@@ -26,10 +26,10 @@ public data class ApiMetadata(
     var tags: List<String> = emptyList(),
     @PublishedApi internal var path: String,
     @PublishedApi internal var method: HttpMethod,
-    @PublishedApi internal val parameters: MutableList<ApiParameter> = mutableListOf(),
+    @PublishedApi internal val parameters: LinkedHashSet<ApiParameter> = linkedSetOf(),
     @PublishedApi internal var requestBody: ApiRequestBody? = null,
-    @PublishedApi internal val responses: MutableList<ApiResponse> = mutableListOf(),
-    @PublishedApi internal val security: MutableList<ApiSecurity> = mutableListOf()
+    @PublishedApi internal val responses: LinkedHashSet<ApiResponse> = linkedSetOf(),
+    @PublishedApi internal val security: LinkedHashSet<ApiSecurity> = linkedSetOf()
 ) {
     init {
         require(path.isNotEmpty()) {
@@ -193,6 +193,10 @@ public data class ApiMetadata(
         contentType: ContentType = ContentType.Application.Json,
         deprecated: Boolean = false
     ) {
+        require(value = this.requestBody == null) {
+            "Only one request body is allowed per API endpoint. " +
+                    "Found '${this.requestBody}' already defined in '${this.path}' / ${this.method}"
+        }
         requestBody = ApiRequestBody(
             type = typeOf<T>(),
             description = description?.trim(),
