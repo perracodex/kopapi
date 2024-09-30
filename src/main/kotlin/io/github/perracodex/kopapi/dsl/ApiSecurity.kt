@@ -14,7 +14,8 @@ package io.github.perracodex.kopapi.dsl
  * @property location The location where the API key is passed (only applicable for API Key schemes).
  * @property openIdConnectUrl The URL for the OpenID Connect configuration (only applicable for OpenID Connect schemes).
  */
-public data class ApiSecurity(
+@ConsistentCopyVisibility
+public data class ApiSecurity @PublishedApi internal constructor(
     val name: String,
     val description: String? = null,
     val scheme: Scheme,

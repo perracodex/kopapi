@@ -17,7 +17,8 @@ import kotlin.reflect.KType
  * @property headers A list of [ApiHeader] objects representing the headers that may be included in the response.
  * @property links A list of [ApiLink] objects representing possible links to other operations.
  */
-public data class ApiResponse(
+@ConsistentCopyVisibility
+public data class ApiResponse @PublishedApi internal constructor(
     val type: KType,
     val status: HttpStatusCode,
     val description: String? = null,

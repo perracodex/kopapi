@@ -16,7 +16,8 @@ import kotlin.reflect.KType
  * @property contentType The [ContentType] specifying how the data is represented (e.g., application/json).
  * @property deprecated Indicates whether the request body is deprecated and should be avoided.
  */
-public data class ApiRequestBody(
+@ConsistentCopyVisibility
+public data class ApiRequestBody @PublishedApi internal constructor(
     val type: KType,
     val description: String? = null,
     val required: Boolean = true,

@@ -20,7 +20,8 @@ import kotlin.reflect.KType
  * @property style Describes how the parameter value is formatted when sent in a request.
  * @property deprecated Indicates whether the parameter is deprecated and should be avoided.
  */
-public data class ApiParameter(
+@ConsistentCopyVisibility
+public data class ApiParameter @PublishedApi internal constructor(
     val type: KType,
     val location: Location,
     val name: String,
