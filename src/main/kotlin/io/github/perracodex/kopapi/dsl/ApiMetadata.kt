@@ -230,15 +230,15 @@ public data class ApiMetadata(
      * @property name The name of the security scheme.
      * @property description A description of the security scheme.
      * @property scheme The type of security scheme (e.g., HTTP, API Key, OAuth2, etc.).
+     * @property httpType The HTTP type of security scheme (only applicable when the scheme is HTTP).
      * @property location The location where the API key is passed (only applicable for API Key schemes).
-     * @property type The HTTP type of security scheme (only applicable when the scheme is HTTP).
      */
     public fun security(
         name: String,
         description: String? = null,
         scheme: ApiSecurity.Scheme,
-        location: ApiSecurity.Location? = null, // Only required for API_KEY scheme.
-        type: ApiSecurity.HttpType? = null // Only applicable for HTTP scheme.
+        httpType: ApiSecurity.HttpType? = null,// Only applicable for HTTP scheme.
+        location: ApiSecurity.Location? = null // Only required for API_KEY scheme
     ) {
         security.add(
             ApiSecurity(
@@ -246,7 +246,7 @@ public data class ApiMetadata(
                 description = description?.trim(),
                 scheme = scheme,
                 location = location,
-                type = type
+                httpType = httpType
             )
         )
     }

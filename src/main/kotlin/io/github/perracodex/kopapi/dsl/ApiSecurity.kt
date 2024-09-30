@@ -10,16 +10,16 @@ package io.github.perracodex.kopapi.dsl
  * @property name The name of the security scheme.
  * @property description A detailed description of the security scheme.
  * @property scheme The type of security scheme (e.g., HTTP, API Key, OAuth2, etc.).
+ * @property httpType The HTTP type of security scheme (only applicable when the scheme is HTTP).
  * @property location The location where the API key is passed (only applicable for API Key schemes).
- * @property type The HTTP type of security scheme (only applicable when the scheme is HTTP).
  * @property openIdConnectUrl The URL for the OpenID Connect configuration (only applicable for OpenID Connect schemes).
  */
 public data class ApiSecurity(
     val name: String,
     val description: String? = null,
     val scheme: Scheme,
+    val httpType: HttpType? = null,       // Only applicable for HTTP scheme.
     val location: Location? = null,       // Only required for API_KEY scheme.
-    val type: HttpType? = null,           // Only applicable for HTTP scheme.
     val openIdConnectUrl: String? = null  // Only applicable for OPENID_CONNECT scheme.
 ) {
     init {
@@ -30,26 +30,32 @@ public data class ApiSecurity(
 
         // Ensure that location is only provided for the API_KEY scheme.
         require(!(scheme == Scheme.API_KEY && location == null)) {
-            "Location must be specified when using the API_KEY scheme."
+            "Location must be specified when using the API_KEY scheme. " +
+                    "Found Scheme '$scheme' with Location '$location'."
         }
         require(!(scheme != Scheme.API_KEY && location != null)) {
-            "Location should only be used with the API_KEY scheme."
+            "Location should only be used with the API_KEY scheme. " +
+                    "Found Location '$location' with Scheme '$scheme'."
         }
 
         // Ensure that HTTP type is only provided when scheme is HTTP.
-        require(!(scheme == Scheme.HTTP && type == null)) {
-            "HTTP type (e.g., basic, bearer) must be specified when using the HTTP scheme."
+        require(!(scheme == Scheme.HTTP && httpType == null)) {
+            "HTTP type (e.g., basic, bearer) must be specified when using the HTTP scheme." +
+                    " Found Scheme '$scheme' with HTTP Type '$httpType'."
         }
-        require(!(scheme != Scheme.HTTP && type != null)) {
-            "HTTP type should only be used with the HTTP scheme."
+        require(!(scheme != Scheme.HTTP && httpType != null)) {
+            "HTTP type should only be used with the HTTP scheme. " +
+                    "Found HTTP Type '$httpType' with Scheme '$scheme'."
         }
 
         // Ensure that openIdConnectUrl is only provided for OPENID_CONNECT scheme.
         require(!(scheme == Scheme.OPENID_CONNECT && openIdConnectUrl == null)) {
-            "openIdConnectUrl must be specified when using the OPENID_CONNECT scheme."
+            "openIdConnectUrl must be specified when using the OPENID_CONNECT scheme. " +
+                    "Found Scheme '$scheme' with openIdConnectUrl '$openIdConnectUrl'."
         }
         require(!(scheme != Scheme.OPENID_CONNECT && openIdConnectUrl != null)) {
-            "openIdConnectUrl should only be used with the OPENID_CONNECT scheme."
+            "openIdConnectUrl should only be used with the OPENID_CONNECT scheme. " +
+                    "Found Scheme '$scheme' with openIdConnectUrl '$openIdConnectUrl'."
         }
     }
 
