@@ -20,7 +20,8 @@ import kotlin.reflect.typeOf
  * @property responses A list of possible responses from the endpoint, including status codes and data types.
  * @property security A list of security schemes required to access the endpoint.
  */
-public data class ApiMetadata(
+@ConsistentCopyVisibility
+public data class ApiMetadata internal constructor(
     var summary: String? = null,
     var description: String? = null,
     var tags: List<String> = emptyList(),
