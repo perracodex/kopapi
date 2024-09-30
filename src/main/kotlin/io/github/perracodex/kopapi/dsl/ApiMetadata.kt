@@ -10,22 +10,22 @@ import kotlin.reflect.typeOf
 /**
  * Represents the metadata of an API endpoint.
  *
- * @property path The URL path of the API endpoint.
- * @property method The [HttpMethod] (e.g., GET, POST, PUT) applicable to the endpoint.
  * @property summary A brief summary of what the API endpoint does.
  * @property description A detailed description of the API endpoint.
  * @property tags A list of tags to categorize and organize the endpoint within the API documentation.
+ * @property path The URL path of the API endpoint.
+ * @property method The [HttpMethod] (e.g., GET, POST, PUT) applicable to the endpoint.
  * @property parameters A list of parameters used by the endpoint, detailing where each is located (e.g., path, query).
  * @property requestBody Information about the request body expected by the endpoint, if applicable.
  * @property responses A list of possible responses from the endpoint, including status codes and data types.
  * @property security A list of security schemes required to access the endpoint.
  */
 public data class ApiMetadata(
-    var path: String,
-    var method: HttpMethod,
     var summary: String? = null,
     var description: String? = null,
     var tags: List<String> = emptyList(),
+    @PublishedApi internal var path: String,
+    @PublishedApi internal var method: HttpMethod,
     @PublishedApi internal val parameters: MutableList<ApiParameter> = mutableListOf(),
     @PublishedApi internal var requestBody: ApiRequestBody? = null,
     @PublishedApi internal val responses: MutableList<ApiResponse> = mutableListOf(),
@@ -36,10 +36,10 @@ public data class ApiMetadata(
             "Path must not be empty."
         }
 
-        path = path.trim()
         summary = summary?.trim()
         description = description?.trim()
         tags = tags.map { it.trim() }
+        path = path.trim()
     }
 
     /**
@@ -60,15 +60,17 @@ public data class ApiMetadata(
         style: ApiParameter.Style = ApiParameter.Style.SIMPLE,
         deprecated: Boolean = false
     ) {
-        ApiParameter(
-            type = typeOf<T>(),
-            location = ApiParameter.Location.PATH,
-            name = name.trim(),
-            description = description?.trim(),
-            required = required,
-            defaultValue = defaultValue,
-            style = style,
-            deprecated = deprecated,
+        parameters.add(
+            ApiParameter(
+                type = typeOf<T>(),
+                location = ApiParameter.Location.PATH,
+                name = name.trim(),
+                description = description?.trim(),
+                required = required,
+                defaultValue = defaultValue,
+                style = style,
+                deprecated = deprecated,
+            )
         )
     }
 
@@ -92,16 +94,18 @@ public data class ApiMetadata(
         style: ApiParameter.Style = ApiParameter.Style.FORM,
         deprecated: Boolean = false
     ) {
-        ApiParameter(
-            type = typeOf<T>(),
-            location = ApiParameter.Location.QUERY,
-            name = name.trim(),
-            description = description?.trim(),
-            required = required,
-            defaultValue = defaultValue,
-            explode = explode,
-            style = style,
-            deprecated = deprecated
+        parameters.add(
+            ApiParameter(
+                type = typeOf<T>(),
+                location = ApiParameter.Location.QUERY,
+                name = name.trim(),
+                description = description?.trim(),
+                required = required,
+                defaultValue = defaultValue,
+                explode = explode,
+                style = style,
+                deprecated = deprecated
+            )
         )
     }
 
@@ -125,16 +129,18 @@ public data class ApiMetadata(
         style: ApiParameter.Style = ApiParameter.Style.SIMPLE,
         deprecated: Boolean = false
     ) {
-        ApiParameter(
-            type = typeOf<T>(),
-            location = ApiParameter.Location.HEADER,
-            name = name.trim(),
-            description = description?.trim(),
-            required = required,
-            defaultValue = defaultValue,
-            explode = explode,
-            style = style,
-            deprecated = deprecated
+        parameters.add(
+            ApiParameter(
+                type = typeOf<T>(),
+                location = ApiParameter.Location.HEADER,
+                name = name.trim(),
+                description = description?.trim(),
+                required = required,
+                defaultValue = defaultValue,
+                explode = explode,
+                style = style,
+                deprecated = deprecated
+            )
         )
     }
 
