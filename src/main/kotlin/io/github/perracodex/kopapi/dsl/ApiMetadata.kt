@@ -26,10 +26,10 @@ public data class ApiMetadata(
     var summary: String? = null,
     var description: String? = null,
     var tags: List<String> = emptyList(),
-    val parameters: MutableList<ApiParameter> = mutableListOf(),
-    var requestBody: ApiRequestBody? = null,
-    val responses: MutableList<ApiResponse> = mutableListOf(),
-    val security: MutableList<ApiSecurity> = mutableListOf()
+    @PublishedApi internal val parameters: MutableList<ApiParameter> = mutableListOf(),
+    @PublishedApi internal var requestBody: ApiRequestBody? = null,
+    @PublishedApi internal val responses: MutableList<ApiResponse> = mutableListOf(),
+    @PublishedApi internal val security: MutableList<ApiSecurity> = mutableListOf()
 ) {
     init {
         require(path.isNotEmpty()) {
