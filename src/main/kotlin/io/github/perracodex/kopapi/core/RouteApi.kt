@@ -5,9 +5,10 @@
 package io.github.perracodex.kopapi.core
 
 import io.github.perracodex.kopapi.dsl.ApiMetadata
+import io.github.perracodex.kopapi.parser.SchemaProvider
+import io.github.perracodex.kopapi.parser.extractEndpointPath
 import io.ktor.http.*
 import io.ktor.server.routing.*
-import io.ktor.util.*
 
 /**
  * Attaches API metadata to a Ktor route, intended for use with terminal route handlers that define an HTTP method.
@@ -19,12 +20,12 @@ import io.ktor.util.*
  * ```
  * get("/items/{id}") {
  *     // Handle GET request
- * }.api {
+ * } api {
  *     summary = "Retrieve an item"
  *     description = "Fetches an item by its unique identifier."
  *     tags = listOf("Item Operations")
- *     response<Item>(status = HttpStatusCode.OK, description = "Successful fetch")
- *     response<Unit>(status = HttpStatusCode.NotFound, description = "Item not found")
+ *     response<Item>(HttpStatusCode.OK, "Successful fetch")
+ *     response(HttpStatusCode.NotFound, "Item not found")
  * }
  * ```
  *
@@ -35,59 +36,42 @@ import io.ktor.util.*
 public infix fun Route.api(configure: ApiMetadata.() -> Unit): Route {
     // Resolve the HTTP method of the route: GET, POST, PUT, DELETE, etc.
     val method: HttpMethod = (this.selector as? HttpMethodRouteSelector)?.method
-        ?: throw IllegalArgumentException("Route must have an HTTP method selector directly associated with it.")
+        ?: throw KopapiException(message = buildApiErrorMessage(route = this))
 
     // Create an instance of ApiMetadata and apply the configuration.
     val metadata: ApiMetadata = ApiMetadata(
-        path = this.extractFullPath(),
+        path = this.extractEndpointPath(),
         method = method
     ).apply(configure)
 
     // Store the metadata in the route's attributes.
-    this.attributes.put(key = ApiMetadataKey, value = metadata)
+    this.attributes.put(key = SchemaProvider.ApiMetadataKey, value = metadata)
     return this
 }
 
 /**
- * Defines the key used to store and retrieve API metadata associated with a specific [Route].
+ * Builds an error message for when the [Route.api] extension function
+ * is applied to a route without an HTTP method.
  *
- * This key is used as part of the routing configuration process, where API metadata is attached to routes
- * using the `api` extension function.
+ * @param route The [Route] missing an HTTP method.
+ * @return A formatted error message string.
  */
-public val ApiMetadataKey: AttributeKey<ApiMetadata> = AttributeKey("ApiMetadata")
+private fun buildApiErrorMessage(route: Route): String {
+    return """
+        Error: The 'api' extension function must be attached to a route that has an HTTP method (e.g., GET, POST, PUT, DELETE).
+        The current route "${route.extractEndpointPath()}" does not have an HTTP method associated with it.
 
-/**
- * Constructs the full path of a route by aggregating path segments from the current route up to the root,
- * by traversing the parent chain of the current route and collects segments defined by various
- * types of [RouteSelector] types.
- *
- * It builds a full path by piecing together these segments in the order from the root to the current route.
- * The method is designed to ignore segments that do not directly contribute to the path structure,
- * such as HTTP method selectors and trailing slashes.
- *
- * @return A string representing the full path from the root to the current route, starting with a `/`.
- * If the current route is at the root or no path segments are defined, the function returns just `/`.
- */
-private fun Route.extractFullPath(): String {
-    val segments: MutableList<String> = mutableListOf()
-    var currentRoute: Route? = this
+        Possible causes:
+        - You might have forgotten to define an HTTP method (e.g., `get("/path")`, `post("/path")`).
+        - You might have applied 'api' to a route that is not directly tied to a specific method.
 
-    // Traverse the parent chain of the current route and collect path segments.
-    while (currentRoute != null && currentRoute.selector !is RootRouteSelector) {
-        val segment: String = when (val selector: RouteSelector = currentRoute.selector) {
-            is PathSegmentConstantRouteSelector -> selector.value
-            is PathSegmentParameterRouteSelector -> "{${selector.name}}"
-            is PathSegmentOptionalParameterRouteSelector -> "{${selector.name}?}"
-            is PathSegmentWildcardRouteSelector -> "*"
-            is TrailingSlashRouteSelector -> ""
-            is HttpMethodRouteSelector -> "" // Skip HTTP method selectors
-            else -> ""
+        Example of proper usage:
+        ```
+        get("/items/{id}") {
+            // Handle GET request
+        } api {
+            summary = "Retrieve an item"
         }
-        if (segment.isNotEmpty()) {
-            segments.add(segment)
-        }
-        currentRoute = currentRoute.parent
-    }
-
-    return segments.reversed().joinToString(separator = "/", prefix = "/")
+        ```
+    """.trimIndent()
 }

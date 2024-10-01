@@ -4,6 +4,10 @@
 
 package io.github.perracodex.kopapi.dsl
 
+import io.ktor.http.*
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
+
 /**
  * Represents the security configuration for an API endpoint.
  *
@@ -15,13 +19,14 @@ package io.github.perracodex.kopapi.dsl
  * @property openIdConnectUrl The URL for the OpenID Connect configuration (only applicable for OpenID Connect schemes).
  */
 @ConsistentCopyVisibility
+@Serializable
 public data class ApiSecurity @PublishedApi internal constructor(
     val name: String,
     val description: String? = null,
     val scheme: Scheme,
-    val httpType: HttpType? = null,       // Only applicable for HTTP scheme.
-    val location: Location? = null,       // Only required for API_KEY scheme.
-    val openIdConnectUrl: String? = null  // Only applicable for OPENID_CONNECT scheme.
+    val httpType: HttpType? = null,                 // Only applicable for HTTP scheme.
+    val location: Location? = null,                 // Only required for API_KEY scheme.
+    @Contextual val openIdConnectUrl: Url? = null   // Only applicable for OPENID_CONNECT scheme.
 ) {
     init {
         // Ensure that name is not empty
@@ -31,31 +36,31 @@ public data class ApiSecurity @PublishedApi internal constructor(
 
         // Ensure that location is only provided for the API_KEY scheme.
         require(!(scheme == Scheme.API_KEY && location == null)) {
-            "Location must be specified when using the API_KEY scheme. " +
+            "Location must be specified when using the ${Scheme.API_KEY.name} scheme. " +
                     "Found Scheme '$scheme' with Location '$location'."
         }
         require(!(scheme != Scheme.API_KEY && location != null)) {
-            "Location should only be used with the API_KEY scheme. " +
+            "Location should only be used with the ${Scheme.API_KEY.name} scheme. " +
                     "Found Location '$location' with Scheme '$scheme'."
         }
 
         // Ensure that HTTP type is only provided when scheme is HTTP.
         require(!(scheme == Scheme.HTTP && httpType == null)) {
-            "HTTP type (e.g., basic, bearer) must be specified when using the HTTP scheme." +
+            "HTTP type (e.g., basic, bearer) must be specified when using the ${Scheme.HTTP.name} scheme." +
                     " Found Scheme '$scheme' with HTTP Type '$httpType'."
         }
         require(!(scheme != Scheme.HTTP && httpType != null)) {
-            "HTTP type should only be used with the HTTP scheme. " +
+            "HTTP type should only be used with the ${Scheme.HTTP.name} scheme. " +
                     "Found HTTP Type '$httpType' with Scheme '$scheme'."
         }
 
         // Ensure that openIdConnectUrl is only provided for OPENID_CONNECT scheme.
         require(!(scheme == Scheme.OPENID_CONNECT && openIdConnectUrl == null)) {
-            "openIdConnectUrl must be specified when using the OPENID_CONNECT scheme. " +
+            "openIdConnectUrl must be specified when using the ${Scheme.OPENID_CONNECT.name} scheme. " +
                     "Found Scheme '$scheme' with openIdConnectUrl '$openIdConnectUrl'."
         }
         require(!(scheme != Scheme.OPENID_CONNECT && openIdConnectUrl != null)) {
-            "openIdConnectUrl should only be used with the OPENID_CONNECT scheme. " +
+            "openIdConnectUrl should only be used with the ${Scheme.OPENID_CONNECT.name} scheme. " +
                     "Found Scheme '$scheme' with openIdConnectUrl '$openIdConnectUrl'."
         }
     }

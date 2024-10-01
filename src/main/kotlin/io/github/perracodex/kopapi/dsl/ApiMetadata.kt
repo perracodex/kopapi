@@ -5,6 +5,8 @@
 package io.github.perracodex.kopapi.dsl
 
 import io.ktor.http.*
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
 
 /**
@@ -21,12 +23,13 @@ import kotlin.reflect.typeOf
  * @property security A list of security schemes required to access the endpoint.
  */
 @ConsistentCopyVisibility
+@Serializable
 public data class ApiMetadata internal constructor(
+    @PublishedApi internal var path: String,
+    @PublishedApi @Contextual internal var method: HttpMethod,
     var summary: String? = null,
     var description: String? = null,
     var tags: List<String> = emptyList(),
-    @PublishedApi internal var path: String,
-    @PublishedApi internal var method: HttpMethod,
     @PublishedApi internal val parameters: LinkedHashSet<ApiParameter> = linkedSetOf(),
     @PublishedApi internal var requestBody: ApiRequestBody? = null,
     @PublishedApi internal val responses: LinkedHashSet<ApiResponse> = linkedSetOf(),
@@ -216,6 +219,7 @@ public data class ApiMetadata internal constructor(
      * @param header A list of [ApiHeader] objects representing the headers that may be included in the response.
      * @param links A list of [ApiLink] objects representing hypermedia links associated with the response.
      */
+    @JvmName(name = "responseWithType")
     public inline fun <reified T : Any> response(
         status: HttpStatusCode = HttpStatusCode.OK,
         description: String? = null,
@@ -236,28 +240,113 @@ public data class ApiMetadata internal constructor(
     }
 
     /**
-     * Adds a security scheme to the API endpoint's metadata.
+     * Adds a response configuration to the API endpoint's metadata,
+     * assuming there is no response type.
      *
-     * @property name The name of the security scheme.
-     * @property description A description of the security scheme.
-     * @property scheme The type of security scheme (e.g., HTTP, API Key, OAuth2, etc.).
-     * @property httpType The HTTP type of security scheme (only applicable when the scheme is HTTP).
-     * @property location The location where the API key is passed (only applicable for API Key schemes).
+     * @param status The [HttpStatusCode] code associated with this response.
+     * @param description A description of the response content and what it represents.
+     * @param contentType The [ContentType] of the response data, such as JSON or XML.
+     * @param header A list of [ApiHeader] objects representing the headers that may be included in the response.
+     * @param links A list of [ApiLink] objects representing hypermedia links associated with the response.
      */
-    public fun security(
+    @JvmName(name = "responseWithoutType")
+    public fun response(
+        status: HttpStatusCode = HttpStatusCode.OK,
+        description: String? = null,
+        contentType: ContentType = ContentType.Application.Json,
+        header: List<ApiHeader>? = null,
+        links: List<ApiLink>? = null
+    ) {
+        response<Unit>(
+            status = status,
+            description = description,
+            contentType = contentType,
+            header = header,
+            links = links
+        )
+    }
+
+    /**
+     * Adds an HTTP security scheme to the API metadata (e.g., Basic, Bearer).
+     *
+     * @param name The name of the security scheme.
+     * @param description A description of the security scheme.
+     * @param httpType The [ApiSecurity.HttpType] of the security scheme.
+     */
+    public fun httpSecurity(
         name: String,
         description: String? = null,
-        scheme: ApiSecurity.Scheme,
-        httpType: ApiSecurity.HttpType? = null,// Only applicable for HTTP scheme.
-        location: ApiSecurity.Location? = null // Only required for API_KEY scheme
+        httpType: ApiSecurity.HttpType
     ) {
         security.add(
             ApiSecurity(
                 name = name.trim(),
                 description = description?.trim(),
-                scheme = scheme,
-                location = location,
+                scheme = ApiSecurity.Scheme.HTTP,
                 httpType = httpType
+            )
+        )
+    }
+
+    /**
+     * Adds an API key security scheme to the API metadata.
+     *
+     * @param name The name of the security scheme.
+     * @param description A description of the security scheme.
+     * @param location The [ApiSecurity.Location] where the API key is passed.
+     */
+    public fun apiKeySecurity(
+        name: String,
+        description: String? = null,
+        location: ApiSecurity.Location
+    ) {
+        security.add(
+            ApiSecurity(
+                name = name.trim(),
+                description = description?.trim(),
+                scheme = ApiSecurity.Scheme.API_KEY,
+                location = location
+            )
+        )
+    }
+
+    /**
+     * Adds an OAuth2 security scheme to the API metadata.
+     *
+     * @param name The name of the security scheme.
+     * @param description A description of the security scheme.
+     */
+    public fun oauth2Security(
+        name: String,
+        description: String? = null
+    ) {
+        security.add(
+            ApiSecurity(
+                name = name.trim(),
+                description = description?.trim(),
+                scheme = ApiSecurity.Scheme.OAUTH2
+            )
+        )
+    }
+
+    /**
+     * Adds an OpenID Connect security scheme to the API metadata.
+     *
+     * @param name The name of the security scheme.
+     * @param description A description of the security scheme.
+     * @param openIdConnectUrl The URL for the OpenID Connect configuration.
+     */
+    public fun openIdConnectSecurity(
+        name: String,
+        description: String? = null,
+        openIdConnectUrl: Url
+    ) {
+        security.add(
+            ApiSecurity(
+                name = name.trim(),
+                description = description?.trim(),
+                scheme = ApiSecurity.Scheme.OPENID_CONNECT,
+                openIdConnectUrl = openIdConnectUrl
             )
         )
     }
