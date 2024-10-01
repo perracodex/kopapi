@@ -4,10 +4,12 @@
 
 package io.github.perracodex.kopapi.parser
 
+import io.github.perracodex.kopapi.core.KopapiPluginConfig
 import io.github.perracodex.kopapi.dsl.ApiMetadata
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.util.*
+import kotlin.reflect.KType
 
 /**
  * Builder for the API metadata and schemas.
@@ -47,10 +49,10 @@ internal object SchemaProvider {
      * @param application The [Application] reference with the routes to traverse.
      * @return The JSON string of the list of [ApiMetadata] objects.
      */
-    fun getApiMetadataJson(application: Application): String {
+    fun getApiMetadataJson(application: Application, serializer: KopapiPluginConfig.Serializer): String {
         return apiMetadataJson ?: run {
-            val apiMetadata: List<ApiMetadata> = getApiMetadata(application)
-            val apiMetadataJsonResult: String = SerializerUtils.getJson(value = apiMetadata)
+            val apiMetadata: List<ApiMetadata> = getApiMetadata(application = application)
+            val apiMetadataJsonResult: String = SerializerUtils.getJson(value = apiMetadata, serializer = serializer)
             apiMetadataJson = apiMetadataJsonResult
             apiMetadataJsonResult
         }

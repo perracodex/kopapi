@@ -21,6 +21,7 @@ public val KopapiPlugin: ApplicationPlugin<KopapiPluginConfig> = createApplicati
     val openapiYamlUrl: String = this.pluginConfig.openapiYamlUrl
     val swaggerUrl: String = this.pluginConfig.swaggerUrl
     val debugUrl: String = this.pluginConfig.debugUrl
+    val serializer: KopapiPluginConfig.Serializer = this.pluginConfig.serializer
 
     // Validate the URLs.
     require(openapiJsonUrl.isNotBlank()) { "The OpenAPI JSON URL must not be empty." }
@@ -50,8 +51,8 @@ public val KopapiPlugin: ApplicationPlugin<KopapiPluginConfig> = createApplicati
         }
 
         // Provide the API metadata, for debugging purposes.
-        get(this@createApplicationPlugin.pluginConfig.debugUrl) {
-            val apiMetadataJson: String = SchemaProvider.getApiMetadataJson(application = call.application)
+        get(debugUrl) {
+            val apiMetadataJson: String = SchemaProvider.getApiMetadataJson(application = call.application, serializer = serializer)
             call.respondText(text = apiMetadataJson, contentType = ContentType.Application.Json)
         }
     }
@@ -84,4 +85,20 @@ public class KopapiPluginConfig {
      * Relative to the server root URL. Default is `openapi/debug`.
      */
     public var debugUrl: String = "openapi/debug"
+
+    /**
+     * The serializer to use when processing the API objects.
+     */
+    public var serializer: Serializer = Serializer.KOTLINX
+
+    /**
+     * The serializer to use when processing the API objects.
+     */
+    public enum class Serializer {
+        /** Use the Kotlinx serializer. (The Default). */
+        KOTLINX,
+
+        /** Use the Jackson serializer. */
+        JACKSON,
+    }
 }

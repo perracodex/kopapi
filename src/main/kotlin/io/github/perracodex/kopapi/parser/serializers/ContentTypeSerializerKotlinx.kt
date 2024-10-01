@@ -4,6 +4,9 @@
 
 package io.github.perracodex.kopapi.parser.serializers
 
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.SerializerProvider
 import io.ktor.http.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -16,17 +19,27 @@ import kotlinx.serialization.encoding.Encoder
  * Simple serializer to encode objects as their string representation.
  * Intended for serialization only, so does not support deserialization.
  */
-internal object HttpMethodSerializer : KSerializer<HttpMethod> {
+internal object ContentTypeSerializerKotlinx : KSerializer<ContentType> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
-        serialName = "HttpMethod",
+        serialName = "ContentType",
         kind = PrimitiveKind.STRING
     )
 
-    override fun serialize(encoder: Encoder, value: HttpMethod) {
-        encoder.encodeString(value = value.toString())
+    override fun serialize(encoder: Encoder, value: ContentType) {
+        encoder.encodeString(value.toString())
     }
 
-    override fun deserialize(decoder: Decoder): HttpMethod {
+    override fun deserialize(decoder: Decoder): ContentType {
         throw UnsupportedOperationException("Deserialization is not supported.")
+    }
+}
+
+/**
+ * Simple Jackson serializer to encode objects as their string representation.
+ * Intended for serialization only, so does not support deserialization.
+ */
+internal object ContentTypeSerializerJackson : JsonSerializer<ContentType>() {
+    override fun serialize(value: ContentType, gen: JsonGenerator, serializers: SerializerProvider) {
+        gen.writeString(value.toString())
     }
 }

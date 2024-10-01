@@ -10,23 +10,24 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlin.reflect.KType
 
 /**
  * Simple serializer to encode objects as their string representation.
  * Intended for serialization only, so does not support deserialization.
+ *
+ * Note that for Jackson serialization, there is no need to implement a separate serializer.
  */
-internal object KTypeSerializer : KSerializer<KType> {
+internal object AnySerializerKotlinx : KSerializer<Any> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
-        serialName = "KType",
+        serialName = "Any",
         kind = PrimitiveKind.STRING
     )
 
-    override fun serialize(encoder: Encoder, value: KType) {
+    override fun serialize(encoder: Encoder, value: Any) {
         encoder.encodeString(value = value.toString())
     }
 
-    override fun deserialize(decoder: Decoder): KType {
+    override fun deserialize(decoder: Decoder): Any {
         throw UnsupportedOperationException("Deserialization is not supported.")
     }
 }
