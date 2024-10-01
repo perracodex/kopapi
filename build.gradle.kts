@@ -40,8 +40,9 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.jackson)
+    implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization)
-
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.html.builder)
 

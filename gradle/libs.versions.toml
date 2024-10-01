@@ -3,7 +3,9 @@
 [versions]
 
 dokka = "1.9.20"                        # https://github.com/Kotlin/dokka/releases
+jackson_version = "2.18.0"              # https://github.com/FasterXML/jackson-module-kotlin/tags
 kotlin = "2.0.20"                       # https://github.com/JetBrains/kotlin/releases
+kotlinx-datetime = "0.6.1"              # https://github.com/Kotlin/kotlinx-datetime/releases
 kotlinx-serialization = "1.7.3"         # https://github.com/Kotlin/kotlinx.serialization/releases
 ktor = "2.3.12"                         # https://ktor.io/docs/releases.html#release-details
 vanniktech = "0.29.0"                   # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
@@ -19,7 +21,17 @@ vanniktech = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech" }
 
 [libraries]
 
-# Serialization (part of the pLugin).
+# Jackson Serialization.
+# https://github.com/FasterXML/jackson-module-kotlin
+# https://github.com/FasterXML/jackson-module-kotlin/tags
+jackson = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson_version" }
+
+# Serializable DateTime.
+# https://github.com/Kotlin/kotlinx-datetime
+# https://github.com/Kotlin/kotlinx-datetime/releases
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+
+# Kotlinx Serialization.
 # https://github.com/Kotlin/kotlinx.serialization
 # https://github.com/Kotlin/kotlinx.serialization/releases
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
