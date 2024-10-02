@@ -39,7 +39,7 @@ import java.util.Locale as JavaLocale
 import java.util.TimeZone as JavaTimeZone
 import java.util.regex.Pattern as JavaPattern
 
-internal class ObjectParser : IParser {
+internal class ObjectParser {
     /** Track processed KTypes to handle generics uniquely. */
     private val processedTypes: MutableSet<KType> = mutableSetOf()
 
@@ -67,7 +67,7 @@ internal class ObjectParser : IParser {
         kType: KType,
         typeParameterMap: Map<KClassifier, KType>
     ): Map<String, Any> {
-        // Handle nullability at the property level
+        // Handle nullability at the property level.
         val baseSchema: MutableMap<String, Any> = if (kType.isMarkedNullable) {
             mapNonNullType(kType = kType, typeParameterMap = typeParameterMap)
                 .toMutableMap()
@@ -91,23 +91,31 @@ internal class ObjectParser : IParser {
         val classifier: KClassifier? = kType.classifier
 
         return when {
-            // Handle collections (e.g., List<String>, Set<Int>)
+            // Handle collections (e.g., List<String>, Set<Int>).
             classifier == List::class || classifier == Set::class ->
                 handleCollectionType(kType = kType, typeParameterMap = typeParameterMap)
 
-            // Handle maps (e.g., Map<String, Int>)
+            // Handle maps (e.g., Map<String, Int>).
             classifier == Map::class ->
                 handleMapType(kType = kType, typeParameterMap = typeParameterMap)
 
-            // Handle enums
+            // Handle enums.
             classifier is KClass<*> && classifier.isSubclassOf(Enum::class) ->
                 handleEnumType(enumClass = classifier)
 
-            // Handle basic types and complex objects
+            // Using qualifiedName because direct comparison with Array::class
+            // fails due to how arrays are represented in Kotlin's reflection API.
+            (classifier as? KClass<*>)?.qualifiedName == "kotlin.Array" ->
+                handleCollectionType(kType = kType, typeParameterMap = typeParameterMap)
+
+            // Handle basic types and complex objects.
+            // This condition must be placed last because all types are also instances of KClass.
+            // If this check is placed earlier, the above checks will never be reached.
             classifier is KClass<*> ->
                 handleComplexOrBasicType(kClass = classifier, kType = kType, typeParameterMap = typeParameterMap)
 
-            else -> mapOf("type" to "object") // Default to object for unknown or unsupported types
+            // Default to object for unknown or unsupported types.
+            else -> mapOf("type" to "object")
         }
     }
 
@@ -118,12 +126,27 @@ internal class ObjectParser : IParser {
         kType: KType,
         typeParameterMap: Map<KClassifier, KType>
     ): Map<String, Any> {
-        val itemType: KType? = kType.arguments.firstOrNull()?.type?.let {
+        val classifier: KClassifier? = kType.classifier
+
+        val itemType: KType = kType.arguments.firstOrNull()?.type?.let {
             replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
+        } ?: return mapOf("type" to "object")  // Fallback if type resolution fails.
+
+        // Determine if the array is of a primitive type
+        val isPrimitiveArray: Boolean = classifier?.let {
+            it == IntArray::class || it == ByteArray::class || it == ShortArray::class ||
+                    it == FloatArray::class || it == DoubleArray::class || it == LongArray::class ||
+                    it == CharArray::class || it == BooleanArray::class
+        } == true
+
+        // Map the item type to its respective schema, considering if it's a primitive array.
+        val itemSchema: Map<String, Any> = if (!isPrimitiveArray) {
+            // Handle as regular object array.
+            mapObjectInternal(kType = itemType, typeParameterMap = typeParameterMap)
+        } else {
+            // Handle as primitive array, mapping directly without nested types.
+            mapPrimitiveType(kClass = itemType.classifier as KClass<*>) ?: mapOf("type" to "object")
         }
-        val itemSchema: Map<String, Any> = itemType?.let {
-            mapObjectInternal(kType = it, typeParameterMap = typeParameterMap)
-        } ?: mapOf("type" to "object")
 
         return mapOf(
             "type" to "array",
