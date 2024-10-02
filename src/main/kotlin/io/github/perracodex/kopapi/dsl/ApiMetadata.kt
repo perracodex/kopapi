@@ -5,45 +5,76 @@
 package io.github.perracodex.kopapi.dsl
 
 import io.ktor.http.*
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
+import java.util.*
 import kotlin.reflect.typeOf
 
 /**
- * Represents the metadata of an API endpoint.
+ * Provides structured metadata for defining and documenting API endpoints.
+ * This class is designed to be used in conjunction with Ktor routes,
+ * enabling detailed descriptions of endpoint behaviors, parameters, responses, and operational characteristics.
  *
- * @property summary A brief summary of what the API endpoint does.
- * @property description A detailed description of the API endpoint.
- * @property tags A list of tags to categorize and organize the endpoint within the API documentation.
- * @property path The URL path of the API endpoint.
- * @property method The [HttpMethod] (e.g., GET, POST, PUT) applicable to the endpoint.
- * @property parameters A list of parameters used by the endpoint, detailing where each is located (e.g., path, query).
- * @property requestBody Information about the request body expected by the endpoint, if applicable.
- * @property responses A list of possible responses from the endpoint, including status codes and data types.
- * @property security A list of security schemes required to access the endpoint.
+ * Usage involves defining a Ktor route and attaching API metadata using the `Route.api` infix
+ * function to enrich the route with operational details and documentation specifications.
+ *
+ * @property path The URL path for the endpoint, derived from the Ktor route.
+ * @property method Specifies the [HttpMethod] (GET, POST, PUT, etc.) for the endpoint, derived from the Ktor route.
+ * @property summary Optional short description of the endpoint's purpose.
+ * @property description Optional detailed explanation of the endpoint and its functionality.
+ * @property tags Optional set of descriptive tags for categorizing the endpoint in API documentation.
+ * @property parameters Optional set of parameters detailing type, necessity, and location in the request.
+ * @property requestBody Optional structure and type of the request body.
+ * @property responses Optional set of possible responses, outlining expected status codes and content types.
+ * @property security Optional set of security schemes detailing the authentication requirements for the endpoint.
  */
+@Suppress("MemberVisibilityCanBePrivate")
 @ConsistentCopyVisibility
-@Serializable
 public data class ApiMetadata internal constructor(
     @PublishedApi internal var path: String,
-    @PublishedApi @Contextual internal var method: HttpMethod,
-    var summary: String? = null,
-    var description: String? = null,
-    var tags: List<String> = emptyList(),
+    @PublishedApi internal var method: HttpMethod,
+    @PublishedApi internal var summary: String? = null,
+    @PublishedApi internal var description: String? = null,
+    @PublishedApi internal var tags: Set<String> = linkedSetOf(),
     @PublishedApi internal val parameters: LinkedHashSet<ApiParameter> = linkedSetOf(),
     @PublishedApi internal var requestBody: ApiRequestBody? = null,
     @PublishedApi internal val responses: LinkedHashSet<ApiResponse> = linkedSetOf(),
     @PublishedApi internal val security: LinkedHashSet<ApiSecurity> = linkedSetOf()
 ) {
     init {
-        require(path.isNotEmpty()) {
-            "Path must not be empty."
-        }
-
-        summary = summary?.trim()
-        description = description?.trim()
-        tags = tags.map { it.trim() }
+        require(path.isNotBlank()) { "Path must not be empty." }
         path = path.trim()
+    }
+
+    /**
+     * Sets a short description of the endpoint's purpose.
+     *
+     * @param text The description to set.
+     */
+    public fun summary(text: String) {
+        this.summary = text.trim().takeIf { it.isNotBlank() }
+    }
+
+    /**
+     * Sets a short description of the endpoint's purpose.
+     *
+     * @param text The description to set.
+     */
+    public fun description(text: String) {
+        this.description = text.trim().takeIf { it.isNotBlank() }
+    }
+
+    /**
+     * Adds tags to the API endpoint's metadata.
+     *
+     * @param tags A list of tags to categorize the endpoint.
+     */
+    public fun tags(vararg tags: String) {
+        // Handle tags to ensure they are unique regardless of case variations,
+        // while retaining the original casing of the first occurrence of each tag.
+        // If other tags were already added, the new ones will be appended to the set.
+        val caseInsensitiveSet: TreeSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
+        caseInsensitiveSet.addAll(this.tags)
+        caseInsensitiveSet.addAll(tags.map { it.trim() }.filter { it.isNotBlank() })
+        this.tags = LinkedHashSet(caseInsensitiveSet)
     }
 
     /**
@@ -69,7 +100,7 @@ public data class ApiMetadata internal constructor(
                 type = typeOf<T>(),
                 location = ApiParameter.Location.PATH,
                 name = name.trim(),
-                description = description?.trim(),
+                description = description.trimNullable(),
                 required = required,
                 defaultValue = defaultValue,
                 style = style,
@@ -103,7 +134,7 @@ public data class ApiMetadata internal constructor(
                 type = typeOf<T>(),
                 location = ApiParameter.Location.QUERY,
                 name = name.trim(),
-                description = description?.trim(),
+                description = description.trimNullable(),
                 required = required,
                 defaultValue = defaultValue,
                 explode = explode,
@@ -138,7 +169,7 @@ public data class ApiMetadata internal constructor(
                 type = typeOf<T>(),
                 location = ApiParameter.Location.HEADER,
                 name = name.trim(),
-                description = description?.trim(),
+                description = description.trimNullable(),
                 required = required,
                 defaultValue = defaultValue,
                 explode = explode,
@@ -173,7 +204,7 @@ public data class ApiMetadata internal constructor(
                 type = typeOf<T>(),
                 location = ApiParameter.Location.COOKIE,
                 name = name.trim(),
-                description = description?.trim(),
+                description = description.trimNullable(),
                 required = required,
                 defaultValue = defaultValue,
                 explode = explode,
@@ -203,7 +234,7 @@ public data class ApiMetadata internal constructor(
         }
         requestBody = ApiRequestBody(
             type = typeOf<T>(),
-            description = description?.trim(),
+            description = description.trimNullable(),
             required = required,
             contentType = contentType,
             deprecated = deprecated
@@ -231,7 +262,7 @@ public data class ApiMetadata internal constructor(
             ApiResponse(
                 type = typeOf<T>(),
                 status = status,
-                description = description?.trim(),
+                description = description.trimNullable(),
                 contentType = contentType,
                 headers = header.takeIf { it?.isNotEmpty() == true },
                 links = links.takeIf { it?.isNotEmpty() == true }
@@ -259,7 +290,7 @@ public data class ApiMetadata internal constructor(
     ) {
         response<Unit>(
             status = status,
-            description = description,
+            description = description.trimNullable(),
             contentType = contentType,
             header = header,
             links = links
@@ -281,7 +312,7 @@ public data class ApiMetadata internal constructor(
         security.add(
             ApiSecurity(
                 name = name.trim(),
-                description = description?.trim(),
+                description = description.trimNullable(),
                 scheme = ApiSecurity.Scheme.HTTP,
                 httpType = httpType
             )
@@ -303,7 +334,7 @@ public data class ApiMetadata internal constructor(
         security.add(
             ApiSecurity(
                 name = name.trim(),
-                description = description?.trim(),
+                description = description.trimNullable(),
                 scheme = ApiSecurity.Scheme.API_KEY,
                 location = location
             )
@@ -323,7 +354,7 @@ public data class ApiMetadata internal constructor(
         security.add(
             ApiSecurity(
                 name = name.trim(),
-                description = description?.trim(),
+                description = description.trimNullable(),
                 scheme = ApiSecurity.Scheme.OAUTH2
             )
         )
@@ -344,10 +375,19 @@ public data class ApiMetadata internal constructor(
         security.add(
             ApiSecurity(
                 name = name.trim(),
-                description = description?.trim(),
+                description = description.trimNullable(),
                 scheme = ApiSecurity.Scheme.OPENID_CONNECT,
                 openIdConnectUrl = openIdConnectUrl
             )
         )
     }
+}
+
+
+/**
+ * Trim a nullable string, returning null if the trimmed result is empty.
+ */
+@PublishedApi
+internal fun String?.trimNullable(): String? {
+    return this?.trim().takeIf { it?.isNotBlank() == true }
 }

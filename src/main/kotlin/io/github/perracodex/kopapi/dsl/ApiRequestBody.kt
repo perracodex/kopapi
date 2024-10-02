@@ -5,8 +5,6 @@
 package io.github.perracodex.kopapi.dsl
 
 import io.ktor.http.*
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
 import kotlin.reflect.KType
 
 /**
@@ -19,11 +17,10 @@ import kotlin.reflect.KType
  * @property deprecated Indicates whether the request body is deprecated and should be avoided.
  */
 @ConsistentCopyVisibility
-@Serializable
 public data class ApiRequestBody @PublishedApi internal constructor(
-    @Contextual val type: KType,
+    val type: KType,
     val description: String? = null,
     val required: Boolean = true,
-    @Contextual val contentType: ContentType = ContentType.Application.Json,
+    val contentType: ContentType = ContentType.Application.Json,
     val deprecated: Boolean = false
 )

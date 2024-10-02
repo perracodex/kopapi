@@ -4,8 +4,6 @@
 
 package io.github.perracodex.kopapi.dsl
 
-import kotlinx.serialization.Serializable
-
 /**
  * Represents the metadata of a response header.
  *
@@ -14,7 +12,6 @@ import kotlinx.serialization.Serializable
  * @property required Indicates whether the header is mandatory.
  * @property deprecated Indicates whether the header is deprecated and should be avoided.
  */
-@Serializable
 public data class ApiHeader(
     val name: String,
     val description: String,

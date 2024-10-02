@@ -5,8 +5,6 @@
 package io.github.perracodex.kopapi.dsl
 
 import io.ktor.http.*
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
 import kotlin.reflect.KType
 
 /**
@@ -20,12 +18,11 @@ import kotlin.reflect.KType
  * @property links A list of [ApiLink] objects representing possible links to other operations.
  */
 @ConsistentCopyVisibility
-@Serializable
 public data class ApiResponse @PublishedApi internal constructor(
-    @Contextual val type: KType,
-    @Contextual val status: HttpStatusCode,
+    val type: KType,
+    val status: HttpStatusCode,
     val description: String? = null,
-    @Contextual val contentType: ContentType = ContentType.Application.Json,
+    val contentType: ContentType = ContentType.Application.Json,
     val headers: List<ApiHeader>? = null,
     val links: List<ApiLink>? = null
 )

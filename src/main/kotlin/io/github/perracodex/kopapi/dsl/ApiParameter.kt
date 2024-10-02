@@ -5,8 +5,6 @@
 package io.github.perracodex.kopapi.dsl
 
 import io.github.perracodex.kopapi.dsl.ApiParameter.Location
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
 import kotlin.reflect.KType
 
 /**
@@ -23,14 +21,13 @@ import kotlin.reflect.KType
  * @property deprecated Indicates whether the parameter is deprecated and should be avoided.
  */
 @ConsistentCopyVisibility
-@Serializable
 public data class ApiParameter @PublishedApi internal constructor(
-    @Contextual val type: KType,
+    val type: KType,
     val location: Location,
     val name: String,
     val description: String? = null,
     val required: Boolean = true,
-    @Contextual val defaultValue: Any? = null,
+    val defaultValue: Any? = null,
     val explode: Boolean? = null,
     val style: Style? = null,
     val deprecated: Boolean = false

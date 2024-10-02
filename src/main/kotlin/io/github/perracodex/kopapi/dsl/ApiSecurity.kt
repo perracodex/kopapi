@@ -5,8 +5,6 @@
 package io.github.perracodex.kopapi.dsl
 
 import io.ktor.http.*
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
 
 /**
  * Represents the security configuration for an API endpoint.
@@ -19,14 +17,13 @@ import kotlinx.serialization.Serializable
  * @property openIdConnectUrl The URL for the OpenID Connect configuration (only applicable for OpenID Connect schemes).
  */
 @ConsistentCopyVisibility
-@Serializable
 public data class ApiSecurity @PublishedApi internal constructor(
     val name: String,
     val description: String? = null,
     val scheme: Scheme,
     val httpType: HttpType? = null,                 // Only applicable for HTTP scheme.
     val location: Location? = null,                 // Only required for API_KEY scheme.
-    @Contextual val openIdConnectUrl: Url? = null   // Only applicable for OPENID_CONNECT scheme.
+    val openIdConnectUrl: Url? = null   // Only applicable for OPENID_CONNECT scheme.
 ) {
     init {
         // Ensure that name is not empty

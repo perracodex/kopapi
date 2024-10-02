@@ -5,8 +5,7 @@
 package io.github.perracodex.kopapi.core
 
 import io.github.perracodex.kopapi.dsl.ApiMetadata
-import io.github.perracodex.kopapi.parser.SchemaProvider
-import io.github.perracodex.kopapi.parser.extractEndpointPath
+import io.github.perracodex.kopapi.routing.extractEndpointPath
 import io.ktor.http.*
 import io.ktor.server.routing.*
 
@@ -21,9 +20,9 @@ import io.ktor.server.routing.*
  * get("/items/{id}") {
  *     // Handle GET request
  * } api {
- *     summary = "Retrieve an item"
- *     description = "Fetches an item by its unique identifier."
- *     tags = listOf("Item Operations")
+ *     summary("Retrieve an item")
+ *     description("Fetches an item by its unique identifier.")
+ *     tags("Item1", "Item2")
  *     response<Item>(HttpStatusCode.OK, "Successful fetch")
  *     response(HttpStatusCode.NotFound, "Item not found")
  * }
@@ -70,7 +69,7 @@ private fun buildApiErrorMessage(route: Route): String {
         get("/items/{id}") {
             // Handle GET request
         } api {
-            summary = "Retrieve an item"
+            summary("Retrieve an item")
         }
         ```
     """.trimIndent()
