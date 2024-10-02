@@ -2,14 +2,14 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.parser
+package io.github.perracodex.kopapi.core
 
-import io.github.perracodex.kopapi.core.KopapiPluginConfig
 import io.github.perracodex.kopapi.dsl.ApiMetadata
+import io.github.perracodex.kopapi.routing.collectRouteAttributes
+import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.util.*
-import kotlin.reflect.KType
 
 /**
  * Builder for the API metadata and schemas.
@@ -38,7 +38,7 @@ internal object SchemaProvider {
     fun getApiMetadata(application: Application): List<ApiMetadata> {
         return apiMetadata ?: run {
             val collectedApiMetadata: List<ApiMetadata> = application.collectRouteAttributes(attributeKey = ApiMetadataKey)
-            apiMetadata = application.collectRouteAttributes(attributeKey = ApiMetadataKey)
+            apiMetadata = collectedApiMetadata
             collectedApiMetadata
         }
     }
