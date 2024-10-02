@@ -49,10 +49,10 @@ internal object SchemaProvider {
      * @param application The [Application] reference with the routes to traverse.
      * @return The JSON string of the list of [ApiMetadata] objects.
      */
-    fun getApiMetadataJson(application: Application, serializer: KopapiPluginConfig.Serializer): String {
+    fun getApiMetadataJson(application: Application): String {
         return apiMetadataJson ?: run {
             val apiMetadata: List<ApiMetadata> = getApiMetadata(application = application)
-            val apiMetadataJsonResult: String = SerializerUtils.getJson(value = apiMetadata, serializer = serializer)
+            val apiMetadataJsonResult: String = SerializationUtils.toJson(instance = apiMetadata)
             apiMetadataJson = apiMetadataJsonResult
             apiMetadataJsonResult
         }
