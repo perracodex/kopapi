@@ -39,5 +39,5 @@ internal fun Route.extractEndpointPath(): String {
         currentRoute = currentRoute.parent
     }
 
-    return segments.reversed().joinToString(separator = "/", prefix = "/")
+    return segments.reversed().joinToString(separator = "/", prefix = "/").trim()
 }

@@ -24,24 +24,23 @@ import kotlin.reflect.typeOf
  * @property parameters Optional set of parameters detailing type, necessity, and location in the request.
  * @property requestBody Optional structure and type of the request body.
  * @property responses Optional set of possible responses, outlining expected status codes and content types.
- * @property security Optional set of security schemes detailing the authentication requirements for the endpoint.
+ * @property securities Optional set of security schemes detailing the authentication requirements for the endpoint.
  */
 @Suppress("MemberVisibilityCanBePrivate")
 @ConsistentCopyVisibility
 public data class ApiMetadata internal constructor(
-    @PublishedApi internal var path: String,
-    @PublishedApi internal var method: HttpMethod,
+    @PublishedApi internal val path: String,
+    @PublishedApi internal val method: HttpMethod,
     @PublishedApi internal var summary: String? = null,
     @PublishedApi internal var description: String? = null,
-    @PublishedApi internal var tags: Set<String> = linkedSetOf(),
-    @PublishedApi internal val parameters: LinkedHashSet<ApiParameter> = linkedSetOf(),
+    @PublishedApi internal var tags: Set<String>? = null,
+    @PublishedApi internal var parameters: LinkedHashSet<ApiParameter>? = null,
     @PublishedApi internal var requestBody: ApiRequestBody? = null,
-    @PublishedApi internal val responses: LinkedHashSet<ApiResponse> = linkedSetOf(),
-    @PublishedApi internal val security: LinkedHashSet<ApiSecurity> = linkedSetOf()
+    @PublishedApi internal var responses: LinkedHashSet<ApiResponse>? = null,
+    @PublishedApi internal var securities: LinkedHashSet<ApiSecurity>? = null
 ) {
     init {
         require(path.isNotBlank()) { "Path must not be empty." }
-        path = path.trim()
     }
 
     /**
@@ -72,9 +71,25 @@ public data class ApiMetadata internal constructor(
         // while retaining the original casing of the first occurrence of each tag.
         // If other tags were already added, the new ones will be appended to the set.
         val caseInsensitiveSet: TreeSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
-        caseInsensitiveSet.addAll(this.tags)
+        this.tags?.let { caseInsensitiveSet.addAll(it) }
         caseInsensitiveSet.addAll(tags.map { it.trim() }.filter { it.isNotBlank() })
         this.tags = LinkedHashSet(caseInsensitiveSet)
+    }
+
+    /** Internal helper function to add a parameter to the API endpoint's metadata. */
+    @PublishedApi
+    internal fun addParameter(parameter: ApiParameter) {
+        val parameters: LinkedHashSet<ApiParameter> = parameters
+            ?: linkedSetOf<ApiParameter>().also { parameters = it }
+        parameters.add(parameter)
+    }
+
+    /** Internal helper function to add a security scheme to the API endpoint's metadata. */
+    @PublishedApi
+    internal fun addSecurity(security: ApiSecurity) {
+        val securities: LinkedHashSet<ApiSecurity> = securities
+            ?: linkedSetOf<ApiSecurity>().also { securities = it }
+        securities.add(security)
     }
 
     /**
@@ -95,7 +110,7 @@ public data class ApiMetadata internal constructor(
         style: ApiParameter.Style = ApiParameter.Style.SIMPLE,
         deprecated: Boolean = false
     ) {
-        parameters.add(
+        addParameter(
             ApiParameter(
                 type = typeOf<T>(),
                 location = ApiParameter.Location.PATH,
@@ -129,7 +144,7 @@ public data class ApiMetadata internal constructor(
         style: ApiParameter.Style = ApiParameter.Style.FORM,
         deprecated: Boolean = false
     ) {
-        parameters.add(
+        addParameter(
             ApiParameter(
                 type = typeOf<T>(),
                 location = ApiParameter.Location.QUERY,
@@ -164,7 +179,7 @@ public data class ApiMetadata internal constructor(
         style: ApiParameter.Style = ApiParameter.Style.SIMPLE,
         deprecated: Boolean = false
     ) {
-        parameters.add(
+        addParameter(
             ApiParameter(
                 type = typeOf<T>(),
                 location = ApiParameter.Location.HEADER,
@@ -199,7 +214,7 @@ public data class ApiMetadata internal constructor(
         style: ApiParameter.Style = ApiParameter.Style.FORM,
         deprecated: Boolean = false
     ) {
-        parameters.add(
+        addParameter(
             ApiParameter(
                 type = typeOf<T>(),
                 location = ApiParameter.Location.COOKIE,
@@ -258,6 +273,9 @@ public data class ApiMetadata internal constructor(
         header: List<ApiHeader>? = null,
         links: List<ApiLink>? = null
     ) {
+        val responses: LinkedHashSet<ApiResponse> = responses
+            ?: linkedSetOf<ApiResponse>().also { responses = it }
+
         responses.add(
             ApiResponse(
                 type = typeOf<T>(),
@@ -309,7 +327,7 @@ public data class ApiMetadata internal constructor(
         description: String? = null,
         httpType: ApiSecurity.HttpType
     ) {
-        security.add(
+        addSecurity(
             ApiSecurity(
                 name = name.trim(),
                 description = description.trimNullable(),
@@ -331,7 +349,7 @@ public data class ApiMetadata internal constructor(
         description: String? = null,
         location: ApiSecurity.Location
     ) {
-        security.add(
+        addSecurity(
             ApiSecurity(
                 name = name.trim(),
                 description = description.trimNullable(),
@@ -351,7 +369,7 @@ public data class ApiMetadata internal constructor(
         name: String,
         description: String? = null
     ) {
-        security.add(
+        addSecurity(
             ApiSecurity(
                 name = name.trim(),
                 description = description.trimNullable(),
@@ -372,7 +390,7 @@ public data class ApiMetadata internal constructor(
         description: String? = null,
         openIdConnectUrl: Url
     ) {
-        security.add(
+        addSecurity(
             ApiSecurity(
                 name = name.trim(),
                 description = description.trimNullable(),
