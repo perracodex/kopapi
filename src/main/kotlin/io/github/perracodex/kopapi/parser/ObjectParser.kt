@@ -88,12 +88,13 @@ internal class ObjectParser {
         kType: KType,
         typeParameterMap: Map<KClassifier, KType>
     ): Map<String, Any> {
-        val classifier: KClassifier? = kType.classifier
+        val classifier: KClassifier = kType.classifier
+            ?: throw IllegalArgumentException("KType must have a classifier to map to OpenAPI schema.")
 
         return when {
             // Handle collections (e.g., List<String>, Set<Int>).
-            classifier == List::class || classifier == Set::class ->
-                handleCollectionType(kType = kType, typeParameterMap = typeParameterMap)
+            classifier == List::class || classifier == Set::class || isArrayType(classifier = classifier) ->
+                handleCollectionType(kType = kType, classifier = classifier, typeParameterMap = typeParameterMap)
 
             // Handle maps (e.g., Map<String, Int>).
             classifier == Map::class ->
@@ -103,11 +104,6 @@ internal class ObjectParser {
             classifier is KClass<*> && classifier.isSubclassOf(Enum::class) ->
                 handleEnumType(enumClass = classifier)
 
-            // Using qualifiedName because direct comparison with Array::class
-            // fails due to how arrays are represented in Kotlin's reflection API.
-            (classifier as? KClass<*>)?.qualifiedName == "kotlin.Array" ->
-                handleCollectionType(kType = kType, typeParameterMap = typeParameterMap)
-
             // Handle basic types and complex objects.
             // This condition must be placed last because all types are also instances of KClass.
             // If this check is placed earlier, the above checks will never be reached.
@@ -115,7 +111,7 @@ internal class ObjectParser {
                 handleComplexOrBasicType(kClass = classifier, kType = kType, typeParameterMap = typeParameterMap)
 
             // Default to object for unknown or unsupported types.
-            else -> mapOf("type" to "object")
+            else -> unknownObject
         }
     }
 
@@ -124,34 +120,59 @@ internal class ObjectParser {
      */
     private fun handleCollectionType(
         kType: KType,
+        classifier: KClassifier,
         typeParameterMap: Map<KClassifier, KType>
     ): Map<String, Any> {
-        val classifier: KClassifier? = kType.classifier
-
-        val itemType: KType = kType.arguments.firstOrNull()?.type?.let {
-            replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
-        } ?: return mapOf("type" to "object")  // Fallback if type resolution fails.
-
-        // Determine if the array is of a primitive type
-        val isPrimitiveArray: Boolean = classifier?.let {
-            it == IntArray::class || it == ByteArray::class || it == ShortArray::class ||
-                    it == FloatArray::class || it == DoubleArray::class || it == LongArray::class ||
-                    it == CharArray::class || it == BooleanArray::class
-        } == true
-
-        // Map the item type to its respective schema, considering if it's a primitive array.
-        val itemSchema: Map<String, Any> = if (!isPrimitiveArray) {
-            // Handle as regular object array.
-            mapObjectInternal(kType = itemType, typeParameterMap = typeParameterMap)
+        // Check if the classifier is a primitive array first, such us IntArray, ByteArray, etc.
+        if (isPrimitiveArrayType(classifier = classifier)) {
+            return mapPrimitiveType(kClass = classifier as KClass<*>) ?: unknownObject
         } else {
-            // Handle as primitive array, mapping directly without nested types.
-            mapPrimitiveType(kClass = itemType.classifier as KClass<*>) ?: mapOf("type" to "object")
-        }
+            // For non-primitive arrays and collections, handle based on type arguments.
+            val itemType: KType = kType.arguments.firstOrNull()?.type?.let {
+                replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
+            } ?: return unknownObject  // Fallback if type resolution fails.
 
-        return mapOf(
-            "type" to "array",
-            "items" to itemSchema
-        )
+            // Map the item type to its respective schema, considering it's a regular object array or collection.
+            val itemSchema: Map<String, Any> = mapObjectInternal(
+                kType = itemType,
+                typeParameterMap = typeParameterMap
+            )
+
+            return mapOf(
+                "type" to "array",
+                "items" to itemSchema
+            )
+        }
+    }
+
+    /**
+     * Checks if a KClassifier represents any array type,
+     * which includes both primitive arrays and arrays of objects (e.g., Array<String>).
+     *
+     * Unlike List<T>, where the type parameter information is retained at runtime
+     * due to reified type parameters in inline functions, generic array types (like Array<T>)
+     * do not retain their specific type information because of type erasure. This limitation
+     * necessitates the use of Java's reflection capabilities to identify array types accurately.
+     *
+     * @param classifier The [KClassifier] of the KType to check.
+     * @return True if the classifier represents an array type, false otherwise.
+     */
+    private fun isArrayType(classifier: KClassifier): Boolean {
+        return isPrimitiveArrayType(classifier = classifier)
+                || (classifier as? KClass<*>)?.javaObjectType?.isArray ?: false
+    }
+
+    /**
+     * Checks if a KClassifier represents a primitive array type.
+     *
+     * @param classifier The [KClassifier] of the KType to check.
+     * @return True if the classifier is a primitive array type, false otherwise.
+     */
+    private fun isPrimitiveArrayType(classifier: KClassifier): Boolean {
+        return classifier == IntArray::class || classifier == ByteArray::class ||
+                classifier == ShortArray::class || classifier == FloatArray::class ||
+                classifier == DoubleArray::class || classifier == LongArray::class ||
+                classifier == CharArray::class || classifier == BooleanArray::class
     }
 
     /**
@@ -177,7 +198,7 @@ internal class ObjectParser {
         // Process the value type
         val valueSchema: Map<String, Any> = valueType?.let {
             mapObjectInternal(kType = it, typeParameterMap = typeParameterMap)
-        } ?: mapOf("type" to "object")
+        } ?: unknownObject
 
         return mapOf(
             "type" to "object",
@@ -259,7 +280,7 @@ internal class ObjectParser {
         // Add properties to the schema
         propertiesMap.putAll(properties)
 
-        processedTypes.remove(kType) // Remove once done to handle different branches
+        processedTypes.remove(kType) // Remove once done to handle different branches.
 
         return mapOf("\$ref" to "#/components/schemas/${kClass.safeName()}")
     }
@@ -425,8 +446,15 @@ internal class ObjectParser {
             Byte::class -> mapOf("type" to "integer", "format" to "int32")
             Char::class -> mapOf("type" to "string", "maxLength" to 1)
 
-            // Byte Array for Binary Data.
-            ByteArray::class -> mapOf("type" to "string", "format" to "byte")
+            // Primitive Arrays.
+            IntArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "integer", "format" to "int32"))
+            ByteArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "string", "format" to "byte"))
+            ShortArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "integer", "format" to "int32"))
+            FloatArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "number", "format" to "float"))
+            DoubleArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "number", "format" to "double"))
+            LongArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "integer", "format" to "int64"))
+            CharArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "string", "maxLength" to 1))
+            BooleanArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "boolean"))
 
             // UUID Types.
             Uuid::class, UUID::class -> mapOf("type" to "string", "format" to "uuid")
@@ -545,5 +573,11 @@ internal class ObjectParser {
      */
     private fun KClass<*>.safeName(): String {
         return this.simpleName ?: this.qualifiedName?.replace(oldChar = '.', newChar = '_') ?: "UnknownClass"
+    }
+
+    companion object {
+        /** Placeholder for unknown object types. */
+       // private val unknownObject: Map<SpecKey, SpecType> = mapOf(SpecKey.TYPE to SpecType.OBJECT)
+        private val unknownObject: Map<String, String> = mapOf("type" to "object")
     }
 }
