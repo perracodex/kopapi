@@ -16,13 +16,16 @@ import kotlin.reflect.KType
  * @property contentType The [ContentType] of the response, indicating the format in which the data is provided.
  * @property headers A list of [ApiHeader] objects representing the headers that may be included in the response.
  * @property links A list of [ApiLink] objects representing possible links to other operations.
+ *
+ * @see [ApiMetadata.response]
+ * @see [ApiHeader]
+ * @see [ApiLink]
  */
-@ConsistentCopyVisibility
-public data class ApiResponse @PublishedApi internal constructor(
+internal data class ApiResponse(
     val type: KType,
     val status: HttpStatusCode,
     val description: String? = null,
     val contentType: ContentType = ContentType.Application.Json,
-    val headers: List<ApiHeader>? = null,
-    val links: List<ApiLink>? = null
+    val headers: Set<ApiHeader>? = null,
+    val links: Set<ApiLink>? = null
 )

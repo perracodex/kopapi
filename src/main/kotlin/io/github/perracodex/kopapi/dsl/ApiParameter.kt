@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.dsl
 
 import io.github.perracodex.kopapi.dsl.ApiParameter.Location
+import io.github.perracodex.kopapi.dsl.types.ParameterStyle
 import kotlin.reflect.KType
 
 /**
@@ -19,9 +20,13 @@ import kotlin.reflect.KType
  * @property explode Specifies whether arrays and objects should be exploded (true) or not (false).
  * @property style Describes how the parameter value is formatted when sent in a request.
  * @property deprecated Indicates whether the parameter is deprecated and should be avoided.
+ *
+ * @see [ApiMetadata.headerParameter]
+ * @see [ApiMetadata.queryParameter]
+ * @see [ApiMetadata.pathParameter]
+ * @see [ApiMetadata.cookieParameter]
  */
-@ConsistentCopyVisibility
-public data class ApiParameter @PublishedApi internal constructor(
+internal data class ApiParameter(
     val type: KType,
     val location: Location,
     val name: String,
@@ -29,13 +34,13 @@ public data class ApiParameter @PublishedApi internal constructor(
     val required: Boolean = true,
     val defaultValue: Any? = null,
     val explode: Boolean? = null,
-    val style: Style? = null,
+    val style: ParameterStyle? = null,
     val deprecated: Boolean = false
 ) {
     init {
-        require(name.isNotEmpty()) {
-            "Name must not be empty."
-        }
+        require(name.isNotBlank()) { "Name must not be empty." }
+        require(type.classifier != Any::class) { "Parameters cannot be of type 'Any'. Define an explicit type." }
+        require(type.classifier != Unit::class) { "Parameters cannot be of type 'Unit'. Define an explicit type." }
     }
 
     /**
@@ -43,7 +48,7 @@ public data class ApiParameter @PublishedApi internal constructor(
      *
      * @property value The string value of the location.
      */
-    public enum class Location(public val value: String) {
+    enum class Location(val value: String) {
         /** Parameter is included in the URL path. */
         PATH(value = "path"),
 
@@ -55,28 +60,5 @@ public data class ApiParameter @PublishedApi internal constructor(
 
         /** Parameter is sent within a cookie. */
         COOKIE(value = "cookie"),
-    }
-
-    /**
-     * Enum defining possible serialization styles for parameters.
-     */
-    public enum class Style {
-        /** Commonly used for query parameters, formatted as key-value pairs. */
-        FORM,
-
-        /** Commonly used for headers, presented in a simple, compact format. */
-        SIMPLE,
-
-        /** Serializes arrays by separating values with spaces. e.g., "a b c" */
-        SPACE_DELIMITED,
-
-        /** Serializes arrays by separating values with pipes. e.g., "a|b|c" */
-        PIPE_DELIMITED,
-
-        /** Prefixes parameters with a period and uses dot-separated values. e.g., ".a.b.c" */
-        LABEL,
-
-        /** Uses semicolons to separate object properties in paths. e.g., ";a=1;b=2" */
-        MATRIX
     }
 }

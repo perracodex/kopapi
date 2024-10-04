@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl
 
+import io.github.perracodex.kopapi.utils.MultilineString
+
 /**
  * Represents the metadata of a response header.
  *
@@ -11,16 +13,17 @@ package io.github.perracodex.kopapi.dsl
  * @property description A human-readable description of the header.
  * @property required Indicates whether the header is mandatory.
  * @property deprecated Indicates whether the header is deprecated and should be avoided.
+ *
+ * @see [ApiResponse]
  */
 public data class ApiHeader(
     val name: String,
-    val description: String,
-    val required: Boolean = false,
-    val deprecated: Boolean = false
+    var required: Boolean = false,
+    var deprecated: Boolean = false
 ) {
     init {
-        require(name.isNotEmpty()) {
-            "Name must not be empty."
-        }
+        require(name.isNotBlank()) { "Name must not be empty." }
     }
+
+    public var description: String by MultilineString()
 }

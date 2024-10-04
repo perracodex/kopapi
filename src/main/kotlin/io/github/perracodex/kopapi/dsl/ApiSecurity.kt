@@ -4,6 +4,9 @@
 
 package io.github.perracodex.kopapi.dsl
 
+import io.github.perracodex.kopapi.dsl.ApiSecurity.Scheme
+import io.github.perracodex.kopapi.dsl.types.AuthenticationMethod
+import io.github.perracodex.kopapi.dsl.types.SecurityLocation
 import io.ktor.http.*
 
 /**
@@ -11,29 +14,32 @@ import io.ktor.http.*
  *
  * @property name The name of the security scheme.
  * @property description A detailed description of the security scheme.
- * @property scheme The type of security scheme (e.g., HTTP, API Key, OAuth2, etc.).
- * @property httpType The HTTP type of security scheme (only applicable when the scheme is HTTP).
+ * @property scheme The type of security [Scheme] (e.g., HTTP, API Key, OAuth2, etc.).
+ * @property authenticationMethod The [AuthenticationMethod] of security scheme (only applicable when the scheme is HTTP).
  * @property location The location where the API key is passed (only applicable for API Key schemes).
- * @property openIdConnectUrl The URL for the OpenID Connect configuration (only applicable for OpenID Connect schemes).
+ * @property openIdConnectUrl The [Url] for the OpenID Connect configuration (only applicable for OpenID Connect schemes).
+ *
+ * @see [ApiMetadata.httpSecurity]
+ * @see [ApiMetadata.apiKeySecurity]
+ * @see [ApiMetadata.oauth2Security]
+ * @see [ApiMetadata.openIdConnectSecurity]
+ * @see [ApiMetadata.mutualTLSSecurity]
  */
-@ConsistentCopyVisibility
-public data class ApiSecurity @PublishedApi internal constructor(
+internal data class ApiSecurity(
     val name: String,
     val description: String? = null,
     val scheme: Scheme,
-    val httpType: HttpType? = null,                 // Only applicable for HTTP scheme.
-    val location: Location? = null,                 // Only required for API_KEY scheme.
-    val openIdConnectUrl: Url? = null   // Only applicable for OPENID_CONNECT scheme.
+    val authenticationMethod: AuthenticationMethod? = null, // Only applicable for HTTP scheme.
+    val location: SecurityLocation? = null, // Only required for API_KEY scheme.
+    val openIdConnectUrl: Url? = null  // Only applicable for OPENID_CONNECT scheme.
 ) {
     init {
         // Ensure that name is not empty
-        require(name.isNotEmpty()) {
-            "Name must not be empty."
-        }
+        require(name.isNotBlank()) { "Name must not be empty." }
 
         // Ensure that location is only provided for the API_KEY scheme.
         require(!(scheme == Scheme.API_KEY && location == null)) {
-            "Location must be specified when using the ${Scheme.API_KEY.name} scheme. " +
+            "SecurityLocation must be specified when using the ${Scheme.API_KEY.name} scheme. " +
                     "Found Scheme '$scheme' with Location '$location'."
         }
         require(!(scheme != Scheme.API_KEY && location != null)) {
@@ -41,14 +47,14 @@ public data class ApiSecurity @PublishedApi internal constructor(
                     "Found Location '$location' with Scheme '$scheme'."
         }
 
-        // Ensure that HTTP type is only provided when scheme is HTTP.
-        require(!(scheme == Scheme.HTTP && httpType == null)) {
+        // Ensure that HTTP authentication method is only provided when scheme is HTTP.
+        require(!(scheme == Scheme.HTTP && authenticationMethod == null)) {
             "HTTP type (e.g., basic, bearer) must be specified when using the ${Scheme.HTTP.name} scheme." +
-                    " Found Scheme '$scheme' with HTTP Type '$httpType'."
+                    " Found Scheme '$scheme' with HTTP authentication method '$authenticationMethod'."
         }
-        require(!(scheme != Scheme.HTTP && httpType != null)) {
+        require(!(scheme != Scheme.HTTP && authenticationMethod != null)) {
             "HTTP type should only be used with the ${Scheme.HTTP.name} scheme. " +
-                    "Found HTTP Type '$httpType' with Scheme '$scheme'."
+                    "Found HTTP authentication method  '$authenticationMethod' with Scheme '$scheme'."
         }
 
         // Ensure that openIdConnectUrl is only provided for OPENID_CONNECT scheme.
@@ -60,6 +66,11 @@ public data class ApiSecurity @PublishedApi internal constructor(
             "openIdConnectUrl should only be used with the ${Scheme.OPENID_CONNECT.name} scheme. " +
                     "Found Scheme '$scheme' with openIdConnectUrl '$openIdConnectUrl'."
         }
+
+        // Mutual TLS requires no additional parameters beyond the scheme itself.
+        require(!(scheme == Scheme.MUTUAL_TLS && (authenticationMethod != null || location != null || openIdConnectUrl != null))) {
+            "Mutual TLS (mTLS) does not require authentication methods, locations, or OpenID URLs."
+        }
     }
 
     /**
@@ -67,7 +78,7 @@ public data class ApiSecurity @PublishedApi internal constructor(
      *
      * @property value The string value of the security scheme.
      */
-    public enum class Scheme(public val value: String) {
+    enum class Scheme(val value: String) {
         /** HTTP security scheme (e.g., basic, bearer). */
         HTTP(value = "http"),
 
@@ -82,38 +93,5 @@ public data class ApiSecurity @PublishedApi internal constructor(
 
         /** Mutual TLS security scheme (mTLS). */
         MUTUAL_TLS(value = "mutualTLS")
-    }
-
-    /**
-     * Enum representing the possible locations where the API key can be passed for the API Key security scheme.
-     * This is applicable only for the API_KEY scheme.
-     *
-     * @property value The string value of the location.
-     */
-    public enum class Location(public val value: String) {
-        /** The API key is passed in a cookie. */
-        COOKIE(value = "cookie"),
-
-        /** The API key is passed in an HTTP header. */
-        HEADER(value = "header"),
-
-        /** The API key is passed as a query parameter. */
-        QUERY(value = "query")
-    }
-
-    /**
-     * Enum representing the possible HTTP authentication types, applicable only to HTTP schemes.
-     *
-     * @property value The string value of the HTTP type.
-     */
-    public enum class HttpType(public val value: String) {
-        /** HTTP Basic authentication scheme. */
-        BASIC(value = "basic"),
-
-        /** HTTP Bearer authentication scheme (commonly used with JWT). */
-        BEARER(value = "bearer"),
-
-        /** HTTP Digest authentication scheme. */
-        DIGEST(value = "digest")
     }
 }

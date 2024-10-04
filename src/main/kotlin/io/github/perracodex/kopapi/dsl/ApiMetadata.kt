@@ -4,8 +4,18 @@
 
 package io.github.perracodex.kopapi.dsl
 
+import io.github.perracodex.kopapi.dsl.builders.parameter.CookieParameterBuilder
+import io.github.perracodex.kopapi.dsl.builders.parameter.HeaderParameterBuilder
+import io.github.perracodex.kopapi.dsl.builders.parameter.PathParameterBuilder
+import io.github.perracodex.kopapi.dsl.builders.parameter.QueryParameterBuilder
+import io.github.perracodex.kopapi.dsl.builders.request.RequestBodyBuilder
+import io.github.perracodex.kopapi.dsl.builders.response.ResponseBuilder
+import io.github.perracodex.kopapi.dsl.builders.security.*
+import io.github.perracodex.kopapi.dsl.types.AuthenticationMethod
+import io.github.perracodex.kopapi.dsl.types.SecurityLocation
+import io.github.perracodex.kopapi.utils.MultilineString
+import io.github.perracodex.kopapi.utils.SpacedString
 import io.ktor.http.*
-import java.util.*
 import kotlin.reflect.typeOf
 
 /**
@@ -16,65 +26,81 @@ import kotlin.reflect.typeOf
  * Usage involves defining a Ktor route and attaching API metadata using the `Route.api` infix
  * function to enrich the route with operational details and documentation specifications.
  *
- * @property path The URL path for the endpoint, derived from the Ktor route.
- * @property method Specifies the [HttpMethod] (GET, POST, PUT, etc.) for the endpoint, derived from the Ktor route.
+ * #### Parameters
+ * - [pathParameter]: Adds a path parameter to the API endpoint's metadata.
+ * - [queryParameter]: Adds a query parameter to the API endpoint's metadata.
+ * - [headerParameter]: Adds a header parameter to the API endpoint's metadata.
+ * - [cookieParameter]: Adds a cookie parameter to the API endpoint's metadata.
+ *
+ * #### Request Body
+ * - [requestBody]: Adds a request body to the API endpoint's metadata.
+ *
+ * #### Responses
+ * - [response]: Add a response to the endpoint. Can be used with or without a response type.
+ *  With no response type, the response is assumed to be only a [HttpStatusCode] with no associated type.
+ *
+ * #### Security Schemes
+ * - [pathParameter]: Adds a path parameter to the API endpoint's metadata.
+ * - [queryParameter]: Adds a query parameter to the API endpoint's metadata.
+ * - [headerParameter]: Adds a header parameter to the API endpoint's metadata.
+ * - [cookieParameter]: Adds a cookie parameter to the API endpoint's metadata.
+ *
+ * #### Usage
+ * ```
+ * get("/items/{id}/{group?}") {
+ *     // Handle GET request
+ * } api {
+ *     summary = "Retrieve an item."
+ *     description = "Fetches an item by its unique identifier."
+ *     description = "In addition, you can filter by group."
+ *     tags = Tags("tag1", "tag2")
+ *     pathParameter<Uuid>("id") { description = "The ID to find." }
+ *     queryParameter<String>("group") { description = "The group to filter." }
+ *     response<Item>(HttpStatusCode.OK) { description = "Successful fetch" }
+ *     response(HttpStatusCode.NotFound) { description = "Item not found" }
+ * }
+ * ```
+ *
+ * @property path The URL path for the endpoint. Automatically derived from the Ktor route.
+ * @property method The endpoint [HttpMethod] (GET, POST, etc.). Automatically derived from the Ktor route.
  * @property summary Optional short description of the endpoint's purpose.
  * @property description Optional detailed explanation of the endpoint and its functionality.
- * @property tags Optional set of descriptive tags for categorizing the endpoint in API documentation.
- * @property parameters Optional set of parameters detailing type, necessity, and location in the request.
- * @property requestBody Optional structure and type of the request body.
- * @property responses Optional set of possible responses, outlining expected status codes and content types.
- * @property securities Optional set of security schemes detailing the authentication requirements for the endpoint.
+ * @property tags Optional set of descriptive [Tags] for categorizing the endpoint in API documentation.
  */
 @Suppress("MemberVisibilityCanBePrivate")
-@ConsistentCopyVisibility
 public data class ApiMetadata internal constructor(
     @PublishedApi internal val path: String,
     @PublishedApi internal val method: HttpMethod,
-    @PublishedApi internal var summary: String? = null,
-    @PublishedApi internal var description: String? = null,
-    @PublishedApi internal var tags: Set<String>? = null,
-    @PublishedApi internal var parameters: LinkedHashSet<ApiParameter>? = null,
-    @PublishedApi internal var requestBody: ApiRequestBody? = null,
-    @PublishedApi internal var responses: LinkedHashSet<ApiResponse>? = null,
-    @PublishedApi internal var securities: LinkedHashSet<ApiSecurity>? = null
 ) {
     init {
-        require(path.isNotBlank()) { "Path must not be empty." }
+        require(path.isNotBlank()) { "Endpoint path must not be empty." }
     }
 
-    /**
-     * Sets a short description of the endpoint's purpose.
-     *
-     * @param text The description to set.
-     */
-    public fun summary(text: String) {
-        this.summary = text.trim().takeIf { it.isNotBlank() }
-    }
+    public var summary: String by SpacedString()
+    public var description: String by MultilineString()
+    public var tags: Tags by TagsDelegate()
 
     /**
-     * Sets a short description of the endpoint's purpose.
-     *
-     * @param text The description to set.
+     * Optional set of parameters detailing type, necessity, and location in the request.
      */
-    public fun description(text: String) {
-        this.description = text.trim().takeIf { it.isNotBlank() }
-    }
+    internal var parameters: LinkedHashSet<ApiParameter>? = null
 
     /**
-     * Adds tags to the API endpoint's metadata.
-     *
-     * @param tags A list of tags to categorize the endpoint.
+     * Optional structure and type of the request body.
      */
-    public fun tags(vararg tags: String) {
-        // Handle tags to ensure they are unique regardless of case variations,
-        // while retaining the original casing of the first occurrence of each tag.
-        // If other tags were already added, the new ones will be appended to the set.
-        val caseInsensitiveSet: TreeSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
-        this.tags?.let { caseInsensitiveSet.addAll(it) }
-        caseInsensitiveSet.addAll(tags.map { it.trim() }.filter { it.isNotBlank() })
-        this.tags = LinkedHashSet(caseInsensitiveSet)
-    }
+    @PublishedApi
+    internal var requestBody: ApiRequestBody? = null
+
+    /**
+     * Optional set of possible responses, outlining expected status codes and content types.
+     */
+    @PublishedApi
+    internal var responses: LinkedHashSet<ApiResponse>? = null
+
+    /**
+     * Optional set of security schemes detailing the authentication requirements for the endpoint.
+     */
+    internal var security: LinkedHashSet<ApiSecurity>? = null
 
     /** Internal helper function to add a parameter to the API endpoint's metadata. */
     @PublishedApi
@@ -86,326 +112,199 @@ public data class ApiMetadata internal constructor(
 
     /** Internal helper function to add a security scheme to the API endpoint's metadata. */
     @PublishedApi
-    internal fun addSecurity(security: ApiSecurity) {
-        val securities: LinkedHashSet<ApiSecurity> = securities
-            ?: linkedSetOf<ApiSecurity>().also { securities = it }
-        securities.add(security)
+    internal fun addSecurity(scheme: ApiSecurity) {
+        val securities: LinkedHashSet<ApiSecurity> = security
+            ?: linkedSetOf<ApiSecurity>().also { security = it }
+        securities.add(scheme)
     }
 
     /**
      * Adds a path parameter to the API endpoint's metadata.
      *
+     * @param T The type of the parameter.
      * @param name The name of the parameter as it appears in the URL path.
-     * @param description A description of the parameter's purpose and usage.
-     * @param required Indicates whether the parameter is mandatory for the API call.
-     * @param defaultValue The default value for the parameter if one is not provided.
-     * @param style The style in which the parameter is serialized in the URL.
-     * @param deprecated Indicates if the header is deprecated and should be avoided.
+     * @param configure A lambda receiver for configuring the [PathParameterBuilder].
+     *
+     * @see [PathParameterBuilder]
      */
-    public inline fun <reified T : Any> pathParameter(
-        name: String,
-        description: String? = null,
-        required: Boolean = true,
-        defaultValue: Any? = null,
-        style: ApiParameter.Style = ApiParameter.Style.SIMPLE,
-        deprecated: Boolean = false
-    ) {
-        addParameter(
-            ApiParameter(
-                type = typeOf<T>(),
-                location = ApiParameter.Location.PATH,
-                name = name.trim(),
-                description = description.trimNullable(),
-                required = required,
-                defaultValue = defaultValue,
-                style = style,
-                deprecated = deprecated,
-            )
-        )
+    public inline fun <reified T : Any> ApiMetadata.pathParameter(name: String, configure: PathParameterBuilder.() -> Unit = {}) {
+        val builder: PathParameterBuilder = PathParameterBuilder().apply(configure)
+        addParameter(parameter = builder.build(name = name, type = typeOf<T>()))
     }
 
     /**
      * Adds a query parameter to the API endpoint's metadata.
      *
-     * @param name The name of the parameter as it appears in the query string.
-     * @param description Explains the role and expected values for the parameter.
-     * @param required Indicates whether the parameter is necessary for the API call.
-     * @param defaultValue The default value if none is provided.
-     * @param explode Whether to send arrays and objects as separate parameters.
-     * @param style The serialization style of the query string.
-     * @param deprecated Indicates if the header is deprecated and should be avoided.
+     * @param T The type of the parameter.
+     * @param name The name of the parameter as it appears in the URL path.
+     * @param configure A lambda receiver for configuring the [QueryParameterBuilder].
+     *
+     * @see [QueryParameterBuilder]
      */
-    public inline fun <reified T : Any> queryParameter(
-        name: String,
-        description: String? = null,
-        required: Boolean = true,
-        defaultValue: Any? = null,
-        explode: Boolean = false,
-        style: ApiParameter.Style = ApiParameter.Style.FORM,
-        deprecated: Boolean = false
-    ) {
-        addParameter(
-            ApiParameter(
-                type = typeOf<T>(),
-                location = ApiParameter.Location.QUERY,
-                name = name.trim(),
-                description = description.trimNullable(),
-                required = required,
-                defaultValue = defaultValue,
-                explode = explode,
-                style = style,
-                deprecated = deprecated
-            )
-        )
+    public inline fun <reified T : Any> ApiMetadata.queryParameter(name: String, configure: QueryParameterBuilder.() -> Unit = {}) {
+        val builder: QueryParameterBuilder = QueryParameterBuilder().apply(configure)
+        addParameter(parameter = builder.build(name = name, type = typeOf<T>()))
     }
 
     /**
      * Adds a header parameter to the API endpoint's metadata.
      *
-     * @param name The name of the header parameter.
-     * @param description Details the usage and significance of the header.
-     * @param required Specifies if the header must be present.
-     * @param defaultValue A fallback value for the header if not explicitly provided.
-     * @param explode Controls how arrays and objects are serialized in the header.
-     * @param style The serialization style, typically simple for headers.
-     * @param deprecated Indicates if the header is deprecated and should be avoided.
+     * @param T The type of the parameter.
+     * @param name The header of the parameter as it appears in the URL path.
+     * @param configure A lambda receiver for configuring the [HeaderParameterBuilder].
+     *
+     * @see [HeaderParameterBuilder]
      */
-    public inline fun <reified T : Any> headerParameter(
-        name: String,
-        description: String? = null,
-        required: Boolean = true,
-        defaultValue: Any? = null,
-        explode: Boolean = false,
-        style: ApiParameter.Style = ApiParameter.Style.SIMPLE,
-        deprecated: Boolean = false
-    ) {
-        addParameter(
-            ApiParameter(
-                type = typeOf<T>(),
-                location = ApiParameter.Location.HEADER,
-                name = name.trim(),
-                description = description.trimNullable(),
-                required = required,
-                defaultValue = defaultValue,
-                explode = explode,
-                style = style,
-                deprecated = deprecated
-            )
-        )
+    public inline fun <reified T : Any> ApiMetadata.headerParameter(name: String, configure: HeaderParameterBuilder.() -> Unit = {}) {
+        val builder: HeaderParameterBuilder = HeaderParameterBuilder().apply(configure)
+        addParameter(parameter = builder.build(name = name, type = typeOf<T>()))
     }
 
     /**
      * Adds a cookie parameter to the API endpoint's metadata.
      *
-     * @param name The name of the cookie.
-     * @param description A brief on the cookie's purpose and its values.
-     * @param required Indicates if the cookie is essential for the request.
-     * @param defaultValue Default cookie value if none is provided.
-     * @param explode Whether individual cookies should be sent for each value of an array or object.
-     * @param style The serialization style, typically 'form' for cookies.
-     * @param deprecated Indicates if the header is deprecated and should be avoided.
+     * @param T The type of the parameter.
+     * @param name The name of the parameter as it appears in the URL path.
+     * @param configure A lambda receiver for configuring the [CookieParameterBuilder].
+     *
+     * @see [CookieParameterBuilder]
      */
-    public inline fun <reified T : Any> cookieParameter(
-        name: String,
-        description: String? = null,
-        required: Boolean = true,
-        defaultValue: Any? = null,
-        explode: Boolean = false,
-        style: ApiParameter.Style = ApiParameter.Style.FORM,
-        deprecated: Boolean = false
-    ) {
-        addParameter(
-            ApiParameter(
-                type = typeOf<T>(),
-                location = ApiParameter.Location.COOKIE,
-                name = name.trim(),
-                description = description.trimNullable(),
-                required = required,
-                defaultValue = defaultValue,
-                explode = explode,
-                style = style,
-                deprecated = deprecated,
-            )
-        )
+    public inline fun <reified T : Any> ApiMetadata.cookieParameter(name: String, configure: CookieParameterBuilder.() -> Unit = {}) {
+        val builder: CookieParameterBuilder = CookieParameterBuilder().apply(configure)
+        addParameter(parameter = builder.build(name = name, type = typeOf<T>()))
     }
 
     /**
-     * Defines and registers a request body for the API endpoint.
+     * Adds a request body to the API endpoint's metadata.
      *
-     * @param description Details the type of data expected in the request body.
-     * @param required Specifies whether the request body is required for the API operation.
-     * @param contentType The [ContentType] of the data being sent.
-     * @param deprecated Indicates if the header is deprecated and should be avoided.
+     * @param T The type of the request body.
+     * @param configure A lambda receiver for configuring the [RequestBodyBuilder].
+     *
+     * @see [RequestBodyBuilder]
      */
-    public inline fun <reified T : Any> requestBody(
-        description: String? = null,
-        required: Boolean = true,
-        contentType: ContentType = ContentType.Application.Json,
-        deprecated: Boolean = false
-    ) {
-        require(value = this.requestBody == null) {
+    public inline fun <reified T : Any> ApiMetadata.requestBody(configure: RequestBodyBuilder.() -> Unit = {}) {
+        require(value = (requestBody == null)) {
             "Only one request body is allowed per API endpoint. " +
-                    "Found '${this.requestBody}' already defined in '${this.path}' / ${this.method}"
+                    "Found '$requestBody' already defined in '${this.path}' / ${this.method}"
         }
-        requestBody = ApiRequestBody(
-            type = typeOf<T>(),
-            description = description.trimNullable(),
-            required = required,
-            contentType = contentType,
-            deprecated = deprecated
-        )
+        val builder: RequestBodyBuilder = RequestBodyBuilder().apply(configure)
+        requestBody = builder.build(typeOf<T>())
     }
 
     /**
-     * Adds a response configuration to the API endpoint's metadata,
+     * Adds a response to the API endpoint's metadata.
      *
+     * @param T The type of the response.
      * @param status The [HttpStatusCode] code associated with this response.
-     * @param description A description of the response content and what it represents.
-     * @param contentType The [ContentType] of the response data, such as JSON or XML.
-     * @param header A list of [ApiHeader] objects representing the headers that may be included in the response.
-     * @param links A list of [ApiLink] objects representing hypermedia links associated with the response.
+     * @param configure A lambda receiver for configuring the [ResponseBuilder].
+     *
+     * @see [ResponseBuilder]
      */
     @JvmName(name = "responseWithType")
-    public inline fun <reified T : Any> response(
-        status: HttpStatusCode = HttpStatusCode.OK,
-        description: String? = null,
-        contentType: ContentType = ContentType.Application.Json,
-        header: List<ApiHeader>? = null,
-        links: List<ApiLink>? = null
-    ) {
+    public inline fun <reified T : Any> ApiMetadata.response(status: HttpStatusCode, configure: ResponseBuilder.() -> Unit = {}) {
         val responses: LinkedHashSet<ApiResponse> = responses
             ?: linkedSetOf<ApiResponse>().also { responses = it }
-
-        responses.add(
-            ApiResponse(
-                type = typeOf<T>(),
-                status = status,
-                description = description.trimNullable(),
-                contentType = contentType,
-                headers = header.takeIf { it?.isNotEmpty() == true },
-                links = links.takeIf { it?.isNotEmpty() == true }
-            )
-        )
+        val builder: ResponseBuilder = ResponseBuilder().apply(configure)
+        responses.add(builder.build(status = status, type = typeOf<T>()))
     }
 
     /**
-     * Adds a response configuration to the API endpoint's metadata,
-     * assuming there is no response type.
+     * Adds a response to the API endpoint's metadata,
+     * assuming there is only a [HttpStatusCode] with no associated type.
      *
      * @param status The [HttpStatusCode] code associated with this response.
-     * @param description A description of the response content and what it represents.
-     * @param contentType The [ContentType] of the response data, such as JSON or XML.
-     * @param header A list of [ApiHeader] objects representing the headers that may be included in the response.
-     * @param links A list of [ApiLink] objects representing hypermedia links associated with the response.
+     * @param configure A lambda receiver for configuring the [ResponseBuilder].
+     *
+     * @see [ResponseBuilder]
      */
     @JvmName(name = "responseWithoutType")
-    public fun response(
-        status: HttpStatusCode = HttpStatusCode.OK,
-        description: String? = null,
-        contentType: ContentType = ContentType.Application.Json,
-        header: List<ApiHeader>? = null,
-        links: List<ApiLink>? = null
-    ) {
-        response<Unit>(
-            status = status,
-            description = description.trimNullable(),
-            contentType = contentType,
-            header = header,
-            links = links
-        )
+    public fun ApiMetadata.response(status: HttpStatusCode, configure: ResponseBuilder.() -> Unit = {}) {
+        response<Unit>(status = status, configure = configure)
     }
 
     /**
      * Adds an HTTP security scheme to the API metadata (e.g., Basic, Bearer).
      *
      * @param name The name of the security scheme.
-     * @param description A description of the security scheme.
-     * @param httpType The [ApiSecurity.HttpType] of the security scheme.
+     * @param method The [AuthenticationMethod] of the security scheme.
+     * @param configure A lambda receiver for configuring the [HttpSecurityBuilder].
+     *
+     * @see [HttpSecurityBuilder]
      */
-    public fun httpSecurity(
+    public fun ApiMetadata.httpSecurity(
         name: String,
-        description: String? = null,
-        httpType: ApiSecurity.HttpType
+        method: AuthenticationMethod,
+        configure: HttpSecurityBuilder.() -> Unit = {}
     ) {
-        addSecurity(
-            ApiSecurity(
-                name = name.trim(),
-                description = description.trimNullable(),
-                scheme = ApiSecurity.Scheme.HTTP,
-                httpType = httpType
-            )
-        )
+        val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
+        addSecurity(scheme = builder.build(name = name, method = method))
     }
 
     /**
      * Adds an API key security scheme to the API metadata.
      *
      * @param name The name of the security scheme.
-     * @param description A description of the security scheme.
-     * @param location The [ApiSecurity.Location] where the API key is passed.
+     * @param location The [SecurityLocation] where the API key is passed.
+     * @param configure A lambda receiver for configuring the [ApiKeySecurityBuilder].
+     *
+     * @see [ApiKeySecurityBuilder]
      */
-    public fun apiKeySecurity(
+    public fun ApiMetadata.apiKeySecurity(
         name: String,
-        description: String? = null,
-        location: ApiSecurity.Location
+        location: SecurityLocation,
+        configure: ApiKeySecurityBuilder.() -> Unit = {}
     ) {
-        addSecurity(
-            ApiSecurity(
-                name = name.trim(),
-                description = description.trimNullable(),
-                scheme = ApiSecurity.Scheme.API_KEY,
-                location = location
-            )
-        )
+        val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
+        addSecurity(scheme = builder.build(name = name, location = location))
     }
 
     /**
      * Adds an OAuth2 security scheme to the API metadata.
      *
      * @param name The name of the security scheme.
-     * @param description A description of the security scheme.
+     * @param configure A lambda receiver for configuring the [OAuth2SecurityBuilder].
+     *
+     * @see [OAuth2SecurityBuilder]
      */
-    public fun oauth2Security(
+    public fun ApiMetadata.oauth2Security(
         name: String,
-        description: String? = null
+        configure: OAuth2SecurityBuilder.() -> Unit = {}
     ) {
-        addSecurity(
-            ApiSecurity(
-                name = name.trim(),
-                description = description.trimNullable(),
-                scheme = ApiSecurity.Scheme.OAUTH2
-            )
-        )
+        val builder: OAuth2SecurityBuilder = OAuth2SecurityBuilder().apply(configure)
+        addSecurity(scheme = builder.build(name = name))
     }
 
     /**
      * Adds an OpenID Connect security scheme to the API metadata.
      *
      * @param name The name of the security scheme.
-     * @param description A description of the security scheme.
-     * @param openIdConnectUrl The URL for the OpenID Connect configuration.
+     * @param url The [Url] for the OpenID Connect configuration.
+     * @param configure A lambda receiver for configuring the [OpenIdConnectSecurityBuilder].
+     *
+     * @see [OpenIdConnectSecurityBuilder]
      */
-    public fun openIdConnectSecurity(
+    public fun ApiMetadata.openIdConnectSecurity(
         name: String,
-        description: String? = null,
-        openIdConnectUrl: Url
+        url: Url,
+        configure: OpenIdConnectSecurityBuilder.() -> Unit = {}
     ) {
-        addSecurity(
-            ApiSecurity(
-                name = name.trim(),
-                description = description.trimNullable(),
-                scheme = ApiSecurity.Scheme.OPENID_CONNECT,
-                openIdConnectUrl = openIdConnectUrl
-            )
-        )
+        val builder: OpenIdConnectSecurityBuilder = OpenIdConnectSecurityBuilder().apply(configure)
+        addSecurity(scheme = builder.build(name = name, url = url))
     }
-}
 
-
-/**
- * Trim a nullable string, returning null if the trimmed result is empty.
- */
-@PublishedApi
-internal fun String?.trimNullable(): String? {
-    return this?.trim().takeIf { it?.isNotBlank() == true }
+    /**
+     * Adds a Mutual TLS security scheme to the API metadata.
+     *
+     * @param name The name of the security scheme.
+     * @param configure A lambda receiver for configuring the [MutualTLSSecurityBuilder].
+     *
+     * @see [MutualTLSSecurityBuilder]
+     */
+    public fun ApiMetadata.mutualTLSSecurity(
+        name: String,
+        configure: MutualTLSSecurityBuilder.() -> Unit = {}
+    ) {
+        val builder: MutualTLSSecurityBuilder = MutualTLSSecurityBuilder().apply(configure)
+        addSecurity(scheme = builder.build(name = name))
+    }
 }
