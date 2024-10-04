@@ -7,91 +7,88 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
 import kotlin.reflect.*
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.primaryConstructor
-import kotlin.uuid.ExperimentalUuidApi
+import kotlin.reflect.full.*
 import kotlin.uuid.Uuid
 import com.fasterxml.jackson.annotation.JsonIgnore as JacksonJsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty as JacksonJsonProperty
-import io.ktor.http.Url as KtorUrl
-import kotlinx.datetime.Instant as KotlinInstant
-import kotlinx.datetime.LocalDate as KotlinLocalDate
-import kotlinx.datetime.LocalDateTime as KotlinLocalDateTime
-import kotlinx.datetime.LocalTime as KotlinLocalTime
+import com.fasterxml.jackson.annotation.JsonTypeName as JacksonJsonTypeName
 import kotlinx.serialization.SerialName as KotlinxSerialName
 import kotlinx.serialization.Transient as KotlinxTransient
-import java.net.URI as JavaURI
-import java.net.URL as JavaURL
-import java.nio.charset.Charset as JavaCharset
-import java.time.Instant as JavaInstant
-import java.time.LocalDate as JavaLocalDate
-import java.time.LocalDateTime as JavaLocalDateTime
-import java.time.LocalTime as JavaLocalTime
-import java.time.OffsetDateTime as JavaOffsetDateTime
-import java.time.ZoneId as JavaZoneId
-import java.time.ZoneOffset as JavaZoneOffset
-import java.time.ZonedDateTime as JavaZonedDateTime
-import java.util.Currency as JavaCurrency
-import java.util.Date as JavaDate
-import java.util.Locale as JavaLocale
-import java.util.TimeZone as JavaTimeZone
-import java.util.regex.Pattern as JavaPattern
 
-internal class ObjectParser {
-    /** Track processed KTypes to handle generics uniquely. */
-    private val processedTypes: MutableSet<KType> = mutableSetOf()
+/**
+ * Object parser for various Kotlin types to prepare data structures
+ * that can be used to construct schemas for the OpenAPI documentation.
+ *
+ * #### Key Features
+ * - Parsing recursion for complex types.
+ * - All primitive types, including enums.
+ * - Major common types like UUID, Instant, LocalDate, etc. from both Kotlin and Java.
+ * - Complex types like data classes, including nested complex Object properties.
+ * - Collections like Lists, Sets, and Arrays, including primitive arrays (eg: IntArray).
+ * - Maps with both complex objects or primitives.
+ * - Generics support, including complex nested types (eg: List<Page<Array<ObjectB>>>)
+ *
+ * #### Supported Annotations
+ * - Kotlinx:
+ *      - `@SerialName`, `@Transient`
+ * - Jackson:
+ *     - `@JsonProperty`, `@JsonIgnore`
+ *
+ * #### Caching
+ *  The parser caches processed types and object definitions to avoid duplication,
+ *  so objects are uniquely processed regardless of how many times are found in the
+ *  current processing context, or subsequent calls.
+ */
+internal object ObjectParser {
+    /** Cache of [TypeDefinition] objects that have been processed. */
+    private val typeDefinitionsCache: MutableSet<TypeDefinition> = mutableSetOf()
 
-    /** Store component objects by name. */
-    private val objectDefinitions: MutableMap<String, MutableMap<String, Any>> = mutableMapOf()
+    /** Temporarily tracks processed [KType] objects while parsing, to handle generics uniquely. */
+    private val inProcessTypeDefinitions: MutableSet<String> = mutableSetOf()
 
     /**
-     * Main function to map an object type to OpenAPI-compliant JSON schema.
+     * Retrieves the currently cached [TypeDefinition] objects.
+     *
+     * @return A set of [TypeDefinition] objects.
      */
-    fun mapObject(kType: KType): Map<String, Any> {
-        return mapObjectInternal(kType, typeParameterMap = emptyMap())
+    fun getTypeDefinitions(): Set<TypeDefinition> = typeDefinitionsCache
+
+    /**
+     * Resets the parser by clearing all processed types and object definitions.
+     */
+    fun reset() {
+        inProcessTypeDefinitions.clear()
+        typeDefinitionsCache.clear()
+        TypeDefinitionWarningManager.clear()
     }
 
     /**
-     * Retrieves the object definitions (components) that have been processed.
-     * These can be used in the OpenAPI components section.
+     * Parses a KType to its [TypeDefinition] representation.
+     *
+     * @param kType The KType to parse.
+     * @return The [TypeDefinition] for the given [kType].
      */
-    fun getObjectDefinitions(): Map<String, Map<String, Any>> = objectDefinitions
-
-    /**
-     * Recursively maps a KType to its OpenAPI schema, handling recursion and complex types.
-     * @param typeParameterMap A map of type parameter classifiers to actual KTypes for replacement.
-     */
-    private fun mapObjectInternal(
-        kType: KType,
-        typeParameterMap: Map<KClassifier, KType>
-    ): Map<String, Any> {
-        // Handle nullability at the property level.
-        val baseSchema: MutableMap<String, Any> = if (kType.isMarkedNullable) {
-            mapNonNullType(kType = kType, typeParameterMap = typeParameterMap)
-                .toMutableMap()
-                .apply { this["nullable"] = true }
-        } else {
-            mapNonNullType(kType = kType, typeParameterMap = typeParameterMap)
-                .toMutableMap()
-        }
-
-        return baseSchema
+    fun resolveTypeDefinition(kType: KType): TypeDefinition {
+        val result: TypeDefinition = processObject(kType = kType, typeParameterMap = emptyMap())
+        TypeDefinitionWarningManager.analyze(newTypeDefinition = result)
+        return result
     }
 
     /**
-     * Maps a non-null KType to its OpenAPI schema.
+     * Recursively maps the given [kType] KType, handling recursion and complex types.
+     *
+     * @param kType The [KType] to recursively map.
      * @param typeParameterMap A map of type parameter classifiers to actual KTypes for replacement.
+     * @return The [TypeDefinition]for the given [kType].
      */
-    private fun mapNonNullType(
+    private fun processObject(
         kType: KType,
         typeParameterMap: Map<KClassifier, KType>
-    ): Map<String, Any> {
+    ): TypeDefinition {
         val classifier: KClassifier = kType.classifier
-            ?: throw IllegalArgumentException("KType must have a classifier to map to OpenAPI schema.")
+            ?: throw IllegalArgumentException("KType must have a classifier.")
 
-        return when {
+        val typeDefinition: TypeDefinition = when {
             // Handle collections (e.g., List<String>, Set<Int>).
             classifier == List::class || classifier == Set::class || isArrayType(classifier = classifier) ->
                 handleCollectionType(kType = kType, classifier = classifier, typeParameterMap = typeParameterMap)
@@ -108,41 +105,71 @@ internal class ObjectParser {
             // This condition must be placed last because all types are also instances of KClass.
             // If this check is placed earlier, the above checks will never be reached.
             classifier is KClass<*> ->
-                handleComplexOrBasicType(kClass = classifier, kType = kType, typeParameterMap = typeParameterMap)
+                handleComplexOrBasicType(kType = kType, kClass = classifier, typeParameterMap = typeParameterMap)
 
             // Default to object for unknown or unsupported types.
-            else -> unknownObject
+            else ->
+                TypeDefinition.create(name = "Unknown", kType = kType, definition = mapOf(typeObject))
         }
+
+        // Mark the TypeDefinition as nullable if the KType is nullable.
+        if (kType.isMarkedNullable) {
+            typeDefinition.definition["nullable"] = true
+        }
+
+        return typeDefinition
     }
 
     /**
-     * Handles collections (List, Set) in OpenAPI schema.
+     * Handles collections (List, Set).
+     *
+     * @param kType The [KType] representing the collection type.
+     * @param classifier The [KClassifier] representing the collection class (e.g., List, Set).
+     * @param typeParameterMap A map of type parameter classifiers to actual [KType] items for replacement.
+     * @return The resolved [TypeDefinition] for the collection type.
      */
     private fun handleCollectionType(
         kType: KType,
         classifier: KClassifier,
         typeParameterMap: Map<KClassifier, KType>
-    ): Map<String, Any> {
-        // Check if the classifier is a primitive array first, such us IntArray, ByteArray, etc.
+    ): TypeDefinition {
+        // Check if the classifier is a primitive array first, such as IntArray, ByteArray, etc.
         if (isPrimitiveArrayType(classifier = classifier)) {
-            return mapPrimitiveType(kClass = classifier as KClass<*>) ?: unknownObject
-        } else {
-            // For non-primitive arrays and collections, handle based on type arguments.
-            val itemType: KType = kType.arguments.firstOrNull()?.type?.let {
-                replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
-            } ?: return unknownObject  // Fallback if type resolution fails.
-
-            // Map the item type to its respective schema, considering it's a regular object array or collection.
-            val itemSchema: Map<String, Any> = mapObjectInternal(
-                kType = itemType,
-                typeParameterMap = typeParameterMap
-            )
-
-            return mapOf(
-                "type" to "array",
-                "items" to itemSchema
+            val definition: Map<String, Any>? = mapPrimitiveType(kClass = classifier as KClass<*>)
+            val serializedName: String = getSerializedClassName(kClass = classifier)
+            return TypeDefinition.create(
+                name = serializedName,
+                kType = kType,
+                definition = definition ?: mapOf(typeObject)
             )
         }
+
+        // Handle non-primitive arrays and collections based on their type arguments.
+        val serializedName: String = getSerializedClassName(kClass = (classifier as KClass<*>))
+        val itemType: KType = kType.arguments.firstOrNull()?.type?.let {
+            replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
+        } ?: return TypeDefinition.create(
+            name = serializedName,
+            kType = kType,
+            definition = mapOf(typeObject)
+        )
+
+        // Map the item type to its respective TypeDefinition,
+        // considering it's a regular object array or collection.
+        val typeDefinition: TypeDefinition = processObject(
+            kType = itemType,
+            typeParameterMap = typeParameterMap
+        )
+
+        val definition: MutableMap<String, Any> = mutableMapOf(
+            "type" to "array",
+            "items" to typeDefinition.definition
+        )
+        return TypeDefinition.create(
+            name = "ArrayOf${typeDefinition.name}",
+            kType = kType,
+            definition = definition
+        )
     }
 
     /**
@@ -172,17 +199,22 @@ internal class ObjectParser {
         return classifier == IntArray::class || classifier == ByteArray::class ||
                 classifier == ShortArray::class || classifier == FloatArray::class ||
                 classifier == DoubleArray::class || classifier == LongArray::class ||
-                classifier == CharArray::class || classifier == BooleanArray::class
+                classifier == CharArray::class || classifier == BooleanArray::class ||
+                classifier == UIntArray::class || classifier == ULongArray::class ||
+                classifier == UByteArray::class || classifier == UShortArray::class
     }
 
     /**
-     * Handles maps (e.g., Map<String, Int>) in OpenAPI schema.
-     * Ensures that the key type is String, as required by OpenAPI specifications.
+     * Handles maps (e.g., Map<String, Int>).
+     *
+     * @param kType The [KType] representing the map type.
+     * @param typeParameterMap A map of type parameter classifiers to actual [KType] items for replacement.
+     * @return The resolved [TypeDefinition] for the map type.
      */
     private fun handleMapType(
         kType: KType,
         typeParameterMap: Map<KClassifier, KType>
-    ): Map<String, Any> {
+    ): TypeDefinition {
         val keyType: KType? = kType.arguments.getOrNull(index = 0)?.type?.let {
             replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
         }
@@ -190,99 +222,152 @@ internal class ObjectParser {
             replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
         }
 
-        // OpenAPI requires keys to be strings
+        // OpenAPI requires keys to be strings.
         if (keyType == null || keyType.classifier != String::class) {
-            throw IllegalArgumentException("OpenAPI only supports string keys for maps. Found key type: $keyType")
+            throw IllegalArgumentException("Maps must have strings as keys. Found key type: $keyType")
         }
 
-        // Process the value type
-        val valueSchema: Map<String, Any> = valueType?.let {
-            mapObjectInternal(kType = it, typeParameterMap = typeParameterMap)
-        } ?: unknownObject
+        // Process the value type.
+        val typeDefinition: TypeDefinition = valueType?.let {
+            processObject(kType = it, typeParameterMap = typeParameterMap)
+        } ?: TypeDefinition.create(name = "MapOf${kType}", kType = kType, definition = mapOf(typeObject))
 
-        return mapOf(
-            "type" to "object",
-            "additionalProperties" to valueSchema
+        val definition: MutableMap<String, Any> = mutableMapOf(
+            typeObject,
+            "additionalProperties" to typeDefinition.definition
+        )
+
+        return TypeDefinition.create(
+            name = "MapOf${typeDefinition.name}",
+            kType = kType,
+            definition = definition
         )
     }
 
     /**
-     * Handles enums in OpenAPI schema.
+     * Handles enums classes.
+     *
+     * @param enumClass The [KClass] representing the enum type.
+     * @return The [TypeDefinition] for the enum type.
      */
-    private fun handleEnumType(enumClass: KClass<*>): Map<String, Any> {
+    private fun handleEnumType(enumClass: KClass<*>): TypeDefinition {
         val enumValues: List<String> = enumClass.java.enumConstants?.map {
             (it as Enum<*>).name
         } ?: emptyList()
 
-        return mapOf(
-            "type" to "string",
-            "enum" to enumValues
+        // Create the TypeDefinition for the enum as a separate object.
+        val serializedEnumName: String = getSerializedClassName(kClass = enumClass)
+        val definition: TypeDefinition = TypeDefinition.create(
+            name = serializedEnumName,
+            kType = enumClass.createType(),
+            definition = mapOf(
+                "type" to "string",
+                "enum" to enumValues
+            )
+        )
+
+        // Add the enum definition to the object definitions if it's not already present.
+        typeDefinitionsCache.add(definition)
+
+        // Return a reference to the enum definition
+        val enumName: String = getSerializedClassName(kClass = enumClass)
+        return TypeDefinition.create(
+            name = enumName,
+            kType = enumClass.createType(),
+            definition = buildDefinitionReference(name = enumName)
         )
     }
 
     /**
      * Handles complex or basic types, such as data classes or primitive types.
      * For complex types, it adds them as a separate object in the objectDefinitions map and creates a $ref.
+     *
+     * @param kType The KType representing the object type.
+     * @param kClass The KClass representing the complex or basic type.
+     * @param typeParameterMap A map of type parameter classifiers to actual KTypes for replacement.
+     * @return The [TypeDefinition] for the complex or basic type.
      */
     private fun handleComplexOrBasicType(
-        kClass: KClass<*>,
         kType: KType,
+        kClass: KClass<*>,
         typeParameterMap: Map<KClassifier, KType>
-    ): Map<String, Any> {
-        // Handle primitive types
-        val primitiveType: Map<String, Any>? = mapPrimitiveType(kClass = kClass)
-        if (primitiveType != null) {
-            return primitiveType
+    ): TypeDefinition {
+        val classSerializedName: String = getSerializedClassName(kClass = kClass)
+
+        // Handle primitive types.
+        mapPrimitiveType(kClass = kClass)?.let { definition ->
+            return TypeDefinition.create(
+                name = classSerializedName,
+                kType = kType,
+                definition = definition
+            )
         }
 
-        // Handle generics
+        // Handle generics.
         if (kType.arguments.isNotEmpty()) {
-            val genericTypeName: String = generateGenericTypeName(kClass = kClass, kType = kType)
-            if (!objectDefinitions.containsKey(genericTypeName)) {
+            val genericTypeName: String = generateGenericTypeName(kType = kType, kClass = kClass)
+            if (typeDefinitionsCache.none { it.type == kType.nativeName() }) {
                 handleGenericType(
-                    kClass = kClass,
                     kType = kType,
+                    kClass = kClass,
                     genericTypeName = genericTypeName,
                     parentTypeParameterMap = typeParameterMap
                 )
             }
-            return mapOf("\$ref" to "#/components/schemas/$genericTypeName")
+            return TypeDefinition.create(
+                name = genericTypeName,
+                kType = kType,
+                definition = buildDefinitionReference(name = genericTypeName)
+            )
         }
 
-        // Prevent infinite recursion for self-referencing objects
-        if (processedTypes.contains(kType)) {
-            return mapOf("\$ref" to "#/components/schemas/${kClass.safeName()}")
+        // Prevent infinite recursion for self-referencing objects.
+        if (inProcessTypeDefinitions.contains(kType.nativeName())) {
+            return TypeDefinition.create(
+                name = classSerializedName,
+                kType = kType,
+                definition = buildDefinitionReference(name = classSerializedName)
+            )
         }
 
-        // Process complex types like data classes
-        processedTypes.add(kType)
+        // Process complex types like data classes.
+        inProcessTypeDefinitions.add(kType.nativeName())
 
-        // Create an empty schema before processing properties to handle circular dependencies
+        // Create an empty definition before processing properties to handle circular dependencies.
         val propertiesMap: MutableMap<String, Any> = mutableMapOf()
-        val schema: MutableMap<String, Any> = mutableMapOf("type" to "object", "properties" to propertiesMap)
-        objectDefinitions[kClass.safeName()] = schema
+        val definition: MutableMap<String, Any> = mutableMapOf(typeObject, "properties" to propertiesMap)
+        val placeholder: TypeDefinition = TypeDefinition.create(
+            name = classSerializedName,
+            kType = kType,
+            definition = definition
+        )
+        typeDefinitionsCache.add(placeholder)
 
-        // Create a mutable map for properties
+        // Create a mutable map for properties.
         val properties: MutableMap<String, Map<String, Any>> = mutableMapOf()
 
-        // Step 1: Get the sorted properties based on the primary constructor's parameter order
+        // Step 1: Get the sorted properties based on the primary constructor's parameter order.
         val sortedProperties: List<KProperty1<out Any, *>> = getSortedProperties(kClass = kClass)
 
-        // Step 2: Process each property using the helper function
+        // Step 2: Process each property using the helper function.
         sortedProperties.forEach { property ->
-            val (serializedName, extendedSchema) = processProperty(
+            val (propertySerializedName, extendedDefinition) = processProperty(
                 property = property,
                 typeParameterMap = typeParameterMap
             )
-            properties[serializedName] = extendedSchema
+            properties[propertySerializedName] = extendedDefinition
         }
 
-        // Add properties to the schema
+        // Add properties to the definition.
         propertiesMap.putAll(properties)
+        // Remove once done to handle different branches.
+        inProcessTypeDefinitions.remove(kType.nativeName())
 
-        processedTypes.remove(kType) // Remove once done to handle different branches.
-
-        return mapOf("\$ref" to "#/components/schemas/${kClass.safeName()}")
+        return TypeDefinition.create(
+            name = classSerializedName,
+            kType = kType,
+            definition = buildDefinitionReference(name = classSerializedName)
+        )
     }
 
     /**
@@ -298,10 +383,10 @@ internal class ObjectParser {
         // Map property names to KProperty1
         val propertyMap: Map<String, KProperty1<out Any, *>> = kClass.declaredMemberProperties.associateBy { it.name }
 
-        // Sort properties based on constructor parameter order
+        // Sort properties based on constructor parameter order.
         val sortedProperties: List<KProperty1<out Any, *>> = constructorParameters.mapNotNull { propertyMap[it] }
 
-        // Append any additional properties not defined in the constructor
+        // Append any additional properties not defined in the constructor.
         val additionalProperties: List<KProperty1<out Any, *>> = propertyMap.keys
             .subtract(constructorParameters.toSet())
             .mapNotNull { propertyMap[it] }
@@ -310,109 +395,128 @@ internal class ObjectParser {
     }
 
     /**
-     * Processes a property by mapping its type, handling annotations, and preparing the schema entry.
+     * Processes a property by mapping its type, handling annotations,
+     * and preparing the definition entry.
+     *
      * @param property The property to process.
      * @param typeParameterMap A map of type parameter classifiers to actual KTypes for replacement.
-     * @return A Pair containing the serialized name and the extended schema map.
+     * @return A Pair containing the serialized name and the extended definition map.
      */
     private fun processProperty(
         property: KProperty1<*, *>,
         typeParameterMap: Map<KClassifier, KType>
     ): Pair<String, Map<String, Any>> {
-        val serializedName: String = getSerializedPropertyName(property)
-        val propertyType: KType = replaceTypeIfNeeded(type = property.returnType, typeParameterMap = typeParameterMap)
-        val propertySchema: Map<String, Any> = mapObjectInternal(kType = propertyType, typeParameterMap = typeParameterMap)
-        val propertyMetadata: Map<String, Any>? = handlePropertyAnnotations(property, serializedName)
-        val extendedSchema: MutableMap<String, Any> = propertySchema.toMutableMap().apply {
+
+        val serializedName: String = getSerializedPropertyName(property = property)
+
+        val propertyType: KType = replaceTypeIfNeeded(
+            type = property.returnType,
+            typeParameterMap = typeParameterMap
+        )
+
+        val typeDefinition: TypeDefinition = processObject(
+            kType = propertyType,
+            typeParameterMap = typeParameterMap
+        )
+
+        val propertyMetadata: Map<String, Any>? = handlePropertyAnnotations(
+            property = property,
+            serializedName = serializedName
+        )
+
+        val extendedDefinition: MutableMap<String, Any> = typeDefinition.definition.apply {
             propertyMetadata?.let { putAll(it) }
         }
-        return serializedName to extendedSchema
+
+        return serializedName to extendedDefinition
     }
 
     /**
      * Generates a unique and consistent name for a generic type, such as Page<Employee> becomes PageOfEmployee.
-     * Handles multiple type parameters by joining them with 'And'.
+     * Handles multiple type parameters by joining them with 'Of'.
      * Falls back to using qualified names if simpleName is not available.
      */
-    private fun generateGenericTypeName(kClass: KClass<*>, kType: KType): String {
+    private fun generateGenericTypeName(kType: KType, kClass: KClass<*>): String {
         val genericArgs: List<KClass<*>> = kType.arguments.mapNotNull { it.type?.classifier as? KClass<*> }
-
-        // Function to safely get a class name, using qualifiedName as a fallback
-        fun KClass<*>.safeName(): String {
-            return this.simpleName
-                ?: this.qualifiedName?.replace(oldChar = '.', newChar = '_')
-                ?: "UnknownClass"
-        }
-
-        val baseName: String = kClass.safeName()
+        val baseName: String = getSerializedClassName(kClass = kClass)
         val genericArgsNames: List<String> = genericArgs.map { it.safeName() }
 
         return if (genericArgsNames.size == 1) {
             "${baseName}Of${genericArgsNames.first()}"
         } else {
-            "${baseName}Of${genericArgsNames.joinToString("And")}"
+            "${baseName}Of${genericArgsNames.joinToString(separator = "Of")}"
         }
     }
 
     /**
-     * Handles generic types like Page<Employee> and creates a schema for them.
-     */
-    /**
-     * Handles generic types like Page<Employee> and creates a schema for them.
+     * Handles generic types like Page<Employee> and creates a definition for them.
+     *
+     * @param kClass The Kotlin class representing the generic type.
+     * @param kType The KType containing the actual types for the generics.
+     * @param genericTypeName The generated name for the generic type.
+     * @param parentTypeParameterMap A map of type parameter classifiers to actual KTypes for replacement.
      */
     private fun handleGenericType(
-        kClass: KClass<*>,
         kType: KType,
+        kClass: KClass<*>,
         genericTypeName: String,
         parentTypeParameterMap: Map<KClassifier, KType>
     ) {
-        // Add a placeholder schema early to avoid circular references
-        objectDefinitions[genericTypeName] = mutableMapOf("type" to "object", "properties" to mutableMapOf<String, Any>())
+        // Add a placeholder definition early to avoid circular references.
+        val placeholder: TypeDefinition = TypeDefinition.create(
+            name = genericTypeName,
+            kType = kType,
+            definition = mapOf(typeObject, "properties" to mutableMapOf<String, Any>())
+        )
+        typeDefinitionsCache.add(placeholder)
 
-        // Retrieve the type parameters from the generic class
+        // Retrieve the type parameters from the generic class.
         val typeParameters: List<KTypeParameter> = kClass.typeParameters
 
-        // Retrieve the actual generic arguments provided
+        // Retrieve the actual generic arguments provided.
         val genericArgs: List<KType> = kType.arguments.mapNotNull { it.type }
 
-        // Ensure the number of type parameters matches the number of generic arguments
+        // Ensure the number of type parameters matches the number of generic arguments.
         if (typeParameters.size != genericArgs.size) {
             throw IllegalArgumentException(
-                "Type parameter count mismatch for $kClass. Expected ${typeParameters.size}, but got ${genericArgs.size}."
+                "Type parameter count mismatch for $kClass. " +
+                        "Expected ${typeParameters.size}, but got ${genericArgs.size}."
             )
         }
 
-        // Create a map of type parameters to their actual types
-        val currentTypeParameterMap: Map<KClassifier, KType> = typeParameters.mapIndexed { index, typeParam ->
-            typeParam as KClassifier to genericArgs[index]
-        }.toMap()
+        // Create a map of type parameters to their actual types.
+        val currentTypeParameterMap: Map<KClassifier, KType> = typeParameters
+            .mapIndexed { index, typeParam ->
+                typeParam as KClassifier to genericArgs[index]
+            }.toMap()
 
-        // Merge parent type parameters with current type parameters
+        // Merge parent type parameters with current type parameters.
         val combinedTypeParameterMap: Map<KClassifier, KType> = parentTypeParameterMap + currentTypeParameterMap
 
-        // Prepare a map to hold the properties for the generic instance
+        // Prepare a map to hold the properties for the generic instance.
         val properties: MutableMap<String, Any> = mutableMapOf()
 
         // Retrieve sorted properties based on the primary constructor's parameter order
         val sortedProperties: List<KProperty1<out Any, *>> = getSortedProperties(kClass)
 
-        // Iterate over each sorted property in the generic class
-        sortedProperties.forEach { property ->
-            val (serializedName, extendedSchema) = processProperty(property, combinedTypeParameterMap)
-            properties[serializedName] = extendedSchema
+        // Iterate over each sorted property in the generic class.
+        sortedProperties.forEach { sortedProperty ->
+            val (serializedName, extendedDefinition) = processProperty(
+                property = sortedProperty,
+                typeParameterMap = combinedTypeParameterMap
+            )
+            properties[serializedName] = extendedDefinition
         }
 
-        // Update the placeholder schema with actual properties
-        objectDefinitions[genericTypeName]?.putAll(
-            mapOf(
-                "type" to "object",
-                "properties" to properties
-            )
+        // Update the placeholder definition  with actual properties.
+        placeholder.definition.putAll(
+            mapOf(typeObject, "properties" to properties)
         )
     }
 
     /**
      * Replaces type parameters in a generic property type with actual types from the type parameter map.
+     *
      * @param type The original KType to be processed.
      * @param typeParameterMap A map of type parameter classifiers to actual KTypes for replacement.
      * @return The processed KType with type parameters replaced as needed.
@@ -430,21 +534,24 @@ internal class ObjectParser {
     }
 
     /**
-     * Maps primitive Kotlin types (e.g., Int, String) to their OpenAPI schema counterparts.
+     * Maps primitive Kotlin types (e.g., Int, String).
      */
-    @OptIn(ExperimentalUuidApi::class)
     private fun mapPrimitiveType(kClass: KClass<*>): Map<String, Any>? {
         return when (kClass) {
             // Basic Kotlin Types.
-            String::class -> mapOf("type" to "string")
+            String::class, CharSequence::class -> mapOf("type" to "string")
+            Char::class -> mapOf("type" to "string", "maxLength" to 1)
+            Boolean::class -> mapOf("type" to "boolean")
             Int::class -> mapOf("type" to "integer", "format" to "int32")
             Long::class -> mapOf("type" to "integer", "format" to "int64")
-            Boolean::class -> mapOf("type" to "boolean")
             Double::class -> mapOf("type" to "number", "format" to "double")
             Float::class -> mapOf("type" to "number", "format" to "float")
             Short::class -> mapOf("type" to "integer", "format" to "int32")
             Byte::class -> mapOf("type" to "integer", "format" to "int32")
-            Char::class -> mapOf("type" to "string", "maxLength" to 1)
+            UInt::class -> mapOf("type" to "integer", "format" to "int32")
+            ULong::class -> mapOf("type" to "integer", "format" to "int64")
+            UShort::class -> mapOf("type" to "integer", "format" to "int32")
+            UByte::class -> mapOf("type" to "integer", "format" to "int32")
 
             // Primitive Arrays.
             IntArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "integer", "format" to "int32"))
@@ -459,94 +566,99 @@ internal class ObjectParser {
             // UUID Types.
             Uuid::class, UUID::class -> mapOf("type" to "string", "format" to "uuid")
 
-            // Date and Time Types.
-            KotlinLocalDate::class, JavaLocalDate::class -> mapOf("type" to "string", "format" to "date")
-            KotlinLocalDateTime::class, JavaLocalDateTime::class -> mapOf("type" to "string", "format" to "date-time")
-            KotlinInstant::class, JavaInstant::class -> mapOf("type" to "string", "format" to "date-time")
-            KotlinLocalTime::class, JavaLocalTime::class -> mapOf("type" to "string", "format" to "time")
-            JavaOffsetDateTime::class -> mapOf("type" to "string", "format" to "date-time")
-            JavaZonedDateTime::class -> mapOf("type" to "string", "format" to "date-time")
-            JavaDate::class -> mapOf("type" to "string", "format" to "date-time")
+            // Kotlin Date/Time Types.
+            kotlinx.datetime.LocalDate::class -> mapOf("type" to "string", "format" to "date")
+            kotlinx.datetime.LocalDateTime::class -> mapOf("type" to "string", "format" to "date-time")
+            kotlinx.datetime.Instant::class -> mapOf("type" to "string", "format" to "date-time")
+            kotlinx.datetime.LocalTime::class -> mapOf("type" to "string", "format" to "time")
+            kotlin.time.Duration::class -> mapOf("type" to "string", "format" to "duration")
+
+            // Java Date/Time Types.
+            java.time.OffsetDateTime::class -> mapOf("type" to "string", "format" to "date-time")
+            java.time.ZonedDateTime::class -> mapOf("type" to "string", "format" to "date-time")
+            java.time.Period::class -> mapOf("type" to "string", "format" to "period")
+            java.time.LocalTime::class -> mapOf("type" to "string", "format" to "time")
+            java.time.LocalDate::class -> mapOf("type" to "string", "format" to "date")
+            java.time.LocalDateTime::class -> mapOf("type" to "string", "format" to "date-time")
+            java.time.Instant::class -> mapOf("type" to "string", "format" to "date-time")
+            java.time.Duration::class -> mapOf("type" to "string", "format" to "duration")
+            java.util.Date::class -> mapOf("type" to "string", "format" to "date-time")
+            java.sql.Date::class -> mapOf("type" to "string", "format" to "date")
 
             // Big Numbers.
             BigDecimal::class -> mapOf("type" to "number", "format" to "double")
             BigInteger::class -> mapOf("type" to "integer", "format" to "int64")
 
             // URL and URI.
-            JavaURL::class -> mapOf("type" to "string", "format" to "uri")
-            JavaURI::class -> mapOf("type" to "string", "format" to "uri")
-            KtorUrl::class -> mapOf("type" to "string", "format" to "uri")
+            io.ktor.http.Url::class -> mapOf("type" to "string", "format" to "uri")
+            java.net.URL::class -> mapOf("type" to "string", "format" to "uri")
+            java.net.URI::class -> mapOf("type" to "string", "format" to "uri")
 
-            // Time and Zone Related Types.
-            JavaZoneId::class -> mapOf(
-                "type" to "string",
-                "format" to "zone-id",
-                "description" to "IANA time zone ID, e.g., 'Europe/Paris'"
-            )
+            // Time Zone and Locale Types
+            java.time.ZoneId::class -> mapOf("type" to "string", "format" to "zone-id")
+            java.time.ZoneOffset::class -> mapOf("type" to "string", "format" to "zone-offset")
+            java.util.TimeZone::class -> mapOf("type" to "string", "format" to "timezone")
+            java.util.Locale::class -> mapOf("type" to "string", "format" to "locale")
+            java.util.Currency::class -> mapOf("type" to "string", "format" to "currency")
+            java.nio.charset.Charset::class -> mapOf("type" to "string", "format" to "charset")
 
-            JavaZoneOffset::class -> mapOf(
-                "type" to "string",
-                "format" to "zone-offset",
-                "description" to "Time zone offset from UTC, e.g., '+02:00'"
-            )
+            // Regex and Patterns.
+            // Currently treated as strings as we don't have the regex expressions when parsing.
+            // A possible enhancement could be to check for annotations like @Pattern.
+            Regex::class -> mapOf("type" to "string")
+            java.util.regex.Pattern::class -> mapOf("type" to "string")
 
-            JavaTimeZone::class -> mapOf(
-                "type" to "string",
-                "format" to "timezone",
-                "description" to "IANA time zone name, e.g., 'America/New_York'"
-            )
-
-            // Locale and Internationalization.
-            JavaLocale::class -> mapOf(
-                "type" to "string",
-                "format" to "locale",
-                "description" to "Locale identifier, e.g., 'en-US'"
-            )
-
-            // Currency.
-            JavaCurrency::class -> mapOf(
-                "type" to "string",
-                "format" to "currency",
-                "description" to "Currency code, e.g., 'USD'"
-            )
-
-            // Pattern.
-            JavaPattern::class -> mapOf(
-                "type" to "string",
-                "format" to "regex",
-                "description" to "Regular expression pattern"
-            )
-
-            // Charset.
-            JavaCharset::class -> mapOf(
-                "type" to "string",
-                "format" to "charset",
-                "description" to "Character set name, e.g., 'UTF-8'"
-            )
-
-            else -> null // Return null if it's not a primitive type
+            else -> null // Return null if it's not a primitive type.
         }
     }
 
     /**
-     * Gets the serialized property name by handling `@SerialName` and Jackson's `@JsonProperty`,
-     * or returns the property name if neither is annotated.
+     * Gets the serialized class name by handling serializer annotations,
+     * or returns the class simple name if not annotated.
+     *
+     * @param kClass The Kotlin class to check for annotations.
+     * @return The serialized class name or simple name if not annotated.
+     */
+    private fun getSerializedClassName(kClass: KClass<*>): String {
+        return getSerializedName(annotatedElement = kClass, defaultName = kClass.safeName())
+    }
+
+    /**
+     * Gets the serialized property name by handling serializer annotations,
+     * or returns the property name as is if not annotated.
      */
     private fun getSerializedPropertyName(property: KProperty1<*, *>): String {
-        // Check for Kotlinx's SerialName annotation first
-        val serialNameAnnotation: KotlinxSerialName? = property.findAnnotation<KotlinxSerialName>()
-        if (serialNameAnnotation != null && serialNameAnnotation.value.isNotBlank()) {
-            return serialNameAnnotation.value
+        return getSerializedName(annotatedElement = property, defaultName = property.name)
+    }
+
+    /**
+     * Gets the serialized name based on either Kotlinx or Jackson annotations.
+     * Falls back to the provided default name if neither annotation is present.
+     *
+     * @param annotatedElement The element (class or property) to check for annotations.
+     * @param defaultName The name to return if no relevant annotation is found.
+     * @return The serialized name based on annotations or the default name.
+     */
+    private fun getSerializedName(annotatedElement: Any, defaultName: String): String {
+        // List of pairs containing annotation lookup functions and the way to extract the relevant value.
+        val annotationCheckers: Set<(Any) -> String?> = setOf(
+            { element -> (element as? KClass<*>)?.findAnnotation<KotlinxSerialName>()?.value },
+            { element -> (element as? KProperty1<*, *>)?.findAnnotation<KotlinxSerialName>()?.value },
+            { element -> (element as? KClass<*>)?.findAnnotation<JacksonJsonTypeName>()?.value },
+            { element -> (element as? KProperty1<*, *>)?.findAnnotation<JacksonJsonProperty>()?.value }
+        )
+
+        // Iterate over the annotation checkers to find the first non-blank name.
+        annotationCheckers.forEach { checker ->
+            checker(annotatedElement)?.let { serialName ->
+                if (serialName.isNotBlank()) {
+                    return serialName
+                }
+            }
         }
 
-        // Then check for Jackson's JsonProperty annotation
-        val jsonPropertyAnnotation: JacksonJsonProperty? = property.findAnnotation<JacksonJsonProperty>()
-        if (jsonPropertyAnnotation != null && jsonPropertyAnnotation.value.isNotBlank()) {
-            return jsonPropertyAnnotation.value
-        }
-
-        // Fallback to the property's actual name.
-        return property.name
+        // Fallback to the provided default name.
+        return defaultName
     }
 
     /**
@@ -555,12 +667,12 @@ internal class ObjectParser {
     private fun handlePropertyAnnotations(property: KProperty1<*, *>, serializedName: String): Map<String, Any>? {
         val metadata: MutableMap<String, Any> = mutableMapOf()
 
-        // Handle Transient annotations
+        // Handle Transient annotations.
         if (property.findAnnotation<KotlinxTransient>() != null || property.findAnnotation<JacksonJsonIgnore>() != null) {
             metadata["transient"] = true
         }
 
-        // Handle serialized name changes
+        // Handle serialized name changes.
         if (serializedName != property.name) {
             metadata["originalName"] = property.name
         }
@@ -575,9 +687,13 @@ internal class ObjectParser {
         return this.simpleName ?: this.qualifiedName?.replace(oldChar = '.', newChar = '_') ?: "UnknownClass"
     }
 
-    companion object {
-        /** Placeholder for unknown object types. */
-       // private val unknownObject: Map<SpecKey, SpecType> = mapOf(SpecKey.TYPE to SpecType.OBJECT)
-        private val unknownObject: Map<String, String> = mapOf("type" to "object")
+    /**
+     * Converts an object to a schema reference.
+     */
+    private fun buildDefinitionReference(name: String): Map<String, String> {
+        return mapOf("\$ref" to "#/components/schemas/$name")
     }
+
+    /** Placeholder for object types. */
+    private val typeObject: Pair<String, String> = Pair("type", "object")
 }
