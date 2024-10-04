@@ -25,7 +25,13 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     require(openapiYamlUrl.isNotBlank()) { "The OpenAPI YAML URL must not be empty." }
     require(swaggerUrl.isNotBlank()) { "The Swagger UI URL must not be empty." }
     require(debugUrl.isNotBlank()) { "The debug URL must not be empty." }
-    check(value = openapiJsonUrl != openapiYamlUrl) { "The OpenAPI JSON and YAML URLs must be different." }
+    require(setOf(openapiJsonUrl, openapiYamlUrl, swaggerUrl, debugUrl).size == 4) {
+        "Each URL in must be unique. Duplicate URLs detected: " +
+                "OpenAPI JSON URL: $openapiJsonUrl, " +
+                "OpenAPI YAML URL: $openapiYamlUrl, " +
+                "Swagger UI URL: $swaggerUrl, " +
+                "Debug URL: $debugUrl"
+    }
 
     // Configure the plugin endpoints using the extracted function.
     application.routing {
