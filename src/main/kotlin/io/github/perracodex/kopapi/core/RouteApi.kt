@@ -15,22 +15,27 @@ import io.ktor.server.routing.*
  * The metadata includes the endpoint full path, the HTTP method associated with the route, and optionally other
  * concrete details such as a summary, description, tags, parameters, request body, and responses.
  *
- * Usage example:
+ * #### Usage
  * ```
- * get("/items/{id}") {
+ * get("/items/{id}/{group?}") {
  *     // Handle GET request
  * } api {
- *     summary("Retrieve an item")
- *     description("Fetches an item by its unique identifier.")
- *     tags("Item1", "Item2")
- *     response<Item>(HttpStatusCode.OK, "Successful fetch")
- *     response(HttpStatusCode.NotFound, "Item not found")
+ *     summary = "Retrieve an item."
+ *     description = "Fetches an item by its unique identifier."
+ *     description = "In addition, you can filter by group."
+ *     tags = Tags("tag1", "tag2")
+ *     pathParameter<Uuid>("id") { description = "The ID to find." }
+ *     queryParameter<String>("group") { description = "The group to filter." }
+ *     response<Item>(HttpStatusCode.OK) { description = "Successful fetch" }
+ *     response(HttpStatusCode.NotFound) { description = "Item not found" }
  * }
  * ```
  *
  * @param configure A lambda receiver for configuring the [ApiMetadata].
  * @return The current [Route] instance with attached metadata.
  * @throws IllegalArgumentException If the route does not have an HTTP method selector.
+ *
+ * @see [ApiMetadata]
  */
 public infix fun Route.api(configure: ApiMetadata.() -> Unit): Route {
     // Resolve the HTTP method of the route: GET, POST, PUT, DELETE, etc.
@@ -63,14 +68,28 @@ private fun buildApiErrorMessage(route: Route): String {
         Possible causes:
         - You might have forgotten to define an HTTP method (e.g., `get("/path")`, `post("/path")`).
         - You might have applied 'api' to a route that is not directly tied to a specific method.
+        - Make sure 'api' is applied to a route either either by infix notation or by concatenation:
+            ```
+            post("/path") { ... } api { ... } // infix notation example
+            get("/path") { ... }.api { ... }  // concatenation example
+            ```
 
-        Example of proper usage:
-        ```
-        get("/items/{id}") {
-            // Handle GET request
-        } api {
-            summary("Retrieve an item")
-        }
-        ```
+        Example of proper usage (with infix notation):
+            ```
+            get("/items/{id}/{group?}") {
+                // Handle GET request
+            } api {
+                summary = "Retrieve an item."
+                description = "Fetches an item by its unique identifier."
+                description = "In addition, you can filter by group."
+                tags = Tags("tag1", "tag2")
+                pathParameter<Uuid>("id") { description = "The ID to find." }
+                queryParameter<String>("group") { description = "The group to filter." }
+                response<Item>(HttpStatusCode.OK) { description = "Successful fetch" }
+                response(HttpStatusCode.NotFound) { description = "Item not found" }
+            }
+            ```
+            
+            Error
     """.trimIndent()
 }
