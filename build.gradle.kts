@@ -37,6 +37,11 @@ kotlin {
     // https://github.com/Kotlin/KEEP/blob/master/proposals/explicit-api-mode.md
     // https://kotlinlang.org/docs/whatsnew14.html#explicit-api-mode-for-library-authors
     explicitApi()
+
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.uuid.ExperimentalUuidApi")
+        freeCompilerArgs.add("-opt-in=kotlin.uuid.ConsistentCopyVisibility")
+    }
 }
 
 dependencies {
