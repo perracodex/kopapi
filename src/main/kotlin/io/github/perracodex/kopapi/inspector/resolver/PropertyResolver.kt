@@ -9,9 +9,10 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.SpecKey
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
 import io.github.perracodex.kopapi.inspector.type.TypeSchema
+import java.lang.reflect.Field
 import kotlin.reflect.*
 import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.full.superclasses
 
 /**
  * Handles traversing of object properties, including traversing their types and handling metadata.
@@ -62,27 +63,70 @@ internal object PropertyResolver {
     }
 
     /**
-     * Retrieves and sorts properties based on the primary constructor's parameter order.
-     * For classes without a primary constructor, properties are sorted based on their declaration order.
+     * Retrieves the properties from the given [kClass] preserving their declaration order.
+     * This includes those defined in the primary constructor and in the class body.
+     * Non-public properties are excluded from the result.
      *
-     * @param kClass The Kotlin class.
-     * @return A list of KProperty1 sorted according to the constructor's parameter order.
+     * Inherited properties are also included, being appended after the subclass's properties.
+     *
+     * @param kClass The [KClass] to retrieve properties from.
+     * @return A list of [KProperty1] items sorted according to their declaration order.
      */
     fun getProperties(kClass: KClass<*>): List<KProperty1<out Any, *>> {
-        val primaryConstructor: KFunction<Any>? = kClass.primaryConstructor
-        val constructorParameters: List<String> = primaryConstructor?.parameters?.mapNotNull { it.name } ?: emptyList()
+        val orderedProperties: MutableList<KProperty1<out Any, *>> = mutableListOf()
+        val processedClasses: MutableSet<KClass<*>> = mutableSetOf()
+        var currentClass: KClass<*>? = kClass
 
-        // Map property names to KProperty1 objects.
-        val propertyMap: Map<String, KProperty1<out Any, *>> = kClass.declaredMemberProperties.associateBy { it.name }
+        while (currentClass != null && currentClass != Any::class && !processedClasses.contains(currentClass)) {
+            processedClasses.add(currentClass)
 
-        // Sort properties based on constructor parameter order.
-        val sortedProperties: List<KProperty1<out Any, *>> = constructorParameters.mapNotNull { propertyMap[it] }
+            // 1. Retrieve declared fields using Java reflection to maintain order.
+            // Kotlin reflection does not guarantee order for properties.
+            val declaredFields: Array<out Field> = currentClass.java.declaredFields
 
-        // Append any additional properties not defined in the constructor.
-        val additionalProperties: List<KProperty1<out Any, *>> = propertyMap.keys
-            .subtract(constructorParameters.toSet())
-            .mapNotNull { propertyMap[it] }
+            // 2. Retrieve all properties declared directly within the current class.
+            // This includes both properties from the primary constructor and those declared in the class body.
+            val declaredMemberProperties: Collection<KProperty1<out Any, *>> = currentClass.declaredMemberProperties
 
-        return sortedProperties + additionalProperties
+            // 3. Map of property names to their corresponding Kotlin property instances for quick lookup.
+            val kotlinPropertiesMap: Map<String, KProperty1<out Any, *>> = declaredMemberProperties.associateBy { it.name }
+
+            // 4. Create a Set to keep track of properties already added, to prevent duplicates.
+            val addedPropertyNames: MutableSet<String> = mutableSetOf()
+
+            // 5. Map Java fields to Kotlin properties in the order they are declared in the source code.
+            for (field in declaredFields) {
+                if (field.isSynthetic) continue
+
+                val propertyName: String = field.name
+                if (propertyName.isNotBlank()) {
+                    val kotlinProperty: KProperty1<out Any, *>? = kotlinPropertiesMap[propertyName]
+                    if (kotlinProperty != null) {
+                        // Only include public properties.
+                        if (kotlinProperty.visibility == KVisibility.PUBLIC) {
+                            // Avoid adding duplicate properties (in case of shadowing).
+                            if (orderedProperties.none { it.name == kotlinProperty.name }) {
+                                orderedProperties.add(kotlinProperty)
+                                addedPropertyNames.add(propertyName)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 6. Append remaining Kotlin properties that were not mapped via Java fields.
+            // Only include public properties.
+            val additionalProperties: List<KProperty1<out Any, *>> = declaredMemberProperties
+                .filter {
+                    it.visibility == KVisibility.PUBLIC &&
+                            it.name !in addedPropertyNames
+                }
+            orderedProperties.addAll(additionalProperties)
+
+            // Move to the superclass, if any.
+            currentClass = currentClass.superclasses.firstOrNull()
+        }
+
+        return orderedProperties
     }
 }
