@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.parser.resolver
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.parser.ObjectTypeParser
 import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
 import io.github.perracodex.kopapi.parser.definition.ElementMetadata
@@ -110,7 +111,7 @@ internal object GenericsResolver {
 
         // Ensure the number of type parameters matches the number of the generics arguments.
         if (classTypeParameters.size != genericsArguments.size) {
-            throw IllegalArgumentException(
+            throw KopapiException(
                 "Generics type parameter count mismatch for $kClass. " +
                         "Expected ${classTypeParameters.size}, but got ${genericsArguments.size}."
             )

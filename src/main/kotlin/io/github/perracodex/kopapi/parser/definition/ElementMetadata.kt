@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.parser.definition
 
 import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
+import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
@@ -27,6 +28,8 @@ internal data class ElementMetadata(
     val isTransient: Boolean = false
 ) {
     companion object {
+        private val tracer = Tracer<ElementMetadata>()
+
         /**
          * Resolves the name for the give [kClass], considering serializer annotations if present.
          *
@@ -73,7 +76,15 @@ internal data class ElementMetadata(
             val originalName: String = when (target) {
                 is KClass<*> -> target.safeName()
                 is KProperty1<*, *> -> target.name
-                else -> throw IllegalArgumentException("Unsupported target type: ${target::class.simpleName}")
+                else -> {
+                    tracer.error("Unable to resolve element name. Unsupported target type: $target")
+                    return Pair(createFallbackName(target = target), null)
+                }
+            }
+
+            if (originalName.isBlank()) {
+                tracer.error("Unable to resolve element name. Empty or blank name for target: $target")
+                return Pair(createFallbackName(target = target), null)
             }
 
             // List of pairs containing annotation lookup functions and the way to extract the relevant value.
@@ -111,7 +122,21 @@ internal data class ElementMetadata(
         private fun KClass<*>.safeName(): String {
             return this.simpleName
                 ?: this.qualifiedName?.substringAfterLast(delimiter = '.')
-                ?: "UnknownClass_${this.toString().replace(Regex(pattern = "[^A-Za-z0-9_]"), replacement = "_")}"
+                ?: "UnknownClass_${this.toString().cleanName()}"
+        }
+
+        /**
+         * Extension function to clean a string by replacing all non-alphanumeric characters with underscores.
+         */
+        private fun String.cleanName(): String {
+            return this.replace(Regex(pattern = "[^A-Za-z0-9_]"), replacement = "_")
+        }
+
+        /**
+         * Creates a fallback name for an element based on the target's type.
+         */
+        private fun createFallbackName(target: Any): String {
+            return "UnknownElement_${target.toString().cleanName()}"
         }
     }
 }

@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.parser.ObjectTypeParser
 import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
 import io.github.perracodex.kopapi.parser.definition.TypeDefinition
 import io.github.perracodex.kopapi.parser.spec.Spec
+import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 
@@ -20,19 +21,20 @@ import kotlin.reflect.KType
  * Responsibilities:
  * - Handling [Map] objects by resolving their key and value types.
  * - Traverse the value type if it is a complex object.
- * - Ensuring that the map's key type is [String].
+ * - Logging errors for unsupported key types.
  * - Creating a [TypeDefinition] which includes an `additionalProperties` spec for the value type.
  * - Caching the created [TypeDefinition] to avoid redundant processing.
  */
 @ObjectTypeParserAPI
 internal object MapResolver {
+    private val tracer = Tracer<MapResolver>()
+
     /**
      * Resolves a [Map] type to a [TypeDefinition].
      *
      * @param kType The [KType] representing the map type.
      * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
      * @return The resolved [TypeDefinition] for the map, with additionalProperties for the value type.
-     * @throws IllegalArgumentException if the map's key type is not [String].
      */
     fun process(
         kType: KType,
@@ -46,13 +48,18 @@ internal object MapResolver {
         }
 
         // OpenAPI requires keys to be strings.
-        if (keyType == null || keyType.classifier != String::class) {
-            throw IllegalArgumentException("Maps must have strings as keys. Found key type: $keyType")
+        // The key is actually not needed for processing since for maps we only traverse the value type,
+        // but we log an error for debugging purposes.
+        if (keyType == null) {
+            tracer.error("Unable to resolve the Map key type from $kType")
+        }
+        if (keyType?.classifier != String::class) {
+            tracer.error("Map keys must be strings in OpenAPI. Found key type: $keyType.")
         }
 
         // Process the value type.
         val typeDefinition: TypeDefinition = valueType?.let {
-            ObjectTypeParser.traverseType(kType = it, typeParameterMap = typeParameterMap)
+            ObjectTypeParser.traverseType(kType = valueType, typeParameterMap = typeParameterMap)
         } ?: TypeDefinition.of(name = "MapOf${kType}", kType = kType, definition = Spec.objectType())
 
         return TypeDefinition.of(

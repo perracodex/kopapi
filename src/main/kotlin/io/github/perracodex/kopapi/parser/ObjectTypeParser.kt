@@ -10,6 +10,7 @@ import io.github.perracodex.kopapi.parser.definition.TypeDefinitionWarningManage
 import io.github.perracodex.kopapi.parser.definition.nativeName
 import io.github.perracodex.kopapi.parser.resolver.*
 import io.github.perracodex.kopapi.parser.spec.Spec
+import io.github.perracodex.kopapi.utils.Tracer
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
@@ -44,6 +45,8 @@ import kotlin.uuid.Uuid
  *  current processing context, or subsequent calls.
  */
 internal object ObjectTypeParser {
+    private val tracer = Tracer<ObjectTypeParser>()
+
     /** Cache of [TypeDefinition] objects that have been processed. */
     private val typeDefinitionsCache: MutableSet<TypeDefinition> = mutableSetOf()
 
@@ -92,8 +95,16 @@ internal object ObjectTypeParser {
         kType: KType,
         typeParameterMap: Map<KClassifier, KType>
     ): TypeDefinition {
+        // Resolve the type's classifier, if unavailable, log an error and return an unknown type.
         val classifier: KClassifier = kType.classifier
-            ?: throw IllegalArgumentException("KType must have a classifier. $kType")
+            ?: run {
+                tracer.error("KType must have a classifier. kType=$kType. typeParameterMap=$typeParameterMap.")
+                return TypeDefinition.of(
+                    name = "Unknown_$kType",
+                    kType = kType,
+                    definition = Spec.objectType()
+                )
+            }
 
         val typeDefinition: TypeDefinition = when {
             // Handle collections (e.g., List<String>, Set<Int>).
@@ -119,12 +130,14 @@ internal object ObjectTypeParser {
                 ObjectResolver.process(kType = kType, kClass = classifier, typeParameterMap = typeParameterMap)
 
             // Fallback for unknown types. This should never be reached.
-            else ->
+            else -> {
+                tracer.error("Unexpected type. kType=$kType. classifier=$classifier. typeParameterMap=$typeParameterMap.")
                 TypeDefinition.of(
                     name = "Unknown_$kType",
                     kType = kType,
                     definition = Spec.objectType()
                 )
+            }
         }
 
         return typeDefinition
