@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.inspector.spec
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 
 /**
- * Provides reusable entries for specifying types and structures in data definitions.
+ * Provides reusable entries for specifying types and structures in data schemas.
  */
 @TypeInspectorAPI
 internal object Spec {
@@ -126,7 +126,7 @@ internal object Spec {
     /**
      * Creates a specification entry for an object type with additional properties.
      *
-     * @param value The type definition for the additional properties.
+     * @param value The type schema details to be set as the additional properties.
      * @return A `MutableMap<String, Any>` representing the object with additional properties.
      */
     fun additionalProperties(value: MutableMap<String, Any>): MutableMap<String, Any> = mutableMapOf(

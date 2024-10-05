@@ -8,7 +8,7 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.SpecKey
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
-import io.github.perracodex.kopapi.inspector.type.TypeDefinition
+import io.github.perracodex.kopapi.inspector.type.TypeSchema
 import kotlin.reflect.*
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.primaryConstructor
@@ -17,19 +17,18 @@ import kotlin.reflect.full.primaryConstructor
  * Handles traversing of object properties, including traversing their types and handling metadata.
  *
  * Responsibilities:
- * - Processing properties by traversing their type definitions.
+ * - Processing properties by traversing them to generate their schema.
  * - Handling metadata such as annotations, nullability, etc.
  * - Ensuring that obtained properties are sorted as per the primary constructor's parameter order.
  */
 @TypeInspectorAPI
 internal object PropertyResolver {
     /**
-     * Processes a property by traversing its type definition,
-     * in addition to handling metadata such as annotations, nullability, etc.
+     * Processes the given [property] by traversing it and resolving its schema.
      *
-     * @param property The property to process.
-     * @param typeParameterMap A map of type parameter classifiers to actual KTypes for replacement.
-     * @return A Pair containing the serialized name and the extended definition map.
+     * @param property The [KProperty1] to process.
+     * @param typeParameterMap A map of type parameter classifiers to actual [KType] for replacement.
+     * @return A [Pair] containing the resolved property name and the resolved schema map.
      */
     fun traverse(
         property: KProperty1<*, *>,
@@ -42,12 +41,12 @@ internal object PropertyResolver {
             typeParameterMap = typeParameterMap
         )
 
-        val typeDefinition: TypeDefinition = TypeInspector.traverse(
+        val typeSchema: TypeSchema = TypeInspector.traverse(
             kType = propertyType,
             typeParameterMap = typeParameterMap
         )
 
-        typeDefinition.definition.apply {
+        typeSchema.schema.apply {
             metadata.originalName?.let {
                 put(SpecKey.ORIGINAL_NAME(), it)
             }
@@ -59,7 +58,7 @@ internal object PropertyResolver {
             }
         }
 
-        return metadata.name to typeDefinition.definition
+        return metadata.name to typeSchema.schema
     }
 
     /**

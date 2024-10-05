@@ -9,7 +9,7 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
-import io.github.perracodex.kopapi.inspector.type.TypeDefinition
+import io.github.perracodex.kopapi.inspector.type.TypeSchema
 import kotlin.reflect.*
 
 /**
@@ -17,9 +17,9 @@ import kotlin.reflect.*
  *
  * Responsibilities:
  * - Verify if the generics type has already been processed, in which case return a reference to it.
- * - Traversing the generics type to resolve its properties and cache their definitions.
+ * - Traversing the generics type to resolve its properties and cache their respective schemas.
  * - Generating a unique and consistent name for the generics type.
- * - Caching the created [TypeDefinition] to avoid redundant processing.
+ * - Caching the created [TypeSchema] to avoid redundant processing.
  */
 @TypeInspectorAPI
 internal object GenericsResolver {
@@ -29,13 +29,13 @@ internal object GenericsResolver {
      * @param kType The KType representing the generics type.
      * @param kClass The KClass representing the generics type.
      * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] for replacement.
-     * @return The [TypeDefinition] for the generics type.
+     * @return The [TypeSchema] for the generics type.
      */
     fun process(
         kType: KType,
         kClass: KClass<*>,
         typeParameterMap: Map<KClassifier, KType>
-    ): TypeDefinition {
+    ): TypeSchema {
         val genericsTypeName: String = generateTypeName(kType = kType, kClass = kClass)
 
         // Check if the generics type has already been processed,
@@ -49,11 +49,11 @@ internal object GenericsResolver {
             )
         }
 
-        // Return a definition reference to the generics type.
-        return TypeDefinition.of(
+        // Return a reference to the generics type schema.
+        return TypeSchema.of(
             name = genericsTypeName,
             kType = kType,
-            definition = Spec.reference(schema = genericsTypeName)
+            schema = Spec.reference(schema = genericsTypeName)
         )
     }
 
@@ -83,7 +83,7 @@ internal object GenericsResolver {
     }
 
     /**
-     * Traverses a generics type to resolve its properties and cache the definition.
+     * Traverses a generics type to resolve its properties and cache their schema.
      *
      * @param kClass The [kClass] representing the generic type.
      * @param kType The [KType] containing the actual types for the generics.
@@ -96,13 +96,13 @@ internal object GenericsResolver {
         genericsTypeName: String,
         parentTypeParameterMap: Map<KClassifier, KType>
     ) {
-        // Add a placeholder definition early to avoid circular references.
-        val placeholder: TypeDefinition = TypeDefinition.of(
+        // Add a schema placeholder early to avoid circular references.
+        val schemaPlaceholder: TypeSchema = TypeSchema.of(
             name = genericsTypeName,
             kType = kType,
-            definition = Spec.properties(value = mutableMapOf())
+            schema = Spec.properties(value = mutableMapOf())
         )
-        TypeInspector.addToCache(definition = placeholder)
+        TypeInspector.addToCache(schema = schemaPlaceholder)
 
         // Retrieve the type parameters from the generic class.
         val classTypeParameters: List<KTypeParameter> = kClass.typeParameters
@@ -127,21 +127,23 @@ internal object GenericsResolver {
         val combinedTypeParameterMap: Map<KClassifier, KType> = parentTypeParameterMap + currentTypeParameterMap
 
         // Prepare a map to hold the properties for the generic instance.
-        val properties: MutableMap<String, Any> = mutableMapOf()
+        val propertiesSchemas: MutableMap<String, Any> = mutableMapOf()
 
         // Retrieve sorted properties based on the primary constructor's parameter order
         val sortedProperties: List<KProperty1<out Any, *>> = PropertyResolver.getProperties(kClass = kClass)
 
         // Iterate over each sorted property in the generic class.
         sortedProperties.forEach { sortedProperty ->
-            val (propertyName, extendedDefinition) = PropertyResolver.traverse(
+            val (propertyName, extendedSchema) = PropertyResolver.traverse(
                 property = sortedProperty,
                 typeParameterMap = combinedTypeParameterMap
             )
-            properties[propertyName] = extendedDefinition
+            propertiesSchemas[propertyName] = extendedSchema
         }
 
-        // Update the placeholder definition  with actual properties.
-        placeholder.definition.putAll(Spec.properties(value = properties))
+        // Update the placeholder with actual processed schemas.
+        schemaPlaceholder.schema.putAll(
+            Spec.properties(value = propertiesSchemas)
+        )
     }
 }

@@ -8,47 +8,53 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
-import io.github.perracodex.kopapi.inspector.type.TypeDefinition
+import io.github.perracodex.kopapi.inspector.type.TypeSchema
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 
 /**
- * Provides functionality to parse and resolve enum types into their corresponding [TypeDefinition].
+ * Provides functionality to resolve enum types into their corresponding [TypeSchema].
  *
  * Responsibilities:
  * - Extracting the names of enum constants from a given enum class.
- * - Creating a [TypeDefinition] for the enum type, which includes the enum values.
- * - Caching the created [TypeDefinition] to avoid redundant processing.
+ * - Creating a [TypeSchema] for the enum type, which includes the enum values.
+ * - Caching the created [TypeSchema] to avoid redundant processing.
  */
 @TypeInspectorAPI
 internal object EnumResolver {
     /**
-     * Processes the given [enumClass] and creates a [TypeDefinition] for it.
+     * Processes the given [enumClass] and creates a [TypeSchema] for it.
      *
      * @param enumClass The [KClass] representing the enum type.
-     * @return The resolved [TypeDefinition] for the enum type.
+     * @return The resolved [TypeSchema] for the enum type.
      */
-    fun process(enumClass: KClass<*>): TypeDefinition {
+    fun process(enumClass: KClass<*>): TypeSchema {
         val enumValues: List<String> = enumClass.java.enumConstants?.map {
             (it as Enum<*>).name
         } ?: emptyList()
 
-        // Create the TypeDefinition for the enum as a separate object.
+        // Create the TypeSchema for the enum as a separate object.
         val enumClassName: String = ElementMetadata.getClassName(kClass = enumClass)
-        val definition: TypeDefinition = TypeDefinition.of(
-            name = enumClassName,
-            kType = enumClass.createType(),
-            definition = Spec.enum(values = enumValues)
-        )
+        val enumKType: KType = enumClass.createType()
 
-        // Add the enum definition to the object definitions if it's not already present.
-        TypeInspector.addToCache(definition = definition)
+        // If the enum type has not been processed yet,
+        // create a schema for it and cache it for future reference.
+        if (!TypeInspector.isCached(kType = enumKType)) {
+            val typeSchema: TypeSchema = TypeSchema.of(
+                name = enumClassName,
+                kType = enumKType,
+                schema = Spec.enum(values = enumValues)
+            )
 
-        // Return a reference to the enum definition
-        return TypeDefinition.of(
+            TypeInspector.addToCache(schema = typeSchema)
+        }
+
+        // Return a reference to the enum schema.
+        return TypeSchema.of(
             name = enumClassName,
-            kType = enumClass.createType(),
-            definition = Spec.reference(schema = enumClassName)
+            kType = enumKType,
+            schema = Spec.reference(schema = enumClassName)
         )
     }
 }

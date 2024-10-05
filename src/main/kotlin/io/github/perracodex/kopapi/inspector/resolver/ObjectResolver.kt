@@ -8,7 +8,7 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
-import io.github.perracodex.kopapi.inspector.type.TypeDefinition
+import io.github.perracodex.kopapi.inspector.type.TypeSchema
 import io.github.perracodex.kopapi.inspector.type.nativeName
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
@@ -16,10 +16,10 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
 /**
- * Resolves complex or basics type (such as data classes or primitives) into a [TypeDefinition].
+ * Resolves complex or basics type (such as data classes or primitives) into a [TypeSchema].
  *
  * Resolves both Kotlin primitives and complex types like data classes. It also
- * manages recursive structures, circular dependencies, and caches type definitions for reuse.
+ * manages recursive structures, circular dependencies, and caches type schemas for reuse.
  *
  * Primitive types are immediately mapped, while complex types are recursively processed,
  * including their properties.
@@ -29,35 +29,35 @@ import kotlin.reflect.KType
  * - Handling of primitive types.
  * - Traversing properties of complex types and resolving them.
  * - Handling circular dependencies and recursive structures.
- * - Caching the created [TypeDefinition] to avoid redundant processing.
+ * - Caching the created [TypeSchema] to avoid redundant processing.
  */
 @TypeInspectorAPI
 internal object ObjectResolver {
-    /** Temporarily tracks processed [KType] objects while recursing. */
-    private val inProcess: MutableSet<String> = mutableSetOf()
+    /** Temporarily tracks processed [KType] objects while traversing/recursing. */
+    private val inProcessTypeSemaphore: MutableSet<String> = mutableSetOf()
 
     /**
-     * Processes a complex or basic type into a [TypeDefinition],
+     * Processes a complex or basic type into a [TypeSchema],
      * traversing its properties and handling metadata.
      *
      * @param kType The [KType] representing the type to resolve.
      * @param kClass The [KClass] corresponding to the type to resolve.
      * @param typeParameterMap A map of type parameters' [KClassifier] to their corresponding [KType].
-     * @return The resolved [TypeDefinition] for the complex or basic type.
+     * @return The resolved [TypeSchema] for the complex or basic type.
      */
     fun process(
         kType: KType,
         kClass: KClass<*>,
         typeParameterMap: Map<KClassifier, KType>
-    ): TypeDefinition {
+    ): TypeSchema {
         val className: String = ElementMetadata.getClassName(kClass = kClass)
 
         // Handle primitive types.
-        TypeInspector.mapPrimitiveType(kClass = kClass)?.let { definition ->
-            return TypeDefinition.of(
+        TypeInspector.mapPrimitiveType(kClass = kClass)?.let { schema ->
+            return TypeSchema.of(
                 name = className,
                 kType = kType,
-                definition = definition
+                schema = schema
             )
         }
 
@@ -77,57 +77,57 @@ internal object ObjectResolver {
      * @param kType The [KType] representing the complex type.
      * @param kClass The [KClass] representing the complex type.
      * @param typeParameterMap A map of type parameters' [KClassifier] to their corresponding [KType].
-     * @return The resolved [TypeDefinition] for the complex type.
+     * @return The resolved [TypeSchema] for the complex type.
      */
     private fun handleComplexType(
         className: String,
         kType: KType,
         kClass: KClass<*>,
         typeParameterMap: Map<KClassifier, KType>
-    ): TypeDefinition {
+    ): TypeSchema {
         // Prevent infinite recursion for self-referencing objects.
-        if (inProcess.contains(kType.nativeName())) {
-            return TypeDefinition.of(
+        if (inProcessTypeSemaphore.contains(kType.nativeName())) {
+            return TypeSchema.of(
                 name = className,
                 kType = kType,
-                definition = Spec.reference(schema = className)
+                schema = Spec.reference(schema = className)
             )
         }
-        inProcess.add(kType.nativeName())
+        inProcessTypeSemaphore.add(kType.nativeName())
 
-        // Create an empty definition before processing properties to handle circular dependencies.
+        // Create an empty TypeSchema before processing properties to handle circular dependencies.
         val propertiesMap: MutableMap<String, Any> = mutableMapOf()
-        val placeholder: TypeDefinition = TypeDefinition.of(
+        val schemaPlaceholder: TypeSchema = TypeSchema.of(
             name = className,
             kType = kType,
-            definition = Spec.properties(value = propertiesMap)
+            schema = Spec.properties(value = propertiesMap)
         )
-        TypeInspector.addToCache(definition = placeholder)
+        TypeInspector.addToCache(schema = schemaPlaceholder)
 
-        // Create a properties map to hold each of the traversed definitions.
-        val propertyDefinitions: MutableMap<String, Map<String, Any>> = mutableMapOf()
+        // Create a properties map to hold each of the traversed schemas.
+        val propertiesSchemas: MutableMap<String, Map<String, Any>> = mutableMapOf()
 
-        // Traverse each property and resolve its definition.
+        // Traverse each property and resolve its schema.
         val typeProperties: List<KProperty1<out Any, *>> = PropertyResolver.getProperties(kClass = kClass)
         typeProperties.forEach { property ->
-            val (propertyName, extendedDefinition) = PropertyResolver.traverse(
+            val (propertyName, extendedSchema) = PropertyResolver.traverse(
                 property = property,
                 typeParameterMap = typeParameterMap
             )
-            propertyDefinitions[propertyName] = extendedDefinition
+            propertiesSchemas[propertyName] = extendedSchema
         }
 
-        // Add the resolved property definitions to the properties map
-        // so they are reflected in the placeholder type definition.
-        propertiesMap.putAll(propertyDefinitions)
+        // Add the resolved property schema to the properties map
+        // so they are reflected in the placeholder TypeSchema.
+        propertiesMap.putAll(propertiesSchemas)
 
         // Once done remove the processing type from the in-memory tracker to handle different branches.
-        inProcess.remove(kType.nativeName())
+        inProcessTypeSemaphore.remove(kType.nativeName())
 
-        return TypeDefinition.of(
+        return TypeSchema.of(
             name = className,
             kType = kType,
-            definition = Spec.reference(schema = className)
+            schema = Spec.reference(schema = className)
         )
     }
 }

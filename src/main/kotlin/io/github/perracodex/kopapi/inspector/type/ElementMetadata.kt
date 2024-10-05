@@ -41,7 +41,7 @@ internal data class ElementMetadata(
         }
 
         /**
-         * Creates an [ElementMetadata] by parsing the annotations from the given [property].
+         * Creates an [ElementMetadata] by inspecting the annotations from the given [property].
          *
          * @param property The [KProperty1] to extract metadata from.
          * @return The constructed [ElementMetadata] instance.

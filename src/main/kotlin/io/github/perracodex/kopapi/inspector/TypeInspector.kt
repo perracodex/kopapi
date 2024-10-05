@@ -7,8 +7,8 @@ package io.github.perracodex.kopapi.inspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.resolver.*
 import io.github.perracodex.kopapi.inspector.spec.Spec
-import io.github.perracodex.kopapi.inspector.type.TypeDefinition
-import io.github.perracodex.kopapi.inspector.type.TypeDefinitionWarningManager
+import io.github.perracodex.kopapi.inspector.type.TypeSchema
+import io.github.perracodex.kopapi.inspector.type.TypeSchemaConflicts
 import io.github.perracodex.kopapi.inspector.type.nativeName
 import io.github.perracodex.kopapi.utils.Tracer
 import java.math.BigDecimal
@@ -22,10 +22,10 @@ import kotlin.uuid.Uuid
 
 /**
  * Inspector for various Kotlin types capable of traversing and parsing [KType] objects
- * into [TypeDefinition] objects containing the necessary information to construct OpenAPI schemas.
+ * into [TypeSchema] objects containing the necessary information to construct OpenAPI schemas.
  *
  * #### Key Features
- * - Parsing recursion for complex types.
+ * - Inspection recursion for complex types.
  * - All primitive types, including enum classes.
  * - Major common types like UUID, Instant, LocalDate, etc. from both Kotlin and Java.
  * - Complex types like data classes, including nested complex Object properties.
@@ -40,73 +40,74 @@ import kotlin.uuid.Uuid
  *     - `@JsonProperty`, `@JsonIgnore`
  *
  * #### Caching
- *  The parser caches processed types and object definitions to avoid duplication,
- *  so objects are uniquely processed regardless of how many times are found in the
- *  current processing context, or subsequent calls.
+ *  The inspector caches resolved schemas to avoid duplication, so types are uniquely processed
+ *  regardless of how many times are found in the current processing context, or subsequent calls.
+ *  If different types are found with the same name, but different package they will still be
+ *  processed and cached separately, but a warning added to [TypeSchemaConflicts].
  */
 internal object TypeInspector {
     private val tracer = Tracer<TypeInspector>()
 
-    /** Cache of [TypeDefinition] objects that have been processed. */
-    private val typeDefinitionsCache: MutableSet<TypeDefinition> = mutableSetOf()
+    /** Cache of [TypeSchema] objects that have been processed. */
+    private val typeSchemaCache: MutableSet<TypeSchema> = mutableSetOf()
 
     /**
-     * Retrieves the currently cached [TypeDefinition] objects.
+     * Retrieves the currently cached [TypeSchema] objects.
      *
-     * @return A set of [TypeDefinition] objects.
+     * @return A set of [TypeSchema] objects.
      */
-    fun getTypeDefinitions(): Set<TypeDefinition> = typeDefinitionsCache
+    fun getTypeSchemas(): Set<TypeSchema> = typeSchemaCache
 
     /**
-     * Parses a KType to its [TypeDefinition] representation.
+     * Inspect the given [kType] to its corresponding [TypeSchema] representation.
      *
-     * @param kType The KType to parse.
-     * @return The [TypeDefinition] for the given [kType].
+     * @param kType The target [KType] to inspect.
+     * @return The resolved [TypeSchema] for the given [kType].
      */
     @OptIn(TypeInspectorAPI::class)
-    fun inspect(kType: KType): TypeDefinition {
-        val result: TypeDefinition = traverse(kType = kType, typeParameterMap = emptyMap())
-        TypeDefinitionWarningManager.analyze(newTypeDefinition = result)
+    fun inspect(kType: KType): TypeSchema {
+        val result: TypeSchema = traverse(kType = kType, typeParameterMap = emptyMap())
+        TypeSchemaConflicts.analyze(newSchema = result)
         return result
     }
 
     /**
-     * Resets the parser by clearing all processed types and object definitions.
+     * Resets the inspector by clearing all processed type schemas, including conflicts.
      */
     @OptIn(TypeInspectorAPI::class)
     fun reset() {
-        typeDefinitionsCache.clear()
-        TypeDefinitionWarningManager.clear()
+        typeSchemaCache.clear()
+        TypeSchemaConflicts.clear()
     }
 
     /**
      * Traverses and resolves the given [kType], handling both simple and complex types,
      * including collections, maps, enums, and generics. Manages recursion and self-referencing types.
      *
-     * Returns a [TypeDefinition] representing the structure of the [kType], considering generic parameters
+     * Returns a [TypeSchema] representing the structure of the [kType], considering generic parameters
      * nullable properties, and any annotations present.
      *
-     * @param kType The [KType] to resolve into a [TypeDefinition].
+     * @param kType The [KType] to resolve into a [TypeSchema].
      * @param typeParameterMap A map of type parameters' [KClassifier] to their corresponding [KType].
-     * @return The resolved [TypeDefinition] for the [kType].
+     * @return The resolved [TypeSchema] for the [kType].
      */
     @TypeInspectorAPI
     fun traverse(
         kType: KType,
         typeParameterMap: Map<KClassifier, KType>
-    ): TypeDefinition {
+    ): TypeSchema {
         // Resolve the type's classifier, if unavailable, log an error and return an unknown type.
         val classifier: KClassifier = kType.classifier
             ?: run {
                 tracer.error("KType must have a classifier. kType=$kType. typeParameterMap=$typeParameterMap.")
-                return TypeDefinition.of(
+                return TypeSchema.of(
                     name = "Unknown_$kType",
                     kType = kType,
-                    definition = Spec.objectType()
+                    schema = Spec.objectType()
                 )
             }
 
-        val typeDefinition: TypeDefinition = when {
+        val typeSchema: TypeSchema = when {
             // Handle collections (e.g., List<String>, Set<Int>).
             classifier == List::class || classifier == Set::class || isArrayType(classifier = classifier) ->
                 CollectionResolver.process(kType = kType, classifier = classifier, typeParameterMap = typeParameterMap)
@@ -132,34 +133,34 @@ internal object TypeInspector {
             // Fallback for unknown types. This should never be reached.
             else -> {
                 tracer.error("Unexpected type. kType=$kType. classifier=$classifier. typeParameterMap=$typeParameterMap.")
-                TypeDefinition.of(
+                TypeSchema.of(
                     name = "Unknown_$kType",
                     kType = kType,
-                    definition = Spec.objectType()
+                    schema = Spec.objectType()
                 )
             }
         }
 
-        return typeDefinition
+        return typeSchema
     }
 
     /**
      * Determines whether the given [KType] is already present
-     * in the [TypeDefinition] cache.
+     * in the [TypeSchema] cache.
      */
     @TypeInspectorAPI
     fun isCached(kType: KType): Boolean {
-        return typeDefinitionsCache.any {
+        return typeSchemaCache.any {
             it.type == kType.nativeName()
         }
     }
 
     /**
-     * Caches the given [TypeDefinition] object.
+     * Caches the given [TypeSchema] object.
      */
     @TypeInspectorAPI
-    fun addToCache(definition: TypeDefinition) {
-        typeDefinitionsCache.add(definition)
+    fun addToCache(schema: TypeSchema) {
+        typeSchemaCache.add(schema)
     }
 
     /**

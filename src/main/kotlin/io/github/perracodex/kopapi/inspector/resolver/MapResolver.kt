@@ -7,39 +7,40 @@ package io.github.perracodex.kopapi.inspector.resolver
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
-import io.github.perracodex.kopapi.inspector.type.TypeDefinition
+import io.github.perracodex.kopapi.inspector.type.TypeSchema
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 
 /**
- * Resolves [Map] objects into their corresponding [TypeDefinition].
+ * Resolves [Map] objects into their corresponding [TypeSchema].
  *
- * Maps do not generate their own schema definition references,
- * but a definition reference will be created for their value type if such is a complex object.
+ * Maps do not generate their schema references,
+ * but a schema will be created for their value type if such is a complex object,
+ * or a schema reference will be assigned if its type has already been processed.
  *
  * Responsibilities:
  * - Handling [Map] objects by resolving their key and value types.
  * - Traverse the value type if it is a complex object.
  * - Logging errors for unsupported key types.
- * - Creating a [TypeDefinition] which includes an `additionalProperties` spec for the value type.
- * - Caching the created [TypeDefinition] to avoid redundant processing.
+ * - Creating a [TypeSchema] which includes an `additionalProperties` spec for the value type.
+ * - Caching the created [TypeSchema] to avoid redundant processing.
  */
 @TypeInspectorAPI
 internal object MapResolver {
     private val tracer = Tracer<MapResolver>()
 
     /**
-     * Resolves a [Map] type to a [TypeDefinition].
+     * Resolves a [Map] type to a [TypeSchema].
      *
      * @param kType The [KType] representing the map type.
      * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
-     * @return The resolved [TypeDefinition] for the map, with additionalProperties for the value type.
+     * @return The resolved [TypeSchema] for the map, with additionalProperties for the value type.
      */
     fun process(
         kType: KType,
         typeParameterMap: Map<KClassifier, KType>
-    ): TypeDefinition {
+    ): TypeSchema {
         val keyType: KType? = kType.arguments.getOrNull(index = 0)?.type?.let {
             TypeInspector.replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
         }
@@ -58,14 +59,14 @@ internal object MapResolver {
         }
 
         // Process the value type.
-        val typeDefinition: TypeDefinition = valueType?.let {
+        val typeSchema: TypeSchema = valueType?.let {
             TypeInspector.traverse(kType = valueType, typeParameterMap = typeParameterMap)
-        } ?: TypeDefinition.of(name = "MapOf${kType}", kType = kType, definition = Spec.objectType())
+        } ?: TypeSchema.of(name = "MapOf${kType}", kType = kType, schema = Spec.objectType())
 
-        return TypeDefinition.of(
-            name = "MapOf${typeDefinition.name}",
+        return TypeSchema.of(
+            name = "MapOf${typeSchema.name}",
             kType = kType,
-            definition = Spec.additionalProperties(value = typeDefinition.definition)
+            schema = Spec.additionalProperties(value = typeSchema.schema)
         )
     }
 }
