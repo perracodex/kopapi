@@ -107,14 +107,14 @@ internal object ObjectParser {
             classifier is KClass<*> ->
                 handleComplexOrBasicType(kType = kType, kClass = classifier, typeParameterMap = typeParameterMap)
 
-            // Default to object for unknown or unsupported types.
+            // Fallback for unknown or unsupported types.
             else ->
-                TypeDefinition.create(name = "Unknown", kType = kType, definition = mapOf(typeObject))
+                TypeDefinition.create(name = "Unknown_$kType", kType = kType, definition = mutableMapOf(typeObject))
         }
 
         // Mark the TypeDefinition as nullable if the KType is nullable.
         if (kType.isMarkedNullable) {
-            typeDefinition.definition["nullable"] = true
+            typeDefinition.definition[SpecKey.REQUIRED()] = false
         }
 
         return typeDefinition
@@ -135,12 +135,12 @@ internal object ObjectParser {
     ): TypeDefinition {
         // Check if the classifier is a primitive array first, such as IntArray, ByteArray, etc.
         if (isPrimitiveArrayType(classifier = classifier)) {
-            val definition: Map<String, Any>? = mapPrimitiveType(kClass = classifier as KClass<*>)
+            val definition: MutableMap<String, Any>? = mapPrimitiveType(kClass = classifier as KClass<*>)
             val serializedName: String = getSerializedClassName(kClass = classifier)
             return TypeDefinition.create(
                 name = serializedName,
                 kType = kType,
-                definition = definition ?: mapOf(typeObject)
+                definition = definition ?: mutableMapOf(typeObject)
             )
         }
 
@@ -151,7 +151,7 @@ internal object ObjectParser {
         } ?: return TypeDefinition.create(
             name = serializedName,
             kType = kType,
-            definition = mapOf(typeObject)
+            definition = mutableMapOf(typeObject)
         )
 
         // Map the item type to its respective TypeDefinition,
@@ -161,14 +161,10 @@ internal object ObjectParser {
             typeParameterMap = typeParameterMap
         )
 
-        val definition: MutableMap<String, Any> = mutableMapOf(
-            "type" to "array",
-            "items" to typeDefinition.definition
-        )
         return TypeDefinition.create(
             name = "ArrayOf${typeDefinition.name}",
             kType = kType,
-            definition = definition
+            definition = mutableMapOf(typeArray, SpecKey.ITEMS() to typeDefinition.definition)
         )
     }
 
@@ -230,17 +226,12 @@ internal object ObjectParser {
         // Process the value type.
         val typeDefinition: TypeDefinition = valueType?.let {
             processObject(kType = it, typeParameterMap = typeParameterMap)
-        } ?: TypeDefinition.create(name = "MapOf${kType}", kType = kType, definition = mapOf(typeObject))
-
-        val definition: MutableMap<String, Any> = mutableMapOf(
-            typeObject,
-            "additionalProperties" to typeDefinition.definition
-        )
+        } ?: TypeDefinition.create(name = "MapOf${kType}", kType = kType, definition = mutableMapOf(typeObject))
 
         return TypeDefinition.create(
             name = "MapOf${typeDefinition.name}",
             kType = kType,
-            definition = definition
+            definition = mutableMapOf(typeObject, "additionalProperties" to typeDefinition.definition)
         )
     }
 
@@ -260,10 +251,7 @@ internal object ObjectParser {
         val definition: TypeDefinition = TypeDefinition.create(
             name = serializedEnumName,
             kType = enumClass.createType(),
-            definition = mapOf(
-                "type" to "string",
-                "enum" to enumValues
-            )
+            definition = mutableMapOf(typeString, SpecKey.ENUM() to enumValues)
         )
 
         // Add the enum definition to the object definitions if it's not already present.
@@ -466,7 +454,7 @@ internal object ObjectParser {
         val placeholder: TypeDefinition = TypeDefinition.create(
             name = genericTypeName,
             kType = kType,
-            definition = mapOf(typeObject, "properties" to mutableMapOf<String, Any>())
+            definition = mutableMapOf(typeObject, SpecKey.PROPERTIES() to mutableMapOf<String, Any>())
         )
         typeDefinitionsCache.add(placeholder)
 
@@ -536,58 +524,55 @@ internal object ObjectParser {
     /**
      * Maps primitive Kotlin types (e.g., Int, String).
      */
-    private fun mapPrimitiveType(kClass: KClass<*>): Map<String, Any>? {
+    private fun mapPrimitiveType(kClass: KClass<*>): MutableMap<String, Any>? {
         return when (kClass) {
             // Basic Kotlin Types.
-            String::class, CharSequence::class -> mapOf("type" to "string")
-            Char::class -> mapOf("type" to "string", "maxLength" to 1)
-            Boolean::class -> mapOf("type" to "boolean")
-            Int::class -> mapOf("type" to "integer", "format" to "int32")
-            Long::class -> mapOf("type" to "integer", "format" to "int64")
-            Double::class -> mapOf("type" to "number", "format" to "double")
-            Float::class -> mapOf("type" to "number", "format" to "float")
-            Short::class -> mapOf("type" to "integer", "format" to "int32")
-            Byte::class -> mapOf("type" to "integer", "format" to "int32")
-            UInt::class -> mapOf("type" to "integer", "format" to "int32")
-            ULong::class -> mapOf("type" to "integer", "format" to "int64")
-            UShort::class -> mapOf("type" to "integer", "format" to "int32")
-            UByte::class -> mapOf("type" to "integer", "format" to "int32")
+            String::class, CharSequence::class -> mutableMapOf(typeString)
+            Char::class -> mutableMapOf(typeString, formatChar)
+            Boolean::class -> mutableMapOf(typeString, typeBoolean)
+            Int::class -> mutableMapOf(typeInteger, formatInt32)
+            Long::class -> mutableMapOf(typeInteger, formatInt64)
+            Double::class -> mutableMapOf(typeNumber, formatDouble)
+            Float::class -> mutableMapOf(typeNumber, formatFloat)
+            Short::class -> mutableMapOf(typeInteger, formatInt32)
+            Byte::class -> mutableMapOf(typeInteger, formatInt32)
+            UInt::class -> mutableMapOf(typeInteger, formatInt32)
+            ULong::class -> mutableMapOf(typeInteger, formatInt64)
+            UShort::class -> mutableMapOf(typeInteger, formatInt32)
+            UByte::class -> mutableMapOf(typeInteger, formatInt32)
 
             // Primitive Arrays.
-            IntArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "integer", "format" to "int32"))
-            ByteArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "string", "format" to "byte"))
-            ShortArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "integer", "format" to "int32"))
-            FloatArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "number", "format" to "float"))
-            DoubleArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "number", "format" to "double"))
-            LongArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "integer", "format" to "int64"))
-            CharArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "string", "maxLength" to 1))
-            BooleanArray::class -> mapOf("type" to "array", "items" to mapOf("type" to "boolean"))
+            IntArray::class, UIntArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeInteger, formatInt32))
+            ByteArray::class, UByteArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeString, formatByte))
+            ShortArray::class, UShortArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeInteger, formatInt32))
+            FloatArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeNumber, formatFloat))
+            DoubleArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeNumber, formatDouble))
+            LongArray::class, ULongArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeInteger, formatInt64))
+            CharArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeString, formatChar))
+            BooleanArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeBoolean))
 
             // UUID Types.
-            Uuid::class, UUID::class -> mapOf("type" to "string", "format" to "uuid")
+            Uuid::class, UUID::class -> mutableMapOf(typeString, formatUuid)
 
             // Kotlin Date/Time Types.
-            kotlinx.datetime.LocalDate::class -> mapOf("type" to "string", "format" to "date")
-            kotlinx.datetime.LocalDateTime::class -> mapOf("type" to "string", "format" to "date-time")
-            kotlinx.datetime.Instant::class -> mapOf("type" to "string", "format" to "date-time")
-            kotlinx.datetime.LocalTime::class -> mapOf("type" to "string", "format" to "time")
-            kotlin.time.Duration::class -> mapOf("type" to "string", "format" to "duration")
+            kotlinx.datetime.LocalDate::class -> mutableMapOf(typeString, formatDate)
+            kotlinx.datetime.LocalDateTime::class -> mutableMapOf(typeString, formatDateTime)
+            kotlinx.datetime.Instant::class -> mutableMapOf(typeString, formatDateTime)
+            kotlinx.datetime.LocalTime::class -> mutableMapOf(typeString, formatTime)
 
             // Java Date/Time Types.
-            java.time.OffsetDateTime::class -> mapOf("type" to "string", "format" to "date-time")
-            java.time.ZonedDateTime::class -> mapOf("type" to "string", "format" to "date-time")
-            java.time.Period::class -> mapOf("type" to "string", "format" to "period")
-            java.time.LocalTime::class -> mapOf("type" to "string", "format" to "time")
-            java.time.LocalDate::class -> mapOf("type" to "string", "format" to "date")
-            java.time.LocalDateTime::class -> mapOf("type" to "string", "format" to "date-time")
-            java.time.Instant::class -> mapOf("type" to "string", "format" to "date-time")
-            java.time.Duration::class -> mapOf("type" to "string", "format" to "duration")
-            java.util.Date::class -> mapOf("type" to "string", "format" to "date-time")
-            java.sql.Date::class -> mapOf("type" to "string", "format" to "date")
+            java.time.OffsetDateTime::class -> mutableMapOf(typeString, formatDateTime)
+            java.time.ZonedDateTime::class -> mutableMapOf(typeString, formatDateTime)
+            java.time.LocalTime::class -> mutableMapOf(typeString, formatTime)
+            java.time.LocalDate::class -> mutableMapOf(typeString, formatDate)
+            java.time.LocalDateTime::class -> mutableMapOf(typeString, formatDateTime)
+            java.time.Instant::class -> mutableMapOf(typeString, formatDateTime)
+            java.util.Date::class -> mutableMapOf(typeString, formatDateTime)
+            java.sql.Date::class -> mutableMapOf(typeString, formatDate)
 
             // Big Numbers.
-            BigDecimal::class -> mapOf("type" to "number", "format" to "double")
-            BigInteger::class -> mapOf("type" to "integer", "format" to "int64")
+            BigDecimal::class -> mutableMapOf(typeNumber, formatDouble)
+            BigInteger::class -> mutableMapOf(typeInteger, formatInt64)
 
             // URL and URI.
             io.ktor.http.Url::class -> mapOf("type" to "string", "format" to "uri")
@@ -607,6 +592,7 @@ internal object ObjectParser {
             // A possible enhancement could be to check for annotations like @Pattern.
             Regex::class -> mapOf("type" to "string")
             java.util.regex.Pattern::class -> mapOf("type" to "string")
+            java.net.URL::class -> mutableMapOf(typeString, formatUri)
 
             else -> null // Return null if it's not a primitive type.
         }
@@ -690,10 +676,30 @@ internal object ObjectParser {
     /**
      * Converts an object to a schema reference.
      */
-    private fun buildDefinitionReference(name: String): Map<String, String> {
-        return mapOf("\$ref" to "#/components/schemas/$name")
+    private fun buildDefinitionReference(name: String): MutableMap<String, Any> {
+        return mutableMapOf("\$ref" to "#/components/schemas/$name")
     }
 
-    /** Placeholder for object types. */
-    private val typeObject: Pair<String, String> = Pair("type", "object")
+    private val typeObject: Pair<String, String> = Pair(SpecKey.TYPE(), SpecType.OBJECT())
+    private val typeArray: Pair<String, String> = Pair(SpecKey.TYPE(), SpecType.ARRAY())
+    private val typeInteger: Pair<String, String> = Pair(SpecKey.TYPE(), SpecType.INTEGER())
+    private val typeNumber: Pair<String, String> = Pair(SpecKey.TYPE(), SpecType.NUMBER())
+    private val typeString: Pair<String, String> = Pair(SpecKey.TYPE(), SpecType.STRING())
+    private val typeBoolean: Pair<String, String> = Pair(SpecKey.TYPE(), SpecType.BOOLEAN())
+
+    private val formatInt32: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.INT32())
+    private val formatInt64: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.INT64())
+    private val formatFloat: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.FLOAT())
+    private val formatDouble: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.DOUBLE())
+
+    private val formatUuid: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.UUID())
+
+    private val formatDate: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.DATE())
+    private val formatDateTime: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.DATETIME())
+    private val formatTime: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.TIME())
+
+    private val formatUri: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.URI())
+
+    private val formatByte: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.BYTE())
+    private val formatChar: Pair<String, Pair<String, Short>> = Pair(SpecKey.FORMAT(), "maxLength" to 1)
 }
