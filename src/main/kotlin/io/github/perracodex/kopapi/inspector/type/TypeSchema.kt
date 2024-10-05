@@ -8,7 +8,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import kotlin.reflect.KType
 
 /**
- * Represents a type schema for a inspected type.
+ * Represents a type schema for an inspected type.
  *
  * @param name The name representing the type. Usually the class or property name without qualifiers.
  * @param type The [KType] full qualified name.

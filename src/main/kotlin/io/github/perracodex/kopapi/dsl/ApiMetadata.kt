@@ -67,7 +67,6 @@ import kotlin.reflect.typeOf
  * @property description Optional detailed explanation of the endpoint and its functionality.
  * @property tags Optional set of descriptive [Tags] for categorizing the endpoint in API documentation.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public data class ApiMetadata internal constructor(
     @PublishedApi internal val path: String,
     @PublishedApi internal val method: HttpMethod,

@@ -46,7 +46,6 @@ internal data class ElementMetadata(
          * @param property The [KProperty1] to extract metadata from.
          * @return The constructed [ElementMetadata] instance.
          */
-        @Suppress("DuplicatedCode")
         fun of(property: KProperty1<*, *>): ElementMetadata {
             val elementName: Pair<String, String?> = geElementName(target = property)
 
