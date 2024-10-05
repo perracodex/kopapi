@@ -2,7 +2,10 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.parser
+package io.github.perracodex.kopapi.parser.definition
+
+import io.github.perracodex.kopapi.parser.ObjectTypeParser
+import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
 
 /**
  * Represents a warning for parsed [TypeDefinition] that share the same name but have different types.
@@ -32,6 +35,7 @@ internal object TypeDefinitionWarningManager {
     /**
      * Clears the warning cache.
      */
+    @ObjectTypeParserAPI
     fun clear() {
         warnings.clear()
     }
@@ -42,8 +46,9 @@ internal object TypeDefinitionWarningManager {
      *
      * @param newTypeDefinition The [TypeDefinition] to check for conflicts.
      */
+    @ObjectTypeParserAPI
     fun analyze(newTypeDefinition: TypeDefinition) {
-        ObjectParser.getTypeDefinitions().filter { typeDefinition ->
+        ObjectTypeParser.getTypeDefinitions().filter { typeDefinition ->
             typeDefinition.name.equals(other = newTypeDefinition.name, ignoreCase = true)
                     && !typeDefinition.type.equals(other = newTypeDefinition.type, ignoreCase = true)
         }.forEach { existing ->

@@ -4,62 +4,78 @@
 
 package io.github.perracodex.kopapi.parser.spec
 
+import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
+
 /**
  * Provides reusable entries for specifying types and structures in data definitions.
  */
+@ObjectTypeParserAPI
 internal object Spec {
-    val objectType: MutableMap<String, Any> = mutableMapOf(
+    fun objectType(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.OBJECT()
     )
-    val string: MutableMap<String, Any> = mutableMapOf(
+
+    fun string(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.STRING()
     )
-    val int32: MutableMap<String, Any> = mutableMapOf(
+
+    fun int32(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.INTEGER(),
         SpecKey.FORMAT() to SpecFormat.INT32()
     )
-    val int64: MutableMap<String, Any> = mutableMapOf(
+
+    fun int64(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.INTEGER(),
         SpecKey.FORMAT() to SpecFormat.INT64()
     )
-    val float: MutableMap<String, Any> = mutableMapOf(
+
+    fun float(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.NUMBER(),
         SpecKey.FORMAT() to SpecFormat.FLOAT()
     )
-    val double: MutableMap<String, Any> = mutableMapOf(
+
+    fun double(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.NUMBER(),
         SpecKey.FORMAT() to SpecFormat.DOUBLE()
     )
-    val uuid: MutableMap<String, Any> = mutableMapOf(
+
+    fun uuid(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.STRING(),
         SpecKey.FORMAT() to SpecFormat.UUID()
     )
-    val date: MutableMap<String, Any> = mutableMapOf(
+
+    fun date(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.STRING(),
         SpecKey.FORMAT() to SpecFormat.DATE()
     )
-    val dateTime: MutableMap<String, Any> = mutableMapOf(
+
+    fun dateTime(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.STRING(),
         SpecKey.FORMAT() to SpecFormat.DATETIME()
     )
-    val time: MutableMap<String, Any> = mutableMapOf(
+
+    fun time(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.STRING(),
         SpecKey.FORMAT() to SpecFormat.TIME()
     )
-    val uri: MutableMap<String, Any> = mutableMapOf(
+
+    fun uri(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.STRING(),
         SpecKey.FORMAT() to SpecFormat.URI()
     )
-    val byte: MutableMap<String, Any> = mutableMapOf(
+
+    fun byte(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.STRING(),
         SpecKey.FORMAT() to SpecFormat.BYTE()
     )
-    val char: MutableMap<String, Any> = mutableMapOf(
+
+    fun char(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.STRING(),
         SpecKey.MIN_LENGTH() to 1,
         SpecKey.MAX_LENGTH() to 1
     )
-    val boolean: MutableMap<String, Any> = mutableMapOf(
+
+    fun boolean(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.BOOLEAN()
     )
 
@@ -117,4 +133,14 @@ internal object Spec {
         SpecKey.TYPE() to SpecType.OBJECT(),
         SpecKey.ADDITIONAL_PROPERTIES() to value
     )
+
+    /**
+     * Creates a specification entry for a reference to a schema.
+     *
+     * @param schema The name of the schema to reference.
+     * @return The specification entry for the schema reference.
+     */
+    fun reference(schema: String): MutableMap<String, Any> {
+        return mutableMapOf(SpecKey.REFERENCE() to "#/components/schemas/$schema")
+    }
 }

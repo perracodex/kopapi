@@ -2,10 +2,10 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.parser
+package io.github.perracodex.kopapi.parser.definition
 
+import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
 import kotlin.reflect.KType
-import kotlin.reflect.javaType
 
 /**
  * Data class type definitions for components.
@@ -38,16 +38,10 @@ internal data class TypeDefinition private constructor(
          * @param definition The type definition as a map.
          * @return A new instance of [TypeDefinition].
          */
+        @ObjectTypeParserAPI
         fun of(name: String, kType: KType, definition: MutableMap<String, Any>): TypeDefinition {
             val qualifiedName: String = kType.nativeName()
             return TypeDefinition(name = name, type = qualifiedName, definition = definition)
         }
     }
-}
-
-/**
- * Extension function to return the Java type name of a KType.
- */
-internal fun KType.nativeName(): String {
-    return this.javaType.typeName
 }
