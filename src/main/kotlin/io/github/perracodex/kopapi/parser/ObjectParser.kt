@@ -575,24 +575,9 @@ internal object ObjectParser {
             BigInteger::class -> mutableMapOf(typeInteger, formatInt64)
 
             // URL and URI.
-            io.ktor.http.Url::class -> mapOf("type" to "string", "format" to "uri")
-            java.net.URL::class -> mapOf("type" to "string", "format" to "uri")
-            java.net.URI::class -> mapOf("type" to "string", "format" to "uri")
-
-            // Time Zone and Locale Types
-            java.time.ZoneId::class -> mapOf("type" to "string", "format" to "zone-id")
-            java.time.ZoneOffset::class -> mapOf("type" to "string", "format" to "zone-offset")
-            java.util.TimeZone::class -> mapOf("type" to "string", "format" to "timezone")
-            java.util.Locale::class -> mapOf("type" to "string", "format" to "locale")
-            java.util.Currency::class -> mapOf("type" to "string", "format" to "currency")
-            java.nio.charset.Charset::class -> mapOf("type" to "string", "format" to "charset")
-
-            // Regex and Patterns.
-            // Currently treated as strings as we don't have the regex expressions when parsing.
-            // A possible enhancement could be to check for annotations like @Pattern.
-            Regex::class -> mapOf("type" to "string")
-            java.util.regex.Pattern::class -> mapOf("type" to "string")
+            io.ktor.http.Url::class -> mutableMapOf(typeString, formatUri)
             java.net.URL::class -> mutableMapOf(typeString, formatUri)
+            java.net.URI::class -> mutableMapOf(typeString, formatUri)
 
             else -> null // Return null if it's not a primitive type.
         }
