@@ -4,7 +4,6 @@
 
 package io.github.perracodex.kopapi.core
 
-
 /**
  * Custom exception for errors that occur in the Kopapi library.
  *
