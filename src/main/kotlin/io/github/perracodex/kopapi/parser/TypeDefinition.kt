@@ -38,7 +38,7 @@ internal data class TypeDefinition private constructor(
          * @param definition The type definition as a map.
          * @return A new instance of [TypeDefinition].
          */
-        fun create(name: String, kType: KType, definition: MutableMap<String, Any>): TypeDefinition {
+        fun of(name: String, kType: KType, definition: MutableMap<String, Any>): TypeDefinition {
             val qualifiedName: String = kType.nativeName()
             return TypeDefinition(name = name, type = qualifiedName, definition = definition)
         }

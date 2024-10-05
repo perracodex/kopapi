@@ -109,7 +109,7 @@ internal object ObjectParser {
 
             // Fallback for unknown or unsupported types.
             else ->
-                TypeDefinition.create(name = "Unknown_$kType", kType = kType, definition = mutableMapOf(typeObject))
+                TypeDefinition.of(name = "Unknown_$kType", kType = kType, definition = mutableMapOf(typeObject))
         }
 
         // Mark the TypeDefinition as nullable if the KType is nullable.
@@ -137,7 +137,7 @@ internal object ObjectParser {
         if (isPrimitiveArrayType(classifier = classifier)) {
             val definition: MutableMap<String, Any>? = mapPrimitiveType(kClass = classifier as KClass<*>)
             val serializedName: String = getSerializedClassName(kClass = classifier)
-            return TypeDefinition.create(
+            return TypeDefinition.of(
                 name = serializedName,
                 kType = kType,
                 definition = definition ?: mutableMapOf(typeObject)
@@ -148,7 +148,7 @@ internal object ObjectParser {
         val serializedName: String = getSerializedClassName(kClass = (classifier as KClass<*>))
         val itemType: KType = kType.arguments.firstOrNull()?.type?.let {
             replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
-        } ?: return TypeDefinition.create(
+        } ?: return TypeDefinition.of(
             name = serializedName,
             kType = kType,
             definition = mutableMapOf(typeObject)
@@ -161,7 +161,7 @@ internal object ObjectParser {
             typeParameterMap = typeParameterMap
         )
 
-        return TypeDefinition.create(
+        return TypeDefinition.of(
             name = "ArrayOf${typeDefinition.name}",
             kType = kType,
             definition = mutableMapOf(typeArray, SpecKey.ITEMS() to typeDefinition.definition)
@@ -226,9 +226,9 @@ internal object ObjectParser {
         // Process the value type.
         val typeDefinition: TypeDefinition = valueType?.let {
             processObject(kType = it, typeParameterMap = typeParameterMap)
-        } ?: TypeDefinition.create(name = "MapOf${kType}", kType = kType, definition = mutableMapOf(typeObject))
+        } ?: TypeDefinition.of(name = "MapOf${kType}", kType = kType, definition = mutableMapOf(typeObject))
 
-        return TypeDefinition.create(
+        return TypeDefinition.of(
             name = "MapOf${typeDefinition.name}",
             kType = kType,
             definition = mutableMapOf(typeObject, "additionalProperties" to typeDefinition.definition)
@@ -248,7 +248,7 @@ internal object ObjectParser {
 
         // Create the TypeDefinition for the enum as a separate object.
         val serializedEnumName: String = getSerializedClassName(kClass = enumClass)
-        val definition: TypeDefinition = TypeDefinition.create(
+        val definition: TypeDefinition = TypeDefinition.of(
             name = serializedEnumName,
             kType = enumClass.createType(),
             definition = mutableMapOf(typeString, SpecKey.ENUM() to enumValues)
@@ -259,7 +259,7 @@ internal object ObjectParser {
 
         // Return a reference to the enum definition
         val enumName: String = getSerializedClassName(kClass = enumClass)
-        return TypeDefinition.create(
+        return TypeDefinition.of(
             name = enumName,
             kType = enumClass.createType(),
             definition = buildDefinitionReference(name = enumName)
@@ -284,7 +284,7 @@ internal object ObjectParser {
 
         // Handle primitive types.
         mapPrimitiveType(kClass = kClass)?.let { definition ->
-            return TypeDefinition.create(
+            return TypeDefinition.of(
                 name = classSerializedName,
                 kType = kType,
                 definition = definition
@@ -302,7 +302,7 @@ internal object ObjectParser {
                     parentTypeParameterMap = typeParameterMap
                 )
             }
-            return TypeDefinition.create(
+            return TypeDefinition.of(
                 name = genericTypeName,
                 kType = kType,
                 definition = buildDefinitionReference(name = genericTypeName)
@@ -311,7 +311,7 @@ internal object ObjectParser {
 
         // Prevent infinite recursion for self-referencing objects.
         if (inProcessTypeDefinitions.contains(kType.nativeName())) {
-            return TypeDefinition.create(
+            return TypeDefinition.of(
                 name = classSerializedName,
                 kType = kType,
                 definition = buildDefinitionReference(name = classSerializedName)
@@ -324,7 +324,7 @@ internal object ObjectParser {
         // Create an empty definition before processing properties to handle circular dependencies.
         val propertiesMap: MutableMap<String, Any> = mutableMapOf()
         val definition: MutableMap<String, Any> = mutableMapOf(typeObject, "properties" to propertiesMap)
-        val placeholder: TypeDefinition = TypeDefinition.create(
+        val placeholder: TypeDefinition = TypeDefinition.of(
             name = classSerializedName,
             kType = kType,
             definition = definition
@@ -351,7 +351,7 @@ internal object ObjectParser {
         // Remove once done to handle different branches.
         inProcessTypeDefinitions.remove(kType.nativeName())
 
-        return TypeDefinition.create(
+        return TypeDefinition.of(
             name = classSerializedName,
             kType = kType,
             definition = buildDefinitionReference(name = classSerializedName)
@@ -451,7 +451,7 @@ internal object ObjectParser {
         parentTypeParameterMap: Map<KClassifier, KType>
     ) {
         // Add a placeholder definition early to avoid circular references.
-        val placeholder: TypeDefinition = TypeDefinition.create(
+        val placeholder: TypeDefinition = TypeDefinition.of(
             name = genericTypeName,
             kType = kType,
             definition = mutableMapOf(typeObject, SpecKey.PROPERTIES() to mutableMapOf<String, Any>())
