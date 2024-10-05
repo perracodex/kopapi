@@ -3,6 +3,8 @@
  */
 package io.github.perracodex.kopapi.parser
 
+import io.github.perracodex.kopapi.parser.spec.Spec
+import io.github.perracodex.kopapi.parser.spec.SpecKey
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
@@ -21,12 +23,12 @@ import kotlinx.serialization.Transient as KotlinxTransient
  *
  * #### Key Features
  * - Parsing recursion for complex types.
- * - All primitive types, including enums.
+ * - All primitive types, including enum classes.
  * - Major common types like UUID, Instant, LocalDate, etc. from both Kotlin and Java.
  * - Complex types like data classes, including nested complex Object properties.
  * - Collections like Lists, Sets, and Arrays, including primitive arrays (eg: IntArray).
  * - Maps with both complex objects or primitives.
- * - Generics support, including complex nested types (eg: List<Page<Array<ObjectB>>>)
+ * - Generics support, including complex nested types.
  *
  * #### Supported Annotations
  * - Kotlinx:
@@ -68,20 +70,24 @@ internal object ObjectParser {
      * @param kType The KType to parse.
      * @return The [TypeDefinition] for the given [kType].
      */
-    fun resolveTypeDefinition(kType: KType): TypeDefinition {
-        val result: TypeDefinition = processObject(kType = kType, typeParameterMap = emptyMap())
+    fun process(kType: KType): TypeDefinition {
+        val result: TypeDefinition = traverseTypeDefinition(kType = kType, typeParameterMap = emptyMap())
         TypeDefinitionWarningManager.analyze(newTypeDefinition = result)
         return result
     }
 
     /**
-     * Recursively maps the given [kType] KType, handling recursion and complex types.
+     * Traverses and resolves the given [KType], handling both simple and complex types,
+     * including collections, maps, enums, and generics. Manages recursion and self-referencing types.
      *
-     * @param kType The [KType] to recursively map.
-     * @param typeParameterMap A map of type parameter classifiers to actual KTypes for replacement.
-     * @return The [TypeDefinition]for the given [kType].
+     * Returns a [TypeDefinition] representing the structure of the [kType], considering generic parameters
+     * nullable properties, and any annotations present.
+     *
+     * @param kType The [KType] to resolve into a [TypeDefinition].
+     * @param typeParameterMap A map of type parameters' [KClassifier] to their corresponding [KType].
+     * @return The resolved [TypeDefinition] for the [kType].
      */
-    private fun processObject(
+    private fun traverseTypeDefinition(
         kType: KType,
         typeParameterMap: Map<KClassifier, KType>
     ): TypeDefinition {
@@ -101,15 +107,23 @@ internal object ObjectParser {
             classifier is KClass<*> && classifier.isSubclassOf(Enum::class) ->
                 handleEnumType(enumClass = classifier)
 
+            // Handle generics.
+            kType.arguments.isNotEmpty() ->
+                handleGenericsType(kType = kType, kClass = classifier as KClass<*>, typeParameterMap = typeParameterMap)
+
             // Handle basic types and complex objects.
             // This condition must be placed last because all types are also instances of KClass.
-            // If this check is placed earlier, the above checks will never be reached.
+            // If this check is placed earlier, the above branches will never be reached.
             classifier is KClass<*> ->
                 handleComplexOrBasicType(kType = kType, kClass = classifier, typeParameterMap = typeParameterMap)
 
-            // Fallback for unknown or unsupported types.
+            // Fallback for unknown types. This should never be reached.
             else ->
-                TypeDefinition.of(name = "Unknown_$kType", kType = kType, definition = mutableMapOf(typeObject))
+                TypeDefinition.of(
+                    name = "Unknown_$kType",
+                    kType = kType,
+                    definition = Spec.objectType
+                )
         }
 
         // Mark the TypeDefinition as nullable if the KType is nullable.
@@ -121,11 +135,11 @@ internal object ObjectParser {
     }
 
     /**
-     * Handles collections (List, Set).
+     * Handles collections (eg: List, Set), including primitive and non-primitive arrays.
      *
      * @param kType The [KType] representing the collection type.
      * @param classifier The [KClassifier] representing the collection class (e.g., List, Set).
-     * @param typeParameterMap A map of type parameter classifiers to actual [KType] items for replacement.
+     * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
      * @return The resolved [TypeDefinition] for the collection type.
      */
     private fun handleCollectionType(
@@ -136,27 +150,27 @@ internal object ObjectParser {
         // Check if the classifier is a primitive array first, such as IntArray, ByteArray, etc.
         if (isPrimitiveArrayType(classifier = classifier)) {
             val definition: MutableMap<String, Any>? = mapPrimitiveType(kClass = classifier as KClass<*>)
-            val serializedName: String = getSerializedClassName(kClass = classifier)
+            val className: String = getClassName(kClass = classifier)
             return TypeDefinition.of(
-                name = serializedName,
+                name = className,
                 kType = kType,
-                definition = definition ?: mutableMapOf(typeObject)
+                definition = definition ?: Spec.objectType
             )
         }
 
         // Handle non-primitive arrays and collections based on their type arguments.
-        val serializedName: String = getSerializedClassName(kClass = (classifier as KClass<*>))
+        val className: String = getClassName(kClass = (classifier as KClass<*>))
         val itemType: KType = kType.arguments.firstOrNull()?.type?.let {
             replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
         } ?: return TypeDefinition.of(
-            name = serializedName,
+            name = className,
             kType = kType,
-            definition = mutableMapOf(typeObject)
+            definition = Spec.objectType
         )
 
         // Map the item type to its respective TypeDefinition,
         // considering it's a regular object array or collection.
-        val typeDefinition: TypeDefinition = processObject(
+        val typeDefinition: TypeDefinition = traverseTypeDefinition(
             kType = itemType,
             typeParameterMap = typeParameterMap
         )
@@ -164,21 +178,22 @@ internal object ObjectParser {
         return TypeDefinition.of(
             name = "ArrayOf${typeDefinition.name}",
             kType = kType,
-            definition = mutableMapOf(typeArray, SpecKey.ITEMS() to typeDefinition.definition)
+            definition = Spec.collection(value = typeDefinition.definition)
         )
     }
 
     /**
-     * Checks if a KClassifier represents any array type,
-     * which includes both primitive arrays and arrays of objects (e.g., Array<String>).
+     * Determines whether the given [KClassifier] represents any array type in Kotlin,
+     * including both primitive arrays (e.g., [IntArray], [DoubleArray])
+     * and generic object arrays (e.g., [Array]<String>).
      *
-     * Unlike List<T>, where the type parameter information is retained at runtime
-     * due to reified type parameters in inline functions, generic array types (like Array<T>)
-     * do not retain their specific type information because of type erasure. This limitation
-     * necessitates the use of Java's reflection capabilities to identify array types accurately.
+     * Unlike standard generic classes like [List], array types in Kotlin are represented by distinct classes
+     * for each primitive type and a generic [Array] class for reference types. This distinction means that
+     * identifying an array type requires checking against all possible array classifiers, both primitive
+     * and generic.
      *
-     * @param classifier The [KClassifier] of the KType to check.
-     * @return True if the classifier represents an array type, false otherwise.
+     * @param classifier The [KClassifier] of the [KType] to evaluate.
+     * @return True if the [classifier] corresponds to any Kotlin array type, otherwise False.
      */
     private fun isArrayType(classifier: KClassifier): Boolean {
         return isPrimitiveArrayType(classifier = classifier)
@@ -186,10 +201,13 @@ internal object ObjectParser {
     }
 
     /**
-     * Checks if a KClassifier represents a primitive array type.
+     * Determines whether the given [KClassifier] represents a specialized primitive array type.
      *
-     * @param classifier The [KClassifier] of the KType to check.
-     * @return True if the classifier is a primitive array type, false otherwise.
+     * Kotlin provides specialized array classes for each primitive type (e.g., [IntArray], [ByteArray], [FloatArray]),
+     * which are distinct from the generic [Array] class used for reference types.
+     *
+     * @param classifier The [KClassifier] of the [KType] to evaluate.
+     * @return True if the [classifier] is one of Kotlin's primitive array types, otherwise False.
      */
     private fun isPrimitiveArrayType(classifier: KClassifier): Boolean {
         return classifier == IntArray::class || classifier == ByteArray::class ||
@@ -201,11 +219,15 @@ internal object ObjectParser {
     }
 
     /**
-     * Handles maps (e.g., Map<String, Int>).
+     * Resolves a map type (e.g., Map<String, Int>) to a [TypeDefinition].
+     *
+     * Maps do not generate their own schema definition references,
+     * but a definition reference will be created for the value type if such is a complex object.
      *
      * @param kType The [KType] representing the map type.
-     * @param typeParameterMap A map of type parameter classifiers to actual [KType] items for replacement.
-     * @return The resolved [TypeDefinition] for the map type.
+     * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
+     * @return The resolved [TypeDefinition] for the map, with additionalProperties for the value type.
+     * @throws IllegalArgumentException if the map's key type is not [String].
      */
     private fun handleMapType(
         kType: KType,
@@ -225,13 +247,13 @@ internal object ObjectParser {
 
         // Process the value type.
         val typeDefinition: TypeDefinition = valueType?.let {
-            processObject(kType = it, typeParameterMap = typeParameterMap)
-        } ?: TypeDefinition.of(name = "MapOf${kType}", kType = kType, definition = mutableMapOf(typeObject))
+            traverseTypeDefinition(kType = it, typeParameterMap = typeParameterMap)
+        } ?: TypeDefinition.of(name = "MapOf${kType}", kType = kType, definition = Spec.objectType)
 
         return TypeDefinition.of(
             name = "MapOf${typeDefinition.name}",
             kType = kType,
-            definition = mutableMapOf(typeObject, "additionalProperties" to typeDefinition.definition)
+            definition = Spec.additionalProperties(value = typeDefinition.definition)
         )
     }
 
@@ -247,74 +269,60 @@ internal object ObjectParser {
         } ?: emptyList()
 
         // Create the TypeDefinition for the enum as a separate object.
-        val serializedEnumName: String = getSerializedClassName(kClass = enumClass)
+        val enumClassName: String = getClassName(kClass = enumClass)
         val definition: TypeDefinition = TypeDefinition.of(
-            name = serializedEnumName,
+            name = enumClassName,
             kType = enumClass.createType(),
-            definition = mutableMapOf(typeString, SpecKey.ENUM() to enumValues)
+            definition = Spec.enum(values = enumValues)
         )
 
         // Add the enum definition to the object definitions if it's not already present.
         typeDefinitionsCache.add(definition)
 
         // Return a reference to the enum definition
-        val enumName: String = getSerializedClassName(kClass = enumClass)
         return TypeDefinition.of(
-            name = enumName,
+            name = enumClassName,
             kType = enumClass.createType(),
-            definition = buildDefinitionReference(name = enumName)
+            definition = buildDefinitionReference(name = enumClassName)
         )
     }
 
     /**
-     * Handles complex or basic types, such as data classes or primitive types.
-     * For complex types, it adds them as a separate object in the objectDefinitions map and creates a $ref.
+     * Resolves a complex or basic type (such as data classes or primitives) into a [TypeDefinition].
      *
-     * @param kType The KType representing the object type.
-     * @param kClass The KClass representing the complex or basic type.
-     * @param typeParameterMap A map of type parameter classifiers to actual KTypes for replacement.
-     * @return The [TypeDefinition] for the complex or basic type.
+     * Resolves both Kotlin primitives and complex types like data classes. It also
+     * manages recursive structures, circular dependencies, and caches type definitions for reuse.
+     *
+     * Primitive types are immediately mapped, while complex types are recursively processed,
+     * including their properties.
+     *
+     * @param kType The [KType] representing the type to resolve.
+     * @param kClass The [KClass] corresponding to the type to resolve.
+     * @param typeParameterMap A map of type parameters' [KClassifier] to their corresponding [KType].
+     * @return The resolved [TypeDefinition] for the complex or basic type.
      */
     private fun handleComplexOrBasicType(
         kType: KType,
         kClass: KClass<*>,
         typeParameterMap: Map<KClassifier, KType>
     ): TypeDefinition {
-        val classSerializedName: String = getSerializedClassName(kClass = kClass)
+        val className: String = getClassName(kClass = kClass)
 
         // Handle primitive types.
         mapPrimitiveType(kClass = kClass)?.let { definition ->
             return TypeDefinition.of(
-                name = classSerializedName,
+                name = className,
                 kType = kType,
                 definition = definition
-            )
-        }
-
-        // Handle generics.
-        if (kType.arguments.isNotEmpty()) {
-            val genericTypeName: String = generateGenericTypeName(kType = kType, kClass = kClass)
-            if (typeDefinitionsCache.none { it.type == kType.nativeName() }) {
-                handleGenericType(
-                    kType = kType,
-                    kClass = kClass,
-                    genericTypeName = genericTypeName,
-                    parentTypeParameterMap = typeParameterMap
-                )
-            }
-            return TypeDefinition.of(
-                name = genericTypeName,
-                kType = kType,
-                definition = buildDefinitionReference(name = genericTypeName)
             )
         }
 
         // Prevent infinite recursion for self-referencing objects.
         if (inProcessTypeDefinitions.contains(kType.nativeName())) {
             return TypeDefinition.of(
-                name = classSerializedName,
+                name = className,
                 kType = kType,
-                definition = buildDefinitionReference(name = classSerializedName)
+                definition = buildDefinitionReference(name = className)
             )
         }
 
@@ -323,11 +331,10 @@ internal object ObjectParser {
 
         // Create an empty definition before processing properties to handle circular dependencies.
         val propertiesMap: MutableMap<String, Any> = mutableMapOf()
-        val definition: MutableMap<String, Any> = mutableMapOf(typeObject, "properties" to propertiesMap)
         val placeholder: TypeDefinition = TypeDefinition.of(
-            name = classSerializedName,
+            name = className,
             kType = kType,
-            definition = definition
+            definition = Spec.properties(value = propertiesMap)
         )
         typeDefinitionsCache.add(placeholder)
 
@@ -352,15 +359,48 @@ internal object ObjectParser {
         inProcessTypeDefinitions.remove(kType.nativeName())
 
         return TypeDefinition.of(
-            name = classSerializedName,
+            name = className,
             kType = kType,
-            definition = buildDefinitionReference(name = classSerializedName)
+            definition = buildDefinitionReference(name = className)
+        )
+    }
+
+    /**
+     * Handles generics types like SomeType<SomeObject>, considering nested and complex generics.
+     *
+     * @param kType The KType representing the generics type.
+     * @param kClass The KClass representing the generics type.
+     * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] for replacement.
+     * @return The [TypeDefinition] for the generics type.
+     */
+    private fun handleGenericsType(
+        kType: KType,
+        kClass: KClass<*>,
+        typeParameterMap: Map<KClassifier, KType>
+    ): TypeDefinition {
+        val genericsTypeName: String = generateGenericsTypeName(kType = kType, kClass = kClass)
+
+        // Check if the generics type has already been processed.
+        if (typeDefinitionsCache.none { it.type == kType.nativeName() }) {
+            resolveGenericsType(
+                kType = kType,
+                kClass = kClass,
+                genericsTypeName = genericsTypeName,
+                parentTypeParameterMap = typeParameterMap
+            )
+        }
+
+        return TypeDefinition.of(
+            name = genericsTypeName,
+            kType = kType,
+            definition = buildDefinitionReference(name = genericsTypeName)
         )
     }
 
     /**
      * Retrieves and sorts properties based on the primary constructor's parameter order.
      * For classes without a primary constructor, properties are sorted based on their declaration order.
+     *
      * @param kClass The Kotlin class.
      * @return A list of KProperty1 sorted according to the constructor's parameter order.
      */
@@ -368,7 +408,7 @@ internal object ObjectParser {
         val primaryConstructor: KFunction<Any>? = kClass.primaryConstructor
         val constructorParameters: List<String> = primaryConstructor?.parameters?.mapNotNull { it.name } ?: emptyList()
 
-        // Map property names to KProperty1
+        // Map property names to KProperty1 objects.
         val propertyMap: Map<String, KProperty1<out Any, *>> = kClass.declaredMemberProperties.associateBy { it.name }
 
         // Sort properties based on constructor parameter order.
@@ -394,88 +434,94 @@ internal object ObjectParser {
         property: KProperty1<*, *>,
         typeParameterMap: Map<KClassifier, KType>
     ): Pair<String, Map<String, Any>> {
-
-        val serializedName: String = getSerializedPropertyName(property = property)
+        val propertyName: String = getPropertyName(property = property)
 
         val propertyType: KType = replaceTypeIfNeeded(
             type = property.returnType,
             typeParameterMap = typeParameterMap
         )
 
-        val typeDefinition: TypeDefinition = processObject(
+        val typeDefinition: TypeDefinition = traverseTypeDefinition(
             kType = propertyType,
             typeParameterMap = typeParameterMap
         )
 
         val propertyMetadata: Map<String, Any>? = handlePropertyAnnotations(
             property = property,
-            serializedName = serializedName
+            propertyName = propertyName
         )
 
         val extendedDefinition: MutableMap<String, Any> = typeDefinition.definition.apply {
             propertyMetadata?.let { putAll(it) }
         }
 
-        return serializedName to extendedDefinition
+        return propertyName to extendedDefinition
     }
 
     /**
-     * Generates a unique and consistent name for a generic type, such as Page<Employee> becomes PageOfEmployee.
-     * Handles multiple type parameters by joining them with 'Of'.
-     * Falls back to using qualified names if simpleName is not available.
+     * Generates a unique and consistent name for a generics type,
+     * such as Page<Employee> becomes PageOfEmployee.
+     *
+     * Handles multiple type parameters by joining them with 'Of',
+     * for example, Page<Employee, Department> becomes PageOfEmployeeOfDepartment.
+     *
+     * @param kType The [KType] representing the generics type, used to extract type arguments.
+     * @param kClass The [KClass] representing the generics class.
+     * @return The generated name for the generics type.
      */
-    private fun generateGenericTypeName(kType: KType, kClass: KClass<*>): String {
-        val genericArgs: List<KClass<*>> = kType.arguments.mapNotNull { it.type?.classifier as? KClass<*> }
-        val baseName: String = getSerializedClassName(kClass = kClass)
-        val genericArgsNames: List<String> = genericArgs.map { it.safeName() }
+    private fun generateGenericsTypeName(kType: KType, kClass: KClass<*>): String {
+        val arguments: List<KClass<*>> = kType.arguments.mapNotNull { it.type?.classifier as? KClass<*> }
+        val className: String = getClassName(kClass = kClass)
+        val argumentsNames: List<String> = arguments.map {
+            getClassName(kClass = it)
+        }
 
-        return if (genericArgsNames.size == 1) {
-            "${baseName}Of${genericArgsNames.first()}"
+        return if (argumentsNames.size == 1) {
+            "${className}Of${argumentsNames.first()}"
         } else {
-            "${baseName}Of${genericArgsNames.joinToString(separator = "Of")}"
+            "${className}Of${argumentsNames.joinToString(separator = "Of")}"
         }
     }
 
     /**
-     * Handles generic types like Page<Employee> and creates a definition for them.
+     * Resolves generics types, handling nested complex generics.
      *
-     * @param kClass The Kotlin class representing the generic type.
-     * @param kType The KType containing the actual types for the generics.
-     * @param genericTypeName The generated name for the generic type.
-     * @param parentTypeParameterMap A map of type parameter classifiers to actual KTypes for replacement.
+     * @param kClass The [kClass] representing the generic type.
+     * @param kType The [KType] containing the actual types for the generics.
+     * @param genericsTypeName The generated name for the generics type.
+     * @param parentTypeParameterMap A map of type parameter classifiers to actual [KType] objects for replacement.
      */
-    private fun handleGenericType(
+    private fun resolveGenericsType(
         kType: KType,
         kClass: KClass<*>,
-        genericTypeName: String,
+        genericsTypeName: String,
         parentTypeParameterMap: Map<KClassifier, KType>
     ) {
         // Add a placeholder definition early to avoid circular references.
         val placeholder: TypeDefinition = TypeDefinition.of(
-            name = genericTypeName,
+            name = genericsTypeName,
             kType = kType,
-            definition = mutableMapOf(typeObject, SpecKey.PROPERTIES() to mutableMapOf<String, Any>())
+            definition = Spec.properties(value = mutableMapOf())
         )
         typeDefinitionsCache.add(placeholder)
 
         // Retrieve the type parameters from the generic class.
-        val typeParameters: List<KTypeParameter> = kClass.typeParameters
+        val classTypeParameters: List<KTypeParameter> = kClass.typeParameters
+        // Retrieve the actual generics arguments provided.
+        val genericsArguments: List<KType> = kType.arguments.mapNotNull { it.type }
 
-        // Retrieve the actual generic arguments provided.
-        val genericArgs: List<KType> = kType.arguments.mapNotNull { it.type }
-
-        // Ensure the number of type parameters matches the number of generic arguments.
-        if (typeParameters.size != genericArgs.size) {
+        // Ensure the number of type parameters matches the number of the generics arguments.
+        if (classTypeParameters.size != genericsArguments.size) {
             throw IllegalArgumentException(
-                "Type parameter count mismatch for $kClass. " +
-                        "Expected ${typeParameters.size}, but got ${genericArgs.size}."
+                "Generics type parameter count mismatch for $kClass. " +
+                        "Expected ${classTypeParameters.size}, but got ${genericsArguments.size}."
             )
         }
 
         // Create a map of type parameters to their actual types.
-        val currentTypeParameterMap: Map<KClassifier, KType> = typeParameters
-            .mapIndexed { index, typeParam ->
-                typeParam as KClassifier to genericArgs[index]
+        val currentTypeParameterMap: Map<KClassifier, KType> = classTypeParameters
+            .mapIndexed { index, typeParameterItem ->
+                typeParameterItem as KClassifier to genericsArguments[index]
             }.toMap()
 
         // Merge parent type parameters with current type parameters.
@@ -485,7 +531,7 @@ internal object ObjectParser {
         val properties: MutableMap<String, Any> = mutableMapOf()
 
         // Retrieve sorted properties based on the primary constructor's parameter order
-        val sortedProperties: List<KProperty1<out Any, *>> = getSortedProperties(kClass)
+        val sortedProperties: List<KProperty1<out Any, *>> = getSortedProperties(kClass = kClass)
 
         // Iterate over each sorted property in the generic class.
         sortedProperties.forEach { sortedProperty ->
@@ -497,17 +543,17 @@ internal object ObjectParser {
         }
 
         // Update the placeholder definition  with actual properties.
-        placeholder.definition.putAll(
-            mapOf(typeObject, "properties" to properties)
-        )
+        placeholder.definition.putAll(Spec.properties(value = properties))
     }
 
     /**
-     * Replaces type parameters in a generic property type with actual types from the type parameter map.
+     * Returns the corresponding type from [typeParameterMap] if the [type]'s classifier
+     * is found in the given [typeParameterMap].
+     * Otherwise, returns the provided [type].
      *
-     * @param type The original KType to be processed.
-     * @param typeParameterMap A map of type parameter classifiers to actual KTypes for replacement.
-     * @return The processed KType with type parameters replaced as needed.
+     * @param type The [KType] to check.
+     * @param typeParameterMap A map where type parameters are mapped to their actual [KType] values.
+     * @return The [KType] from the map if the classifier is found, otherwise the provided [type].
      */
     private fun replaceTypeIfNeeded(
         type: KType,
@@ -527,90 +573,90 @@ internal object ObjectParser {
     private fun mapPrimitiveType(kClass: KClass<*>): MutableMap<String, Any>? {
         return when (kClass) {
             // Basic Kotlin Types.
-            String::class, CharSequence::class -> mutableMapOf(typeString)
-            Char::class -> mutableMapOf(typeString, formatChar)
-            Boolean::class -> mutableMapOf(typeString, typeBoolean)
-            Int::class -> mutableMapOf(typeInteger, formatInt32)
-            Long::class -> mutableMapOf(typeInteger, formatInt64)
-            Double::class -> mutableMapOf(typeNumber, formatDouble)
-            Float::class -> mutableMapOf(typeNumber, formatFloat)
-            Short::class -> mutableMapOf(typeInteger, formatInt32)
-            Byte::class -> mutableMapOf(typeInteger, formatInt32)
-            UInt::class -> mutableMapOf(typeInteger, formatInt32)
-            ULong::class -> mutableMapOf(typeInteger, formatInt64)
-            UShort::class -> mutableMapOf(typeInteger, formatInt32)
-            UByte::class -> mutableMapOf(typeInteger, formatInt32)
+            String::class, CharSequence::class -> Spec.string
+            Char::class -> Spec.char
+            Boolean::class -> Spec.boolean
+            Int::class -> Spec.int32
+            Long::class -> Spec.int64
+            Double::class -> Spec.double
+            Float::class -> Spec.float
+            Short::class -> Spec.int32
+            Byte::class -> Spec.int32
+            UInt::class -> Spec.int32
+            ULong::class -> Spec.int64
+            UShort::class -> Spec.int32
+            UByte::class -> Spec.int32
 
             // Primitive Arrays.
-            IntArray::class, UIntArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeInteger, formatInt32))
-            ByteArray::class, UByteArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeString, formatByte))
-            ShortArray::class, UShortArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeInteger, formatInt32))
-            FloatArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeNumber, formatFloat))
-            DoubleArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeNumber, formatDouble))
-            LongArray::class, ULongArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeInteger, formatInt64))
-            CharArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeString, formatChar))
-            BooleanArray::class -> mutableMapOf(typeArray, SpecKey.ITEMS() to mutableMapOf(typeBoolean))
+            IntArray::class, ShortArray::class, UIntArray::class, UShortArray::class -> Spec.array(spec = Spec.int32)
+            LongArray::class, ULongArray::class -> Spec.array(spec = Spec.int64)
+            FloatArray::class -> Spec.array(spec = Spec.float)
+            DoubleArray::class -> Spec.array(spec = Spec.double)
+            BooleanArray::class -> Spec.array(spec = Spec.boolean)
+            CharArray::class -> Spec.array(spec = Spec.char)
+            ByteArray::class, UByteArray::class -> Spec.array(spec = Spec.byte)
 
             // UUID Types.
-            Uuid::class, UUID::class -> mutableMapOf(typeString, formatUuid)
+            Uuid::class, UUID::class -> Spec.uuid
 
             // Kotlin Date/Time Types.
-            kotlinx.datetime.LocalDate::class -> mutableMapOf(typeString, formatDate)
-            kotlinx.datetime.LocalDateTime::class -> mutableMapOf(typeString, formatDateTime)
-            kotlinx.datetime.Instant::class -> mutableMapOf(typeString, formatDateTime)
-            kotlinx.datetime.LocalTime::class -> mutableMapOf(typeString, formatTime)
+            kotlinx.datetime.LocalDate::class -> Spec.date
+            kotlinx.datetime.LocalDateTime::class -> Spec.dateTime
+            kotlinx.datetime.Instant::class -> Spec.dateTime
+            kotlinx.datetime.LocalTime::class -> Spec.time
 
             // Java Date/Time Types.
-            java.time.OffsetDateTime::class -> mutableMapOf(typeString, formatDateTime)
-            java.time.ZonedDateTime::class -> mutableMapOf(typeString, formatDateTime)
-            java.time.LocalTime::class -> mutableMapOf(typeString, formatTime)
-            java.time.LocalDate::class -> mutableMapOf(typeString, formatDate)
-            java.time.LocalDateTime::class -> mutableMapOf(typeString, formatDateTime)
-            java.time.Instant::class -> mutableMapOf(typeString, formatDateTime)
-            java.util.Date::class -> mutableMapOf(typeString, formatDateTime)
-            java.sql.Date::class -> mutableMapOf(typeString, formatDate)
+            java.time.OffsetDateTime::class -> Spec.dateTime
+            java.time.ZonedDateTime::class -> Spec.dateTime
+            java.time.LocalTime::class -> Spec.time
+            java.time.LocalDate::class -> Spec.date
+            java.time.LocalDateTime::class -> Spec.dateTime
+            java.time.Instant::class -> Spec.dateTime
+            java.util.Date::class -> Spec.dateTime
+            java.sql.Date::class -> Spec.date
 
             // Big Numbers.
-            BigDecimal::class -> mutableMapOf(typeNumber, formatDouble)
-            BigInteger::class -> mutableMapOf(typeInteger, formatInt64)
+            BigDecimal::class -> Spec.double
+            BigInteger::class -> Spec.int64
 
             // URL and URI.
-            io.ktor.http.Url::class -> mutableMapOf(typeString, formatUri)
-            java.net.URL::class -> mutableMapOf(typeString, formatUri)
-            java.net.URI::class -> mutableMapOf(typeString, formatUri)
+            io.ktor.http.Url::class -> Spec.uri
+            java.net.URL::class -> Spec.uri
+            java.net.URI::class -> Spec.uri
 
             else -> null // Return null if it's not a primitive type.
         }
     }
 
     /**
-     * Gets the serialized class name by handling serializer annotations,
-     * or returns the class simple name if not annotated.
+     * Resolves the name for the give [kClass], considering serializer annotations if present.
      *
-     * @param kClass The Kotlin class to check for annotations.
-     * @return The serialized class name or simple name if not annotated.
+     * @param kClass The [KClass] to process for name resolution.
+     * @return The resolved class name.
      */
-    private fun getSerializedClassName(kClass: KClass<*>): String {
-        return getSerializedName(annotatedElement = kClass, defaultName = kClass.safeName())
+    private fun getClassName(kClass: KClass<*>): String {
+        return geElementName(target = kClass)
     }
 
     /**
-     * Gets the serialized property name by handling serializer annotations,
-     * or returns the property name as is if not annotated.
+     * Resolves the name for the give [property], considering serializer annotations if present.
+     *
+     * @param property The [KProperty1] to process for name resolution.
+     * @return The resolved property name.
      */
-    private fun getSerializedPropertyName(property: KProperty1<*, *>): String {
-        return getSerializedName(annotatedElement = property, defaultName = property.name)
+    private fun getPropertyName(property: KProperty1<*, *>): String {
+        return geElementName(target = property)
     }
 
     /**
-     * Gets the serialized name based on either Kotlinx or Jackson annotations.
-     * Falls back to the provided default name if neither annotation is present.
+     * Resolves the name of the given [target], either from specific annotations if present,
+     * or from the target's own name.
      *
-     * @param annotatedElement The element (class or property) to check for annotations.
-     * @param defaultName The name to return if no relevant annotation is found.
-     * @return The serialized name based on annotations or the default name.
+     * @param target The target ([KClass] or [KProperty1]) to process for name resolution.
+     * @return The resolved name from annotations or the target's own name if no annotation is found.
+     * @throws IllegalArgumentException if the target is not a supported type.
      */
-    private fun getSerializedName(annotatedElement: Any, defaultName: String): String {
+    private fun geElementName(target: Any): String {
         // List of pairs containing annotation lookup functions and the way to extract the relevant value.
         val annotationCheckers: Set<(Any) -> String?> = setOf(
             { element -> (element as? KClass<*>)?.findAnnotation<KotlinxSerialName>()?.value },
@@ -621,41 +667,55 @@ internal object ObjectParser {
 
         // Iterate over the annotation checkers to find the first non-blank name.
         annotationCheckers.forEach { checker ->
-            checker(annotatedElement)?.let { serialName ->
+            checker(target)?.let { serialName ->
                 if (serialName.isNotBlank()) {
                     return serialName
                 }
             }
         }
 
-        // Fallback to the provided default name.
-        return defaultName
+        // Fallback to the object name if no annotations are found.
+        return when (target) {
+            is KClass<*> -> target.safeName()
+            is KProperty1<*, *> -> target.name
+            else -> throw IllegalArgumentException("Unsupported target type: ${target::class.simpleName}")
+        }
     }
 
     /**
      * Handles property annotations like `@SerialName`, `@Transient`, and adds relevant metadata.
+     *
+     * @param property The [KProperty1] to process.
+     * @param propertyName The currently resolved element name, which could be the serialized name.
+     * @return A map of metadata for the property, or null if no annotations are found.
      */
-    private fun handlePropertyAnnotations(property: KProperty1<*, *>, serializedName: String): Map<String, Any>? {
+    private fun handlePropertyAnnotations(
+        property: KProperty1<*, *>,
+        propertyName: String
+    ): Map<String, Any>? {
         val metadata: MutableMap<String, Any> = mutableMapOf()
 
         // Handle Transient annotations.
         if (property.findAnnotation<KotlinxTransient>() != null || property.findAnnotation<JacksonJsonIgnore>() != null) {
-            metadata["transient"] = true
+            metadata[SpecKey.TRANSIENT()] = true
         }
 
         // Handle serialized name changes.
-        if (serializedName != property.name) {
-            metadata["originalName"] = property.name
+        if (propertyName != property.name) {
+            metadata[SpecKey.ORIGINAL_NAME()] = property.name
         }
 
         return if (metadata.isEmpty()) null else metadata
     }
 
     /**
-     * Extension function to safely get a class name, using qualifiedName as a fallback.
+     * Extension function to safely get a class name.
+     * If The name cannot be determined, it creates a fallback name based on the class type.
      */
-    private fun KClass<*>.safeName(): String {
-        return this.simpleName ?: this.qualifiedName?.replace(oldChar = '.', newChar = '_') ?: "UnknownClass"
+    fun KClass<*>.safeName(): String {
+        return this.simpleName
+            ?: this.qualifiedName?.substringAfterLast(delimiter = '.')
+            ?: "UnknownClass_${this.toString().replace(Regex(pattern = "[^A-Za-z0-9_]"), replacement = "_")}"
     }
 
     /**
@@ -664,27 +724,4 @@ internal object ObjectParser {
     private fun buildDefinitionReference(name: String): MutableMap<String, Any> {
         return mutableMapOf("\$ref" to "#/components/schemas/$name")
     }
-
-    private val typeObject: Pair<String, String> = Pair(SpecKey.TYPE(), SpecType.OBJECT())
-    private val typeArray: Pair<String, String> = Pair(SpecKey.TYPE(), SpecType.ARRAY())
-    private val typeInteger: Pair<String, String> = Pair(SpecKey.TYPE(), SpecType.INTEGER())
-    private val typeNumber: Pair<String, String> = Pair(SpecKey.TYPE(), SpecType.NUMBER())
-    private val typeString: Pair<String, String> = Pair(SpecKey.TYPE(), SpecType.STRING())
-    private val typeBoolean: Pair<String, String> = Pair(SpecKey.TYPE(), SpecType.BOOLEAN())
-
-    private val formatInt32: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.INT32())
-    private val formatInt64: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.INT64())
-    private val formatFloat: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.FLOAT())
-    private val formatDouble: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.DOUBLE())
-
-    private val formatUuid: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.UUID())
-
-    private val formatDate: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.DATE())
-    private val formatDateTime: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.DATETIME())
-    private val formatTime: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.TIME())
-
-    private val formatUri: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.URI())
-
-    private val formatByte: Pair<String, String> = Pair(SpecKey.FORMAT(), SpecFormat.BYTE())
-    private val formatChar: Pair<String, Pair<String, Short>> = Pair(SpecKey.FORMAT(), "maxLength" to 1)
 }
