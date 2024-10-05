@@ -46,7 +46,7 @@ internal data class ElementMetadata(
          * @param property The [KProperty1] to extract metadata from.
          * @return The constructed [ElementMetadata] instance.
          */
-        fun of(property: KProperty1<*, *>): ElementMetadata {
+        fun of(property: KProperty1<out Any, *>): ElementMetadata {
             val elementName: Pair<String, String?> = geElementName(target = property)
 
             val isTransient: Boolean = property.findAnnotation<kotlinx.serialization.Transient>() != null ||

@@ -35,7 +35,7 @@ internal object PropertyResolver {
      * @return A [Pair] containing the resolved property name and the resolved schema map.
      */
     fun traverse(
-        property: KProperty1<*, *>,
+        property: KProperty1<out Any, *>,
         typeParameterMap: Map<KClassifier, KType>
     ): Pair<String, Map<String, Any>> {
         val metadata: ElementMetadata = ElementMetadata.of(property = property)
