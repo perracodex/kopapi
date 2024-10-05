@@ -2,10 +2,10 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.parser.definition
+package io.github.perracodex.kopapi.inspector.type
 
-import io.github.perracodex.kopapi.parser.TypeInspector
-import io.github.perracodex.kopapi.parser.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 
 /**
  * Represents a warning for parsed [TypeDefinition] that share the same name but have different types.
