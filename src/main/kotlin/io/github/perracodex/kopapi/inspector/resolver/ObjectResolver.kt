@@ -16,18 +16,13 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
 /**
- * Resolves complex or basics type (such as data classes or primitives) into a [TypeSchema].
+ * Resolves complex or basics type (such as classes, data classes or primitives) into a [TypeSchema].
  *
- * Resolves both Kotlin primitives and complex types like data classes. It also
- * manages recursive structures, circular dependencies, and caches type schemas for reuse.
- *
- * Primitive types are immediately mapped, while complex types are recursively processed,
- * including their properties.
+ * Primitive types are immediately mapped, while complex types are recursively inspected.
  *
  * Responsibilities:
- * - Handling of complex types (eg: data classes).
+ * - Handling of complex types (eg: classes, data classes).
  * - Handling of primitive types.
- * - Traversing properties of complex types and resolving them.
  * - Handling circular dependencies and recursive structures.
  * - Caching the created [TypeSchema] to avoid redundant processing.
  */
