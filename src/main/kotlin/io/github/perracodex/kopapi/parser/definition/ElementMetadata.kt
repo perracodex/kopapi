@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.parser.definition
 
-import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
+import io.github.perracodex.kopapi.parser.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -20,7 +20,7 @@ import kotlin.reflect.javaType
  * @property isRequired Indicates whether the element is required. Defaults to true.
  * @property isTransient Indicates whether the element is transient and should be ignored. Defaults to false.
  */
-@ObjectTypeParserAPI
+@TypeInspectorAPI
 internal data class ElementMetadata(
     val name: String,
     val originalName: String? = null,
@@ -144,7 +144,7 @@ internal data class ElementMetadata(
 /**
  * Extension function to return the Java type name of a KType.
  */
-@ObjectTypeParserAPI
+@TypeInspectorAPI
 internal fun KType.nativeName(): String {
     return this.javaType.typeName
 }

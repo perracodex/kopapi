@@ -4,12 +4,12 @@
 
 package io.github.perracodex.kopapi.parser.spec
 
-import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
+import io.github.perracodex.kopapi.parser.annotation.TypeInspectorAPI
 
 /**
  * Provides reusable entries for specifying types and structures in data definitions.
  */
-@ObjectTypeParserAPI
+@TypeInspectorAPI
 internal object Spec {
     fun objectType(): MutableMap<String, Any> = mutableMapOf(
         SpecKey.TYPE() to SpecType.OBJECT()

@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.parser.resolver
 
-import io.github.perracodex.kopapi.parser.ObjectTypeParser
-import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
+import io.github.perracodex.kopapi.parser.TypeInspector
+import io.github.perracodex.kopapi.parser.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.parser.definition.ElementMetadata
 import io.github.perracodex.kopapi.parser.definition.TypeDefinition
 import io.github.perracodex.kopapi.parser.spec.Spec
@@ -22,7 +22,7 @@ import kotlin.reflect.KType
  * - Handling of both primitive and non-primitive [Array] types.
  * - Extracting the contained element type and traversing it if needed.
  */
-@ObjectTypeParserAPI
+@TypeInspectorAPI
 internal object CollectionResolver {
     /**
      * Handles collections (eg: List, Set), including primitive and non-primitive arrays.
@@ -40,8 +40,8 @@ internal object CollectionResolver {
         val className: String = ElementMetadata.getClassName(kClass = (classifier as KClass<*>))
 
         // Check if the classifier is a primitive array first, such as IntArray, ByteArray, etc.
-        if (ObjectTypeParser.isPrimitiveArrayType(classifier = classifier)) {
-            val definition: MutableMap<String, Any>? = ObjectTypeParser.mapPrimitiveType(kClass = classifier)
+        if (TypeInspector.isPrimitiveArrayType(classifier = classifier)) {
+            val definition: MutableMap<String, Any>? = TypeInspector.mapPrimitiveType(kClass = classifier)
             return TypeDefinition.of(
                 name = className,
                 kType = kType,
@@ -51,7 +51,7 @@ internal object CollectionResolver {
 
         // Handle non-primitive arrays and collections based on their type arguments.
         val itemType: KType = kType.arguments.firstOrNull()?.type?.let {
-            ObjectTypeParser.replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
+            TypeInspector.replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
         } ?: return TypeDefinition.of(
             name = className,
             kType = kType,
@@ -60,7 +60,7 @@ internal object CollectionResolver {
 
         // Map the item type to its respective TypeDefinition,
         // considering it's a regular object array or collection.
-        val typeDefinition: TypeDefinition = ObjectTypeParser.traverseType(
+        val typeDefinition: TypeDefinition = TypeInspector.traverse(
             kType = itemType,
             typeParameterMap = typeParameterMap
         )

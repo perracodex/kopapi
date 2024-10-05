@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.parser
 
-import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
+import io.github.perracodex.kopapi.parser.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.parser.definition.TypeDefinition
 import io.github.perracodex.kopapi.parser.definition.TypeDefinitionWarningManager
 import io.github.perracodex.kopapi.parser.definition.nativeName
@@ -21,8 +21,8 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.uuid.Uuid
 
 /**
- * Object parser for various Kotlin types to prepare data structures
- * that can be used to construct schemas for the OpenAPI documentation.
+ * Inspector for various Kotlin types capable of traversing and parsing [KType] objects
+ * into [TypeDefinition] objects containing the necessary information to construct OpenAPI schemas.
  *
  * #### Key Features
  * - Parsing recursion for complex types.
@@ -44,8 +44,8 @@ import kotlin.uuid.Uuid
  *  so objects are uniquely processed regardless of how many times are found in the
  *  current processing context, or subsequent calls.
  */
-internal object ObjectTypeParser {
-    private val tracer = Tracer<ObjectTypeParser>()
+internal object TypeInspector {
+    private val tracer = Tracer<TypeInspector>()
 
     /** Cache of [TypeDefinition] objects that have been processed. */
     private val typeDefinitionsCache: MutableSet<TypeDefinition> = mutableSetOf()
@@ -63,9 +63,9 @@ internal object ObjectTypeParser {
      * @param kType The KType to parse.
      * @return The [TypeDefinition] for the given [kType].
      */
-    @OptIn(ObjectTypeParserAPI::class)
-    fun process(kType: KType): TypeDefinition {
-        val result: TypeDefinition = traverseType(kType = kType, typeParameterMap = emptyMap())
+    @OptIn(TypeInspectorAPI::class)
+    fun inspect(kType: KType): TypeDefinition {
+        val result: TypeDefinition = traverse(kType = kType, typeParameterMap = emptyMap())
         TypeDefinitionWarningManager.analyze(newTypeDefinition = result)
         return result
     }
@@ -73,14 +73,14 @@ internal object ObjectTypeParser {
     /**
      * Resets the parser by clearing all processed types and object definitions.
      */
-    @OptIn(ObjectTypeParserAPI::class)
+    @OptIn(TypeInspectorAPI::class)
     fun reset() {
         typeDefinitionsCache.clear()
         TypeDefinitionWarningManager.clear()
     }
 
     /**
-     * Traverses and resolves the given [KType], handling both simple and complex types,
+     * Traverses and resolves the given [kType], handling both simple and complex types,
      * including collections, maps, enums, and generics. Manages recursion and self-referencing types.
      *
      * Returns a [TypeDefinition] representing the structure of the [kType], considering generic parameters
@@ -90,8 +90,8 @@ internal object ObjectTypeParser {
      * @param typeParameterMap A map of type parameters' [KClassifier] to their corresponding [KType].
      * @return The resolved [TypeDefinition] for the [kType].
      */
-    @ObjectTypeParserAPI
-    fun traverseType(
+    @TypeInspectorAPI
+    fun traverse(
         kType: KType,
         typeParameterMap: Map<KClassifier, KType>
     ): TypeDefinition {
@@ -147,7 +147,7 @@ internal object ObjectTypeParser {
      * Determines whether the given [KType] is already present
      * in the [TypeDefinition] cache.
      */
-    @ObjectTypeParserAPI
+    @TypeInspectorAPI
     fun isCached(kType: KType): Boolean {
         return typeDefinitionsCache.any {
             it.type == kType.nativeName()
@@ -157,7 +157,7 @@ internal object ObjectTypeParser {
     /**
      * Caches the given [TypeDefinition] object.
      */
-    @ObjectTypeParserAPI
+    @TypeInspectorAPI
     fun addToCache(definition: TypeDefinition) {
         typeDefinitionsCache.add(definition)
     }
@@ -171,7 +171,7 @@ internal object ObjectTypeParser {
      * @param typeParameterMap A map where type parameters are mapped to their actual [KType] values.
      * @return The [KType] from the map if the classifier is found, otherwise the provided [type].
      */
-    @ObjectTypeParserAPI
+    @TypeInspectorAPI
     fun replaceTypeIfNeeded(
         type: KType,
         typeParameterMap: Map<KClassifier, KType>
@@ -197,7 +197,7 @@ internal object ObjectTypeParser {
      * @param classifier The [KClassifier] of the [KType] to evaluate.
      * @return True if the [classifier] corresponds to any Kotlin array type, otherwise False.
      */
-    @ObjectTypeParserAPI
+    @TypeInspectorAPI
     private fun isArrayType(classifier: KClassifier): Boolean {
         return isPrimitiveArrayType(classifier = classifier)
                 || (classifier as? KClass<*>)?.javaObjectType?.isArray ?: false
@@ -212,7 +212,7 @@ internal object ObjectTypeParser {
      * @param classifier The [KClassifier] of the [KType] to evaluate.
      * @return True if the [classifier] is one of Kotlin's primitive array types, otherwise False.
      */
-    @ObjectTypeParserAPI
+    @TypeInspectorAPI
     fun isPrimitiveArrayType(classifier: KClassifier): Boolean {
         return classifier == IntArray::class || classifier == ByteArray::class ||
                 classifier == ShortArray::class || classifier == FloatArray::class ||
@@ -229,7 +229,7 @@ internal object ObjectTypeParser {
      * @return A mutable map representing the schema for the primitive type,
      * or null if the type is not a primitive.
      */
-    @ObjectTypeParserAPI
+    @TypeInspectorAPI
     fun mapPrimitiveType(kClass: KClass<*>): MutableMap<String, Any>? {
         return when (kClass) {
             // Basic Kotlin Types.

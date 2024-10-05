@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.parser.resolver
 
-import io.github.perracodex.kopapi.parser.ObjectTypeParser
-import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
+import io.github.perracodex.kopapi.parser.TypeInspector
+import io.github.perracodex.kopapi.parser.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.parser.definition.TypeDefinition
 import io.github.perracodex.kopapi.parser.spec.Spec
 import io.github.perracodex.kopapi.utils.Tracer
@@ -25,7 +25,7 @@ import kotlin.reflect.KType
  * - Creating a [TypeDefinition] which includes an `additionalProperties` spec for the value type.
  * - Caching the created [TypeDefinition] to avoid redundant processing.
  */
-@ObjectTypeParserAPI
+@TypeInspectorAPI
 internal object MapResolver {
     private val tracer = Tracer<MapResolver>()
 
@@ -41,10 +41,10 @@ internal object MapResolver {
         typeParameterMap: Map<KClassifier, KType>
     ): TypeDefinition {
         val keyType: KType? = kType.arguments.getOrNull(index = 0)?.type?.let {
-            ObjectTypeParser.replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
+            TypeInspector.replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
         }
         val valueType: KType? = kType.arguments.getOrNull(index = 1)?.type?.let {
-            ObjectTypeParser.replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
+            TypeInspector.replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
         }
 
         // OpenAPI requires keys to be strings.
@@ -59,7 +59,7 @@ internal object MapResolver {
 
         // Process the value type.
         val typeDefinition: TypeDefinition = valueType?.let {
-            ObjectTypeParser.traverseType(kType = valueType, typeParameterMap = typeParameterMap)
+            TypeInspector.traverse(kType = valueType, typeParameterMap = typeParameterMap)
         } ?: TypeDefinition.of(name = "MapOf${kType}", kType = kType, definition = Spec.objectType())
 
         return TypeDefinition.of(

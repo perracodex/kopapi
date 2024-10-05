@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.parser.resolver
 
-import io.github.perracodex.kopapi.parser.ObjectTypeParser
-import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
+import io.github.perracodex.kopapi.parser.TypeInspector
+import io.github.perracodex.kopapi.parser.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.parser.definition.ElementMetadata
 import io.github.perracodex.kopapi.parser.definition.TypeDefinition
 import io.github.perracodex.kopapi.parser.spec.SpecKey
@@ -21,7 +21,7 @@ import kotlin.reflect.full.primaryConstructor
  * - Handling metadata such as annotations, nullability, etc.
  * - Ensuring that obtained properties are sorted as per the primary constructor's parameter order.
  */
-@ObjectTypeParserAPI
+@TypeInspectorAPI
 internal object PropertyResolver {
     /**
      * Processes a property by traversing its type definition,
@@ -37,12 +37,12 @@ internal object PropertyResolver {
     ): Pair<String, Map<String, Any>> {
         val metadata: ElementMetadata = ElementMetadata.of(property = property)
 
-        val propertyType: KType = ObjectTypeParser.replaceTypeIfNeeded(
+        val propertyType: KType = TypeInspector.replaceTypeIfNeeded(
             type = property.returnType,
             typeParameterMap = typeParameterMap
         )
 
-        val typeDefinition: TypeDefinition = ObjectTypeParser.traverseType(
+        val typeDefinition: TypeDefinition = TypeInspector.traverse(
             kType = propertyType,
             typeParameterMap = typeParameterMap
         )

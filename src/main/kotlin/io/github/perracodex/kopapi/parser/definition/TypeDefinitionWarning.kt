@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.parser.definition
 
-import io.github.perracodex.kopapi.parser.ObjectTypeParser
-import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
+import io.github.perracodex.kopapi.parser.TypeInspector
+import io.github.perracodex.kopapi.parser.annotation.TypeInspectorAPI
 
 /**
  * Represents a warning for parsed [TypeDefinition] that share the same name but have different types.
@@ -35,7 +35,7 @@ internal object TypeDefinitionWarningManager {
     /**
      * Clears the warning cache.
      */
-    @ObjectTypeParserAPI
+    @TypeInspectorAPI
     fun clear() {
         warnings.clear()
     }
@@ -46,9 +46,9 @@ internal object TypeDefinitionWarningManager {
      *
      * @param newTypeDefinition The [TypeDefinition] to check for conflicts.
      */
-    @ObjectTypeParserAPI
+    @TypeInspectorAPI
     fun analyze(newTypeDefinition: TypeDefinition) {
-        ObjectTypeParser.getTypeDefinitions().filter { typeDefinition ->
+        TypeInspector.getTypeDefinitions().filter { typeDefinition ->
             typeDefinition.name.equals(other = newTypeDefinition.name, ignoreCase = true)
                     && !typeDefinition.type.equals(other = newTypeDefinition.type, ignoreCase = true)
         }.forEach { existing ->

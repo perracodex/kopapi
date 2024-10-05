@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.parser.resolver
 
-import io.github.perracodex.kopapi.parser.ObjectTypeParser
-import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
+import io.github.perracodex.kopapi.parser.TypeInspector
+import io.github.perracodex.kopapi.parser.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.parser.definition.ElementMetadata
 import io.github.perracodex.kopapi.parser.definition.TypeDefinition
 import io.github.perracodex.kopapi.parser.spec.Spec
@@ -20,7 +20,7 @@ import kotlin.reflect.full.createType
  * - Creating a [TypeDefinition] for the enum type, which includes the enum values.
  * - Caching the created [TypeDefinition] to avoid redundant processing.
  */
-@ObjectTypeParserAPI
+@TypeInspectorAPI
 internal object EnumResolver {
     /**
      * Processes the given [enumClass] and creates a [TypeDefinition] for it.
@@ -42,7 +42,7 @@ internal object EnumResolver {
         )
 
         // Add the enum definition to the object definitions if it's not already present.
-        ObjectTypeParser.addToCache(definition = definition)
+        TypeInspector.addToCache(definition = definition)
 
         // Return a reference to the enum definition
         return TypeDefinition.of(

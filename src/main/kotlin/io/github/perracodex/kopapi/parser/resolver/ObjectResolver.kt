@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.parser.resolver
 
-import io.github.perracodex.kopapi.parser.ObjectTypeParser
-import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
+import io.github.perracodex.kopapi.parser.TypeInspector
+import io.github.perracodex.kopapi.parser.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.parser.definition.ElementMetadata
 import io.github.perracodex.kopapi.parser.definition.TypeDefinition
 import io.github.perracodex.kopapi.parser.definition.nativeName
@@ -31,7 +31,7 @@ import kotlin.reflect.KType
  * - Handling circular dependencies and recursive structures.
  * - Caching the created [TypeDefinition] to avoid redundant processing.
  */
-@ObjectTypeParserAPI
+@TypeInspectorAPI
 internal object ObjectResolver {
     /** Temporarily tracks processed [KType] objects while recursing. */
     private val inProcess: MutableSet<String> = mutableSetOf()
@@ -53,7 +53,7 @@ internal object ObjectResolver {
         val className: String = ElementMetadata.getClassName(kClass = kClass)
 
         // Handle primitive types.
-        ObjectTypeParser.mapPrimitiveType(kClass = kClass)?.let { definition ->
+        TypeInspector.mapPrimitiveType(kClass = kClass)?.let { definition ->
             return TypeDefinition.of(
                 name = className,
                 kType = kType,
@@ -102,7 +102,7 @@ internal object ObjectResolver {
             kType = kType,
             definition = Spec.properties(value = propertiesMap)
         )
-        ObjectTypeParser.addToCache(definition = placeholder)
+        TypeInspector.addToCache(definition = placeholder)
 
         // Create a properties map to hold each of the traversed definitions.
         val propertyDefinitions: MutableMap<String, Map<String, Any>> = mutableMapOf()

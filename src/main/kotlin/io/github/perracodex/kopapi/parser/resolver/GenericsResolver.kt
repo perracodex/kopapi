@@ -5,8 +5,8 @@
 package io.github.perracodex.kopapi.parser.resolver
 
 import io.github.perracodex.kopapi.core.KopapiException
-import io.github.perracodex.kopapi.parser.ObjectTypeParser
-import io.github.perracodex.kopapi.parser.annotation.ObjectTypeParserAPI
+import io.github.perracodex.kopapi.parser.TypeInspector
+import io.github.perracodex.kopapi.parser.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.parser.definition.ElementMetadata
 import io.github.perracodex.kopapi.parser.definition.TypeDefinition
 import io.github.perracodex.kopapi.parser.spec.Spec
@@ -21,7 +21,7 @@ import kotlin.reflect.*
  * - Generating a unique and consistent name for the generics type.
  * - Caching the created [TypeDefinition] to avoid redundant processing.
  */
-@ObjectTypeParserAPI
+@TypeInspectorAPI
 internal object GenericsResolver {
     /**
      * Handles generics types, considering nested and complex generics.
@@ -40,7 +40,7 @@ internal object GenericsResolver {
 
         // Check if the generics type has already been processed,
         // if not, traverse the generics type to resolve its properties and cache it.
-        if (!ObjectTypeParser.isCached(kType = kType)) {
+        if (!TypeInspector.isCached(kType = kType)) {
             traverse(
                 kType = kType,
                 kClass = kClass,
@@ -102,7 +102,7 @@ internal object GenericsResolver {
             kType = kType,
             definition = Spec.properties(value = mutableMapOf())
         )
-        ObjectTypeParser.addToCache(definition = placeholder)
+        TypeInspector.addToCache(definition = placeholder)
 
         // Retrieve the type parameters from the generic class.
         val classTypeParameters: List<KTypeParameter> = kClass.typeParameters
