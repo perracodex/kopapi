@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.SpecKey
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
 import io.github.perracodex.kopapi.inspector.type.TypeSchema
+import io.github.perracodex.kopapi.utils.Tracer
 import java.lang.reflect.Field
 import kotlin.reflect.*
 import kotlin.reflect.full.declaredMemberProperties
@@ -24,6 +25,8 @@ import kotlin.reflect.full.superclasses
  */
 @TypeInspectorAPI
 internal object PropertyResolver {
+    private val tracer = Tracer<PropertyResolver>()
+
     /**
      * Processes the given [property] by traversing it and resolving its schema.
      *
@@ -125,6 +128,10 @@ internal object PropertyResolver {
 
             // Move to the superclass, if any.
             currentClass = currentClass.superclasses.firstOrNull()
+        }
+
+        if (orderedProperties.isEmpty()) {
+            tracer.error("No properties found for class: $kClass")
         }
 
         return orderedProperties
