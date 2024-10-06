@@ -100,11 +100,13 @@ internal object ObjectResolver {
         )
         TypeInspector.addToCache(schema = schemaPlaceholder)
 
-        // Create a properties map to hold each of the traversed schemas.
+        // Initialize a map to hold resolved schemas for each property.
         val propertiesSchemas: MutableMap<String, Any> = mutableMapOf()
 
-        // Traverse each class property and resolve its schema.
+        // Retrieve all relevant properties of the generic class.
         val classProperties: List<KProperty1<out Any, *>> = PropertyResolver.getProperties(kClass = kClass)
+
+        // Traverse each property to resolve its schema using the merged type parameters.
         classProperties.forEach { property ->
             val propertySchema: PropertySchema = PropertyResolver.traverse(
                 classKType = kType,
@@ -118,7 +120,7 @@ internal object ObjectResolver {
         // tracker to handle different branches.
         inProcessTypeSemaphore.remove(kType.nativeName())
 
-        // Update the placeholder with actual processed schemas.
+        // Update the cached schema placeholder with the resolved property schemas.
         schemaPlaceholder.schema.putAll(
             Spec.properties(value = propertiesSchemas)
         )

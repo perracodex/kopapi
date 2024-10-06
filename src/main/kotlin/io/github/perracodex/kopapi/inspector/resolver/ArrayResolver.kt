@@ -15,14 +15,14 @@ import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 
 /**
- * Resolves primitive and generics [Array] types, into their corresponding [TypeSchema].
+ * Resolves primitive and `Generics` [Array] types, into their corresponding [TypeSchema].
  *
- * Generics [Array] types processing is delegated to the [CollectionResolver],
- * as they share similar characteristics with [Collection] types.
+ * `Generics` [Array] types processing is delegated to the [CollectionResolver],
+ * as they share similar characteristics with `Collection` types.
  *
  * Responsibilities:
  * - Handling primitive arrays (e.g.: IntArray, ByteArray, etc.)
- * - Delegating generics [Array] types to the [CollectionResolver].
+ * - Delegating `Generics` [Array] types to the [CollectionResolver].
  */
 @TypeInspectorAPI
 internal object ArrayResolver {
