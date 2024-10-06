@@ -133,7 +133,8 @@ internal object TypeInspector {
             classifier is KClass<*> && classifier.isSubclassOf(Enum::class) ->
                 EnumResolver.process(enumClass = classifier)
 
-            // Handle generics.
+            // Handle generics. Must be checked after arrays, collections, and maps
+            // because they also have type arguments.
             kType.arguments.isNotEmpty() ->
                 GenericsResolver.process(
                     kType = kType,
