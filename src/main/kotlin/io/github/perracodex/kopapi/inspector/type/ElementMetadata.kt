@@ -16,7 +16,6 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.javaType
 
 /**
  * Represents metadata for an element basic properties.
@@ -150,23 +149,6 @@ internal data class ElementMetadata(
         }
 
         /**
-         * Extension function to safely get a class name.
-         * If The name cannot be determined, it creates a fallback name based on the class type.
-         */
-        private fun KClass<*>.safeName(): String {
-            return this.simpleName
-                ?: this.qualifiedName?.substringAfterLast(delimiter = '.')
-                ?: "UnknownClass_${this.toString().cleanName()}"
-        }
-
-        /**
-         * Extension function to clean a string by replacing all non-alphanumeric characters with underscores.
-         */
-        private fun String.cleanName(): String {
-            return this.replace(Regex(pattern = "[^A-Za-z0-9_]"), replacement = "_")
-        }
-
-        /**
          * Creates a fallback name for an element based on the target's type.
          */
         private fun createFallbackName(target: Any): String {
@@ -239,12 +221,4 @@ internal data class ElementMetadata(
             }
         }
     }
-}
-
-/**
- * Extension function to return the Java type name of a KType.
- */
-@TypeInspectorAPI
-internal fun KType.nativeName(): String {
-    return this.javaType.typeName
 }

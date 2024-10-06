@@ -5,8 +5,8 @@
 package io.github.perracodex.kopapi.inspector
 
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
 import io.github.perracodex.kopapi.inspector.resolver.*
-import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.type.TypeSchema
 import io.github.perracodex.kopapi.inspector.type.TypeSchemaConflicts
@@ -105,10 +105,15 @@ internal object TypeInspector {
         val classifier: KClassifier = kType.classifier
             ?: run {
                 tracer.error("Missing classifier. kType=$kType. typeParameterMap=$typeParameterMap.")
-                return buildUnknownTypeSchema(kType = kType)
+                return TypeDescriptor.buildUnknownTypeSchema(kType = kType)
             }
 
         val typeSchema: TypeSchema = when {
+            // Handle user defined custom types.
+            // Must be checked always first to allow to override standard types.
+            CustomTypeRegistry.isCustomType(kType = kType) ->
+                CustomTypeRegistry.getTypeSchema(kType = kType)
+
             // Handle primitive arrays (e.g.: IntArray), and generics arrays (e.g., Array<String>).
             TypeDescriptor.isArray(kType = kType) ->
                 ArrayResolver.process(
@@ -155,29 +160,13 @@ internal object TypeInspector {
             // Fallback for unknown types. This should never be reached.
             else -> {
                 tracer.error("Unexpected type: $kType. typeParameterMap=$typeParameterMap.")
-                buildUnknownTypeSchema(kType = kType)
+                TypeDescriptor.buildUnknownTypeSchema(kType = kType)
             }
         }
 
         return typeSchema
     }
 
-    /**
-     * Constructs a [TypeSchema] for the given [kType] when the type is unknown.
-     *
-     * @param kType The unknown [KType] to build a schema for.
-     *
-     */
-    @OptIn(TypeInspectorAPI::class)
-    private fun buildUnknownTypeSchema(
-        kType: KType,
-    ): TypeSchema {
-        return TypeSchema.of(
-            name = "Unknown_$kType",
-            kType = kType,
-            schema = Spec.objectType()
-        )
-    }
 
     /**
      * Determines whether the given [KType] is already present

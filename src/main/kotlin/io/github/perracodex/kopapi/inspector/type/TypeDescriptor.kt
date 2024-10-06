@@ -161,4 +161,20 @@ internal object TypeDescriptor {
             else -> null // Return null if it's not a primitive type.
         }
     }
+
+    /**
+     * Constructs a [TypeSchema] for the given [kType] when the type is unknown.
+     *
+     * @param kType The unknown [KType] to build a schema for.
+     *
+     */
+    fun buildUnknownTypeSchema(
+        kType: KType,
+    ): TypeSchema {
+        return TypeSchema.of(
+            name = "Unknown_$kType",
+            kType = kType,
+            schema = Spec.objectType()
+        )
+    }
 }

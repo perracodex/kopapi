@@ -4,6 +4,11 @@
 
 package io.github.perracodex.kopapi.plugin
 
+import io.github.perracodex.kopapi.inspector.custom.CustomType
+import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
+import io.github.perracodex.kopapi.plugin.builders.CustomTypeBuilder
+import kotlin.reflect.typeOf
+
 /**
  * Configuration for the [Kopapi] plugin.
  */
@@ -31,4 +36,25 @@ public class KopapiConfig {
      * Relative to the server root URL. Default is `openapi/debug`.
      */
     public var debugUrl: String = "openapi/debug"
+
+    /**
+     * Appends a custom type to be used when generating the OpenAPI schema.
+     * These can be new unhandled types or existing standard types with custom specifications.
+     *
+     * #### Sample Usage
+     * ```
+     * customType<Test>("string")
+     * customType<Measure>("number") { format = "float" }
+     * customType<BigDecimal>("money") { format = "decimal" }
+     * customType<Dog>("mammal") { format = "breed" }
+     * ```
+     *
+     * @param T The new type to register. [Unit] and [Any] are not allowed.
+     * @param configure A lambda receiver to configure the [CustomTypeBuilder].
+     */
+    public inline fun <reified T : Any> customType(type: String, configure: CustomTypeBuilder.() -> Unit = {}) {
+        val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
+        val newCustomType: CustomType = builder.build(type = typeOf<T>(), specType = type)
+        CustomTypeRegistry.register(newCustomType)
+    }
 }
