@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.plugin
 
 import io.github.perracodex.kopapi.routing.kopapiRoutes
+import io.github.perracodex.kopapi.utils.Tracer
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 
@@ -15,6 +16,8 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     name = "Kopapi",
     createConfiguration = ::KopapiConfig
 ) {
+    val tracer = Tracer<KopapiConfig>()
+
     val openapiJsonUrl: String = this.pluginConfig.openapiJsonUrl.trim()
     val openapiYamlUrl: String = this.pluginConfig.openapiYamlUrl.trim()
     val swaggerUrl: String = this.pluginConfig.swaggerUrl.trim()
@@ -31,6 +34,12 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
                 "OpenAPI YAML URL: $openapiYamlUrl, " +
                 "Swagger UI URL: $swaggerUrl, " +
                 "Debug URL: $debugUrl"
+    }
+
+    // If no servers are provided, add a default one.
+    if (this.pluginConfig.servers.isEmpty()) {
+        val server: String = this.pluginConfig.servers.addDefault()
+        tracer.warning("No servers were provided. Added a default server: $server")
     }
 
     // Configure the plugin endpoints using the extracted function.

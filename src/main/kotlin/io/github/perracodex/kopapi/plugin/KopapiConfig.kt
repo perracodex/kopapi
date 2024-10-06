@@ -7,6 +7,8 @@ package io.github.perracodex.kopapi.plugin
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
 import io.github.perracodex.kopapi.plugin.builders.CustomTypeBuilder
+import io.github.perracodex.kopapi.plugin.builders.Servers
+import io.ktor.http.*
 import kotlin.reflect.typeOf
 
 /**
@@ -36,6 +38,27 @@ public class KopapiConfig {
      * Relative to the server root URL. Default is `openapi/debug`.
      */
     public var debugUrl: String = "openapi/debug"
+
+    /**
+     * The list of servers to include in the OpenAPI schema.
+     */
+    internal val servers: Servers = Servers()
+
+    /**
+     * Appends a list of servers to the configuration.
+     * Can be defined as strings or [Url] objects.
+     *
+     * #### Sample Usage
+     * ```
+     * servers {
+     *      add("http://localhost:8080")
+     *      add(Url("http://localhost:8081"))
+     * }
+     * ```
+     */
+    public fun servers(init: Servers.() -> Unit) {
+        servers.init()
+    }
 
     /**
      * Registers a new `custom type` to be used when generating the OpenAPI schema.
