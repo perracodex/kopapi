@@ -38,7 +38,7 @@ public class KopapiConfig {
     public var debugUrl: String = "openapi/debug"
 
     /**
-     * Appends a custom type to be used when generating the OpenAPI schema.
+     * Registers a new `custom type` to be used when generating the OpenAPI schema.
      * These can be new unhandled types or existing standard types with custom specifications.
      *
      * #### Sample Usage
