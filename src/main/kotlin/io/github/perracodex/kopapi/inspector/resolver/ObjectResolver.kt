@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
+import io.github.perracodex.kopapi.inspector.type.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.type.TypeSchema
 import io.github.perracodex.kopapi.inspector.type.nativeName
 import kotlin.reflect.KClass
@@ -48,7 +49,7 @@ internal object ObjectResolver {
         val className: String = ElementMetadata.getClassName(kClass = kClass)
 
         // Handle primitive types.
-        TypeInspector.mapPrimitiveType(kClass = kClass)?.let { schema ->
+        TypeDescriptor.mapPrimitiveType(kClass = kClass)?.let { schema ->
             return TypeSchema.of(
                 name = className,
                 kType = kType,

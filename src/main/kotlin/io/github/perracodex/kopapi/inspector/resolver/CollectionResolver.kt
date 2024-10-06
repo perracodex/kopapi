@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
+import io.github.perracodex.kopapi.inspector.type.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.type.TypeSchema
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
@@ -40,8 +41,8 @@ internal object CollectionResolver {
         val className: String = ElementMetadata.getClassName(kClass = (classifier as KClass<*>))
 
         // Check if the classifier is a primitive array first, such as IntArray, ByteArray, etc.
-        if (TypeInspector.isPrimitiveArrayType(classifier = classifier)) {
-            val schema: MutableMap<String, Any>? = TypeInspector.mapPrimitiveType(kClass = classifier)
+        if (TypeDescriptor.isPrimitiveArray(classifier = classifier)) {
+            val schema: MutableMap<String, Any>? = TypeDescriptor.mapPrimitiveType(kClass = classifier)
             return TypeSchema.of(
                 name = className,
                 kType = kType,
