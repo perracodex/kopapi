@@ -32,9 +32,9 @@ import kotlin.reflect.full.isSubclassOf
  *
  * #### Supported Annotations
  * - Kotlinx:
- *      - `@SerialName`, `@Transient`
+ *      - `@SerialName`, `@Transient`, `@Required`
  * - Jackson:
- *     - `@JsonProperty`, `@JsonIgnore`
+ *     - `JsonTypeName`, `@JsonProperty`, `@JsonIgnore`
  *
  * #### Caching
  *  The inspector caches resolved schemas to avoid duplication, so types are uniquely processed
