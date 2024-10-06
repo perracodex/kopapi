@@ -63,10 +63,10 @@ internal object CollectionResolver {
 
         // Distinguishing names between Array<T> and Collections is solely for clarity and debugging,
         // as neither results in a referable object in the final schema; only the contained element does.
-        val name: String = if (TypeDescriptor.isArray(kType = kType)) {
-            "ArrayOf${typeSchema.name}"
-        } else {
+        val name: String = if (TypeDescriptor.isCollection(classifier = classifier)) {
             "CollectionOf${typeSchema.name}"
+        } else {
+            "ArrayOf${typeSchema.name}"
         }
 
         return TypeSchema.of(
