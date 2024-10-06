@@ -55,8 +55,7 @@ internal object ArrayResolver {
             )
         }
 
-        // If not a primitive array then assume is a generics Array,
-        // If it is not found, log an error and treat it as an object type.
+        // If not a primitive array then it is expected to be a Generics array.
         if (!TypeDescriptor.isGenericsArray(kType = kType)) {
             tracer.error("Type is not a generics Array<T>: $kType")
             return TypeSchema.of(
