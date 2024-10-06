@@ -12,6 +12,7 @@ import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
+import kotlin.reflect.full.isSuperclassOf
 import kotlin.uuid.Uuid
 
 /**
@@ -21,21 +22,57 @@ import kotlin.uuid.Uuid
 @TypeInspectorAPI
 internal object TypeDescriptor {
     /**
-     * Determines whether the given [KClassifier] represents any array type in Kotlin,
-     * including both primitive arrays (e.g., [IntArray], [DoubleArray])
-     * and generics arrays (e.g., [Array]).
-     *
-     * Unlike standard generic classes like [List], array types in Kotlin are represented by distinct classes
-     * for each primitive type and a generic [Array] class for reference types. This distinction means that
-     * identifying an array type requires checking against all possible array classifiers, both primitive
-     * and generic.
+     * Determines whether the given [KType] represents a [Collection] as [List], [Set], etc.
      *
      * @param classifier The [KClassifier] of the [KType] to evaluate.
-     * @return True if the [classifier] corresponds to any Kotlin array type, otherwise False.
+     * @return True if determined is a [Collection], otherwise False.
+     *
+     * @see [isArray]
+     * @see [isGenericsArray]
+     * @see [isPrimitiveArray]
      */
-    fun isArray(classifier: KClassifier): Boolean {
+    fun isCollection(classifier: KClassifier): Boolean {
+        return classifier is KClass<*> && Collection::class.isSuperclassOf(classifier)
+    }
+
+    /**
+     * Determines whether the given [kType] represents any array type in Kotlin,
+     * for both, primitive arrays (e.g., [IntArray], [DoubleArray]), and generics [Array] types
+     *
+     * @param kType The [KType] to evaluate.
+     * @return True if corresponds to any array type, otherwise False.
+     *
+     * @see [isGenericsArray]
+     * @see [isPrimitiveArray]
+     * @see [isCollection]
+     */
+    fun isArray(kType: KType): Boolean {
+        val classifier: KClassifier = kType.classifier ?: return false
         return isPrimitiveArray(classifier = classifier)
-                || (classifier as? KClass<*>)?.javaObjectType?.isArray ?: false
+                || isGenericsArray(kType = kType)
+    }
+
+    /**
+     * Determines whether the given [kType] represents a generics [Array] type,
+     *
+     * Unlike standard generic classes like [List], array types in Kotlin are
+     * represented by distinct classes for each primitive type and a generic [Array]
+     * class for reference types.
+     * This distinction means that identifying an array type requires checking against
+     * all possible array classifiers, both primitive and generic.
+     *
+     * @param kType The [KType] to evaluate.
+     * @return True if corresponds to generics [Array] type, otherwise False.
+     *
+     * @see [isArray]
+     * @see [isPrimitiveArray]
+     * @see [isCollection]
+     */
+    fun isGenericsArray(kType: KType): Boolean {
+        val classifier: KClassifier = kType.classifier ?: return false
+        return !isPrimitiveArray(classifier = classifier) &&
+                kType.arguments.firstOrNull() != null &&
+                ((classifier as? KClass<*>)?.javaObjectType?.isArray ?: false)
     }
 
     /**
@@ -46,6 +83,10 @@ internal object TypeDescriptor {
      *
      * @param classifier The [KClassifier] of the [KType] to evaluate.
      * @return True if the [classifier] is one of Kotlin's primitive array types, otherwise False.
+     *
+     * @see [isArray]
+     * @see [isGenericsArray]
+     * @see [isCollection]
      */
     fun isPrimitiveArray(classifier: KClassifier): Boolean {
         return classifier == IntArray::class || classifier == ByteArray::class ||

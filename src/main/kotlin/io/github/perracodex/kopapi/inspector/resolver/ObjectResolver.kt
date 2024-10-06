@@ -22,7 +22,7 @@ import kotlin.reflect.KType
  * Primitive types are immediately mapped, while complex types are recursively inspected.
  *
  * Responsibilities:
- * - Handling of complex types (eg: classes, data classes).
+ * - Handling of complex types (e.g.: classes, data classes).
  * - Handling of primitive types.
  * - Handling circular dependencies and recursive structures.
  * - Caching the created [TypeSchema] to avoid redundant processing.

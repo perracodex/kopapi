@@ -8,28 +8,28 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
-import io.github.perracodex.kopapi.inspector.type.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.type.TypeSchema
+import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 
 /**
- * Resolves collection types (eg: [List], [Set]) including [Array] types,
- * into their corresponding [TypeSchema].
+ * Resolves [Collection] types (e.g.: [List], [Set], etc.), into their corresponding [TypeSchema].
  *
  * Responsibilities:
- * - Handling collections (eg: [List], [Set]).
- * - Handling of both primitive and non-primitive [Array] types.
- * - Extracting the contained element type and traversing it if needed.
+ * - Traversing the contained element type and resolving its respective [TypeSchema].
  */
 @TypeInspectorAPI
 internal object CollectionResolver {
+    private val tracer = Tracer<CollectionResolver>()
+
     /**
-     * Handles collections (eg: List, Set), including primitive and non-primitive arrays.
+     * Process [Collection] types (e.g.: [List], [Set], etc.),
+     * by introspecting the contained element type and traversing it if needed.
      *
      * @param kType The [KType] representing the collection type.
-     * @param classifier The [KClassifier] representing the collection class (e.g., List, Set).
+     * @param classifier The [KClassifier] representing the [Collection]  type.
      * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
      * @return The resolved [TypeSchema] for the collection type.
      */
@@ -40,32 +40,29 @@ internal object CollectionResolver {
     ): TypeSchema {
         val className: String = ElementMetadata.getClassName(kClass = (classifier as KClass<*>))
 
-        // Check if the classifier is a primitive array first, such as IntArray, ByteArray, etc.
-        if (TypeDescriptor.isPrimitiveArray(classifier = classifier)) {
-            val schema: MutableMap<String, Any>? = TypeDescriptor.mapPrimitiveType(kClass = classifier)
+        val argumentType: KType = kType.arguments.firstOrNull()?.type?.let {
+            TypeInspector.replaceTypeIfNeeded(
+                type = it,
+                typeParameterMap = typeParameterMap
+            )
+        } ?: run {
+            // Collections always have an argument type, so if not found,
+            // log an error and treat it as an object type.
+            tracer.error("No argument found for Collection<T> type: $kType")
             return TypeSchema.of(
                 name = className,
                 kType = kType,
-                schema = schema ?: Spec.objectType()
+                schema = Spec.objectType()
             )
         }
 
-        // Handle non-primitive arrays and collections based on their type arguments.
-        val itemType: KType = kType.arguments.firstOrNull()?.type?.let {
-            TypeInspector.replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
-        } ?: return TypeSchema.of(
-            name = className,
-            kType = kType,
-            schema = Spec.objectType()
-        )
-
-        // Map the item type to its respective TypeSchema,
-        // considering it's a regular object array or collection.
+        // Traverse the argument type to its respective TypeSchema,
         val typeSchema: TypeSchema = TypeInspector.traverse(
-            kType = itemType,
+            kType = argumentType,
             typeParameterMap = typeParameterMap
         )
 
+        // Although is a collection type, we suffix the name with 'ArrayOf' for simplicity.
         return TypeSchema.of(
             name = "ArrayOf${typeSchema.name}",
             kType = kType,

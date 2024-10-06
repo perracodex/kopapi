@@ -97,18 +97,26 @@ internal object TypeInspector {
         // Resolve the type's classifier, if unavailable, log an error and return an unknown type.
         val classifier: KClassifier = kType.classifier
             ?: run {
-                tracer.error("KType must have a classifier. kType=$kType. typeParameterMap=$typeParameterMap.")
-                return TypeSchema.of(
-                    name = "Unknown_$kType",
-                    kType = kType,
-                    schema = Spec.objectType()
-                )
+                tracer.error("Missing classifier. kType=$kType. typeParameterMap=$typeParameterMap.")
+                return buildUnknownTypeSchema(kType = kType)
             }
 
         val typeSchema: TypeSchema = when {
-            // Handle collections (e.g., List<String>, Set<Int>).
-            classifier == List::class || classifier == Set::class || TypeDescriptor.isArray(classifier = classifier) ->
-                CollectionResolver.process(kType = kType, classifier = classifier, typeParameterMap = typeParameterMap)
+            // Handle primitive arrays (e.g.: IntArray), and generics arrays (e.g., Array<String>).
+            TypeDescriptor.isArray(kType = kType) ->
+                ArrayResolver.process(
+                    kType = kType,
+                    classifier = classifier,
+                    typeParameterMap = typeParameterMap
+                )
+
+            // Handle collections (e.g., List<String>, Set<Int>, etc.).
+            TypeDescriptor.isCollection(classifier = classifier) ->
+                CollectionResolver.process(
+                    kType = kType,
+                    classifier = classifier,
+                    typeParameterMap = typeParameterMap
+                )
 
             // Handle maps (e.g., Map<String, Int>).
             classifier == Map::class ->
@@ -120,26 +128,47 @@ internal object TypeInspector {
 
             // Handle generics.
             kType.arguments.isNotEmpty() ->
-                GenericsResolver.process(kType = kType, kClass = classifier as KClass<*>, typeParameterMap = typeParameterMap)
+                GenericsResolver.process(
+                    kType = kType,
+                    kClass = classifier as KClass<*>,
+                    typeParameterMap = typeParameterMap
+                )
 
             // Handle basic types and complex objects.
             // This condition must be placed last because all types are also instances of KClass.
             // If this check is placed earlier, the above branches will never be reached.
             classifier is KClass<*> ->
-                ObjectResolver.process(kType = kType, kClass = classifier, typeParameterMap = typeParameterMap)
+                ObjectResolver.process(
+                    kType = kType,
+                    kClass = classifier,
+                    typeParameterMap = typeParameterMap
+                )
 
             // Fallback for unknown types. This should never be reached.
             else -> {
-                tracer.error("Unexpected type. kType=$kType. classifier=$classifier. typeParameterMap=$typeParameterMap.")
-                TypeSchema.of(
-                    name = "Unknown_$kType",
-                    kType = kType,
-                    schema = Spec.objectType()
-                )
+                tracer.error("Unexpected type: $kType. typeParameterMap=$typeParameterMap.")
+                buildUnknownTypeSchema(kType = kType)
             }
         }
 
         return typeSchema
+    }
+
+    /**
+     * Constructs a [TypeSchema] for the given [kType] when the type is unknown.
+     *
+     * @param kType The unknown [KType] to build a schema for.
+     *
+     */
+    @OptIn(TypeInspectorAPI::class)
+    private fun buildUnknownTypeSchema(
+        kType: KType,
+    ): TypeSchema {
+        return TypeSchema.of(
+            name = "Unknown_$kType",
+            kType = kType,
+            schema = Spec.objectType()
+        )
     }
 
     /**
