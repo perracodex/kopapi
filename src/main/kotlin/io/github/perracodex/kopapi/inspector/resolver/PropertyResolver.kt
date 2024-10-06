@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.SpecKey
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
 import io.github.perracodex.kopapi.inspector.type.TypeSchema
+import io.github.perracodex.kopapi.inspector.type.resolveGenerics
 import io.github.perracodex.kopapi.utils.Tracer
 import java.lang.reflect.Field
 import kotlin.reflect.*
@@ -45,8 +46,7 @@ internal object PropertyResolver {
             property = property
         )
 
-        val propertyType: KType = TypeInspector.replaceTypeIfNeeded(
-            kType = property.returnType,
+        val propertyType: KType = property.returnType.resolveGenerics(
             typeParameterMap = typeParameterMap
         )
 

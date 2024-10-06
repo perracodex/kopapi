@@ -8,9 +8,11 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.TypeSchema
+import io.github.perracodex.kopapi.inspector.type.resolveGenerics
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
+import kotlin.reflect.KTypeProjection
 
 /**
  * Resolves [Map] objects into their corresponding [TypeSchema].
@@ -41,12 +43,9 @@ internal object MapResolver {
         kType: KType,
         typeParameterMap: Map<KClassifier, KType>
     ): TypeSchema {
-        val keyType: KType? = kType.arguments.getOrNull(index = 0)?.type?.let {
-            TypeInspector.replaceTypeIfNeeded(kType = it, typeParameterMap = typeParameterMap)
-        }
-        val valueType: KType? = kType.arguments.getOrNull(index = 1)?.type?.let {
-            TypeInspector.replaceTypeIfNeeded(kType = it, typeParameterMap = typeParameterMap)
-        }
+        val mapArguments: List<KTypeProjection> = kType.arguments
+        val keyType: KType? = mapArguments.getOrNull(index = 0)?.type?.resolveGenerics(typeParameterMap = typeParameterMap)
+        val valueType: KType? = mapArguments.getOrNull(index = 1)?.type?.resolveGenerics(typeParameterMap = typeParameterMap)
 
         // OpenAPI requires keys to be strings.
         // The key is actually not needed for processing since for maps we only traverse the value type,

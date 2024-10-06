@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
 import io.github.perracodex.kopapi.inspector.type.TypeSchema
+import io.github.perracodex.kopapi.inspector.type.resolveGenerics
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
@@ -40,12 +41,9 @@ internal object CollectionResolver {
     ): TypeSchema {
         val className: String = ElementMetadata.getClassName(kClass = (classifier as KClass<*>))
 
-        val argumentType: KType = kType.arguments.firstOrNull()?.type?.let { argumentType ->
-            TypeInspector.replaceTypeIfNeeded(
-                kType = argumentType,
-                typeParameterMap = typeParameterMap
-            )
-        } ?: run {
+        val argumentType: KType = kType.arguments.firstOrNull()?.type?.resolveGenerics(
+            typeParameterMap = typeParameterMap
+        ) ?: run {
             // Collections always have an argument type, so if not found,
             // log an error and treat it as an object type.
             tracer.error("No argument found for Collection<T> type: $kType")

@@ -4,7 +4,6 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
@@ -129,7 +128,7 @@ internal object GenericsResolver {
                 kType = kType,
                 kClass = kClass,
                 genericsTypeName = genericsTypeName,
-                parentTypeParameterMap = typeParameterMap
+                inheritedTypeParameterMap = typeParameterMap
             )
         }
 
@@ -167,21 +166,35 @@ internal object GenericsResolver {
     }
 
     /**
-     * Traverses a generics type to resolve its properties and cache their schema.
+     * Traverses a `Generics` type to resolve its properties and cache their schema.
      *
-     * @param kClass The [kClass] representing the generic type.
-     * @param kType The [KType] containing the actual types for the generics.
-     * @param genericsTypeName The generated name for the generics type.
-     * @param parentTypeParameterMap A map of type parameter classifiers to actual [KType] objects for replacement.
+     * #### ParameterMap Details
+     * - **inheritedTypeParameterMap:** Carries type mappings from the outer traversal context.
+     * - **localTypeParameterMap:** Maps the current `Generics` type parameters to their concrete type arguments.
+     * - **mergedTypeParameterMap:** Combines inherited and local type parameters to maintain context-specific substitutions.
+     *
+     * #### ParameterMap Lifecycle
+     * - `inheritedTypeParameterMap` is received from the caller and remains unchanged within this scope.
+     * - `localTypeParameterMap` is created for each new `Generics` traversal.
+     * - `mergedTypeParameterMap` is used within the current traversal and passed only downwards to nested traversals.
+     *    Does not affect the inherited map in upper context scopes.
+     *
+     * This ensures type parameters from different `Generics` remain isolated, preventing mix-ups
+     * and maintaining accurate type resolution throughout the traversal process.
+     *
+     * @param kType The [KType] containing the actual type arguments for the `Generics`.
+     * @param kClass The [KClass] representing the `Generics` type.
+     * @param genericsTypeName The generated name for the `Generics` type schema.
+     * @param inheritedTypeParameterMap A map of type parameter classifiers to their concrete [KType]s from the outer context.
      */
     @Suppress("DuplicatedCode")
     private fun traverse(
         kType: KType,
         kClass: KClass<*>,
         genericsTypeName: String,
-        parentTypeParameterMap: Map<KClassifier, KType>
+        inheritedTypeParameterMap: Map<KClassifier, KType>
     ) {
-        // Add a schema placeholder early to avoid circular references.
+        // Create a schema placeholder and cache it to handle potential circular references.
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
             name = genericsTypeName,
             kType = kType,
@@ -189,43 +202,42 @@ internal object GenericsResolver {
         )
         TypeInspector.addToCache(schema = schemaPlaceholder)
 
-        // Retrieve the type parameters from the generic class.
-        val classTypeParameters: List<KTypeParameter> = kClass.typeParameters
-        // Retrieve the actual generics arguments provided.
-        val genericsArguments: List<KType> = kType.arguments.mapNotNull { it.type }
+        // Extract `Generic` type parameters and their corresponding type arguments.
+        val typeParameters: List<KTypeParameter> = kClass.typeParameters
+        val typeArguments: List<KType> = kType.arguments.mapNotNull { it.type }
 
-        // Ensure the number of type parameters matches the number of the generics arguments.
-        if (classTypeParameters.size != genericsArguments.size) {
-            throw KopapiException(
-                "Generics type parameter count mismatch for $kClass. " +
-                        "Expected ${classTypeParameters.size}, but got ${genericsArguments.size}."
-            )
+        // Validate that each type parameter has a corresponding type argument.
+        require(typeParameters.size == typeArguments.size) {
+            "Generics type parameter count mismatch for $kClass. " +
+                    "Expected ${typeParameters.size}, but got ${typeArguments.size}."
         }
 
-        // Create a map of type parameters to their actual types.
-        val currentTypeParameterMap: Map<KClassifier, KType> = classTypeParameters
-            .mapIndexed { index, typeParameterItem ->
-                typeParameterItem as KClassifier to genericsArguments[index]
+        // Map each type parameter to its actual type argument.
+        val localTypeParameterMap: Map<KClassifier, KType> = typeParameters
+            .mapIndexed { index, typeParameter ->
+                typeParameter as KClassifier to typeArguments[index]
             }.toMap()
 
-        // Merge parent type parameters with current type parameters.
-        val combinedTypeParameterMap: Map<KClassifier, KType> = parentTypeParameterMap + currentTypeParameterMap
+        // Merge inherited type parameters with the local context type parameter mappings.
+        val mergedTypeParameterMap: Map<KClassifier, KType> = inheritedTypeParameterMap + localTypeParameterMap
 
-        // Prepare a map to hold the properties for the generic instance.
+        // Initialize a map to hold resolved schemas for each property.
         val propertiesSchemas: MutableMap<String, Any> = mutableMapOf()
 
-        // Traverse each class property and resolve its schema.
+        // Retrieve all relevant properties of the generic class.
         val classProperties: List<KProperty1<out Any, *>> = PropertyResolver.getProperties(kClass = kClass)
+
+        // Traverse each property to resolve its schema using the merged type parameters.
         classProperties.forEach { property ->
             val propertySchema: PropertySchema = PropertyResolver.traverse(
                 classKType = kType,
                 property = property,
-                typeParameterMap = combinedTypeParameterMap
+                typeParameterMap = mergedTypeParameterMap
             )
             propertiesSchemas[propertySchema.name] = propertySchema.schema
         }
 
-        // Update the placeholder with actual processed schemas.
+        // Update the cached schema placeholder with the resolved property schemas.
         schemaPlaceholder.schema.putAll(
             Spec.properties(value = propertiesSchemas)
         )

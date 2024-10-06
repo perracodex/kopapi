@@ -197,39 +197,4 @@ internal object TypeInspector {
     fun addToCache(schema: TypeSchema) {
         typeSchemaCache.add(schema)
     }
-
-    /**
-     * Returns the corresponding type from [typeParameterMap] if the [kType]'s classifier
-     * is found in the given [typeParameterMap].
-     * Otherwise, returns the provided [kType].
-     *
-     * #### Type Substitution
-     * This function checks if the classifier (typically a type argument like `T`, `K`, etc.)
-     * of the given [kType] exists in the [typeParameterMap].
-     * If it does, it replaces the type with its mapped concrete type.
-     *
-     * #### Ensuring Accurate Type Resolution
-     * By substituting type parameters with actual types, it ensures that the introspecting
-     * traversal can generate precise [TypeSchema] representations, especially for `Generics` types.
-     *
-     * #### Example Scenario
-     * Consider a `Generics` class `Data<T>`. When inspecting `Data<Car>`,
-     * `T` should be replaced with `Car` in the type resolution process.
-     *
-     * @param kType The [kType] to check for replacement.
-     * @param typeParameterMap A map where type parameters are mapped to their actual [kType] values.
-     * @return The [kType] from the map if the classifier is found, otherwise the provided [kType].
-     */
-    @TypeInspectorAPI
-    fun replaceTypeIfNeeded(
-        kType: KType,
-        typeParameterMap: Map<KClassifier, KType>
-    ): KType {
-        val classifier: KClassifier? = kType.classifier
-        return if (classifier in typeParameterMap) {
-            typeParameterMap[classifier]!!
-        } else {
-            kType
-        }
-    }
 }
