@@ -130,11 +130,12 @@ internal object GenericsResolver {
         val propertiesSchemas: MutableMap<String, Any> = mutableMapOf()
 
         // Retrieve sorted properties based on the primary constructor's parameter order
-        val sortedProperties: List<KProperty1<out Any, *>> = PropertyResolver.getProperties(kClass = kClass)
+        val typeProperties: List<KProperty1<out Any, *>> = PropertyResolver.getProperties(kClass = kClass)
 
-        // Iterate over each sorted property in the generic class.
-        sortedProperties.forEach { sortedProperty ->
+        // Iterate over each property in the generic class.
+        typeProperties.forEach { sortedProperty ->
             val (propertyName, extendedSchema) = PropertyResolver.traverse(
+                classKType = kType,
                 property = sortedProperty,
                 typeParameterMap = combinedTypeParameterMap
             )
