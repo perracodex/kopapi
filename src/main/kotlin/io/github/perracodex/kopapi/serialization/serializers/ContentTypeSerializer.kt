@@ -12,7 +12,7 @@ import io.ktor.http.*
 /**
  * Simple Jackson serializer to encode [ContentType] objects as their string representation.
  */
-internal object ContentTypeSerializerJackson : JsonSerializer<ContentType>() {
+internal object ContentTypeSerializer : JsonSerializer<ContentType>() {
     override fun serialize(value: ContentType, gen: JsonGenerator, serializers: SerializerProvider) {
         gen.writeString(value.toString())
     }

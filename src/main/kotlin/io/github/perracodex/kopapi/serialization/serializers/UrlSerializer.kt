@@ -12,7 +12,7 @@ import io.ktor.http.*
 /**
  * Simple Jackson serializer to encode [Url] objects as their string representation.
  */
-internal object UrlSerializerJackson : JsonSerializer<Url>() {
+internal object UrlSerializer : JsonSerializer<Url>() {
     override fun serialize(value: Url, gen: JsonGenerator, serializers: SerializerProvider) {
         gen.writeString(value.toString())
     }

@@ -12,7 +12,7 @@ import io.ktor.http.*
 /**
  * Simple Jackson serializer to encode [HttpMethod] objects as their string representation.
  */
-internal object HttpMethodSerializerJackson : JsonSerializer<HttpMethod>() {
+internal object HttpMethodSerializer : JsonSerializer<HttpMethod>() {
     override fun serialize(value: HttpMethod, gen: JsonGenerator, serializers: SerializerProvider) {
         gen.writeString(value.value)
     }

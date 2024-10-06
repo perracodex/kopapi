@@ -29,11 +29,11 @@ internal object SerializationUtils {
         .setSerializationInclusion(JsonInclude.Include.ALWAYS)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .registerModule(SimpleModule().apply {
-            addSerializer(ContentType::class.java, ContentTypeSerializerJackson)
-            addSerializer(HttpMethod::class.java, HttpMethodSerializerJackson)
-            addSerializer(HttpStatusCode::class.java, HttpStatusCodeSerializerJackson)
-            addSerializer(KType::class.java, KTypeSerializerJackson)
-            addSerializer(Url::class.java, UrlSerializerJackson)
+            addSerializer(ContentType::class.java, ContentTypeSerializer)
+            addSerializer(HttpMethod::class.java, HttpMethodSerializer)
+            addSerializer(HttpStatusCode::class.java, HttpStatusCodeSerializer)
+            addSerializer(KType::class.java, KTypeSerializer)
+            addSerializer(Url::class.java, UrlSerializer)
         })
 
     /**

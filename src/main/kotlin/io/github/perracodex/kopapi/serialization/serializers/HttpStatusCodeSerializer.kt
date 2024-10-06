@@ -12,7 +12,7 @@ import io.ktor.http.*
 /**
  * Simple Jackson serializer to encode [HttpStatusCode] objects as their string representation.
  */
-internal object HttpStatusCodeSerializerJackson : JsonSerializer<HttpStatusCode>() {
+internal object HttpStatusCodeSerializer : JsonSerializer<HttpStatusCode>() {
     override fun serialize(value: HttpStatusCode, gen: JsonGenerator, serializers: SerializerProvider) {
         gen.writeString("${value.value} ${value.description}")
     }

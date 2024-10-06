@@ -12,7 +12,7 @@ import kotlin.reflect.KType
 /**
  * Simple Jackson serializer to encode [KType] objects as their string representation.
  */
-internal object KTypeSerializerJackson : JsonSerializer<KType>() {
+internal object KTypeSerializer : JsonSerializer<KType>() {
     override fun serialize(value: KType, gen: JsonGenerator, serializers: SerializerProvider) {
         gen.writeString(value.toString())
     }
