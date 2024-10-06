@@ -43,10 +43,15 @@ import kotlin.reflect.KType
  * otherwise, returns the original [KType].
  */
 internal fun KType.resolveGenerics(typeParameterMap: Map<KClassifier, KType>): KType {
-    val classifier: KClassifier? = this.classifier
-    return if (classifier in typeParameterMap) {
-        typeParameterMap[classifier]!!
-    } else {
-        this
+    this.classifier?.let {
+        if (typeParameterMap.containsKey(classifier)) {
+            return typeParameterMap[classifier] ?: run {
+                // This should never happen. It would mean a corrupted map.
+                throw IllegalStateException("Unable to resolve Generics. Missing mapping for classifier '$classifier'")
+            }
+        }
     }
+
+    // Return the original type if no substitution is needed.
+    return this
 }
