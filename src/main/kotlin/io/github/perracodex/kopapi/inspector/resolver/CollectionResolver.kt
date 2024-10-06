@@ -61,6 +61,8 @@ internal object CollectionResolver {
         )
 
         // Although is a collection type, we suffix the name with 'ArrayOf' for simplicity.
+        // The name is actually irrelevant because both Array<T> and Collections never
+        // produce a referable object in the final schema.
         return TypeSchema.of(
             name = "ArrayOf${typeSchema.name}",
             kType = kType,
