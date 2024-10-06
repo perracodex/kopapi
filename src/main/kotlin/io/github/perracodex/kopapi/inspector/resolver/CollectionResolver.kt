@@ -55,7 +55,7 @@ internal object CollectionResolver {
             )
         }
 
-        // Traverse the argument type to its respective TypeSchema,
+        // Traverse the collection argument element to resolve its respective TypeSchema.
         val typeSchema: TypeSchema = TypeInspector.traverse(
             kType = argumentType,
             typeParameterMap = typeParameterMap
