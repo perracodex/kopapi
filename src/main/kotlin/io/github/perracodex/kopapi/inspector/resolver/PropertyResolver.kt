@@ -33,20 +33,20 @@ internal object PropertyResolver {
      * @param classKType The [KType] of the class declaring the property.
      * @param property The [KProperty1] to process.
      * @param typeParameterMap A map of type parameter classifiers to actual [KType] for replacement.
-     * @return A [Pair] containing the resolved property name and the resolved schema map.
+     * @return A [PropertySchema] containing the resolved property name and schema.
      */
     fun traverse(
         classKType: KType,
         property: KProperty1<out Any, *>,
         typeParameterMap: Map<KClassifier, KType>
-    ): Pair<String, Map<String, Any>> {
+    ): PropertySchema {
         val metadata: ElementMetadata = ElementMetadata.of(
             classKType = classKType,
             property = property
         )
 
         val propertyType: KType = TypeInspector.replaceTypeIfNeeded(
-            type = property.returnType,
+            kType = property.returnType,
             typeParameterMap = typeParameterMap
         )
 
@@ -70,7 +70,7 @@ internal object PropertyResolver {
             }
         }
 
-        return metadata.name to typeSchema.schema
+        return PropertySchema(name = metadata.name, schema = typeSchema.schema)
     }
 
     /**
@@ -148,3 +148,15 @@ internal object PropertyResolver {
         return orderedProperties
     }
 }
+
+/**
+ * Data class to hold the resolved property information.
+ *
+ * @property name The resolved property name.
+ *               This is the final name after applying metadata transformations.
+ * @property schema The resolved schema map.
+ */
+internal data class PropertySchema(
+    val name: String,
+    val schema: Map<String, Any>
+)

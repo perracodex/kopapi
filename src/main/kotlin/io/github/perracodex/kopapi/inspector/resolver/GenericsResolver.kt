@@ -13,13 +13,97 @@ import io.github.perracodex.kopapi.inspector.type.TypeSchema
 import kotlin.reflect.*
 
 /**
- * Resolves generics types, considering nested and complex generics.
+ * Resolves `Generics` types, considering nested and complex `Generics`.
  *
- * Responsibilities:
- * - Verify if the generics type has already been processed, in which case return a reference to it.
- * - Traversing the generics type to resolve its properties and cache their respective schemas.
- * - Generating a unique and consistent name for the generics type.
- * - Caching the created [TypeSchema] to avoid redundant processing.
+ * #### Type Parameter Map Details
+ *
+ * `Generics` processing relies on the `typeParameterMap` arguments being passed across traversal.
+ * This mapping is crucial for resolving `Generics` types during type inspection.
+ * It is a mapping between the `Generics` type parameter (such as `T`, `K`, etc.), and its actual
+ * real type argument.
+ * This mapping ensures that when the inspector encounters a type argument, it can substitute
+ * it with the appropriate actual type.
+ * This map is propagated through recursive inspections to maintain consistency in type resolution
+ * across the entire type hierarchy.
+ *
+ * #### Flow
+ *
+ * **Example Scenario: Inspecting a `Generics` Data Class `Page<Employee>`**
+ * ```
+ * // Generic data class definition.
+ * data class Page<T>(
+ *     val content: T,
+ *     val pageNumber: Int,
+ *     val pageSize: Int
+ * )
+ *
+ * // Concrete type to inspect.
+ * data class Employee(
+ *     val id: Int,
+ *     val name: String
+ * )
+ *
+ * // Data class using the generic `Page` with `Employee` as a type argument.
+ * data class Result(
+ *     val page: Page<Employee>,
+ *     val someOtherProperty: Int,
+ *     ...
+ * )
+ * ```
+ *
+ * **Flow Explanation:**
+ * 1. **Inspecting `Page<Employee>`:**
+ *    - **`Generics` Detection:** Identifies `Page` as a `Generics` class with type parameter `T`.
+ *    - **Type Argument Mapping:** Creates `typeParameterMap = { T -> Employee }`.
+ *    - **Property Traversal:**
+ *      - **`content: T`:**
+ *        - Substitutes `T` with `Employee` using `typeParameterMap`.
+ *        - Delegates to `ObjectResolver` to process `Employee`, generating its schema.
+ *      - **`pageNumber: Int` & `pageSize: Int`:**
+ *        - Identified as primitive types and mapped directly to OpenAPI `integer` type.
+ *    - **Schema Assembly:** Combines the schemas to form `PageOfEmployee`, referencing the `Employee` schema.
+ *
+ * **Resulting Schema:**
+ * ```
+ * {
+ *   "PageOfEmployee": {
+ *     "type": "object",
+ *     "properties": {
+ *       "content": {
+ *         "$ref": "#/components/schemas/Employee"
+ *       },
+ *       "pageNumber": {
+ *         "type": "integer"
+ *       },
+ *       "pageSize": {
+ *         "type": "integer"
+ *       }
+ *     }
+ *   },
+ *   "Employee": {
+ *     "type": "object",
+ *     "properties": {
+ *       "id": {
+ *         "type": "integer"
+ *       },
+ *       "name": {
+ *         "type": "string"
+ *       }
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * **Example Key Points:**
+ *
+ * - **`Generics` Class Handling:** `Page<T>` is a `Generics` class with type parameter `T`.
+ *   When inspecting `Page<Employee>`, `typeParameterMap` is utilized to substitute `T` with `Employee`.
+ * - **Type Replacement:** The `typeParameterMap` enables substituting `T` in the `content` property with `Employee`.
+ * - **Delegation to Specific Resolvers:**
+ *   - `content: T` (now `content: Employee`) is delegated to `ObjectResolver` to process the concrete type `Employee`.
+ *   - Primitive properties like `pageNumber` and `pageSize` are handled directly without needing type substitution.
+ * - **Accurate Schema Generation:** Each property's schema is correctly generated based on its type,
+ *   ensuring the final `PageOfEmployee` schema accurately reflects its structure.
  */
 @TypeInspectorAPI
 internal object GenericsResolver {
@@ -90,6 +174,7 @@ internal object GenericsResolver {
      * @param genericsTypeName The generated name for the generics type.
      * @param parentTypeParameterMap A map of type parameter classifiers to actual [KType] objects for replacement.
      */
+    @Suppress("DuplicatedCode")
     private fun traverse(
         kType: KType,
         kClass: KClass<*>,
@@ -129,17 +214,15 @@ internal object GenericsResolver {
         // Prepare a map to hold the properties for the generic instance.
         val propertiesSchemas: MutableMap<String, Any> = mutableMapOf()
 
-        // Retrieve sorted properties based on the primary constructor's parameter order
-        val typeProperties: List<KProperty1<out Any, *>> = PropertyResolver.getProperties(kClass = kClass)
-
-        // Iterate over each property in the generic class.
-        typeProperties.forEach { sortedProperty ->
-            val (propertyName, extendedSchema) = PropertyResolver.traverse(
+        // Traverse each class property and resolve its schema.
+        val classProperties: List<KProperty1<out Any, *>> = PropertyResolver.getProperties(kClass = kClass)
+        classProperties.forEach { property ->
+            val propertySchema: PropertySchema = PropertyResolver.traverse(
                 classKType = kType,
-                property = sortedProperty,
+                property = property,
                 typeParameterMap = combinedTypeParameterMap
             )
-            propertiesSchemas[propertyName] = extendedSchema
+            propertiesSchemas[propertySchema.name] = propertySchema.schema
         }
 
         // Update the placeholder with actual processed schemas.

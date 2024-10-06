@@ -42,10 +42,10 @@ internal object MapResolver {
         typeParameterMap: Map<KClassifier, KType>
     ): TypeSchema {
         val keyType: KType? = kType.arguments.getOrNull(index = 0)?.type?.let {
-            TypeInspector.replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
+            TypeInspector.replaceTypeIfNeeded(kType = it, typeParameterMap = typeParameterMap)
         }
         val valueType: KType? = kType.arguments.getOrNull(index = 1)?.type?.let {
-            TypeInspector.replaceTypeIfNeeded(type = it, typeParameterMap = typeParameterMap)
+            TypeInspector.replaceTypeIfNeeded(kType = it, typeParameterMap = typeParameterMap)
         }
 
         // OpenAPI requires keys to be strings.

@@ -75,6 +75,7 @@ internal object ObjectResolver {
      * @param typeParameterMap A map of type parameters' [KClassifier] to their corresponding [KType].
      * @return The resolved [TypeSchema] for the complex type.
      */
+    @Suppress("DuplicatedCode")
     private fun handleComplexType(
         className: String,
         kType: KType,
@@ -91,35 +92,36 @@ internal object ObjectResolver {
         }
         inProcessTypeSemaphore.add(kType.nativeName())
 
-        // Create an empty TypeSchema before processing properties to handle circular dependencies.
-        val propertiesMap: MutableMap<String, Any> = mutableMapOf()
+        // Add a schema placeholder early to avoid circular references.
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
             name = className,
             kType = kType,
-            schema = Spec.properties(value = propertiesMap)
+            schema = Spec.properties(value = mutableMapOf())
         )
         TypeInspector.addToCache(schema = schemaPlaceholder)
 
         // Create a properties map to hold each of the traversed schemas.
-        val propertiesSchemas: MutableMap<String, Map<String, Any>> = mutableMapOf()
+        val propertiesSchemas: MutableMap<String, Any> = mutableMapOf()
 
-        // Traverse each property and resolve its schema.
-        val typeProperties: List<KProperty1<out Any, *>> = PropertyResolver.getProperties(kClass = kClass)
-        typeProperties.forEach { property ->
-            val (propertyName, extendedSchema) = PropertyResolver.traverse(
+        // Traverse each class property and resolve its schema.
+        val classProperties: List<KProperty1<out Any, *>> = PropertyResolver.getProperties(kClass = kClass)
+        classProperties.forEach { property ->
+            val propertySchema: PropertySchema = PropertyResolver.traverse(
                 classKType = kType,
                 property = property,
                 typeParameterMap = typeParameterMap
             )
-            propertiesSchemas[propertyName] = extendedSchema
+            propertiesSchemas[propertySchema.name] = propertySchema.schema
         }
 
-        // Add the resolved property schema to the properties map
-        // so they are reflected in the placeholder TypeSchema.
-        propertiesMap.putAll(propertiesSchemas)
-
-        // Once done remove the processing type from the in-memory tracker to handle different branches.
+        // Once done traversing remove the processing type from the in-memory
+        // tracker to handle different branches.
         inProcessTypeSemaphore.remove(kType.nativeName())
+
+        // Update the placeholder with actual processed schemas.
+        schemaPlaceholder.schema.putAll(
+            Spec.properties(value = propertiesSchemas)
+        )
 
         return TypeSchema.of(
             name = className,

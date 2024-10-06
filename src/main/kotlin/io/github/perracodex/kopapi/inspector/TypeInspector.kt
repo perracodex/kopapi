@@ -24,10 +24,10 @@ import kotlin.reflect.full.isSubclassOf
  * #### Key Features
  * - Inspection recursion for complex types.
  * - All primitive types, including enum classes.
- * - Major common types like UUID, Instant, LocalDate, etc. from both Kotlin and Java.
+ * - Major common types like `UUID`, `Instant`, `LocalDate`, etc. from both Kotlin and Java.
  * - Complex types like data classes, including nested complex Object properties.
- * - Collections like Lists, Sets, and Arrays, including primitive arrays (eg: IntArray).
- * - Maps with both complex objects or primitives.
+ * - `Collections` like `Lists`, `Sets`, and `Arrays`, including primitive arrays (eg: `IntArray`).
+ * - `Maps` with both complex objects or primitives.
  * - Generics support, including complex nested types.
  *
  * #### Supported Annotations
@@ -80,13 +80,20 @@ internal object TypeInspector {
 
     /**
      * Traverses and resolves the given [kType], handling both simple and complex types,
-     * including collections, maps, enums, and generics. Manages recursion and self-referencing types.
+     * including collections, maps, enums, and `Generics`. Manages recursion and self-referencing types.
      *
-     * Returns a [TypeSchema] representing the structure of the [kType], considering generic parameters
-     * nullable properties, and any annotations present.
+     * Returns a [TypeSchema] representing the structure of the [kType], considering `Generics`,
+     * optional properties, nullable properties, and some concrete annotations (see [TypeDescriptor]).
+     *
+     * #### Type Parameter Map Details
+     *
+     * The [typeParameterMap] is a crucial component for resolving `Generics` types during traversal
+     * and type inspections. This map is propagated through recursive inspections to maintain
+     * consistency in type resolution across the entire type hierarchy.
+     * See [GenericsResolver] for more detailed information on how this map is used.
      *
      * @param kType The [KType] to resolve into a [TypeSchema].
-     * @param typeParameterMap A map of type parameters' [KClassifier] to their corresponding [KType].
+     * @param typeParameterMap A map of type parameters' [KClassifier] to their actual [KType] replacements.
      * @return The resolved [TypeSchema] for the [kType].
      */
     @TypeInspectorAPI
@@ -191,24 +198,37 @@ internal object TypeInspector {
     }
 
     /**
-     * Returns the corresponding type from [typeParameterMap] if the [type]'s classifier
+     * Returns the corresponding type from [typeParameterMap] if the [kType]'s classifier
      * is found in the given [typeParameterMap].
-     * Otherwise, returns the provided [type].
+     * Otherwise, returns the provided [kType].
      *
-     * @param type The [KType] to check.
-     * @param typeParameterMap A map where type parameters are mapped to their actual [KType] values.
-     * @return The [KType] from the map if the classifier is found, otherwise the provided [type].
+     * #### Type Substitution
+     * This function checks if the classifier (typically a type argument like `T`, `K`, etc.)
+     * of the given [kType] exists in the [typeParameterMap].
+     * If it does, it replaces the type with its mapped concrete type.
+     *
+     * #### Ensuring Accurate Type Resolution
+     * By substituting type parameters with actual types, it ensures that the introspecting
+     * traversal can generate precise [TypeSchema] representations, especially for `Generics` types.
+     *
+     * #### Example Scenario
+     * Consider a `Generics` class `Data<T>`. When inspecting `Data<Car>`,
+     * `T` should be replaced with `Car` in the type resolution process.
+     *
+     * @param kType The [kType] to check for replacement.
+     * @param typeParameterMap A map where type parameters are mapped to their actual [kType] values.
+     * @return The [kType] from the map if the classifier is found, otherwise the provided [kType].
      */
     @TypeInspectorAPI
     fun replaceTypeIfNeeded(
-        type: KType,
+        kType: KType,
         typeParameterMap: Map<KClassifier, KType>
     ): KType {
-        val classifier: KClassifier? = type.classifier
+        val classifier: KClassifier? = kType.classifier
         return if (classifier in typeParameterMap) {
             typeParameterMap[classifier]!!
         } else {
-            type
+            kType
         }
     }
 }

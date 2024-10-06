@@ -40,9 +40,9 @@ internal object CollectionResolver {
     ): TypeSchema {
         val className: String = ElementMetadata.getClassName(kClass = (classifier as KClass<*>))
 
-        val argumentType: KType = kType.arguments.firstOrNull()?.type?.let {
+        val argumentType: KType = kType.arguments.firstOrNull()?.type?.let { argumentType ->
             TypeInspector.replaceTypeIfNeeded(
-                type = it,
+                kType = argumentType,
                 typeParameterMap = typeParameterMap
             )
         } ?: run {
