@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
+import io.github.perracodex.kopapi.inspector.type.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.type.TypeSchema
 import io.github.perracodex.kopapi.inspector.type.resolveGenerics
 import io.github.perracodex.kopapi.utils.Tracer
@@ -60,11 +61,16 @@ internal object CollectionResolver {
             typeParameterMap = typeParameterMap
         )
 
-        // Although is a collection type, we suffix the name with 'ArrayOf' for simplicity.
-        // The name is actually irrelevant because both Array<T> and Collections never
-        // produce a referable object in the final schema.
+        // Distinguishing names between Array<T> and Collections is solely for clarity and debugging,
+        // as neither results in a referable object in the final schema; only the contained element does.
+        val name: String = if (TypeDescriptor.isArray(kType = kType)) {
+            "ArrayOf${typeSchema.name}"
+        } else {
+            "CollectionOf${typeSchema.name}"
+        }
+
         return TypeSchema.of(
-            name = "ArrayOf${typeSchema.name}",
+            name = name,
             kType = kType,
             schema = Spec.collection(value = typeSchema.schema)
         )
