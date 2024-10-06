@@ -106,6 +106,7 @@ internal object ObjectResolver {
         val typeProperties: List<KProperty1<out Any, *>> = PropertyResolver.getProperties(kClass = kClass)
         typeProperties.forEach { property ->
             val (propertyName, extendedSchema) = PropertyResolver.traverse(
+                classKType = kType,
                 property = property,
                 typeParameterMap = typeParameterMap
             )

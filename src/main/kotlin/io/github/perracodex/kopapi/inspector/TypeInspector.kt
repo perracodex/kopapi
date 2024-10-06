@@ -21,7 +21,7 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.uuid.Uuid
 
 /**
- * Inspector for various Kotlin types capable of traversing and parsing [KType] objects
+ * Class for introspecting various Kotlin types capable of traversing and mapping [KType] objects
  * into [TypeSchema] objects containing the necessary information to construct OpenAPI schemas.
  *
  * #### Key Features

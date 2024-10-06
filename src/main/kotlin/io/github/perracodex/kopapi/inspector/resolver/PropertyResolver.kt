@@ -30,15 +30,20 @@ internal object PropertyResolver {
     /**
      * Processes the given [property] by traversing it and resolving its schema.
      *
+     * @param classKType The [KType] of the class declaring the property.
      * @param property The [KProperty1] to process.
      * @param typeParameterMap A map of type parameter classifiers to actual [KType] for replacement.
      * @return A [Pair] containing the resolved property name and the resolved schema map.
      */
     fun traverse(
+        classKType: KType,
         property: KProperty1<out Any, *>,
         typeParameterMap: Map<KClassifier, KType>
     ): Pair<String, Map<String, Any>> {
-        val metadata: ElementMetadata = ElementMetadata.of(property = property)
+        val metadata: ElementMetadata = ElementMetadata.of(
+            classKType = classKType,
+            property = property
+        )
 
         val propertyType: KType = TypeInspector.replaceTypeIfNeeded(
             type = property.returnType,
@@ -56,6 +61,9 @@ internal object PropertyResolver {
             }
             if (!metadata.isRequired) {
                 put(SpecKey.REQUIRED(), false)
+            }
+            if (metadata.isNullable) {
+                put(SpecKey.NULLABLE(), true)
             }
             if (metadata.isTransient) {
                 put(SpecKey.TRANSIENT(), true)
@@ -117,14 +125,17 @@ internal object PropertyResolver {
                 }
             }
 
-            // 6. Append remaining Kotlin properties that were not mapped via Java fields.
-            // Only include public properties.
-            val additionalProperties: List<KProperty1<out Any, *>> = declaredMemberProperties
-                .filter {
-                    it.visibility == KVisibility.PUBLIC &&
-                            it.name !in addedPropertyNames
-                }
-            orderedProperties.addAll(additionalProperties)
+            // 6. If failed to resolve the properties through the java fields, fallback to declared properties.
+            // Note that if a property doesn't have a backing field, it won't be included in the Java fields.
+            // This is correct as we don't want to include properties that are not backed by fields, since
+            // these are not serialized by default.
+            if (orderedProperties.isEmpty()) {
+                val additionalProperties: List<KProperty1<out Any, *>> = declaredMemberProperties
+                    .filter {
+                        it.visibility == KVisibility.PUBLIC
+                    }
+                orderedProperties.addAll(additionalProperties)
+            }
 
             // Move to the superclass, if any.
             currentClass = currentClass.superclasses.firstOrNull()

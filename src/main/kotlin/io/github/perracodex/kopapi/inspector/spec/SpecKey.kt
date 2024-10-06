@@ -17,6 +17,7 @@ internal enum class SpecKey(val value: String) {
     PROPERTIES(value = "properties"),
     ADDITIONAL_PROPERTIES(value = "additionalProperties"),
     REQUIRED(value = "required"),
+    NULLABLE(value = "nullable"),
     MIN_LENGTH(value = "minLength"),
     MAX_LENGTH(value = "maxLength"),
     REFERENCE(value = "\$ref"),
