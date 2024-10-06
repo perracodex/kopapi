@@ -148,10 +148,10 @@ internal object GenericsResolver {
 
     /**
      * Generates a unique and consistent name for a generics type,
-     * such as Page<Employee> becomes PageOfEmployee.
+     * such as for example `Page<Employee>` becomes `PageOfEmployee`.
      *
      * Handles multiple type parameters by joining them with 'Of',
-     * for example, Page<Employee, Department> becomes PageOfEmployeeOfDepartment.
+     * for example, `Page<Employee, Department>` becomes `PageOfEmployeeOfDepartment`.
      *
      * @param kType The [KType] representing the generics type, used to extract type arguments.
      * @param kClass The [KClass] representing the generics class.
@@ -174,12 +174,12 @@ internal object GenericsResolver {
     /**
      * Traverses a `Generics` type to resolve its properties and cache their schema.
      *
-     * #### ParameterMap Details
-     * - **inheritedTypeParameterMap:** Carries type mappings from the outer traversal context.
-     * - **localTypeParameterMap:** Maps the current `Generics` type parameters to their concrete type arguments.
-     * - **mergedTypeParameterMap:** Combines inherited and local type parameters to maintain context-specific substitutions.
+     * #### Type Parameter Map Details
+     * - `inheritedTypeParameterMap` Carries type mappings from the outer traversal context.
+     * - `localTypeParameterMap` Maps the current `Generics` type parameters to their concrete type arguments.
+     * - `mergedTypeParameterMap` Combines inherited and local type parameters to maintain context-specific substitutions.
      *
-     * #### ParameterMap Lifecycle
+     * #### Type Parameter Map Lifecycle
      * - `inheritedTypeParameterMap` is received from the caller and remains unchanged within this scope.
      * - `localTypeParameterMap` is created for each new `Generics` traversal.
      * - `mergedTypeParameterMap` is used within the current traversal and passed only downwards to nested traversals.
