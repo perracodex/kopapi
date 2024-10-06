@@ -25,6 +25,12 @@ import kotlin.reflect.*
  * This map is propagated through recursive inspections to maintain consistency in type resolution
  * across the entire type hierarchy.
  *
+ *
+ * #### Type Parameter Map Scope
+ * The typeParameterMap` is scoped per traversal context, ensuring that type substitutions
+ * are isolated and consistent within each generic inspection. This prevents type parameter
+ * mappings from different generics from interfering with one another.
+ *
  * #### Flow
  *
  * **Example Scenario: Inspecting a `Generics` Data Class `Page<Employee>`**
