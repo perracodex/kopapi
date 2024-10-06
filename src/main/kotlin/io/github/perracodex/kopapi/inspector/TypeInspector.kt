@@ -40,7 +40,8 @@ import kotlin.reflect.full.isSubclassOf
  *  The inspector caches resolved schemas to avoid duplication, so types are uniquely processed
  *  regardless of how many times are found in the current processing context, or subsequent calls.
  *  If different types are found with the same name, but different package they will still be
- *  processed and cached separately, but a warning added to [TypeSchemaConflicts].
+ *  processed and cached separately, but a warning will be added to the [TypeSchemaConflicts]
+ *  class allowing to inform about potential conflicts.
  */
 internal object TypeInspector {
     private val tracer = Tracer<TypeInspector>()
