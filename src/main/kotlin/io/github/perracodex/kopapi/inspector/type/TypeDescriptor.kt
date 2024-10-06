@@ -33,7 +33,6 @@ internal object TypeDescriptor {
      * @param classifier The [KClassifier] of the [KType] to evaluate.
      * @return True if the [classifier] corresponds to any Kotlin array type, otherwise False.
      */
-    @TypeInspectorAPI
     fun isArray(classifier: KClassifier): Boolean {
         return isPrimitiveArray(classifier = classifier)
                 || (classifier as? KClass<*>)?.javaObjectType?.isArray ?: false
@@ -48,7 +47,6 @@ internal object TypeDescriptor {
      * @param classifier The [KClassifier] of the [KType] to evaluate.
      * @return True if the [classifier] is one of Kotlin's primitive array types, otherwise False.
      */
-    @TypeInspectorAPI
     fun isPrimitiveArray(classifier: KClassifier): Boolean {
         return classifier == IntArray::class || classifier == ByteArray::class ||
                 classifier == ShortArray::class || classifier == FloatArray::class ||
@@ -65,7 +63,6 @@ internal object TypeDescriptor {
      * @return A mutable map representing the schema for the primitive type,
      * or null if the type is not a primitive.
      */
-    @TypeInspectorAPI
     fun mapPrimitiveType(kClass: KClass<*>): MutableMap<String, Any>? {
         return when (kClass) {
             // Basic Kotlin Types.
