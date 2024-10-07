@@ -8,6 +8,8 @@ kotlin = "2.0.20"                       # https://github.com/JetBrains/kotlin/re
 kotlinx-datetime = "0.6.1"              # https://github.com/Kotlin/kotlinx-datetime/releases
 kotlinx-serialization = "1.7.3"         # https://github.com/Kotlin/kotlinx.serialization/releases
 ktor = "2.3.12"                         # https://ktor.io/docs/releases.html#release-details
+mockk = "1.13.12"                       # https://github.com/mockk/mockk/releases
+mockito-kotlin = "5.4.0"                # https://github.com/mockito/mockito-kotlin/releases
 vanniktech = "0.29.0"                   # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
 
 
@@ -42,3 +44,12 @@ kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-
 # https://github.com/ktorio/ktor/releases
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-html-builder = { module = "io.ktor:ktor-server-html-builder", version.ref = "ktor" }
+
+# Testing.
+# https://github.com/mockk/mockk
+# https://github.com/mockito/mockito-kotlin
+# https://github.com/mockk/mockk/releases
+# https://github.com/mockito/mockito-kotlin/releases
+test-kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+test-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+test-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
