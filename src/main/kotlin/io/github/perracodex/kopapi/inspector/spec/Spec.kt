@@ -141,6 +141,6 @@ internal object Spec {
      * @return The specification entry for the schema reference.
      */
     fun reference(schema: String): MutableMap<String, Any> {
-        return mutableMapOf(SpecKey.REFERENCE() to "#/components/schemas/$schema")
+        return mutableMapOf(SpecKey.REFERENCE() to "${SpecKey.REFERENCE_PREFIX}$schema")
     }
 }

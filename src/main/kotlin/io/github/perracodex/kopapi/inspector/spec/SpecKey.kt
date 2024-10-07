@@ -21,6 +21,7 @@ internal enum class SpecKey(val value: String) {
     MIN_LENGTH(value = "minLength"),
     MAX_LENGTH(value = "maxLength"),
     REFERENCE(value = "\$ref"),
+    REFERENCE_PREFIX(value = "#/components/schemas/"),
     TRANSIENT(value = "transient"), // For internal use, not part of OpenAPI spec.
     ORIGINAL_NAME(value = "originalName"); // For internal use, not part of OpenAPI spec.
 
