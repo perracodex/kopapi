@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
+import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
@@ -25,7 +26,7 @@ import kotlin.reflect.KType
  * - Delegating `Generics` [Array] types to the [CollectionResolver].
  */
 @TypeInspectorAPI
-internal object ArrayResolver {
+internal class ArrayResolver(private val typeResolver: TypeResolver) {
     private val tracer = Tracer<ArrayResolver>()
 
     /**
@@ -37,7 +38,7 @@ internal object ArrayResolver {
      * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
      * @return The resolved [TypeSchema] for the collection type.
      */
-    fun process(
+    fun traverse(
         kType: KType,
         classifier: KClassifier,
         typeParameterMap: Map<KClassifier, KType>
@@ -66,7 +67,7 @@ internal object ArrayResolver {
         }
 
         // If dealing with a generics array, delegate to the CollectionResolver to handle it.
-        return CollectionResolver.process(
+        return typeResolver.traverseCollection(
             kType = kType,
             classifier = classifier,
             typeParameterMap = typeParameterMap

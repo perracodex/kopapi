@@ -24,7 +24,8 @@ class SimpleInspection {
         )
 
         // Inspect the Type Schema
-        val schemeRef: TypeSchema = TypeInspector.inspect(kType = Box::class.createType())
+        val inspector = TypeInspector()
+        val schemeRef: TypeSchema = inspector.inspect(kType = Box::class.createType())
 
         // Basic definition validation,
         assertEquals(Box::class.java.simpleName, schemeRef.name, "Schema name should match the class name")
@@ -37,7 +38,7 @@ class SimpleInspection {
         assertEquals("${SpecKey.REFERENCE_PREFIX}${schemeRef.name}", value, "The reference value is incorrect")
 
         // Retrieve and assert registered schemas,
-        val schemesSet: Set<TypeSchema> = TypeInspector.getTypeSchemas()
+        val schemesSet: Set<TypeSchema> = inspector.getTypeSchemas()
         assertEquals(1, schemesSet.size, "There should be exactly one registered schema")
 
         // Verify the definition of the retrieved schema,

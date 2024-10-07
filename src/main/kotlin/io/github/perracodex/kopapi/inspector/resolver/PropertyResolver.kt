@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.SpecKey
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
@@ -25,7 +25,7 @@ import kotlin.reflect.full.superclasses
  * - Ensuring that obtained properties are sorted as per the primary constructor's parameter order.
  */
 @TypeInspectorAPI
-internal object PropertyResolver {
+internal class PropertyResolver(private val typeResolver: TypeResolver) {
     private val tracer = Tracer<PropertyResolver>()
 
     /**
@@ -50,7 +50,7 @@ internal object PropertyResolver {
             typeParameterMap = typeParameterMap
         )
 
-        val typeSchema: TypeSchema = TypeInspector.traverse(
+        val typeSchema: TypeSchema = typeResolver.traverseType(
             kType = propertyType,
             typeParameterMap = typeParameterMap
         )

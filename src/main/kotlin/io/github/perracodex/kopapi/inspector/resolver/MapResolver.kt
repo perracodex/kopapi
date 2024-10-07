@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.TypeSchema
@@ -29,7 +29,7 @@ import kotlin.reflect.KTypeProjection
  * - Caching the created [TypeSchema] to avoid redundant processing.
  */
 @TypeInspectorAPI
-internal object MapResolver {
+internal class MapResolver(private val typeResolver: TypeResolver) {
     private val tracer = Tracer<MapResolver>()
 
     /**
@@ -39,7 +39,7 @@ internal object MapResolver {
      * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
      * @return The resolved [TypeSchema] for the map, with additionalProperties for the value type.
      */
-    fun process(
+    fun traverse(
         kType: KType,
         typeParameterMap: Map<KClassifier, KType>
     ): TypeSchema {
@@ -59,7 +59,7 @@ internal object MapResolver {
 
         // Process the value type.
         val typeSchema: TypeSchema = valueType?.let {
-            TypeInspector.traverse(kType = valueType, typeParameterMap = typeParameterMap)
+            typeResolver.traverseType(kType = valueType, typeParameterMap = typeParameterMap)
         } ?: TypeSchema.of(name = "MapOf${kType}", kType = kType, schema = Spec.objectType())
 
         return TypeSchema.of(

@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
@@ -28,9 +28,9 @@ import kotlin.reflect.KType
  * - Caching the created [TypeSchema] to avoid redundant processing.
  */
 @TypeInspectorAPI
-internal object ObjectResolver {
-    /** Temporarily tracks processed [KType] objects while traversing/recursing. */
-    private val inProcessTypeSemaphore: MutableSet<String> = mutableSetOf()
+internal class ObjectResolver(private val typeResolver: TypeResolver) {
+    /** Semaphore to prevent infinite recursion during type processing. */
+    private val inProcessSemaphore: MutableSet<String> = mutableSetOf()
 
     /**
      * Processes a complex or basic type into a [TypeSchema],
@@ -41,7 +41,7 @@ internal object ObjectResolver {
      * @param typeParameterMap A map of type parameters' [KClassifier] to their corresponding [KType].
      * @return The resolved [TypeSchema] for the complex or basic type.
      */
-    fun process(
+    fun traverse(
         kType: KType,
         kClass: KClass<*>,
         typeParameterMap: Map<KClassifier, KType>
@@ -83,14 +83,14 @@ internal object ObjectResolver {
         typeParameterMap: Map<KClassifier, KType>
     ): TypeSchema {
         // Prevent infinite recursion for self-referencing objects.
-        if (inProcessTypeSemaphore.contains(kType.nativeName())) {
+        if (inProcessSemaphore.contains(kType.nativeName())) {
             return TypeSchema.of(
                 name = className,
                 kType = kType,
                 schema = Spec.reference(schema = className)
             )
         }
-        inProcessTypeSemaphore.add(kType.nativeName())
+        inProcessSemaphore.add(kType.nativeName())
 
         // Add a schema placeholder early to avoid circular references.
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
@@ -98,17 +98,17 @@ internal object ObjectResolver {
             kType = kType,
             schema = Spec.properties(value = mutableMapOf())
         )
-        TypeInspector.addToCache(schema = schemaPlaceholder)
+        typeResolver.addToCache(schema = schemaPlaceholder)
 
         // Initialize a map to hold resolved schemas for each property.
         val propertiesSchemas: MutableMap<String, Any> = mutableMapOf()
 
         // Retrieve all relevant properties of the generic class.
-        val classProperties: List<KProperty1<out Any, *>> = PropertyResolver.getProperties(kClass = kClass)
+        val classProperties: List<KProperty1<out Any, *>> = typeResolver.getClassProperties(kClass = kClass)
 
         // Traverse each property to resolve its schema using the merged type parameters.
         classProperties.forEach { property ->
-            val propertySchema: PropertySchema = PropertyResolver.traverse(
+            val propertySchema: PropertySchema = typeResolver.traverseProperty(
                 classKType = kType,
                 property = property,
                 typeParameterMap = typeParameterMap
@@ -118,7 +118,7 @@ internal object ObjectResolver {
 
         // Once done traversing remove the processing type from the in-memory
         // tracker to handle different branches.
-        inProcessTypeSemaphore.remove(kType.nativeName())
+        inProcessSemaphore.remove(kType.nativeName())
 
         // Update the cached schema placeholder with the resolved property schemas.
         schemaPlaceholder.schema.putAll(

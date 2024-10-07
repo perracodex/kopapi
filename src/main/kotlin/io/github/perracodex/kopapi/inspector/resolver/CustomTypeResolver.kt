@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
@@ -24,7 +24,7 @@ import kotlin.reflect.KType
  * - Return a reference to the custom type schema.
  */
 @TypeInspectorAPI
-internal object CustomTypeResolver {
+internal class CustomTypeResolver(private val typeResolver: TypeResolver) {
     private val tracer = Tracer<CustomTypeResolver>()
 
     /**
@@ -52,7 +52,7 @@ internal object CustomTypeResolver {
 
         // If the custom type has not been processed yet,
         // create a schema for it and cache it for future reference.
-        if (!TypeInspector.isCached(kType = kType)) {
+        if (!typeResolver.isCached(kType = kType)) {
             val schema: MutableMap<String, Any> = mutableMapOf(SpecKey.TYPE() to customType.specType)
             customType.specFormat?.let { schema[SpecKey.FORMAT()] = customType.specFormat }
             customType.minLength?.let { schema[SpecKey.MIN_LENGTH()] = customType.minLength }
@@ -65,7 +65,7 @@ internal object CustomTypeResolver {
                 schema = schema
             )
 
-            TypeInspector.addToCache(schema = schemaType)
+            typeResolver.addToCache(schema = schemaType)
         }
 
         // Return a reference to the custom type schema.

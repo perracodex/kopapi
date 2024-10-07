@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
@@ -22,7 +22,7 @@ import kotlin.reflect.full.createType
  * - Caching the created [TypeSchema] to avoid redundant processing.
  */
 @TypeInspectorAPI
-internal object EnumResolver {
+internal class EnumResolver(private val typeResolver: TypeResolver) {
     /**
      * Processes the given [enumClass] and creates a [TypeSchema] for it.
      *
@@ -40,14 +40,14 @@ internal object EnumResolver {
 
         // If the enum type has not been processed yet,
         // create a schema for it and cache it for future reference.
-        if (!TypeInspector.isCached(kType = enumKType)) {
+        if (!typeResolver.isCached(kType = enumKType)) {
             val typeSchema: TypeSchema = TypeSchema.of(
                 name = enumClassName,
                 kType = enumKType,
                 schema = Spec.enum(values = enumValues)
             )
 
-            TypeInspector.addToCache(schema = typeSchema)
+            typeResolver.addToCache(schema = typeSchema)
         }
 
         // Return a reference to the enum schema.

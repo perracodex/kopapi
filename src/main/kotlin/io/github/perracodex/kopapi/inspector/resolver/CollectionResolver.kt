@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.spec.Spec
 import io.github.perracodex.kopapi.inspector.type.ElementMetadata
@@ -23,7 +23,7 @@ import kotlin.reflect.KType
  * - Traversing the contained element type and resolving its respective [TypeSchema].
  */
 @TypeInspectorAPI
-internal object CollectionResolver {
+internal class CollectionResolver(private val typeResolver: TypeResolver) {
     private val tracer = Tracer<CollectionResolver>()
 
     /**
@@ -35,7 +35,7 @@ internal object CollectionResolver {
      * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
      * @return The resolved [TypeSchema] for the collection type.
      */
-    fun process(
+    fun traverse(
         kType: KType,
         classifier: KClassifier,
         typeParameterMap: Map<KClassifier, KType>
@@ -56,7 +56,7 @@ internal object CollectionResolver {
         }
 
         // Traverse the collection argument element to resolve its respective TypeSchema.
-        val typeSchema: TypeSchema = TypeInspector.traverse(
+        val typeSchema: TypeSchema = typeResolver.traverseType(
             kType = argumentType,
             typeParameterMap = typeParameterMap
         )

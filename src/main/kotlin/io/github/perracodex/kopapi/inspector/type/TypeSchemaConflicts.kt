@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 /**
  * Manager caching conflicting [TypeSchema] objects.
  */
-internal object TypeSchemaConflicts {
+internal class TypeSchemaConflicts(private val typeInspector: TypeInspector) {
     /** Holds Conflict generated during the inspection process. */
     private val conflicts: MutableSet<Conflict> = mutableSetOf()
 
@@ -37,7 +37,7 @@ internal object TypeSchemaConflicts {
      */
     @TypeInspectorAPI
     fun analyze(newSchema: TypeSchema) {
-        TypeInspector.getTypeSchemas().filter { schema ->
+        typeInspector.getTypeSchemas().filter { schema ->
             schema.name.equals(other = newSchema.name, ignoreCase = true)
                     && !schema.type.equals(other = newSchema.type, ignoreCase = true)
         }.forEach { existing ->
