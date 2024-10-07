@@ -211,7 +211,7 @@ internal data class ElementMetadata(
             return try {
                 kClass.primaryConstructor?.parameters?.find { argument ->
                     argument.name == property.name
-                }?.isOptional ?: true // Assuming true if the parameter is not found.
+                }?.let { !it.isOptional } ?: true // Assuming true if the parameter is not found.
             } catch (e: Exception) {
                 tracer.error(
                     message = "Unable to determine if property is required by constructor. Field: $property",
