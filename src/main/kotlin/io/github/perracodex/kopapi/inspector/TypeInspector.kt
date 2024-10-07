@@ -17,6 +17,10 @@ import kotlin.reflect.KType
  * This class delegates the core type traversal and schema resolution logic to the [TypeResolver] class.
  * The [TypeSchemaConflicts] instance manages and logs any schema naming conflicts  detected during
  * the inspection process.
+ *
+ * @see [TypeResolver]
+ * @see [TypeSchemaConflicts]
+ * @see [TypeSchema]
  */
 @OptIn(TypeInspectorAPI::class)
 internal class TypeInspector {

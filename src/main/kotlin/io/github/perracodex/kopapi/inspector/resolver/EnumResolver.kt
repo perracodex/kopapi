@@ -20,6 +20,8 @@ import kotlin.reflect.full.createType
  * - Extracting the names of enum constants from a given enum class.
  * - Creating a [TypeSchema] for the enum type, which includes the enum values.
  * - Caching the created [TypeSchema] to avoid redundant processing.
+ *
+ * @see [TypeResolver]
  */
 @TypeInspectorAPI
 internal class EnumResolver(private val typeResolver: TypeResolver) {

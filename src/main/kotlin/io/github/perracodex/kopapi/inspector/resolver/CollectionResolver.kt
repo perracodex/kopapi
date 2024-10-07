@@ -21,6 +21,9 @@ import kotlin.reflect.KType
  *
  * Responsibilities:
  * - Traversing the contained element type and resolving its respective [TypeSchema].
+ *
+ * @see [ArrayResolver]
+ * @see [TypeResolver]
  */
 @TypeInspectorAPI
 internal class CollectionResolver(private val typeResolver: TypeResolver) {

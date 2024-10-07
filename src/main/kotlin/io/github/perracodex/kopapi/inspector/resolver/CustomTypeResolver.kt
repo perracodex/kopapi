@@ -22,6 +22,9 @@ import kotlin.reflect.KType
  * - Verify if the custom type is registered, and log an error if not.
  * - Create and cache a schema for the custom type for future reference.
  * - Return a reference to the custom type schema.
+ *
+ * @see [CustomType]
+ * @see [TypeResolver]
  */
 @TypeInspectorAPI
 internal class CustomTypeResolver(private val typeResolver: TypeResolver) {

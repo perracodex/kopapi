@@ -8,6 +8,10 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 
 /**
  * Provides reusable entries for specifying types and structures in data schemas.
+ *
+ * @see [SpecKey]
+ * @see [SpecType]
+ * @see [SpecFormat]
  */
 @TypeInspectorAPI
 internal object Spec {

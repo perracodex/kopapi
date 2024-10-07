@@ -8,6 +8,10 @@ package io.github.perracodex.kopapi.inspector.spec
  * Represents the formats used in OpenAPI specifications.
  *
  * @property value The string value of the format.
+ *
+ * @see [Spec]
+ * @see [SpecKey]
+ * @see [SpecType]
  */
 internal enum class SpecFormat(val value: String) {
     BYTE(value = "byte"),

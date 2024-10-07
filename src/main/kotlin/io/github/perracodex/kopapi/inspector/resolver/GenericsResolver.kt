@@ -108,6 +108,9 @@ import kotlin.reflect.*
  *   - Primitive properties like `pageNumber` and `pageSize` are handled directly without needing type substitution.
  * - **Accurate Schema Generation:** Each property's schema is correctly generated based on its type,
  *   ensuring the final `PageOfEmployee` schema accurately reflects its structure.
+ *
+ * @see [PropertyResolver]
+ * @see [TypeResolver]
  */
 @TypeInspectorAPI
 internal class GenericsResolver(private val typeResolver: TypeResolver) {

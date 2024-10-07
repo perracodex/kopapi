@@ -36,6 +36,18 @@ import kotlin.reflect.full.isSubclassOf
  *      - `@SerialName`, `@Transient`, `@Required`
  * - Jackson (partial support):
  *     - `JsonTypeName`, `@JsonProperty`, `@JsonIgnore`
+ *
+ * @see [ArrayResolver]
+ * @see [CollectionResolver]
+ * @see [CustomTypeResolver]
+ * @see [EnumResolver]
+ * @see [GenericsResolver]
+ * @see [MapResolver]
+ * @see [ObjectResolver]
+ * @see [PropertyResolver]
+ * @see [TypeSchema]
+ * @see [TypeDescriptor]
+ * @see [TypeInspector]
  */
 @TypeInspectorAPI
 internal class TypeResolver {

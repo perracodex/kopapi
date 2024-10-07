@@ -24,6 +24,9 @@ import kotlin.reflect.KType
  * Responsibilities:
  * - Handling primitive arrays (e.g.: IntArray, ByteArray, etc.)
  * - Delegating `Generics` [Array] types to the [CollectionResolver].
+ *
+ * @see [CollectionResolver]
+ * @see [TypeResolver]
  */
 @TypeInspectorAPI
 internal class ArrayResolver(private val typeResolver: TypeResolver) {

@@ -8,6 +8,10 @@ package io.github.perracodex.kopapi.inspector.spec
  * Represents the types used in OpenAPI specifications.
  *
  * @property value The string value of the type.
+ *
+ * @see [Spec]
+ * @see [SpecKey]
+ * @see [SpecFormat]
  */
 internal enum class SpecType(val value: String) {
     ARRAY(value = "array"),

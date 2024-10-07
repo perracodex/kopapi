@@ -8,6 +8,10 @@ package io.github.perracodex.kopapi.inspector.spec
  * Represents the keys used in OpenAPI specifications.
  *
  * @property value The string value of the key.
+ *
+ * @see [Spec]
+ * @see [SpecType]
+ * @see [SpecFormat]
  */
 internal enum class SpecKey(val value: String) {
     ENUM(value = "enum"),

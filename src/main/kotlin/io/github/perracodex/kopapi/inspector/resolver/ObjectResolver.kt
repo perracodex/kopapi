@@ -26,6 +26,9 @@ import kotlin.reflect.KType
  * - Handling of primitive types.
  * - Handling circular dependencies and recursive structures.
  * - Caching the created [TypeSchema] to avoid redundant processing.
+ *
+ * @see [PropertyResolver]
+ * @see [TypeResolver]
  */
 @TypeInspectorAPI
 internal class ObjectResolver(private val typeResolver: TypeResolver) {

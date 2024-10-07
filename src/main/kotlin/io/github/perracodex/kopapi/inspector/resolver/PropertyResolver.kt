@@ -23,6 +23,9 @@ import kotlin.reflect.full.superclasses
  * - Processing properties by traversing them to generate their schema.
  * - Handling metadata such as annotations, nullability, etc.
  * - Ensuring that obtained properties are sorted as per the primary constructor's parameter order.
+ *
+ * @see [TypeResolver]
+ * @see [ElementMetadata]
  */
 @TypeInspectorAPI
 internal class PropertyResolver(private val typeResolver: TypeResolver) {

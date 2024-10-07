@@ -27,6 +27,8 @@ import kotlin.reflect.KTypeProjection
  * - Logging errors for unsupported key types.
  * - Creating a [TypeSchema] which includes an `additionalProperties` spec for the value type.
  * - Caching the created [TypeSchema] to avoid redundant processing.
+ *
+ * @see [TypeResolver]
  */
 @TypeInspectorAPI
 internal class MapResolver(private val typeResolver: TypeResolver) {
