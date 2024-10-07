@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.plugin
 
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
 import io.github.perracodex.kopapi.plugin.builders.CustomTypeBuilder
@@ -64,17 +65,93 @@ public class KopapiConfig {
      * Registers a new `custom type` to be used when generating the OpenAPI schema.
      * These can be new unhandled types or existing standard types with custom specifications.
      *
-     * #### Sample Usage
+     * #### Syntax
      * ```
-     * customType<Test>("string")
-     * customType<Measure>("number") { format = "float" }
-     * customType<BigDecimal>("money") { format = "decimal" }
-     * customType<Dog>("mammal") { format = "breed" }
+     * customType<T>("type") { configuration }
+     * ```
+     * Where `T` is the new Object class to register and `"type"` is the type name to be used in the OpenAPI schema.
+     * The `"type"` name can be any custom text, or one of the standard OpenAPI types:
+     * ```
+     * "array", "boolean", "integer", "number", "object", "string"
+     * ```
+     *
+     * #### Samples
+     * ```
+     * customType<Data>("string")
+     * customType<Length>("number") { format = "float" }
+     * customType<CurrencyCode>("string") { minLength = 3, maxLength = 3 }
+     * ```
+     *
+     * #### Example
+     * Let's say you want to register two new custom types: `CurrencyCode` and `DiscountRate`.
+     *
+     * - You wish to represent `CurrencyCode` as a `string` type with a specific length.
+     * - You wish to represent `DiscountRate` as a `number` type with a percentage format.
+     *
+     * You can register these custom types as follows:
+     * ```
+     * customType<CurrencyCode>("string") {
+     *     minLength = 3
+     *     maxLength = 3
+     * }
+     *
+     * customType<DiscountRate>("number") {
+     *     format = "percentage"
+     *     additional = mapOf("minimum" to "0", "maximum" to "100")
+     * }
+     * ```
+     *
+     * Now, if we have a class `Transaction` that uses both the `CurrencyCode` and `DiscountRate` types:
+     * ```
+     * data class Transaction(
+     *     val id: Uuid,
+     *     val currency: CurrencyCode,
+     *     val discount: DiscountRate
+     * )
+     * ```
+     *
+     * This will produce the following OpenAPI schema for the `Transaction` class:
+     * ```
+     * "Transaction": {
+     *    "type": "object",
+     *    "properties": {
+     *       "id": {
+     *          "type": "string",
+     *          "format": "uuid"
+     *       },
+     *       "currency": {
+     *          "$ref": "#/components/schemas/CustomTypeOfCurrencyCode"
+     *       },
+     *       "discount": {
+     *          "$ref": "#/components/schemas/CustomTypeOfDiscountRate"
+     *       }
+     *    }
+     * }
+     * ```
+     *
+     * In addition, the OpenAPI specification will include the schema for each custom type as follows:
+     * ```
+     * "CustomTypeOfCurrencyCode": {
+     *    "type": "string",
+     *    "minLength": 3,
+     *    "maxLength": 3
+     * }
+     *
+     * "CustomTypeOfDiscountRate": {
+     *    "type": "number",
+     *    "format": "percentage",
+     *    "minimum": 0,
+     *    "maximum": 100
+     * }
      * ```
      *
      * @param T The new type to register. [Unit] and [Any] are not allowed.
+     * @param type The type name to be used in the OpenAPI schema.
      * @param configure A lambda receiver to configure the [CustomTypeBuilder].
+     *
+     * @see [CustomTypeBuilder]
      */
+    @OptIn(TypeInspectorAPI::class)
     public inline fun <reified T : Any> customType(type: String, configure: CustomTypeBuilder.() -> Unit = {}) {
         val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
         val newCustomType: CustomType = builder.build(type = typeOf<T>(), specType = type)

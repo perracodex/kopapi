@@ -10,12 +10,12 @@ package io.github.perracodex.kopapi.inspector.spec
  * @property value The string value of the type.
  */
 internal enum class SpecType(val value: String) {
+    ARRAY(value = "array"),
+    BOOLEAN(value = "boolean"),
     INTEGER(value = "integer"),
     NUMBER(value = "number"),
-    STRING(value = "string"),
-    BOOLEAN(value = "boolean"),
-    ARRAY(value = "array"),
-    OBJECT(value = "object");
+    OBJECT(value = "object"),
+    STRING(value = "string");
 
     operator fun invoke(): String = value
 

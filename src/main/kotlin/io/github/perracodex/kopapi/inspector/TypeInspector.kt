@@ -112,7 +112,7 @@ internal object TypeInspector {
             // Handle user defined custom types.
             // Must be checked always first to allow to override standard types.
             CustomTypeRegistry.isCustomType(kType = kType) ->
-                CustomTypeRegistry.getTypeSchema(kType = kType)
+                CustomTypeResolver.process(kType = kType)
 
             // Handle primitive arrays (e.g.: IntArray), and generics arrays (e.g., Array<String>).
             TypeDescriptor.isArray(kType = kType) ->

@@ -5,13 +5,8 @@
 package io.github.perracodex.kopapi.inspector.custom
 
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
-import io.github.perracodex.kopapi.inspector.spec.SpecKey
-import io.github.perracodex.kopapi.inspector.type.TypeDescriptor
-import io.github.perracodex.kopapi.inspector.type.TypeSchema
-import io.github.perracodex.kopapi.inspector.type.safeName
 import io.github.perracodex.kopapi.plugin.KopapiConfig
 import io.github.perracodex.kopapi.plugin.builders.CustomTypeBuilder
-import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KType
 
 /**
@@ -23,14 +18,10 @@ import kotlin.reflect.KType
  * @see [CustomType]
  */
 @PublishedApi
+@TypeInspectorAPI
 internal object CustomTypeRegistry {
-    private val tracer = Tracer<CustomTypeRegistry>()
-
     /** The set of all registered `custom types`. */
     private val registry: MutableSet<CustomType> = mutableSetOf()
-
-    /** Custom types prefix. used to compose [TypeSchema] names. */
-    private const val PREFIX = "CUSTOM_TYPE_"
 
     /**
      * Adds a new `custom types` into the registry.
@@ -52,27 +43,12 @@ internal object CustomTypeRegistry {
     }
 
     /**
-     * Builds the [TypeSchema] for a given [KType].
-     * If the [kType] was not registered it falls back to creating an `unknown object` [TypeSchema].
+     * Finds a `custom type` in the registry by its [KType].
      *
-     * @param kType The [KType] for which to create the [TypeSchema].
-     * @return A new [TypeSchema] instance for the given [kType].
+     * @param kType The [KType] to search for.
+     * @return The [CustomType] instance if found, null otherwise.
      */
-    @TypeInspectorAPI
-    fun getTypeSchema(kType: KType): TypeSchema {
-        registry.find { it.type == kType }?.let { customType ->
-            val schema: MutableMap<String, Any> = mutableMapOf(SpecKey.TYPE() to customType.specType)
-            customType.specFormat?.let { schema[SpecKey.FORMAT()] = it }
-            val name = "$PREFIX${kType.safeName()}"
-
-            return TypeSchema.of(
-                name = name,
-                kType = kType,
-                schema = schema
-            )
-        } ?: run {
-            tracer.error("Custom type not found for $kType.")
-            return TypeDescriptor.buildUnknownTypeSchema(kType)
-        }
+    fun find(kType: KType): CustomType? {
+        return registry.find { it.type == kType }
     }
 }
