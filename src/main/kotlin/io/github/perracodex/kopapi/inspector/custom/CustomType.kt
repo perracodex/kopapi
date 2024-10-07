@@ -14,10 +14,15 @@ import kotlin.reflect.KType
  *
  * @property type The [KType] of the parameter, specifying the Kotlin type.
  * @property specType The type map to be used in the OpenAPI schema. For example, `string` or `integer`.
- * @property specFormat The format of the type, if any. For example, `int32` or `int64`.
- * @property minLength The minimum length of the custom type, if any.
- * @property maxLength The maximum length of the custom type, if any.
- * @property additional Optional additional custom properties not covered by the above fields.
+ * @property specFormat Used for defining expected data formats (e.g., "date", "email").
+ * @property minLength Minimum length for string values.
+ * @property maxLength Maximum length for string values.
+ * @property minimum Minimum value for numeric types. Defines the inclusive lower bound.
+ * @property maximum Maximum value for numeric types. Defines the inclusive upper bound.
+ * @property exclusiveMinimum Exclusive lower bound for numeric types. The value is strictly greater.
+ * @property exclusiveMaximum Exclusive upper bound for numeric types. The value is strictly less.
+ * @property multipleOf Factor that constrains the value to be a multiple of a number.
+ * @property additional Map for specifying any additional custom properties not covered by the above fields
  *
  * @see [CustomTypeRegistry]
  * @see [KopapiConfig.customType]
@@ -29,6 +34,11 @@ internal data class CustomType internal constructor(
     val specFormat: String? = null,
     val minLength: Int? = null,
     val maxLength: Int? = null,
+    val minimum: Number? = null,
+    val maximum: Number? = null,
+    val exclusiveMinimum: Number? = null,
+    val exclusiveMaximum: Number? = null,
+    val multipleOf: Number? = null,
     val additional: Map<String, String>? = null
 ) {
     init {
@@ -43,6 +53,28 @@ internal data class CustomType internal constructor(
             require(maxLength == null || minLength <= maxLength) {
                 "Minimum length must be less than or equal to maximum length."
             }
+        }
+
+        // Validate value constraints.
+        minimum?.let {
+            require(maximum == null || minimum.toDouble() <= maximum.toDouble()) {
+                "Minimum value must be less than or equal to maximum value."
+            }
+        }
+        exclusiveMinimum?.let {
+            require(minimum == null || exclusiveMinimum.toDouble() > minimum.toDouble()) {
+                "Exclusive minimum must be strictly greater than the minimum value."
+            }
+        }
+        exclusiveMaximum?.let {
+            require(maximum == null || exclusiveMaximum.toDouble() < maximum.toDouble()) {
+                "Exclusive maximum must be strictly less than the maximum value."
+            }
+        }
+
+        // Validate multipleOf constraint
+        multipleOf?.let {
+            require(multipleOf.toDouble() > 0) { "multipleOf must be greater than zero." }
         }
     }
 }

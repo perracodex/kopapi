@@ -24,6 +24,11 @@ internal enum class SpecKey(val value: String) {
     NULLABLE(value = "nullable"),
     MIN_LENGTH(value = "minLength"),
     MAX_LENGTH(value = "maxLength"),
+    MINIMUM(value = "minimum"),
+    MAXIMUM(value = "maximum"),
+    EXCLUSIVE_MINIMUM(value = "exclusiveMinimum"),
+    EXCLUSIVE_MAXIMUM(value = "exclusiveMaximum"),
+    MULTIPLE_OF(value = "multipleOf"),
     REFERENCE(value = "\$ref"),
     REFERENCE_PREFIX(value = "#/components/schemas/"),
     TRANSIENT(value = "transient"), // For internal use, not part of OpenAPI spec.

@@ -61,6 +61,11 @@ internal class CustomTypeResolver(private val typeResolver: TypeResolver) {
             customType.minLength?.let { schema[SpecKey.MIN_LENGTH()] = customType.minLength }
             customType.maxLength?.let { schema[SpecKey.MAX_LENGTH()] = customType.maxLength }
             customType.additional?.let { schema.putAll(customType.additional) }
+            customType.minimum?.let { schema[SpecKey.MINIMUM()] = customType.minimum }
+            customType.maximum?.let { schema[SpecKey.MAXIMUM()] = customType.maximum }
+            customType.exclusiveMinimum?.let { schema[SpecKey.EXCLUSIVE_MINIMUM()] = customType.exclusiveMinimum }
+            customType.exclusiveMaximum?.let { schema[SpecKey.EXCLUSIVE_MAXIMUM()] = customType.exclusiveMaximum }
+            customType.multipleOf?.let { schema[SpecKey.MULTIPLE_OF()] = customType.multipleOf }
 
             val schemaType: TypeSchema = TypeSchema.of(
                 name = typeName,

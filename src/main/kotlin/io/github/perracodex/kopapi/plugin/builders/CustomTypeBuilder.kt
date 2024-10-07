@@ -64,10 +64,15 @@ import kotlin.reflect.KType
  * }
  * ```
  *
- * @property format Optional format of the custom type.
- * @property minLength Optional minimum length of the custom type.
- * @property maxLength Optional maximum length of the custom type.
- * @property additional Optional additional custom properties not covered by the above fields.
+ * @property format Used for defining expected data formats (e.g., "date", "email").
+ * @property minLength Minimum length for string values.
+ * @property maxLength Maximum length for string values.
+ * @property minimum Minimum value for numeric types. Defines the inclusive lower bound.
+ * @property maximum Maximum value for numeric types. Defines the inclusive upper bound.
+ * @property exclusiveMinimum Exclusive lower bound for numeric types. The value is strictly greater.
+ * @property exclusiveMaximum Exclusive upper bound for numeric types. The value is strictly less.
+ * @property multipleOf Factor that constrains the value to be a multiple of a number.
+ * @property additional Map for specifying any additional custom properties not covered by the above fields.
  *
  * @see [KopapiConfig.customType]
  */
@@ -75,6 +80,11 @@ public data class CustomTypeBuilder(
     var format: String? = null,
     var minLength: Int? = null,
     var maxLength: Int? = null,
+    var minimum: Number? = null,
+    var maximum: Number? = null,
+    var exclusiveMinimum: Number? = null,
+    var exclusiveMaximum: Number? = null,
+    var multipleOf: Number? = null,
     var additional: Map<String, String>? = null
 ) {
     /**
@@ -92,6 +102,11 @@ public data class CustomTypeBuilder(
             specFormat = format.trimOrNull(),
             minLength = minLength,
             maxLength = maxLength,
+            minimum = minimum,
+            maximum = maximum,
+            exclusiveMinimum = exclusiveMinimum,
+            exclusiveMaximum = exclusiveMaximum,
+            multipleOf = multipleOf,
             additional = additional
         )
     }
