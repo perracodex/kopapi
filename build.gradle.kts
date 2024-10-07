@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.html.builder)
 
+    testImplementation(libs.test.mockk)
     testImplementation(kotlin("test"))
 }
 
