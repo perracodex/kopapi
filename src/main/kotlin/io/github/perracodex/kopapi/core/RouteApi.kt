@@ -15,7 +15,7 @@ import io.ktor.server.routing.*
  * The metadata includes the endpoint full path, the HTTP method associated with the route, and optionally other
  * concrete details such as a summary, description, tags, parameters, request body, and responses.
  *
- * #### Usage
+ * #### Sample Usage
  * ```
  * get("/items/{group_id}/{item_id?}") {
  *     // Handle GET request
