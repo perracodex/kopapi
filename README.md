@@ -46,3 +46,10 @@ get("/items/{group_id}/{item_id?}") {
 * ### [Type Conflicts](./.wiki/10.type-conflicts.md)
 
 * ### [Type Introspection](./.wiki/11.type-introspection.md)
+
+---
+
+### License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
