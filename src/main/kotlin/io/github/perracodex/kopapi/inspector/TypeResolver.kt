@@ -92,7 +92,7 @@ internal class TypeResolver {
      *     |    |       - Add schema to cache.
      *     |    |   - Return schema or reference to schema.
      *     |    |
-     *     |    +-> No: Skip to next check.
+     *     |    +-> No: Skip to next decision check.
      *     |
      *     +-> Is the type an Array?
      *     |    |
@@ -113,7 +113,7 @@ internal class TypeResolver {
      *     |        |                   - Log error.
      *     |        |                   - Return unknown type schema.
      *     |        |
-     *     |        +-> No: Skip to next check.
+     *     |        +-> No: Skip to next decision check.
      *     |
      *     +-> Is the type a Collection?
      *     |    |
@@ -124,7 +124,7 @@ internal class TypeResolver {
      *     |    |       - Build collection schema.
      *     |    |       - Return schema.
      *     |    |
-     *     |    +-> No: Skip to next check.
+     *     |    +-> No: Skip to next decision check.
      *     |
      *     +-> Is the type a Map?
      *     |     |
@@ -136,7 +136,7 @@ internal class TypeResolver {
      *     |     |      - Build map schema with `additionalProperties`.
      *     |     |      - Return schema.
      *     |     |
-     *     |     +-> No: Skip to next check.
+     *     |     +-> No: Skip to next decision check.
      *     |
      *     +-> Is the type an Enum?
      *     |     |
@@ -148,7 +148,7 @@ internal class TypeResolver {
      *     |     |          - Add schema to cache.
      *     |     |      - Return schema or reference to schema.
      *     |     |
-     *     |     +-> No: Skip to next check.
+     *     |     +-> No: Skip to next decision check.
      *     |
      *     +-> Does the type have Type Arguments? (Generics)
      *     |    |
@@ -165,7 +165,7 @@ internal class TypeResolver {
      *     |    |           - Add schema to cache.
      *     |    |       - Return schema or reference to schema.
      *     |    |
-     *     |    +-> No: Skip to next check.
+     *     |    +-> No: Skip to next decision check.
      *     |
      *     +-> Is the type a KClass? (Object)
      *          |
