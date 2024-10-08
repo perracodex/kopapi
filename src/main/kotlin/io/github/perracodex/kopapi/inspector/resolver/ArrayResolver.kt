@@ -36,7 +36,7 @@ internal class ArrayResolver(private val typeResolver: TypeResolver) {
      * by introspecting the contained element type and traversing it if needed.
      *
      * @param kType The [KType] representing the collection type.
-     * @param classifier The [KClassifier] representing the `Collection` or typed `Array`.
+     * @param classifier The [KClassifier] representing the `Collection` or typed array `Array<T>`.
      * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
      * @return The resolved [TypeSchema] for the collection type.
      */
@@ -59,8 +59,8 @@ internal class ArrayResolver(private val typeResolver: TypeResolver) {
         }
 
         // If not a primitive array then it is expected to be a typed array (Array<T>).
-        if (!TypeDescriptor.isGenericsArray(kType = kType)) {
-            tracer.error("Type is not a typed Array<T>: $kType")
+        if (!TypeDescriptor.isTypedArray(kType = kType)) {
+            tracer.error("Type is not a typed array 'Array<T>': $kType")
             return TypeSchema.of(
                 name = className,
                 kType = kType,

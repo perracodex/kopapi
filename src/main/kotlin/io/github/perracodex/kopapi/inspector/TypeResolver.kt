@@ -24,8 +24,8 @@ import kotlin.reflect.full.isSubclassOf
  * ### Key Features
  * - Recursive Inspection: Capable of recursively traversing complex types, including nested objects.
  * - Comprehensive Type Support: Handles all primitive types, enums, and common Kotlin and Java types.
- * - Collections and Maps: Supports collections such as `List`, `Set`, including primitive and typed arrays.
- *   (e.g., `IntArray`), and maps with both primitive and complex object values.
+ * - Collections and Maps: Supports collections such as `List`, `Set`, including primitive and typed arrays,
+ *   and maps with both primitive and complex object values.
  * - Generics Handling: Resolves generics, including nested and complex generic types.
  * - Annotation Support: Recognizes and processes `Kotlinx` and `Jackson` annotations.
  * - Caching Mechanism: Caches resolved schemas to prevent duplication and improve performance.
@@ -103,7 +103,7 @@ internal class TypeResolver {
      *      *     |        |   |       - Return schema.
      *      *     |        |   |
      *      *     |        |   +-> No:
-     *      *     |        |       - Is it a typed Array<T>?
+     *      *     |        |       - Is it a typed array `Array<T>`?
      *      *     |        |           |
      *      *     |        |           +-> Yes:
      *      *     |        |           |       - Delegate to `CollectionResolver`.
@@ -207,7 +207,7 @@ internal class TypeResolver {
             CustomTypeRegistry.isCustomType(kType = kType) ->
                 customTypeResolver.process(kType = kType)
 
-            // Handle primitive arrays (e.g.: IntArray), and typed arrays (Array<T>).
+            // Handle primitive arrays (e.g.: IntArray), and typed arrays "Array<T>".
             TypeDescriptor.isArray(kType = kType) ->
                 arrayResolver.traverse(
                     kType = kType,
