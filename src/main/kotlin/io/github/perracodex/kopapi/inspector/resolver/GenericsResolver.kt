@@ -12,9 +12,30 @@ import io.github.perracodex.kopapi.inspector.type.TypeSchema
 import kotlin.reflect.*
 
 /**
- * Resolves `Generics` types, considering nested and complex `Generics`.
+ * - Purpose:
+ *      - Handles generic types with type parameters.
+ * - Action:
+ *      - Generate Unique Name:
+ *          Creates a unique name for the generic type (e.g., `PageOfEmployee`).
+ *      - Type Parameter Map:
+ *          - Create Local Map: Maps the generic type parameters to their concrete types.
+ *          - Merge Maps: Merges the local map with the inherited type parameter map to maintain accurate type substitutions.
+ *      - Traverse Properties:
+ *          - Retrieve Properties: Gets the properties of the generic type.
+ *          - Traverse Each Property: Uses `TypeResolver` to traverse each property, substituting types as needed.
+ *      - Construct Schema: Builds the schema for the generic type.
+ *      - Caching: Adds the schema to the `TypeResolver` cache.
+ *      - Result: Constructs and returns the generic type schema.
  *
- * #### Type Parameter Map Details
+ * #### Type Parameter Map
+ * - Purpose:
+ *      - Manages type substitutions for generic types during traversal.
+ * - Behavior:
+ *      - Isolation: Each traversal context maintains its own map to prevent conflicts.
+ *      - Propagation: Passed down during recursive traversal to ensure correct substitutions.
+ * - Example:
+ *      - If inspecting `Container<T>`, and `T` is for example mapped to `String`,
+ *        the map `{ T -> String }` is used to substitute `T` with `String`.
  *
  * `Generics` processing relies on the `typeParameterMap` arguments being passed across traversal.
  * This mapping is crucial for resolving `Generics` types during type inspection.
@@ -26,7 +47,7 @@ import kotlin.reflect.*
  * across the entire type hierarchy.
  *
  * #### Type Parameter Map Scope
- * The typeParameterMap` is scoped per traversal context, ensuring that type substitutions
+ * The `typeParameterMap` is scoped per traversal context, ensuring that type substitutions
  * are isolated and consistent within each generic inspection. This prevents type parameter
  * mappings from different generics from interfering with one another.
  *

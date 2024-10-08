@@ -17,15 +17,31 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
 /**
- * Resolves complex or basics type (such as classes, data classes or primitives) into a [TypeSchema].
+ * - Purpose:
+ *      - Handles complex object types, such as classes and data classes.
+ * - Action:
+ *      - Check for Primitive Type:
+ *          - If determined is a primitive type, maps it directly to its schema representation.
+ *      - Handle Complex Type:
+ *          - Circular Reference Prevention: Uses a semaphore to prevent infinite recursion in case of self-referencing types.
+ *          - Add Placeholder Schema: Adds a placeholder schema to the cache before processing properties.
+ *          - Retrieve Properties: Uses `PropertyResolver` to get the class properties.
+ *          - Traverse Properties: Recursively traverses each property using `TypeResolver`.
+ *          - Update Schema: Fills in the placeholder schema with the resolved properties.
+ *          - Remove from Semaphore: Removes the type from the semaphore after processing.
+ *      - Result: Constructs and returns the object schema.
  *
- * Primitive types are immediately mapped, while complex types are recursively inspected.
- *
- * Responsibilities:
- * - Handling of complex types (e.g.: classes, data classes).
- * - Handling of primitive types.
- * - Handling circular dependencies and recursive structures.
- * - Caching the created [TypeSchema] to avoid redundant processing.
+ * #### Circular Reference Handling
+ * - Purpose:
+ *      - Prevents infinite loops when types reference themselves directly or indirectly.
+ * - Mechanism:
+ *      - Semaphore: Tracks types currently being processed to detect circular references.
+ *      - Placeholder Schema: Adds a temporary schema to the cache to satisfy references during processing.
+ *      - Update After Processing: Replaces the placeholder with the completed schema after processing.
+ *      - Remove from Semaphore: Removes the type from the semaphore after processing.
+ * - Example:
+ *      - When a class Node has a property of type Node, the semaphore detects
+ *        the self-reference and handles it appropriately.
  *
  * @see [PropertyResolver]
  * @see [TypeResolver]
@@ -33,7 +49,7 @@ import kotlin.reflect.KType
 @TypeInspectorAPI
 internal class ObjectResolver(private val typeResolver: TypeResolver) {
     /** Semaphore to prevent infinite recursion during type processing. */
-    private val inProcessSemaphore: MutableSet<String> = mutableSetOf()
+    private val semaphore: MutableSet<String> = mutableSetOf()
 
     /**
      * Processes a complex or basic type into a [TypeSchema],
@@ -86,14 +102,14 @@ internal class ObjectResolver(private val typeResolver: TypeResolver) {
         typeParameterMap: Map<KClassifier, KType>
     ): TypeSchema {
         // Prevent infinite recursion for self-referencing objects.
-        if (inProcessSemaphore.contains(kType.nativeName())) {
+        if (semaphore.contains(kType.nativeName())) {
             return TypeSchema.of(
                 name = className,
                 kType = kType,
                 schema = Spec.reference(schema = className)
             )
         }
-        inProcessSemaphore.add(kType.nativeName())
+        semaphore.add(kType.nativeName())
 
         // Add a schema placeholder early to avoid circular references.
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
@@ -121,7 +137,7 @@ internal class ObjectResolver(private val typeResolver: TypeResolver) {
 
         // Once done traversing remove the processing type from the in-memory
         // tracker to handle different branches.
-        inProcessSemaphore.remove(kType.nativeName())
+        semaphore.remove(kType.nativeName())
 
         // Update the cached schema placeholder with the resolved property schemas.
         schemaPlaceholder.schema.putAll(

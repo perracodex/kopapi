@@ -17,12 +17,18 @@ import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.superclasses
 
 /**
- * Handles traversing of object properties, including traversing their types and handling metadata.
- *
- * Responsibilities:
- * - Processing properties by traversing them to generate their schema.
- * - Handling metadata such as annotations, nullability, etc.
- * - Ensuring that obtained properties are sorted as per the primary constructor's parameter order.
+ * - Purpose:
+ *      - Handles properties of objects, including metadata extraction and type resolution.
+ * - Action:
+ *      - Retrieve Properties:
+ *          - Maintain Order: Gets properties in declaration order, including inherited properties.
+ *          - Exclude Non-Public: Excludes non-public properties.
+ *      - Process Each Property:
+ *          - Extract Metadata: Retrieves information such as name, nullability, and annotations.
+ *          - Resolve Property Type: Determines the property's type, substituting generics as necessary.
+ *          - Traverse Property Type: Uses `TypeResolver` to traverse the property's type.
+ *          - Apply Metadata: Incorporates metadata into the property's schema.
+ *      - Result: Collects property schemas to be included in the parent object schema.
  *
  * @see [TypeResolver]
  * @see [ElementMetadata]

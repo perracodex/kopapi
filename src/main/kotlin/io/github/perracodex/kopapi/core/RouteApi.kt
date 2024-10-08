@@ -17,17 +17,16 @@ import io.ktor.server.routing.*
  *
  * #### Usage
  * ```
- * get("/items/{id}/{group?}") {
+ * get("/items/{group_id}/{item_id?}") {
  *     // Handle GET request
  * } api {
- *     summary = "Retrieve an item."
- *     description = "Fetches an item by its unique identifier."
- *     description = "In addition, you can filter by group."
- *     tags = Tags("tag1", "tag2")
- *     pathParameter<Uuid>("id") { description = "The ID to find." }
- *     queryParameter<String>("group") { description = "The group to filter." }
- *     response<Item>(HttpStatusCode.OK) { description = "Successful fetch" }
- *     response(HttpStatusCode.NotFound) { description = "Item not found" }
+ *     summary = "Retrieve data items."
+ *     description = "Fetches all items for a group."
+ *     tags = Tags("Items", "Data")
+ *     pathParameter<Uuid>("group_id") { description = "The Id of the group." }
+ *     queryParameter<String>("item_id") { description = "Optional item Id." }
+ *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful" }
+ *     response(HttpStatusCode.NotFound) { description = "Data not found" }
  * }
  * ```
  *
@@ -70,25 +69,24 @@ private fun buildApiErrorMessage(route: Route): String {
         - Make sure 'api' is applied to a route either by infix or chained:
             ```
             post { ... } api { ... } // Infix example
-            post { ... }.api { ... } // Chained example
+            post { ... }.api { ... } // Chained '.' example
             ```
 
         Example of proper usage (infix notation):
             ```
-            get("/items/{id}/{group?}") {
+            get("/items/{group_id}/{item_id?}") {
                 // Handle GET request
-            } api {
-                summary = "Retrieve an item."
-                description = "Fetches an item by its unique identifier."
-                description = "In addition, you can filter by group."
-                tags = Tags("tag1", "tag2")
-                pathParameter<Uuid>("id") { description = "The ID to find." }
-                queryParameter<String>("group") { description = "The group to filter." }
-                response<Item>(HttpStatusCode.OK) { description = "Successful fetch" }
-                response(HttpStatusCode.NotFound) { description = "Item not found" }
+            } api { 
+                summary = "Retrieve data items."
+                description = "Fetches all items for a group."
+                tags = Tags("Items", "Data")
+                pathParameter<Uuid>("group_id") { description = "The Id of the group to resolve." }
+                queryParameter<String>("item_id") { description = "Optional item Id to locate." }
+                response<List<Item>>(HttpStatusCode.OK) { description = "Successful fetch" }
+                response(HttpStatusCode.NotFound) { description = "Data not found" }
             }
             ```
-            
+
             Error
     """.trimIndent()
 }

@@ -16,12 +16,13 @@ import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KType
 
 /**
- * Resolves user defined [CustomType] objects, into their corresponding [TypeSchema].
- *
- * Responsibilities:
- * - Verify if the custom type is registered, and log an error if not.
- * - Create and cache a schema for the custom type for future reference.
- * - Return a reference to the custom type schema.
+ * - Purpose:
+ *      - Processes user-defined custom types.
+ * - Action:
+ *      - Check Registration: Determines if the type is registered as a [CustomType].
+ *      - Construct Schema: If registered, constructs the custom schema.
+ *      - Caching: Adds the schema to the `TypeResolver` cache to avoid redundant processing.
+ *      - Result: Returns the constructed schema.
  *
  * @see [CustomType]
  * @see [TypeResolver]

@@ -15,18 +15,14 @@ import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
 
 /**
- * Resolves [Map] objects into their corresponding [TypeSchema].
- *
- * Maps do not generate their schema references,
- * but a schema will be created for their value type if such is a complex object,
- * or a schema reference will be assigned if its type has already been processed.
- *
- * Responsibilities:
- * - Handling [Map] objects by resolving their key and value types.
- * - Traverse the value type if it is a complex object.
- * - Logging errors for unsupported key types.
- * - Creating a [TypeSchema] which includes an `additionalProperties` spec for the value type.
- * - Caching the created [TypeSchema] to avoid redundant processing.
+ * - Purpose:
+ *      - Handles `Map` types.
+ * - Action:
+ *      - Validate Key Type: Verifies that the map's key type is a `String`, logging an error if not.
+ *      - Resolve Value Type: Determines the value type of the map.
+ *      - Traverse Value Type: Uses `TypeResolver` to traverse the value type.
+ *      - Construct Schema: Creates a schema with `additionalProperties` representing the value schema.
+ *      - Result: Constructs and returns the map schema.
  *
  * @see [TypeResolver]
  */

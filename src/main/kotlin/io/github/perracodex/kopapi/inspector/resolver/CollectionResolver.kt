@@ -17,10 +17,13 @@ import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 
 /**
- * Resolves [Collection] types (e.g.: [List], [Set], etc.), into their corresponding [TypeSchema].
- *
- * Responsibilities:
- * - Traversing the contained element type and resolving its respective [TypeSchema].
+ * - Purpose:
+ *      - Handles `Collection` types like `List`, `Set`, etc.
+ * - Action:
+ *      - Resolve Element Type: Determines the element type of the collection.
+ *      - Traverse Element Type: Uses `TypeResolver` to traverse the element type, which may involve recursion.
+ *      - Construct Schema: Builds the collection schema, incorporating the element schema.
+ *      - Result: Constructs and returns the collection schema.
  *
  * @see [ArrayResolver]
  * @see [TypeResolver]

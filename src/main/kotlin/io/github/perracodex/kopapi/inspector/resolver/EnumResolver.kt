@@ -14,12 +14,13 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 
 /**
- * Provides functionality to resolve enum types into their corresponding [TypeSchema].
- *
- * Responsibilities:
- * - Extracting the names of enum constants from a given enum class.
- * - Creating a [TypeSchema] for the enum type, which includes the enum values.
- * - Caching the created [TypeSchema] to avoid redundant processing.
+ * - Purpose:
+ *      - Handles enumeration types.
+ * - Action:
+ *      - Extract Enum Values: Retrieves the list of possible enum values.
+ *      - Construct Schema: Builds the enum schema, including the list of values.
+ *      - Caching: Adds the schema to the `TypeResolver` cache if not already present.
+ *      - Result: Constructs and returns the enum schema.
  *
  * @see [TypeResolver]
  */

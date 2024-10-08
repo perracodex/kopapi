@@ -37,7 +37,7 @@ internal object TypeDescriptor {
 
     /**
      * Determines whether the given [kType] represents any array type in Kotlin,
-     * for both, primitive arrays (e.g., `IntArray`, `DoubleArray`), and generics `Array` types.
+     * for both, primitive arrays (e.g., `IntArray`, `DoubleArray`), and typed  `Array`s.
      *
      * @param kType The [KType] to evaluate.
      * @return True if corresponds to any array type, otherwise False.
@@ -53,16 +53,16 @@ internal object TypeDescriptor {
     }
 
     /**
-     * Determines whether the given [kType] represents a `Generics` [Array] type,
+     * Determines whether the given [kType] represents a typed `Array`,
      *
      * Unlike standard generic classes like `List`, array types in Kotlin are
-     * represented by distinct classes for each primitive type and a `Generics` [Array]
+     * represented by distinct classes for each primitive type and a typed `Array`
      * class for reference types.
      * This distinction means that identifying an array type requires checking against
      * all possible array classifiers, both primitive and generic.
      *
      * @param kType The [KType] to evaluate.
-     * @return True if corresponds to `Generics` [Array] type, otherwise False.
+     * @return True if corresponds to typed [Array], otherwise False.
      *
      * @see [isArray]
      * @see [isPrimitiveArray]
@@ -79,7 +79,7 @@ internal object TypeDescriptor {
      * Determines whether the given [KClassifier] represents a specialized primitive array type.
      *
      * Kotlin provides specialized array classes for each primitive type (e.g., `IntArray`, `FloatArray`),
-     * which are distinct from the `Generics` [Array] class used for reference types.
+     * which are distinct from the typed [Array] class used for reference types.
      *
      * @param classifier The [KClassifier] of the [KType] to evaluate.
      * @return True if the [classifier] is one of Kotlin's primitive array types, otherwise False.

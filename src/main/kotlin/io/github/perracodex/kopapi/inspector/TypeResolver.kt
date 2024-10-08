@@ -24,7 +24,7 @@ import kotlin.reflect.full.isSubclassOf
  * ### Key Features
  * - Recursive Inspection: Capable of recursively traversing complex types, including nested objects.
  * - Comprehensive Type Support: Handles all primitive types, enums, and common Kotlin and Java types.
- * - Collections and Maps: Supports collections such as `List`, `Set`, `Array`, including primitive arrays
+ * - Collections and Maps: Supports collections such as `List`, `Set`, including primitive and typed arrays.
  *   (e.g., `IntArray`), and maps with both primitive and complex object values.
  * - Generics Handling: Resolves generics, including nested and complex generic types.
  * - Annotation Support: Recognizes and processes `Kotlinx` and `Jackson` annotations.
@@ -56,7 +56,6 @@ internal class TypeResolver {
     /** Cache of [TypeSchema] objects that have been processed. */
     val typeSchemaCache: MutableSet<TypeSchema> = mutableSetOf()
 
-    /** Instances of resolver classes, passing this TypeInspector instance to them. */
     private val arrayResolver = ArrayResolver(typeResolver = this)
     private val collectionResolver = CollectionResolver(typeResolver = this)
     private val customTypeResolver = CustomTypeResolver(typeResolver = this)
@@ -80,6 +79,113 @@ internal class TypeResolver {
      * consistency in type resolution across the entire type hierarchy.
      * See [GenericsResolver] for more detailed information on how this map is used.
      *
+     * #### Decision Tree
+     * TypeResolver:
+     *      *     |
+     *      *     +-> Is the type a Custom Type?
+     *      *     |    |
+     *      *     |    +-> Yes:
+     *      *     |    |   - `CustomTypeResolver` processes the type.
+     *      *     |    |   - If not cached:
+     *      *     |    |       - Build schema for the custom type.
+     *      *     |    |       - Add schema to cache.
+     *      *     |    |   - Return schema or reference to schema.
+     *      *     |    |
+     *      *     |    +-> No: Skip to next check.
+     *      *     |
+     *      *     +-> Is the type an Array?
+     *      *     |    |
+     *      *     |    +-> Yes:
+     *      *     |        - Is it a Primitive Array?
+     *      *     |        |   |
+     *      *     |        |   +-> Yes:
+     *      *     |        |   |       - Map the primitive array type to schema.
+     *      *     |        |   |       - Return schema.
+     *      *     |        |   |
+     *      *     |        |   +-> No:
+     *      *     |        |       - Is it a typed Array<T>?
+     *      *     |        |           |
+     *      *     |        |           +-> Yes:
+     *      *     |        |           |       - Delegate to `CollectionResolver`.
+     *      *     |        |           |
+     *      *     |        |           +-> No:
+     *      *     |        |                   - Log error.
+     *      *     |        |                   - Return unknown type schema.
+     *      *     |        |
+     *      *     |        +-> No: Skip to next check.
+     *      *     |
+     *      *     +-> Is the type a Collection?
+     *      *     |    |
+     *      *     |    +-> Yes:
+     *      *     |    |       - `CollectionResolver` processes the type.
+     *      *     |    |       - Resolve the element type.
+     *      *     |    |       - Traverse the element type using `TypeResolver`.
+     *      *     |    |       - Build collection schema.
+     *      *     |    |       - Return schema.
+     *      *     |    |
+     *      *     |    +-> No: Skip to next check.
+     *      *     |
+     *      *     +-> Is the type a Map?
+     *      *     |     |
+     *      *     |     +-> Yes:
+     *      *     |     |      - `MapResolver` processes the type.
+     *      *     |     |      - Validate that the key type is String.
+     *      *     |     |      - Resolve the value type.
+     *      *     |     |      - Traverse the value type using `TypeResolver`.
+     *      *     |     |      - Build map schema with `additionalProperties`.
+     *      *     |     |      - Return schema.
+     *      *     |     |
+     *      *     |     +-> No: Skip to next check.
+     *      *     |
+     *      *     +-> Is the type an Enum?
+     *      *     |     |
+     *      *     |     +-> Yes:
+     *      *     |     |      - `EnumResolver` processes the type.
+     *      *     |     |      - If not cached:
+     *      *     |     |          - Extract enum values.
+     *      *     |     |          - Build enum schema.
+     *      *     |     |          - Add schema to cache.
+     *      *     |     |      - Return schema or reference to schema.
+     *      *     |     |
+     *      *     |     +-> No: Skip to next check.
+     *      *     |
+     *      *     +-> Does the type have Type Arguments? (Generics)
+     *      *     |    |
+     *      *     |    +-> Yes:
+     *      *     |    |       - `GenericsResolver` processes the type.
+     *      *     |    |       - Generate unique name for the generic type.
+     *      *     |    |       - If not cached:
+     *      *     |    |           - Map type parameters to actual types.
+     *      *     |    |           - Merge type parameter maps.
+     *      *     |    |           - Traverse properties:
+     *      *     |    |              - For each property:
+     *      *     |    |                - Traverse property type using `TypeResolver`.
+     *      *     |    |           - Build schema.
+     *      *     |    |           - Add schema to cache.
+     *      *     |    |       - Return schema or reference to schema.
+     *      *     |    |
+     *      *     |    +-> No: Skip to next check.
+     *      *     |
+     *      *     +-> Is the type a KClass? (Object)
+     *      *          |
+     *      *          +-> Yes:
+     *      *          |       - `ObjectResolver` processes the type.
+     *      *          |       - Check if the type is cached.
+     *      *          |       - If not cached:
+     *      *          |           - Add placeholder to cache.
+     *      *          |           - Retrieve properties.
+     *      *          |           - Traverse properties:
+     *      *          |              - For each property:
+     *      *          |                - Traverse property type using `TypeResolver`.
+     *      *          |       - Build schema.
+     *      *          |          - Update cache.
+     *      *          |       - Return schema or reference to schema.
+     *      *          |
+     *      *          +-> No:
+     *      *                  - Log error.
+     *      *                  - Return unknown type schema.
+     *      * ```
+     *
      * @param kType The [KType] to resolve into a [TypeSchema].
      * @param typeParameterMap A map of type parameters' [KClassifier] to their actual [KType] replacements.
      * @return The resolved [TypeSchema] for the [kType].
@@ -101,7 +207,7 @@ internal class TypeResolver {
             CustomTypeRegistry.isCustomType(kType = kType) ->
                 customTypeResolver.process(kType = kType)
 
-            // Handle primitive arrays (e.g.: IntArray), and generics arrays (e.g., Array<String>).
+            // Handle primitive arrays (e.g.: IntArray), and typed arrays (Array<T>).
             TypeDescriptor.isArray(kType = kType) ->
                 arrayResolver.traverse(
                     kType = kType,
