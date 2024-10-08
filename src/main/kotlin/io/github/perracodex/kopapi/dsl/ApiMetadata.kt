@@ -120,6 +120,13 @@ public data class ApiMetadata internal constructor(
     /**
      * Adds a path parameter to the API endpoint's metadata.
      *
+     * #### Sample Usage
+     * ```
+     * pathParameter<String>("id") {
+     *     description = "The unique identifier of the item."
+     * }
+     * ```
+     *
      * @param T The type of the parameter.
      * @param name The name of the parameter as it appears in the URL path.
      * @param configure A lambda receiver for configuring the [PathParameterBuilder].
@@ -133,6 +140,18 @@ public data class ApiMetadata internal constructor(
 
     /**
      * Adds a query parameter to the API endpoint's metadata.
+     *
+     * #### Sample Usage
+     * ```
+     * queryParameter<Int>("page") {
+     *     description = "The page number to retrieve."
+     * }
+     * queryParameter<Int>("size") {
+     *     description = "The number of items per page."
+     *     required = false
+     *     defaultValue = 1
+     * }
+     * ```
      *
      * @param T The type of the parameter.
      * @param name The name of the parameter as it appears in the URL path.
@@ -148,6 +167,14 @@ public data class ApiMetadata internal constructor(
     /**
      * Adds a header parameter to the API endpoint's metadata.
      *
+     * #### Sample Usage
+     * ```
+     * headerParameter<String>("X-Custom-Header") {
+     *     description = "A custom header for special purposes."
+     *     required = true
+     * }
+     * ```
+     *
      * @param T The type of the parameter.
      * @param name The header of the parameter as it appears in the URL path.
      * @param configure A lambda receiver for configuring the [HeaderParameterBuilder].
@@ -162,6 +189,13 @@ public data class ApiMetadata internal constructor(
     /**
      * Adds a cookie parameter to the API endpoint's metadata.
      *
+     * #### Sample Usage
+     * ```
+     * cookieParameter<String>("session") {
+     *     description = "The session ID for authentication."
+     * }
+     * ```
+     *
      * @param T The type of the parameter.
      * @param name The name of the parameter as it appears in the URL path.
      * @param configure A lambda receiver for configuring the [CookieParameterBuilder].
@@ -175,6 +209,15 @@ public data class ApiMetadata internal constructor(
 
     /**
      * Adds a request body to the API endpoint's metadata.
+     *
+     * #### Sample Usage
+     * ```
+     * requestBody<MyRequestBodyType> {
+     *     description = "The data required to create a new item."
+     *     required = true
+     *     contentType = ContentType.Application.Json
+     * }
+     * ```
      *
      * @param T The type of the request body.
      * @param configure A lambda receiver for configuring the [RequestBodyBuilder].
@@ -191,9 +234,31 @@ public data class ApiMetadata internal constructor(
     }
 
     /**
-     * Adds a response to the API endpoint's metadata.
+     * Adds a response, with a body, to the API endpoint's metadata.
      *
-     * @param T The type of the response.
+     * #### Sample Usage
+     *```
+     * response<ResponseType>(HttpStatusCode.OK) {
+     *     description = "Successfully retrieved the item."
+     *     contentType = ContentType.Application.Json
+     * }
+     * ```
+     *
+     * #### Adding Headers and Links
+     * ```
+     * response<ResponseType>(HttpStatusCode.OK) {
+     *     description = "Successfully retrieved the item."
+     *     header("X-Rate-Limit") {
+     *         description = "Number of allowed requests per period."
+     *         required = true
+     *     }
+     *     link("getNextItem") {
+     *         description = "Link to the next item."
+     *     }
+     * }
+     * ```
+     *
+     * @param T The body type of the response.
      * @param status The [HttpStatusCode] code associated with this response.
      * @param configure A lambda receiver for configuring the [ResponseBuilder].
      *
@@ -208,8 +273,29 @@ public data class ApiMetadata internal constructor(
     }
 
     /**
-     * Adds a response to the API endpoint's metadata,
-     * assuming there is only a [HttpStatusCode] with no associated type.
+     * Adds a response, with no response body, to the API endpoint's metadata.
+     * Assuming there is only a [HttpStatusCode] with no associated type.
+     *
+     * #### Sample Usage
+     *```
+     * response(HttpStatusCode.NotFound) {
+     *     description = "The item was not found."
+     * }
+     * ```
+     *
+     * #### Adding Headers and Links
+     * ```
+     * response(HttpStatusCode.OK) {
+     *     description = "Successfully retrieved the item."
+     *     header("X-Rate-Limit") {
+     *         description = "Number of allowed requests per period."
+     *         required = true
+     *     }
+     *     link("getNextItem") {
+     *         description = "Link to the next item."
+     *     }
+     * }
+     * ```
      *
      * @param status The [HttpStatusCode] code associated with this response.
      * @param configure A lambda receiver for configuring the [ResponseBuilder].
@@ -223,6 +309,13 @@ public data class ApiMetadata internal constructor(
 
     /**
      * Adds an HTTP security scheme to the API metadata (e.g., Basic, Bearer).
+     *
+     * #### Sample Usage
+     * ```
+     * httpSecurity("BasicAuth", AuthenticationMethod.BASIC) {
+     *     description = "Basic Authentication"
+     * }
+     * ```
      *
      * @param name The name of the security scheme.
      * @param method The [AuthenticationMethod] of the security scheme.
@@ -242,6 +335,13 @@ public data class ApiMetadata internal constructor(
     /**
      * Adds an API key security scheme to the API metadata.
      *
+     * #### Sample Usage
+     * ```
+     * apiKeySecurity("API Key", APIKeyLocation.HEADER) {
+     *     description = "API Key Authentication via header."
+     * }
+     * ```
+     *
      * @param name The name of the security scheme.
      * @param location The [SecurityLocation] where the API key is passed.
      * @param configure A lambda receiver for configuring the [ApiKeySecurityBuilder].
@@ -260,6 +360,13 @@ public data class ApiMetadata internal constructor(
     /**
      * Adds an OAuth2 security scheme to the API metadata.
      *
+     * #### Sample Usage
+     * ```
+     * oauth2Security("OAuth2") {
+     *     description = "OAuth2 Authentication."
+     * }
+     * ```
+     *
      * @param name The name of the security scheme.
      * @param configure A lambda receiver for configuring the [OAuth2SecurityBuilder].
      *
@@ -275,6 +382,14 @@ public data class ApiMetadata internal constructor(
 
     /**
      * Adds an OpenID Connect security scheme to the API metadata.
+     *
+     * #### Sample Usage
+     * ```
+     * openIdConnectSecurity("OpenID") {
+     *     description = "OpenID Connect Authentication."
+     *     url = Url("https://example.com/.well-known/openid-configuration")
+     * }
+     * ```
      *
      * @param name The name of the security scheme.
      * @param url The [Url] for the OpenID Connect configuration.
@@ -293,6 +408,13 @@ public data class ApiMetadata internal constructor(
 
     /**
      * Adds a Mutual TLS security scheme to the API metadata.
+     *
+     * #### Sample Usage
+     * ```
+     * mutualTLSSecurity("MutualTLS") {
+     *     description = "Mutual TLS Authentication."
+     * }
+     * ```
      *
      * @param name The name of the security scheme.
      * @param configure A lambda receiver for configuring the [MutualTLSSecurityBuilder].

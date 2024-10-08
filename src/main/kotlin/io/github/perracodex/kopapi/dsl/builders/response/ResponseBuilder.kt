@@ -51,6 +51,14 @@ public data class ResponseBuilder(
     /**
      * Adds a header to the response.
      *
+     * #### Sample Usage
+     * ```
+     * header("X-Rate-Limit") {
+     *     description = "Number of allowed requests per period."
+     *     required = true
+     * }
+     * ```
+     *
      * @param name The name of the header.
      * @param configure A lambda receiver for configuring the [ApiHeader].
      */
@@ -61,6 +69,13 @@ public data class ResponseBuilder(
 
     /**
      * Adds a link to the response.
+     *
+     * #### Sample Usage
+     * ```
+     * link("getNextItem") {
+     *     description = "Link to the next item."
+     * }
+     * ```
      *
      * @param operationId The name of an existing, resolvable OAS operation.
      * @param configure A lambda receiver for configuring the [ApiLink].

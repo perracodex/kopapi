@@ -32,6 +32,14 @@ public data class ApiLink(
     /**
      * Adds a parameter to the link.
      *
+     * #### Sample Usage
+     * ```
+     * link("getEmployee") {
+     *    description = "The employee to retrieve."
+     *    parameter("employeeId", "something")
+     * }
+     * ```
+     *
      * @param name The name of the parameter.
      * @param value The value of the parameter.
      */
