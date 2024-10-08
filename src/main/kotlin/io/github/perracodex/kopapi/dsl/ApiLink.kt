@@ -43,7 +43,10 @@ public data class ApiLink(
      * @param name The name of the parameter.
      * @param value The value of the parameter.
      */
-    public fun ApiLink.parameter(name: String, value: String) {
+    public fun ApiLink.parameter(
+        name: String,
+        value: String
+    ) {
         val parameters: LinkedHashSet<ApiLinkParameter> = parameters
             ?: linkedSetOf<ApiLinkParameter>().also { parameters = it }
         parameters.add(ApiLinkParameter(name = name, value = value))

@@ -132,7 +132,10 @@ public data class ApiMetadata internal constructor(
      *
      * @see [PathParameterBuilder]
      */
-    public inline fun <reified T : Any> ApiMetadata.pathParameter(name: String, configure: PathParameterBuilder.() -> Unit = {}) {
+    public inline fun <reified T : Any> ApiMetadata.pathParameter(
+        name: String,
+        configure: PathParameterBuilder.() -> Unit = {}
+    ) {
         val builder: PathParameterBuilder = PathParameterBuilder().apply(configure)
         addParameter(parameter = builder.build(name = name, type = typeOf<T>()))
     }
@@ -158,7 +161,10 @@ public data class ApiMetadata internal constructor(
      *
      * @see [QueryParameterBuilder]
      */
-    public inline fun <reified T : Any> ApiMetadata.queryParameter(name: String, configure: QueryParameterBuilder.() -> Unit = {}) {
+    public inline fun <reified T : Any> ApiMetadata.queryParameter(
+        name: String,
+        configure: QueryParameterBuilder.() -> Unit = {}
+    ) {
         val builder: QueryParameterBuilder = QueryParameterBuilder().apply(configure)
         addParameter(parameter = builder.build(name = name, type = typeOf<T>()))
     }
@@ -180,7 +186,10 @@ public data class ApiMetadata internal constructor(
      *
      * @see [HeaderParameterBuilder]
      */
-    public inline fun <reified T : Any> ApiMetadata.headerParameter(name: String, configure: HeaderParameterBuilder.() -> Unit = {}) {
+    public inline fun <reified T : Any> ApiMetadata.headerParameter(
+        name: String,
+        configure: HeaderParameterBuilder.() -> Unit = {}
+    ) {
         val builder: HeaderParameterBuilder = HeaderParameterBuilder().apply(configure)
         addParameter(parameter = builder.build(name = name, type = typeOf<T>()))
     }
@@ -201,7 +210,10 @@ public data class ApiMetadata internal constructor(
      *
      * @see [CookieParameterBuilder]
      */
-    public inline fun <reified T : Any> ApiMetadata.cookieParameter(name: String, configure: CookieParameterBuilder.() -> Unit = {}) {
+    public inline fun <reified T : Any> ApiMetadata.cookieParameter(
+        name: String,
+        configure: CookieParameterBuilder.() -> Unit = {}
+    ) {
         val builder: CookieParameterBuilder = CookieParameterBuilder().apply(configure)
         addParameter(parameter = builder.build(name = name, type = typeOf<T>()))
     }
@@ -223,7 +235,9 @@ public data class ApiMetadata internal constructor(
      *
      * @see [RequestBodyBuilder]
      */
-    public inline fun <reified T : Any> ApiMetadata.requestBody(configure: RequestBodyBuilder.() -> Unit = {}) {
+    public inline fun <reified T : Any> ApiMetadata.requestBody(
+        configure: RequestBodyBuilder.() -> Unit = {}
+    ) {
         require(value = (requestBody == null)) {
             "Only one request body is allowed per API endpoint. " +
                     "Found '$requestBody' already defined in '${this.path}' / ${this.method}"
@@ -264,7 +278,10 @@ public data class ApiMetadata internal constructor(
      * @see [ResponseBuilder]
      */
     @JvmName(name = "responseWithType")
-    public inline fun <reified T : Any> ApiMetadata.response(status: HttpStatusCode, configure: ResponseBuilder.() -> Unit = {}) {
+    public inline fun <reified T : Any> ApiMetadata.response(
+        status: HttpStatusCode,
+        configure: ResponseBuilder.() -> Unit = {}
+    ) {
         val responses: LinkedHashSet<ApiResponse> = responses
             ?: linkedSetOf<ApiResponse>().also { responses = it }
         val builder: ResponseBuilder = ResponseBuilder().apply(configure)
@@ -302,7 +319,10 @@ public data class ApiMetadata internal constructor(
      * @see [ResponseBuilder]
      */
     @JvmName(name = "responseWithoutType")
-    public fun ApiMetadata.response(status: HttpStatusCode, configure: ResponseBuilder.() -> Unit = {}) {
+    public fun ApiMetadata.response(
+        status: HttpStatusCode,
+        configure: ResponseBuilder.() -> Unit = {}
+    ) {
         response<Unit>(status = status, configure = configure)
     }
 
