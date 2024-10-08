@@ -4,7 +4,7 @@ Kopapi is library to generate OpenAPI documentation from [Ktor](https://ktor.io/
 
 **Quick usage example before diving into the Wiki:**
 
-```text
+```kotlin
 get("/items/{group_id}/{item_id?}") {
     // Handle GET request
 } api { 
