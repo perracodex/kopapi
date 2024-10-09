@@ -40,20 +40,20 @@ import kotlin.reflect.full.isSubclassOf
  *     - `JsonTypeName`, `@JsonProperty`, `@JsonIgnore`
  */
 @TypeInspectorAPI
-internal class TypeSchemaResolver {
-    private val tracer = Tracer<TypeSchemaResolver>()
+internal class TypeSchemaBuilder {
+    private val tracer = Tracer<TypeSchemaBuilder>()
 
     /** Cache of [TypeSchema] objects that have been processed. */
     val typeSchemaCache: MutableSet<TypeSchema> = mutableSetOf()
 
-    private val arrayResolver = ArrayResolver(typeSchemaResolver = this)
-    private val collectionResolver = CollectionResolver(typeSchemaResolver = this)
-    private val customTypeResolver = CustomTypeResolver(typeSchemaResolver = this)
-    private val enumResolver = EnumResolver(typeSchemaResolver = this)
-    private val genericsResolver = GenericsResolver(typeSchemaResolver = this)
-    private val mapResolver = MapResolver(typeSchemaResolver = this)
-    private val objectResolver = ObjectResolver(typeSchemaResolver = this)
-    private val propertyResolver = PropertyResolver(typeSchemaResolver = this)
+    private val arrayResolver = ArrayResolver(typeSchemaBuilder = this)
+    private val collectionResolver = CollectionResolver(typeSchemaBuilder = this)
+    private val customTypeResolver = CustomTypeResolver(typeSchemaBuilder = this)
+    private val enumResolver = EnumResolver(typeSchemaBuilder = this)
+    private val genericsResolver = GenericsResolver(typeSchemaBuilder = this)
+    private val mapResolver = MapResolver(typeSchemaBuilder = this)
+    private val objectResolver = ObjectResolver(typeSchemaBuilder = this)
+    private val propertyResolver = PropertyResolver(typeSchemaBuilder = this)
 
     /**
      * Traverses and resolves the given [kType], handling both simple and complex types,
@@ -71,7 +71,7 @@ internal class TypeSchemaResolver {
      *
      * #### Decision Tree
      * ```
-     * TypeSchemaResolver:
+     * traverseType:
      *     |
      *     +-> Is the type a Custom Type?
      *     |    |
@@ -110,7 +110,7 @@ internal class TypeSchemaResolver {
      *     |    +-> Yes:
      *     |    |       - `CollectionResolver` processes the type.
      *     |    |       - Resolve the element type.
-     *     |    |       - Traverse the element type using `TypeSchemaResolver`.
+     *     |    |       - Traverse the element type using `TypeSchemaBuilder`.
      *     |    |       - Build collection schema.
      *     |    |       - Return schema.
      *     |    |
@@ -122,7 +122,7 @@ internal class TypeSchemaResolver {
      *     |     |      - `MapResolver` processes the type.
      *     |     |      - Validate that the key type is String.
      *     |     |      - Resolve the value type.
-     *     |     |      - Traverse the value type using `TypeSchemaResolver`.
+     *     |     |      - Traverse the value type using `TypeSchemaBuilder`.
      *     |     |      - Build map schema with `additionalProperties`.
      *     |     |      - Return schema.
      *     |     |
@@ -150,7 +150,7 @@ internal class TypeSchemaResolver {
      *     |    |           - Merge type parameter maps.
      *     |    |           - Traverse properties:
      *     |    |              - For each property:
-     *     |    |                - Traverse property type using `TypeSchemaResolver`.
+     *     |    |                - Traverse property type using `TypeSchemaBuilder`.
      *     |    |           - Build schema.
      *     |    |           - Add schema to cache.
      *     |    |       - Return schema or reference to schema.
@@ -167,7 +167,7 @@ internal class TypeSchemaResolver {
      *          |           - Retrieve properties.
      *          |           - Traverse properties:
      *          |              - For each property:
-     *          |                - Traverse property type using `TypeSchemaResolver`.
+     *          |                - Traverse property type using `TypeSchemaBuilder`.
      *          |       - Build schema.
      *          |          - Update cache.
      *          |       - Return schema or reference to schema.

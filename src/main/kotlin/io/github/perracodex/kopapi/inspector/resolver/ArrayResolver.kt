@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeSchemaResolver
+import io.github.perracodex.kopapi.inspector.TypeSchemaBuilder
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
@@ -27,10 +27,10 @@ import kotlin.reflect.KType
  *      - Result: Returns the constructed schema, or delegates as appropriate.
  *
  * @see [CollectionResolver]
- * @see [TypeSchemaResolver]
+ * @see [TypeSchemaBuilder]
  */
 @TypeInspectorAPI
-internal class ArrayResolver(private val typeSchemaResolver: TypeSchemaResolver) {
+internal class ArrayResolver(private val typeSchemaBuilder: TypeSchemaBuilder) {
     private val tracer = Tracer<ArrayResolver>()
 
     /**
@@ -71,7 +71,7 @@ internal class ArrayResolver(private val typeSchemaResolver: TypeSchemaResolver)
         }
 
         // If dealing with a typed array (Array<T>), delegate to the CollectionResolver to handle it.
-        return typeSchemaResolver.traverseCollection(
+        return typeSchemaBuilder.traverseCollection(
             kType = kType,
             classifier = classifier,
             typeParameterMap = typeParameterMap

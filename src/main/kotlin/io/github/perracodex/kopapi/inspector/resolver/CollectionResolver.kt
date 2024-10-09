@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeSchemaResolver
+import io.github.perracodex.kopapi.inspector.TypeSchemaBuilder
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
@@ -21,15 +21,15 @@ import kotlin.reflect.KType
  *      - Handles `Collection` types like `List`, `Set`, etc.
  * - Action:
  *      - Resolve Element Type: Determines the element type of the collection.
- *      - Traverse Element Type: Uses `TypeSchemaResolver` to traverse the element type, which may involve recursion.
+ *      - Traverse Element Type: Uses `TypeSchemaBuilder` to traverse the element type, which may involve recursion.
  *      - Construct Schema: Builds the collection schema, incorporating the element schema.
  *      - Result: Constructs and returns the collection schema.
  *
  * @see [ArrayResolver]
- * @see [TypeSchemaResolver]
+ * @see [TypeSchemaBuilder]
  */
 @TypeInspectorAPI
-internal class CollectionResolver(private val typeSchemaResolver: TypeSchemaResolver) {
+internal class CollectionResolver(private val typeSchemaBuilder: TypeSchemaBuilder) {
     private val tracer = Tracer<CollectionResolver>()
 
     /**
@@ -62,7 +62,7 @@ internal class CollectionResolver(private val typeSchemaResolver: TypeSchemaReso
         }
 
         // Traverse the collection argument element to resolve its respective TypeSchema.
-        val typeSchema: TypeSchema = typeSchemaResolver.traverseType(
+        val typeSchema: TypeSchema = typeSchemaBuilder.traverseType(
             kType = argumentType,
             typeParameterMap = typeParameterMap
         )
