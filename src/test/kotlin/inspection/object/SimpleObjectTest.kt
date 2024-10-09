@@ -1,0 +1,110 @@
+/*
+ * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
+ */
+
+package inspection.`object`/*
+ * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
+ */
+
+import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.schema.Schema
+import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
+import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.keys.DataFormat
+import io.github.perracodex.kopapi.keys.DataType
+import kotlin.reflect.full.createType
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import kotlin.test.fail
+
+class SimpleObjectTest {
+
+    // Define the test Data Class.
+    private data class Box(
+        val color: String,
+        val weight: Int,
+        val isFragile: Boolean
+    )
+
+    @Test
+    fun `test a simple schema inspection by verifying the schema structure`() {
+
+        // Inspect the Type Schema.
+        val inspector = TypeInspector()
+        val schemeRef: TypeSchema = inspector.inspect(kType = Box::class.createType())
+
+        // Basic definition validation.
+        assertEquals(expected = Box::class.simpleName, actual = schemeRef.name, message = "Schema name should match the class name")
+        assertEquals(expected = Box::class.java.name, actual = schemeRef.type, message = "Schema type should match the type string")
+
+        // Validate that schemeRef.schema is a Schema.Reference
+        assertTrue(actual = schemeRef.schema is Schema.Reference, message = "Expected schema to be a Schema.Reference")
+        assertEquals(
+            expected = "${Schema.REFERENCE_PATH}${schemeRef.name}",
+            actual = schemeRef.schema.ref,
+            message = "Reference value is incorrect"
+        )
+
+        // Retrieve and assert registered schemas.
+        val schemasSet: Set<TypeSchema> = inspector.getTypeSchemas()
+        assertEquals(expected = 1, actual = schemasSet.size, message = "There should be exactly one registered schema")
+
+        // Get the actual schema for Box.
+        val schema: TypeSchema = schemasSet.first()
+        assertEquals(expected = Box::class.simpleName, actual = schema.name, message = "Retrieved schema name should match")
+        assertEquals(expected = Box::class.java.name, actual = schema.type, message = "Retrieved schema type should match")
+
+        // Assert that schema.schema is a Schema.Object
+        assertTrue(actual = schema.schema is Schema.Object, message = "Expected schema to be a Schema.Object")
+
+        // Validate schema properties.
+        val properties: MutableMap<String, SchemaProperty> = schema.schema.properties
+        assertEquals(expected = 3, actual = properties.size, message = "Properties should contain exactly three entries")
+
+        // Assert each of the properties.
+        validateProperty(properties = properties, propertyName = "color", expectedType = DataType.STRING)
+        validateProperty(properties = properties, propertyName = "weight", expectedType = DataType.INTEGER, DataFormat.INT32)
+        validateProperty(properties = properties, propertyName = "isFragile", expectedType = DataType.BOOLEAN)
+    }
+
+    /**
+     * Validates a single property within the properties map.
+     *
+     * @param properties The complete properties map.
+     * @param propertyName The name of the property to validate.
+     * @param expectedType The expected [DataType] of the property.
+     * @param expectedFormat (Optional) The expected [DataFormat] of the property.
+     */
+    private fun validateProperty(
+        properties: Map<String, SchemaProperty>,
+        propertyName: String,
+        expectedType: DataType,
+        expectedFormat: DataFormat? = null
+    ) {
+        val property: SchemaProperty = properties[propertyName]
+            ?: fail("Property '$propertyName' is missing")
+
+        val schema: Schema = property.schema
+
+        // Check the schema type.
+        assertEquals(
+            expected = expectedType,
+            actual = schema.type,
+            message = "Property '$propertyName' should have type '$expectedType'"
+        )
+
+        // If expectedFormat is provided, check it.
+        expectedFormat?.let {
+            if (schema is Schema.Primitive) {
+                assertEquals(
+                    expected = expectedFormat.value,
+                    actual = schema.format,
+                    message = "Property '$propertyName' should have format '${expectedFormat.value}'"
+                )
+            } else {
+                fail("Property '$propertyName' is expected to be a Schema.Primitive with a format")
+            }
+        }
+    }
+}
