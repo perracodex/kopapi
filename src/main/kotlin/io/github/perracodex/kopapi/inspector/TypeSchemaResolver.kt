@@ -40,20 +40,20 @@ import kotlin.reflect.full.isSubclassOf
  *     - `JsonTypeName`, `@JsonProperty`, `@JsonIgnore`
  */
 @TypeInspectorAPI
-internal class TypeResolver {
-    private val tracer = Tracer<TypeResolver>()
+internal class TypeSchemaResolver {
+    private val tracer = Tracer<TypeSchemaResolver>()
 
     /** Cache of [TypeSchema] objects that have been processed. */
     val typeSchemaCache: MutableSet<TypeSchema> = mutableSetOf()
 
-    private val arrayResolver = ArrayResolver(typeResolver = this)
-    private val collectionResolver = CollectionResolver(typeResolver = this)
-    private val customTypeResolver = CustomTypeResolver(typeResolver = this)
-    private val enumResolver = EnumResolver(typeResolver = this)
-    private val genericsResolver = GenericsResolver(typeResolver = this)
-    private val mapResolver = MapResolver(typeResolver = this)
-    private val objectResolver = ObjectResolver(typeResolver = this)
-    private val propertyResolver = PropertyResolver(typeResolver = this)
+    private val arrayResolver = ArrayResolver(typeSchemaResolver = this)
+    private val collectionResolver = CollectionResolver(typeSchemaResolver = this)
+    private val customTypeResolver = CustomTypeResolver(typeSchemaResolver = this)
+    private val enumResolver = EnumResolver(typeSchemaResolver = this)
+    private val genericsResolver = GenericsResolver(typeSchemaResolver = this)
+    private val mapResolver = MapResolver(typeSchemaResolver = this)
+    private val objectResolver = ObjectResolver(typeSchemaResolver = this)
+    private val propertyResolver = PropertyResolver(typeSchemaResolver = this)
 
     /**
      * Traverses and resolves the given [kType], handling both simple and complex types,
@@ -71,7 +71,7 @@ internal class TypeResolver {
      *
      * #### Decision Tree
      * ```
-     * TypeResolver:
+     * TypeSchemaResolver:
      *     |
      *     +-> Is the type a Custom Type?
      *     |    |
@@ -110,7 +110,7 @@ internal class TypeResolver {
      *     |    +-> Yes:
      *     |    |       - `CollectionResolver` processes the type.
      *     |    |       - Resolve the element type.
-     *     |    |       - Traverse the element type using `TypeResolver`.
+     *     |    |       - Traverse the element type using `TypeSchemaResolver`.
      *     |    |       - Build collection schema.
      *     |    |       - Return schema.
      *     |    |
@@ -122,7 +122,7 @@ internal class TypeResolver {
      *     |     |      - `MapResolver` processes the type.
      *     |     |      - Validate that the key type is String.
      *     |     |      - Resolve the value type.
-     *     |     |      - Traverse the value type using `TypeResolver`.
+     *     |     |      - Traverse the value type using `TypeSchemaResolver`.
      *     |     |      - Build map schema with `additionalProperties`.
      *     |     |      - Return schema.
      *     |     |
@@ -150,7 +150,7 @@ internal class TypeResolver {
      *     |    |           - Merge type parameter maps.
      *     |    |           - Traverse properties:
      *     |    |              - For each property:
-     *     |    |                - Traverse property type using `TypeResolver`.
+     *     |    |                - Traverse property type using `TypeSchemaResolver`.
      *     |    |           - Build schema.
      *     |    |           - Add schema to cache.
      *     |    |       - Return schema or reference to schema.
@@ -167,7 +167,7 @@ internal class TypeResolver {
      *          |           - Retrieve properties.
      *          |           - Traverse properties:
      *          |              - For each property:
-     *          |                - Traverse property type using `TypeResolver`.
+     *          |                - Traverse property type using `TypeSchemaResolver`.
      *          |       - Build schema.
      *          |          - Update cache.
      *          |       - Return schema or reference to schema.

@@ -14,11 +14,11 @@ import kotlin.reflect.KType
  * transforming [KType] instances into corresponding [TypeSchema] objects. These schemas
  * encapsulate all necessary information to construct OpenAPI-compliant schemas.
  *
- * This class delegates the core type traversal and schema resolution logic to the [TypeResolver] class.
+ * This class delegates the core type traversal and schema resolution logic to the [TypeSchemaResolver] class.
  * The [SchemaConflicts] instance manages and logs any schema naming conflicts  detected during
  * the inspection process.
  *
- * @see [TypeResolver]
+ * @see [TypeSchemaResolver]
  * @see [SchemaConflicts]
  * @see [TypeSchema]
  */
@@ -27,8 +27,8 @@ internal class TypeInspector {
     /** Instance of [SchemaConflicts] to manage conflicting [TypeSchema] objects. */
     private val conflicts = SchemaConflicts(typeInspector = this)
 
-    /** Instance of [TypeResolver] to handle type traversal and schema resolution. */
-    private val typeResolver = TypeResolver()
+    /** Instance of [TypeSchemaResolver] to handle type traversal and schema resolution. */
+    private val typeSchemaResolver = TypeSchemaResolver()
 
     /**
      * Inspect the given [kType] to its corresponding [TypeSchema] representation.
@@ -37,7 +37,7 @@ internal class TypeInspector {
      * @return The resolved [TypeSchema] for the given [kType].
      */
     fun inspect(kType: KType): TypeSchema {
-        val result: TypeSchema = typeResolver.traverseType(kType = kType, typeParameterMap = emptyMap())
+        val result: TypeSchema = typeSchemaResolver.traverseType(kType = kType, typeParameterMap = emptyMap())
         conflicts.analyze(newSchema = result)
         return result
     }
@@ -47,13 +47,13 @@ internal class TypeInspector {
      *
      * @return A set of [TypeSchema] objects.
      */
-    fun getTypeSchemas(): Set<TypeSchema> = typeResolver.typeSchemaCache
+    fun getTypeSchemas(): Set<TypeSchema> = typeSchemaResolver.typeSchemaCache
 
     /**
      * Resets the instance by clearing all processed data, including conflicts.
      */
     fun reset() {
-        typeResolver.typeSchemaCache.clear()
+        typeSchemaResolver.typeSchemaCache.clear()
         conflicts.clear()
     }
 }

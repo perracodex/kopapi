@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeResolver
+import io.github.perracodex.kopapi.inspector.TypeSchemaResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
@@ -19,13 +19,13 @@ import kotlin.reflect.full.createType
  * - Action:
  *      - Extract Enum Values: Retrieves the list of possible enum values.
  *      - Construct Schema: Builds the enum schema, including the list of values.
- *      - Caching: Adds the schema to the `TypeResolver` cache if not already present.
+ *      - Caching: Adds the schema to the `TypeSchemaResolver` cache if not already present.
  *      - Result: Constructs and returns the enum schema.
  *
- * @see [TypeResolver]
+ * @see [TypeSchemaResolver]
  */
 @TypeInspectorAPI
-internal class EnumResolver(private val typeResolver: TypeResolver) {
+internal class EnumResolver(private val typeSchemaResolver: TypeSchemaResolver) {
     /**
      * Processes the given [enumClass] and creates a [TypeSchema] for it.
      *
@@ -43,14 +43,14 @@ internal class EnumResolver(private val typeResolver: TypeResolver) {
 
         // If the enum type has not been processed yet,
         // create a schema for it and cache it for future reference.
-        if (!typeResolver.isCached(kType = enumKType)) {
+        if (!typeSchemaResolver.isCached(kType = enumKType)) {
             val typeSchema: TypeSchema = TypeSchema.of(
                 name = enumClassName,
                 kType = enumKType,
                 schema = SchemaFactory.ofEnum(values = enumValues)
             )
 
-            typeResolver.addToCache(schema = typeSchema)
+            typeSchemaResolver.addToCache(schema = typeSchema)
         }
 
         // Return a reference to the enum schema.

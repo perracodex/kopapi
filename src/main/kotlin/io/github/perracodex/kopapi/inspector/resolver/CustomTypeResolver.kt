@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeResolver
+import io.github.perracodex.kopapi.inspector.TypeSchemaResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
@@ -22,14 +22,14 @@ import kotlin.reflect.KType
  * - Action:
  *      - Check Registration: Determines if the type is registered as a [CustomType].
  *      - Construct Schema: If registered, constructs the custom schema.
- *      - Caching: Adds the schema to the `TypeResolver` cache to avoid redundant processing.
+ *      - Caching: Adds the schema to the `TypeSchemaResolver` cache to avoid redundant processing.
  *      - Result: Returns the constructed schema.
  *
  * @see [CustomType]
- * @see [TypeResolver]
+ * @see [TypeSchemaResolver]
  */
 @TypeInspectorAPI
-internal class CustomTypeResolver(private val typeResolver: TypeResolver) {
+internal class CustomTypeResolver(private val typeSchemaResolver: TypeSchemaResolver) {
     private val tracer = Tracer<CustomTypeResolver>()
 
     /**
@@ -56,7 +56,7 @@ internal class CustomTypeResolver(private val typeResolver: TypeResolver) {
             }
 
         // If the custom type has not been processed yet, create a schema for it and cache it.
-        if (!typeResolver.isCached(kType = kType)) {
+        if (!typeSchemaResolver.isCached(kType = kType)) {
             // Map customType.dataType and customType.dataFormat to the Schema.Primitive fields.
             val primitiveSchema: Schema.Primitive = Schema.Primitive(
                 type = customType.dataType,
@@ -77,7 +77,7 @@ internal class CustomTypeResolver(private val typeResolver: TypeResolver) {
                 schema = primitiveSchema
             )
 
-            typeResolver.addToCache(schema = schemaType)
+            typeSchemaResolver.addToCache(schema = schemaType)
         }
 
         // Return a reference to the custom type schema.

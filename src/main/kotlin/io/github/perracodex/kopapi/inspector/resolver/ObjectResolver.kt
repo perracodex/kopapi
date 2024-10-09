@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeResolver
+import io.github.perracodex.kopapi.inspector.TypeSchemaResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.Schema
@@ -28,7 +28,7 @@ import kotlin.reflect.KType
  *          - Circular Reference Prevention: Uses a semaphore to prevent infinite recursion in case of self-referencing types.
  *          - Add Placeholder Schema: Adds a placeholder schema to the cache before processing properties.
  *          - Retrieve Properties: Uses `PropertyResolver` to get the class properties.
- *          - Traverse Properties: Recursively traverses each property using `TypeResolver`.
+ *          - Traverse Properties: Recursively traverses each property using `TypeSchemaResolver`.
  *          - Update Schema: Fills in the placeholder schema with the resolved properties.
  *          - Remove from Semaphore: Removes the type from the semaphore after processing.
  *      - Result: Constructs and returns the object schema.
@@ -46,10 +46,10 @@ import kotlin.reflect.KType
  *        the self-reference and handles it appropriately.
  *
  * @see [PropertyResolver]
- * @see [TypeResolver]
+ * @see [TypeSchemaResolver]
  */
 @TypeInspectorAPI
-internal class ObjectResolver(private val typeResolver: TypeResolver) {
+internal class ObjectResolver(private val typeSchemaResolver: TypeSchemaResolver) {
     /** Semaphore to prevent infinite recursion during type processing. */
     private val semaphore: MutableSet<String> = mutableSetOf()
 
@@ -120,17 +120,17 @@ internal class ObjectResolver(private val typeResolver: TypeResolver) {
             kType = kType,
             schema = SchemaFactory.ofObject()
         )
-        typeResolver.addToCache(schema = schemaPlaceholder)
+        typeSchemaResolver.addToCache(schema = schemaPlaceholder)
 
         // Get the placeholder schema to place each property.
         val propertiesSchemas: Schema.Object = schemaPlaceholder.schema as Schema.Object
 
         // Retrieve all relevant properties of the generic class.
-        val classProperties: List<KProperty1<out Any, *>> = typeResolver.getClassProperties(kClass = kClass)
+        val classProperties: List<KProperty1<out Any, *>> = typeSchemaResolver.getClassProperties(kClass = kClass)
 
         // Traverse each property to resolve its schema using the merged type parameters.
         classProperties.forEach { property ->
-            val (name: String, schemaProperty: SchemaProperty) = typeResolver.traverseProperty(
+            val (name: String, schemaProperty: SchemaProperty) = typeSchemaResolver.traverseProperty(
                 classKType = kType,
                 property = property,
                 typeParameterMap = typeParameterMap
