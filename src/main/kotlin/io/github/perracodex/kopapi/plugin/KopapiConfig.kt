@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.plugin
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
+import io.github.perracodex.kopapi.keys.DataType
 import io.github.perracodex.kopapi.plugin.builders.CustomTypeBuilder
 import io.github.perracodex.kopapi.plugin.builders.Servers
 import io.ktor.http.*
@@ -63,23 +64,19 @@ public class KopapiConfig {
 
     /**
      * Registers a new `custom type` to be used when generating the OpenAPI schema.
-     * These can be new unhandled types or existing standard types with custom specifications.
+     * It can be a new unhandled type or an existing standard type with custom specifications.
      *
      * #### Syntax
      * ```
-     * customType<T>("type") { configuration }
+     * addType<T>(DataType) { configuration }
      * ```
-     * Where `T` is the new Object class to register and `"type"` is the type name to be used in the OpenAPI schema.
-     * The `"type"` name can be any custom text, or one of the standard OpenAPI types:
-     * ```
-     * "array", "boolean", "integer", "number", "object", "string"
-     * ```
+     * Where `T` is the new Object class to register and `DataType` is the type to be used in the OpenAPI schema.
      *
      * #### Samples
      * ```
-     * customType<Data>("string")
-     * customType<Length>("number") { format = "float" }
-     * customType<CurrencyCode>("string") { minLength = 3, maxLength = 3 }
+     * addType<Data>(DataType.STRING)
+     * addType<Length>(DataType.NUMBER) { format = "float" }
+     * addType<Password>(DataType.STRING) { minLength = 8, maxLength = 12 }
      * ```
      *
      * #### Example
@@ -90,12 +87,12 @@ public class KopapiConfig {
      *
      * You can register these custom types as follows:
      * ```
-     * customType<CurrencyCode>("string") {
+     * addType<CurrencyCode>(DataType.STRING) {
      *     minLength = 3
      *     maxLength = 3
      * }
      *
-     * customType<DiscountRate>("number") {
+     * addType<DiscountRate>(DataType.NUMBER) {
      *     format = "percentage"
      *     additional = mapOf("minimum" to "0", "maximum" to "100")
      * }
@@ -146,15 +143,15 @@ public class KopapiConfig {
      * ```
      *
      * @param T The new type to register. [Unit] and [Any] are not allowed.
-     * @param type The type name to be used in the OpenAPI schema.
+     * @param type The [DataType] to be used in the OpenAPI schema.
      * @param configure A lambda receiver to configure the [CustomTypeBuilder].
      *
      * @see [CustomTypeBuilder]
      */
     @OptIn(TypeInspectorAPI::class)
-    public inline fun <reified T : Any> customType(type: String, configure: CustomTypeBuilder.() -> Unit = {}) {
+    public inline fun <reified T : Any> addType(type: DataType, configure: CustomTypeBuilder.() -> Unit = {}) {
         val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
-        val newCustomType: CustomType = builder.build(type = typeOf<T>(), specType = type)
+        val newCustomType: CustomType = builder.build(type = typeOf<T>(), dataType = type)
         CustomTypeRegistry.register(newCustomType)
     }
 }

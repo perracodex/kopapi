@@ -8,11 +8,12 @@ import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
-import io.github.perracodex.kopapi.inspector.spec.Spec
-import io.github.perracodex.kopapi.inspector.spec.SpecKey
-import io.github.perracodex.kopapi.inspector.type.TypeSchema
-import io.github.perracodex.kopapi.inspector.type.safeName
+import io.github.perracodex.kopapi.inspector.schema.Schema
+import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
+import io.github.perracodex.kopapi.inspector.utils.safeName
 import io.github.perracodex.kopapi.utils.Tracer
+import io.github.perracodex.kopapi.utils.trimOrNull
 import kotlin.reflect.KType
 
 /**
@@ -50,28 +51,30 @@ internal class CustomTypeResolver(private val typeResolver: TypeResolver) {
                 return TypeSchema.of(
                     name = typeName,
                     kType = kType,
-                    schema = Spec.objectType()
+                    schema = SchemaFactory.ofObject()
                 )
             }
 
-        // If the custom type has not been processed yet,
-        // create a schema for it and cache it for future reference.
+        // If the custom type has not been processed yet, create a schema for it and cache it.
         if (!typeResolver.isCached(kType = kType)) {
-            val schema: MutableMap<String, Any> = mutableMapOf(SpecKey.TYPE() to customType.specType)
-            customType.specFormat?.let { schema[SpecKey.FORMAT()] = customType.specFormat }
-            customType.minLength?.let { schema[SpecKey.MIN_LENGTH()] = customType.minLength }
-            customType.maxLength?.let { schema[SpecKey.MAX_LENGTH()] = customType.maxLength }
-            customType.additional?.let { schema.putAll(customType.additional) }
-            customType.minimum?.let { schema[SpecKey.MINIMUM()] = customType.minimum }
-            customType.maximum?.let { schema[SpecKey.MAXIMUM()] = customType.maximum }
-            customType.exclusiveMinimum?.let { schema[SpecKey.EXCLUSIVE_MINIMUM()] = customType.exclusiveMinimum }
-            customType.exclusiveMaximum?.let { schema[SpecKey.EXCLUSIVE_MAXIMUM()] = customType.exclusiveMaximum }
-            customType.multipleOf?.let { schema[SpecKey.MULTIPLE_OF()] = customType.multipleOf }
+            // Map customType.dataType and customType.dataFormat to the Schema.Primitive fields.
+            val primitiveSchema: Schema.Primitive = Schema.Primitive(
+                type = customType.dataType,
+                format = customType.dataFormat.trimOrNull(),
+                minLength = customType.minLength,
+                maxLength = customType.maxLength,
+                minimum = customType.minimum,
+                maximum = customType.maximum,
+                exclusiveMinimum = customType.exclusiveMinimum,
+                exclusiveMaximum = customType.exclusiveMaximum,
+                multipleOf = customType.multipleOf,
+                additional = customType.additional // Additional properties, if any.
+            )
 
             val schemaType: TypeSchema = TypeSchema.of(
                 name = typeName,
                 kType = kType,
-                schema = schema
+                schema = primitiveSchema
             )
 
             typeResolver.addToCache(schema = schemaType)
@@ -81,7 +84,7 @@ internal class CustomTypeResolver(private val typeResolver: TypeResolver) {
         return TypeSchema.of(
             name = typeName,
             kType = kType,
-            schema = Spec.reference(schema = typeName)
+            schema = SchemaFactory.ofReference(schemaName = typeName)
         )
     }
 }

@@ -6,10 +6,10 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
-import io.github.perracodex.kopapi.inspector.spec.SpecKey
-import io.github.perracodex.kopapi.inspector.type.ElementMetadata
-import io.github.perracodex.kopapi.inspector.type.TypeSchema
-import io.github.perracodex.kopapi.inspector.type.resolveGenerics
+import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
+import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
+import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.inspector.utils.resolveGenerics
 import io.github.perracodex.kopapi.utils.Tracer
 import java.lang.reflect.Field
 import kotlin.reflect.*
@@ -31,7 +31,7 @@ import kotlin.reflect.full.superclasses
  *      - Result: Collects property schemas to be included in the parent object schema.
  *
  * @see [TypeResolver]
- * @see [ElementMetadata]
+ * @see [MetadataDescriptor]
  */
 @TypeInspectorAPI
 internal class PropertyResolver(private val typeResolver: TypeResolver) {
@@ -43,14 +43,14 @@ internal class PropertyResolver(private val typeResolver: TypeResolver) {
      * @param classKType The [KType] of the class declaring the property.
      * @param property The [KProperty1] to process.
      * @param typeParameterMap A map of type parameter classifiers to actual [KType] for replacement.
-     * @return A [PropertySchema] containing the resolved property name and schema.
+     * @return A [SchemaProperty] containing information about the property.
      */
     fun traverse(
         classKType: KType,
         property: KProperty1<out Any, *>,
         typeParameterMap: Map<KClassifier, KType>
-    ): PropertySchema {
-        val metadata: ElementMetadata = ElementMetadata.of(
+    ): Pair<String, SchemaProperty> {
+        val metadata: MetadataDescriptor = MetadataDescriptor.of(
             classKType = classKType,
             property = property
         )
@@ -64,22 +64,16 @@ internal class PropertyResolver(private val typeResolver: TypeResolver) {
             typeParameterMap = typeParameterMap
         )
 
-        typeSchema.schema.apply {
-            metadata.originalName?.let {
-                put(SpecKey.ORIGINAL_NAME(), it)
-            }
-            if (!metadata.isRequired) {
-                put(SpecKey.REQUIRED(), false)
-            }
-            if (metadata.isNullable) {
-                put(SpecKey.NULLABLE(), true)
-            }
-            if (metadata.isTransient) {
-                put(SpecKey.TRANSIENT(), true)
-            }
-        }
-
-        return PropertySchema(name = metadata.name, schema = typeSchema.schema)
+        // Create the SchemaProperty with metadata
+        return Pair(
+            metadata.name, SchemaProperty(
+                schema = typeSchema.schema,
+                isNullable = metadata.isNullable,
+                isRequired = metadata.isRequired,
+                originalName = metadata.originalName,
+                isTransient = metadata.isTransient
+            )
+        )
     }
 
     /**
@@ -157,15 +151,3 @@ internal class PropertyResolver(private val typeResolver: TypeResolver) {
         return orderedProperties
     }
 }
-
-/**
- * Data class to hold the resolved property information.
- *
- * @property name The resolved property name.
- *               This is the final name after applying metadata transformations.
- * @property schema The resolved schema map.
- */
-internal data class PropertySchema(
-    val name: String,
-    val schema: Map<String, Any>
-)

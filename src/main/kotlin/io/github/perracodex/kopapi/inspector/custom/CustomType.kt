@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.custom
 
+import io.github.perracodex.kopapi.keys.DataType
 import io.github.perracodex.kopapi.plugin.KopapiConfig
 import io.github.perracodex.kopapi.plugin.builders.CustomTypeBuilder
 import kotlin.reflect.KType
@@ -13,8 +14,8 @@ import kotlin.reflect.KType
  * allowing to inject new non-handled types, or define custom specifications for existing standard types.
  *
  * @property type The [KType] of the parameter, specifying the Kotlin type.
- * @property specType The type map to be used in the OpenAPI schema. For example, `string` or `integer`.
- * @property specFormat Used for defining expected data formats (e.g., "date", "email").
+ * @property dataType The type map to be used in the OpenAPI schema. For example, `string` or `integer`.
+ * @property dataFormat Used for defining expected data formats (e.g., "date", "email").
  * @property minLength Minimum length for string values.
  * @property maxLength Maximum length for string values.
  * @property minimum Minimum value for numeric types. Defines the inclusive lower bound.
@@ -25,13 +26,13 @@ import kotlin.reflect.KType
  * @property additional Map for specifying any additional custom properties not covered by the above fields
  *
  * @see [CustomTypeRegistry]
- * @see [KopapiConfig.customType]
+ * @see [KopapiConfig.addType]
  * @see [CustomTypeBuilder]
  */
 internal data class CustomType internal constructor(
     val type: KType,
-    val specType: String,
-    val specFormat: String? = null,
+    val dataType: DataType,
+    val dataFormat: String? = null,
     val minLength: Int? = null,
     val maxLength: Int? = null,
     val minimum: Number? = null,
@@ -42,7 +43,6 @@ internal data class CustomType internal constructor(
     val additional: Map<String, String>? = null
 ) {
     init {
-        require(specType.isNotBlank()) { "Custom type must not be empty." }
         require(type.classifier != Any::class) { "Custom type cannot be of type 'Any'. Define an explicit type." }
         require(type.classifier != Unit::class) { "Custom type cannot be of type 'Unit'. Define an explicit type." }
 

@@ -2,12 +2,14 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.inspector.type
+package io.github.perracodex.kopapi.inspector.descriptor
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.utils.cleanName
+import io.github.perracodex.kopapi.inspector.utils.safeName
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlinx.serialization.*
 import kotlin.reflect.KClass
@@ -27,7 +29,7 @@ import kotlin.reflect.full.primaryConstructor
  * @property isTransient Indicates whether the element should be ignored. Defaults to false.
  */
 @TypeInspectorAPI
-internal data class ElementMetadata(
+internal data class MetadataDescriptor(
     val name: String,
     val originalName: String? = null,
     val isRequired: Boolean = true,
@@ -35,7 +37,7 @@ internal data class ElementMetadata(
     val isTransient: Boolean = false
 ) {
     companion object {
-        private val tracer = Tracer<ElementMetadata>()
+        private val tracer = Tracer<MetadataDescriptor>()
 
         /**
          * Resolves the name for the give [kClass], considering serializer annotations if present.
@@ -48,16 +50,16 @@ internal data class ElementMetadata(
         }
 
         /**
-         * Creates an [ElementMetadata] by inspecting the annotations from the given [property].
+         * Creates an [MetadataDescriptor] by inspecting the annotations from the given [property].
          *
          * @param classKType The [KType] of the class declaring the property.
          * @param property The [KProperty1] to extract metadata from.
-         * @return The constructed [ElementMetadata] instance.
+         * @return The constructed [MetadataDescriptor] instance.
          */
         fun of(
             classKType: KType,
             property: KProperty1<out Any, *>
-        ): ElementMetadata {
+        ): MetadataDescriptor {
             val elementName: Pair<String, String?> = geElementName(target = property)
 
             val isTransient: Boolean = property.isTransient()
@@ -68,7 +70,7 @@ internal data class ElementMetadata(
                 elementName = elementName
             )
 
-            return ElementMetadata(
+            return MetadataDescriptor(
                 name = elementName.first,
                 originalName = elementName.second,
                 isRequired = isRequired,
@@ -183,11 +185,6 @@ internal data class ElementMetadata(
                     }
                 }
             } catch (e: Exception) {
-                tracer.error(
-                    message = "Unable to determine if property is required by constructor. Field: $property",
-                    cause = e
-                )
-
                 // If there is an error (e.g., no serializer found)
                 // fallback to checking the primary constructor.
                 determineIfRequiredByConstructor(

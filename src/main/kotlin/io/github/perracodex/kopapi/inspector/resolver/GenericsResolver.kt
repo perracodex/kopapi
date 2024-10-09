@@ -6,9 +6,11 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
-import io.github.perracodex.kopapi.inspector.spec.Spec
-import io.github.perracodex.kopapi.inspector.type.ElementMetadata
-import io.github.perracodex.kopapi.inspector.type.TypeSchema
+import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
+import io.github.perracodex.kopapi.inspector.schema.Schema
+import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
+import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 import kotlin.reflect.*
 
 /**
@@ -166,7 +168,7 @@ internal class GenericsResolver(private val typeResolver: TypeResolver) {
         return TypeSchema.of(
             name = genericsTypeName,
             kType = kType,
-            schema = Spec.reference(schema = genericsTypeName)
+            schema = SchemaFactory.ofReference(schemaName = genericsTypeName)
         )
     }
 
@@ -183,9 +185,9 @@ internal class GenericsResolver(private val typeResolver: TypeResolver) {
      */
     private fun generateTypeName(kType: KType, kClass: KClass<*>): String {
         val arguments: List<KClass<*>> = kType.arguments.mapNotNull { it.type?.classifier as? KClass<*> }
-        val className: String = ElementMetadata.getClassName(kClass = kClass)
+        val className: String = MetadataDescriptor.getClassName(kClass = kClass)
         val argumentsNames: List<String> = arguments.map {
-            ElementMetadata.getClassName(kClass = it)
+            MetadataDescriptor.getClassName(kClass = it)
         }
 
         return if (argumentsNames.size == 1) {
@@ -230,7 +232,7 @@ internal class GenericsResolver(private val typeResolver: TypeResolver) {
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
             name = genericsTypeName,
             kType = kType,
-            schema = Spec.properties(value = mutableMapOf())
+            schema = SchemaFactory.ofObject()
         )
         typeResolver.addToCache(schema = schemaPlaceholder)
 
@@ -253,25 +255,21 @@ internal class GenericsResolver(private val typeResolver: TypeResolver) {
         // Merge inherited type parameters with the local context type parameter mappings.
         val mergedTypeParameterMap: Map<KClassifier, KType> = inheritedTypeParameterMap + localTypeParameterMap
 
-        // Initialize a map to hold resolved schemas for each property.
-        val propertiesSchemas: MutableMap<String, Any> = mutableMapOf()
+        // Get the placeholder schema to place each property.
+        val propertiesSchemas: Schema.Object = schemaPlaceholder.schema as Schema.Object
 
         // Retrieve all relevant properties of the generic class.
         val classProperties: List<KProperty1<out Any, *>> = typeResolver.getClassProperties(kClass = kClass)
 
         // Traverse each property to resolve its schema using the merged type parameters.
         classProperties.forEach { property ->
-            val propertySchema: PropertySchema = typeResolver.traverseProperty(
+            val (name: String, schemaProperty: SchemaProperty) = typeResolver.traverseProperty(
                 classKType = kType,
                 property = property,
                 typeParameterMap = mergedTypeParameterMap
             )
-            propertiesSchemas[propertySchema.name] = propertySchema.schema
-        }
 
-        // Update the cached schema placeholder with the resolved property schemas.
-        schemaPlaceholder.schema.putAll(
-            Spec.properties(value = propertiesSchemas)
-        )
+            propertiesSchemas.properties[name] = schemaProperty
+        }
     }
 }

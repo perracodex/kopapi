@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.plugin.builders
 
 import io.github.perracodex.kopapi.inspector.custom.CustomType
+import io.github.perracodex.kopapi.keys.DataType
 import io.github.perracodex.kopapi.plugin.KopapiConfig
 import io.github.perracodex.kopapi.utils.trimOrNull
 import kotlin.reflect.KType
@@ -25,7 +26,7 @@ import kotlin.reflect.KType
  *
  * #### Example
  * ```
- * customType<LanguageCode>("string") {
+ * addType<LanguageCode>(DataType.STRING) {
  *     format = "iso-code"
  *     minLength = 2
  *     maxLength = 2
@@ -74,7 +75,7 @@ import kotlin.reflect.KType
  * @property multipleOf Factor that constrains the value to be a multiple of a number.
  * @property additional Map for specifying any additional custom properties not covered by the above fields.
  *
- * @see [KopapiConfig.customType]
+ * @see [KopapiConfig.addType]
  */
 public data class CustomTypeBuilder(
     var format: String? = null,
@@ -91,15 +92,15 @@ public data class CustomTypeBuilder(
      * Builds an [CustomType] instance from the current builder state.
      *
      * @param type The [KType] of the parameter that specifies the target type.
-     * @param specType The type spec key. For example, `string`, `integer`, etc.
+     * @param dataType The [DataType] to be used in the OpenAPI schema.
      * @return The constructed [CustomType] instance.
      */
     @PublishedApi
-    internal fun build(type: KType, specType: String): CustomType {
+    internal fun build(type: KType, dataType: DataType): CustomType {
         return CustomType(
             type = type,
-            specType = specType.trim(),
-            specFormat = format.trimOrNull(),
+            dataType = dataType,
+            dataFormat = format.trimOrNull(),
             minLength = minLength,
             maxLength = maxLength,
             minimum = minimum,

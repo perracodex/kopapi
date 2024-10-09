@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.inspector.type
+package io.github.perracodex.kopapi.inspector.schema
 
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 /**
  * Manager caching conflicting [TypeSchema] objects.
  */
-internal class TypeSchemaConflicts(private val typeInspector: TypeInspector) {
+internal class SchemaConflicts(private val typeInspector: TypeInspector) {
     /** Holds Conflict generated during the inspection process. */
     private val conflicts: MutableSet<Conflict> = mutableSetOf()
 

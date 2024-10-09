@@ -5,8 +5,8 @@
 package io.github.perracodex.kopapi.inspector
 
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
-import io.github.perracodex.kopapi.inspector.type.TypeSchema
-import io.github.perracodex.kopapi.inspector.type.TypeSchemaConflicts
+import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
+import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import kotlin.reflect.KType
 
 /**
@@ -15,17 +15,17 @@ import kotlin.reflect.KType
  * encapsulate all necessary information to construct OpenAPI-compliant schemas.
  *
  * This class delegates the core type traversal and schema resolution logic to the [TypeResolver] class.
- * The [TypeSchemaConflicts] instance manages and logs any schema naming conflicts  detected during
+ * The [SchemaConflicts] instance manages and logs any schema naming conflicts  detected during
  * the inspection process.
  *
  * @see [TypeResolver]
- * @see [TypeSchemaConflicts]
+ * @see [SchemaConflicts]
  * @see [TypeSchema]
  */
 @OptIn(TypeInspectorAPI::class)
 internal class TypeInspector {
-    /** Instance of [TypeSchemaConflicts] to manage conflicting [TypeSchema] objects. */
-    private val conflicts = TypeSchemaConflicts(typeInspector = this)
+    /** Instance of [SchemaConflicts] to manage conflicting [TypeSchema] objects. */
+    private val conflicts = SchemaConflicts(typeInspector = this)
 
     /** Instance of [TypeResolver] to handle type traversal and schema resolution. */
     private val typeResolver = TypeResolver()

@@ -6,10 +6,12 @@ package io.github.perracodex.kopapi.inspector
 
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
+import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.resolver.*
-import io.github.perracodex.kopapi.inspector.type.TypeDescriptor
-import io.github.perracodex.kopapi.inspector.type.TypeSchema
-import io.github.perracodex.kopapi.inspector.type.nativeName
+import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
+import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.inspector.schema.factory.PrimitiveFactory
+import io.github.perracodex.kopapi.inspector.utils.nativeName
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
@@ -36,18 +38,6 @@ import kotlin.reflect.full.isSubclassOf
  *      - `@SerialName`, `@Transient`, `@Required`
  * - Jackson (partial support):
  *     - `JsonTypeName`, `@JsonProperty`, `@JsonIgnore`
- *
- * @see [ArrayResolver]
- * @see [CollectionResolver]
- * @see [CustomTypeResolver]
- * @see [EnumResolver]
- * @see [GenericsResolver]
- * @see [MapResolver]
- * @see [ObjectResolver]
- * @see [PropertyResolver]
- * @see [TypeSchema]
- * @see [TypeDescriptor]
- * @see [TypeInspector]
  */
 @TypeInspectorAPI
 internal class TypeResolver {
@@ -70,7 +60,7 @@ internal class TypeResolver {
      * including collections, maps, enums, and `Generics`. Manages recursion and self-referencing types.
      *
      * Returns a [TypeSchema] representing the structure of the [kType], considering `Generics`,
-     * optional properties, nullable properties, and some concrete annotations (see [TypeDescriptor]).
+     * optional properties, nullable properties, and some concrete annotations (see [PrimitiveFactory]).
      *
      * #### Type Parameter Map Details
      *
@@ -199,7 +189,7 @@ internal class TypeResolver {
         val classifier: KClassifier = kType.classifier
             ?: run {
                 tracer.error("Missing classifier. kType=$kType. typeParameterMap=$typeParameterMap.")
-                return TypeDescriptor.buildUnknownTypeSchema(kType = kType)
+                return TypeSchema.ofUnknown(kType = kType)
             }
 
         val typeSchema: TypeSchema = when {
@@ -254,7 +244,7 @@ internal class TypeResolver {
             // Fallback for unknown types. This should never be reached.
             else -> {
                 tracer.error("Unexpected type: $kType. typeParameterMap=$typeParameterMap.")
-                TypeDescriptor.buildUnknownTypeSchema(kType = kType)
+                TypeSchema.ofUnknown(kType = kType)
             }
         }
 
@@ -288,13 +278,13 @@ internal class TypeResolver {
      * @param classKType The [KType] of the class declaring the property.
      * @param property The [KProperty1] to process.
      * @param typeParameterMap A map of type parameter classifiers to actual [KType] for replacement.
-     * @return A [PropertySchema] containing the resolved property name and schema.
+     * @return A [SchemaProperty] containing information about the property.
      */
     fun traverseProperty(
         classKType: KType,
         property: KProperty1<out Any, *>,
         typeParameterMap: Map<KClassifier, KType>
-    ): PropertySchema {
+    ): Pair<String, SchemaProperty> {
         return propertyResolver.traverse(
             classKType = classKType,
             property = property,

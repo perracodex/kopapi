@@ -2,22 +2,16 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.inspector.type
+package io.github.perracodex.kopapi.inspector.descriptor
 
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
-import io.github.perracodex.kopapi.inspector.spec.Spec
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSuperclassOf
-import kotlin.uuid.Uuid
 
 /**
- * Provides functionality to evaluate and map Kotlin types, including primitive types
- * and their corresponding schemas.
+ * Provides functionality to evaluate types and determine their characteristics.
  */
 @TypeInspectorAPI
 internal object TypeDescriptor {
@@ -95,86 +89,5 @@ internal object TypeDescriptor {
                 classifier == CharArray::class || classifier == BooleanArray::class ||
                 classifier == UIntArray::class || classifier == ULongArray::class ||
                 classifier == UByteArray::class || classifier == UShortArray::class
-    }
-
-    /**
-     * Constructs a mutable map representing the schema for the given primitive type.
-     *
-     * @param kClass The [KClass] representing the primitive type.
-     * @return A mutable map representing the schema for the primitive type,
-     * or null if the type is not a primitive.
-     */
-    fun mapPrimitiveType(kClass: KClass<*>): MutableMap<String, Any>? {
-        return when (kClass) {
-            // Basic Kotlin Types.
-            String::class, CharSequence::class -> Spec.string()
-            Char::class -> Spec.char()
-            Boolean::class -> Spec.boolean()
-            Int::class -> Spec.int32()
-            Long::class -> Spec.int64()
-            Double::class -> Spec.double()
-            Float::class -> Spec.float()
-            Short::class -> Spec.int32()
-            Byte::class -> Spec.int32()
-            UInt::class -> Spec.int32()
-            ULong::class -> Spec.int64()
-            UShort::class -> Spec.int32()
-            UByte::class -> Spec.int32()
-
-            // Primitive Arrays.
-            IntArray::class, ShortArray::class, UIntArray::class, UShortArray::class -> Spec.array(spec = Spec.int32())
-            LongArray::class, ULongArray::class -> Spec.array(spec = Spec.int64())
-            FloatArray::class -> Spec.array(spec = Spec.float())
-            DoubleArray::class -> Spec.array(spec = Spec.double())
-            BooleanArray::class -> Spec.array(spec = Spec.boolean())
-            CharArray::class -> Spec.array(spec = Spec.char())
-            ByteArray::class, UByteArray::class -> Spec.array(spec = Spec.byte())
-
-            // UUID Types.
-            Uuid::class, UUID::class -> Spec.uuid()
-
-            // Kotlin Date/Time Types.
-            kotlinx.datetime.LocalDate::class -> Spec.date()
-            kotlinx.datetime.LocalDateTime::class -> Spec.dateTime()
-            kotlinx.datetime.Instant::class -> Spec.dateTime()
-            kotlinx.datetime.LocalTime::class -> Spec.time()
-
-            // Java Date/Time Types.
-            java.time.OffsetDateTime::class -> Spec.dateTime()
-            java.time.ZonedDateTime::class -> Spec.dateTime()
-            java.time.LocalTime::class -> Spec.time()
-            java.time.LocalDate::class -> Spec.date()
-            java.time.LocalDateTime::class -> Spec.dateTime()
-            java.time.Instant::class -> Spec.dateTime()
-            java.util.Date::class -> Spec.dateTime()
-            java.sql.Date::class -> Spec.date()
-
-            // Big Numbers.
-            BigDecimal::class -> Spec.double()
-            BigInteger::class -> Spec.int64()
-
-            // URL and URI.
-            io.ktor.http.Url::class -> Spec.uri()
-            java.net.URL::class -> Spec.uri()
-            java.net.URI::class -> Spec.uri()
-
-            else -> null // Return null if it's not a primitive type.
-        }
-    }
-
-    /**
-     * Constructs a [TypeSchema] for the given [kType] when the type is unknown.
-     *
-     * @param kType The unknown [KType] to build a schema for.
-     *
-     */
-    fun buildUnknownTypeSchema(
-        kType: KType,
-    ): TypeSchema {
-        return TypeSchema.of(
-            name = "Unknown_$kType",
-            kType = kType,
-            schema = Spec.objectType()
-        )
     }
 }

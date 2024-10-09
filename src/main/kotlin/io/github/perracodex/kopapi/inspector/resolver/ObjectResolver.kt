@@ -6,11 +6,13 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
-import io.github.perracodex.kopapi.inspector.spec.Spec
-import io.github.perracodex.kopapi.inspector.type.ElementMetadata
-import io.github.perracodex.kopapi.inspector.type.TypeDescriptor
-import io.github.perracodex.kopapi.inspector.type.TypeSchema
-import io.github.perracodex.kopapi.inspector.type.nativeName
+import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
+import io.github.perracodex.kopapi.inspector.schema.Schema
+import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
+import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.inspector.schema.factory.PrimitiveFactory
+import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
+import io.github.perracodex.kopapi.inspector.utils.nativeName
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KProperty1
@@ -65,10 +67,10 @@ internal class ObjectResolver(private val typeResolver: TypeResolver) {
         kClass: KClass<*>,
         typeParameterMap: Map<KClassifier, KType>
     ): TypeSchema {
-        val className: String = ElementMetadata.getClassName(kClass = kClass)
+        val className: String = MetadataDescriptor.getClassName(kClass = kClass)
 
         // Handle primitive types.
-        TypeDescriptor.mapPrimitiveType(kClass = kClass)?.let { schema ->
+        PrimitiveFactory.newSchema(kClass = kClass)?.let { schema ->
             return TypeSchema.of(
                 name = className,
                 kType = kType,
@@ -106,48 +108,44 @@ internal class ObjectResolver(private val typeResolver: TypeResolver) {
             return TypeSchema.of(
                 name = className,
                 kType = kType,
-                schema = Spec.reference(schema = className)
+                schema = SchemaFactory.ofReference(schemaName = className)
             )
         }
         semaphore.add(kType.nativeName())
 
         // Add a schema placeholder early to avoid circular references.
+        // Add a schema placeholder early to avoid circular references.
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
             name = className,
             kType = kType,
-            schema = Spec.properties(value = mutableMapOf())
+            schema = SchemaFactory.ofObject()
         )
         typeResolver.addToCache(schema = schemaPlaceholder)
 
-        // Initialize a map to hold resolved schemas for each property.
-        val propertiesSchemas: MutableMap<String, Any> = mutableMapOf()
+        // Get the placeholder schema to place each property.
+        val propertiesSchemas: Schema.Object = schemaPlaceholder.schema as Schema.Object
 
         // Retrieve all relevant properties of the generic class.
         val classProperties: List<KProperty1<out Any, *>> = typeResolver.getClassProperties(kClass = kClass)
 
         // Traverse each property to resolve its schema using the merged type parameters.
         classProperties.forEach { property ->
-            val propertySchema: PropertySchema = typeResolver.traverseProperty(
+            val (name: String, schemaProperty: SchemaProperty) = typeResolver.traverseProperty(
                 classKType = kType,
                 property = property,
                 typeParameterMap = typeParameterMap
             )
-            propertiesSchemas[propertySchema.name] = propertySchema.schema
+            propertiesSchemas.properties[name] = schemaProperty
         }
 
         // Once done traversing remove the processing type from the in-memory
         // tracker to handle different branches.
         semaphore.remove(kType.nativeName())
 
-        // Update the cached schema placeholder with the resolved property schemas.
-        schemaPlaceholder.schema.putAll(
-            Spec.properties(value = propertiesSchemas)
-        )
-
         return TypeSchema.of(
             name = className,
             kType = kType,
-            schema = Spec.reference(schema = className)
+            schema = SchemaFactory.ofReference(schemaName = className)
         )
     }
 }

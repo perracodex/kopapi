@@ -6,11 +6,11 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
-import io.github.perracodex.kopapi.inspector.spec.Spec
-import io.github.perracodex.kopapi.inspector.type.ElementMetadata
-import io.github.perracodex.kopapi.inspector.type.TypeDescriptor
-import io.github.perracodex.kopapi.inspector.type.TypeSchema
-import io.github.perracodex.kopapi.inspector.type.resolveGenerics
+import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
+import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
+import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
+import io.github.perracodex.kopapi.inspector.utils.resolveGenerics
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
@@ -46,7 +46,7 @@ internal class CollectionResolver(private val typeResolver: TypeResolver) {
         classifier: KClassifier,
         typeParameterMap: Map<KClassifier, KType>
     ): TypeSchema {
-        val className: String = ElementMetadata.getClassName(kClass = (classifier as KClass<*>))
+        val className: String = MetadataDescriptor.getClassName(kClass = (classifier as KClass<*>))
 
         val argumentType: KType = kType.arguments.firstOrNull()?.type?.resolveGenerics(
             typeParameterMap = typeParameterMap
@@ -57,7 +57,7 @@ internal class CollectionResolver(private val typeResolver: TypeResolver) {
             return TypeSchema.of(
                 name = className,
                 kType = kType,
-                schema = Spec.objectType()
+                schema = SchemaFactory.ofObject()
             )
         }
 
@@ -78,7 +78,7 @@ internal class CollectionResolver(private val typeResolver: TypeResolver) {
         return TypeSchema.of(
             name = name,
             kType = kType,
-            schema = Spec.collection(value = typeSchema.schema)
+            schema = SchemaFactory.ofCollection(items = typeSchema.schema)
         )
     }
 }

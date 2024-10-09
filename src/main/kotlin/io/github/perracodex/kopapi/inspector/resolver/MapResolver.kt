@@ -6,9 +6,9 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
-import io.github.perracodex.kopapi.inspector.spec.Spec
-import io.github.perracodex.kopapi.inspector.type.TypeSchema
-import io.github.perracodex.kopapi.inspector.type.resolveGenerics
+import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
+import io.github.perracodex.kopapi.inspector.utils.resolveGenerics
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
@@ -58,12 +58,12 @@ internal class MapResolver(private val typeResolver: TypeResolver) {
         // Process the value type.
         val typeSchema: TypeSchema = valueType?.let {
             typeResolver.traverseType(kType = valueType, typeParameterMap = typeParameterMap)
-        } ?: TypeSchema.of(name = "MapOf${kType}", kType = kType, schema = Spec.objectType())
+        } ?: TypeSchema.of(name = "MapOf${kType}", kType = kType, schema = SchemaFactory.ofObject())
 
         return TypeSchema.of(
             name = "MapOf${typeSchema.name}",
             kType = kType,
-            schema = Spec.additionalProperties(value = typeSchema.schema)
+            schema = SchemaFactory.ofAdditionalProperties(value = typeSchema.schema)
         )
     }
 }

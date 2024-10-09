@@ -13,7 +13,7 @@ import kotlin.reflect.KType
  * Registry for user defined `custom types` to be used when generating the OpenAPI schema.
  * These can be new unhandled types or existing standard types with custom specifications.
  *
- * @see [KopapiConfig.customType]
+ * @see [KopapiConfig.addType]
  * @see [CustomTypeBuilder]
  * @see [CustomType]
  */

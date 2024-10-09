@@ -6,9 +6,9 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
-import io.github.perracodex.kopapi.inspector.spec.Spec
-import io.github.perracodex.kopapi.inspector.type.ElementMetadata
-import io.github.perracodex.kopapi.inspector.type.TypeSchema
+import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
+import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
@@ -38,7 +38,7 @@ internal class EnumResolver(private val typeResolver: TypeResolver) {
         } ?: emptyList()
 
         // Create the TypeSchema for the enum as a separate object.
-        val enumClassName: String = ElementMetadata.getClassName(kClass = enumClass)
+        val enumClassName: String = MetadataDescriptor.getClassName(kClass = enumClass)
         val enumKType: KType = enumClass.createType()
 
         // If the enum type has not been processed yet,
@@ -47,7 +47,7 @@ internal class EnumResolver(private val typeResolver: TypeResolver) {
             val typeSchema: TypeSchema = TypeSchema.of(
                 name = enumClassName,
                 kType = enumKType,
-                schema = Spec.enum(values = enumValues)
+                schema = SchemaFactory.ofEnum(values = enumValues)
             )
 
             typeResolver.addToCache(schema = typeSchema)
@@ -57,7 +57,7 @@ internal class EnumResolver(private val typeResolver: TypeResolver) {
         return TypeSchema.of(
             name = enumClassName,
             kType = enumKType,
-            schema = Spec.reference(schema = enumClassName)
+            schema = SchemaFactory.ofReference(schemaName = enumClassName)
         )
     }
 }

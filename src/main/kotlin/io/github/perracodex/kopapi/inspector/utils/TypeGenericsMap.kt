@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.inspector.type
+package io.github.perracodex.kopapi.inspector.utils
 
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType

@@ -6,10 +6,12 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeResolver
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
-import io.github.perracodex.kopapi.inspector.spec.Spec
-import io.github.perracodex.kopapi.inspector.type.ElementMetadata
-import io.github.perracodex.kopapi.inspector.type.TypeDescriptor
-import io.github.perracodex.kopapi.inspector.type.TypeSchema
+import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
+import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
+import io.github.perracodex.kopapi.inspector.schema.Schema
+import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.inspector.schema.factory.PrimitiveFactory
+import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
@@ -45,16 +47,16 @@ internal class ArrayResolver(private val typeResolver: TypeResolver) {
         classifier: KClassifier,
         typeParameterMap: Map<KClassifier, KType>
     ): TypeSchema {
-        val className: String = ElementMetadata.getClassName(kClass = (classifier as KClass<*>))
+        val className: String = MetadataDescriptor.getClassName(kClass = (classifier as KClass<*>))
 
         // Check if dealing with a primitive array first, such as IntArray, ByteArray, etc.,
         // and return the corresponding schema if it is.
         if (TypeDescriptor.isPrimitiveArray(classifier = classifier)) {
-            val schema: MutableMap<String, Any>? = TypeDescriptor.mapPrimitiveType(kClass = classifier)
+            val schema: Schema? = PrimitiveFactory.newSchema(kClass = classifier)
             return TypeSchema.of(
                 name = className,
                 kType = kType,
-                schema = schema ?: Spec.objectType()
+                schema = schema ?: SchemaFactory.ofObject()
             )
         }
 
@@ -64,7 +66,7 @@ internal class ArrayResolver(private val typeResolver: TypeResolver) {
             return TypeSchema.of(
                 name = className,
                 kType = kType,
-                schema = Spec.objectType()
+                schema = SchemaFactory.ofObject()
             )
         }
 
