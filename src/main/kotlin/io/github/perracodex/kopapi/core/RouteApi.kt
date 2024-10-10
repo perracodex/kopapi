@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.core
 
 import io.github.perracodex.kopapi.dsl.ApiMetadata
-import io.github.perracodex.kopapi.routing.extractEndpointPath
+import io.github.perracodex.kopapi.routing.extractRoutePath
 import io.ktor.http.*
 import io.ktor.server.routing.*
 
@@ -37,13 +37,19 @@ import io.ktor.server.routing.*
  * @see [ApiMetadata]
  */
 public infix fun Route.api(configure: ApiMetadata.() -> Unit): Route {
+    val selector: RouteSelector = when (this) {
+        is RoutingRoot -> this.selector
+        is RoutingNode -> this.selector
+        else -> throw KopapiException(message = buildApiErrorMessage(route = this))
+    }
+
     // Resolve the HTTP method of the route: GET, POST, PUT, DELETE, etc.
-    val method: HttpMethod = (this.selector as? HttpMethodRouteSelector)?.method
+    val method: HttpMethod = (selector as? HttpMethodRouteSelector)?.method
         ?: throw KopapiException(message = buildApiErrorMessage(route = this))
 
     // Create an instance of ApiMetadata and apply the configuration.
     val metadata: ApiMetadata = ApiMetadata(
-        path = this.extractEndpointPath(),
+        path = this.extractRoutePath(),
         method = method
     ).apply(configure)
 
@@ -62,7 +68,7 @@ public infix fun Route.api(configure: ApiMetadata.() -> Unit): Route {
 private fun buildApiErrorMessage(route: Route): String {
     return """
         Error: The 'api' extension function must be attached to a route that has an HTTP method (e.g., GET, POST, PUT, DELETE).
-        The current route "${route.extractEndpointPath()}" does not have an HTTP method associated with it.
+        The current route "${route.extractRoutePath()}" does not have an HTTP method associated with it.
 
         Possible causes:
         - You might have applied 'api' to a route that is not directly tied to a specific HTTP method,

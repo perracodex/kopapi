@@ -18,13 +18,19 @@ import io.ktor.server.routing.*
  * @return A string representing the full path from the root to the current route, starting with a `/`.
  * If the current route is at the root or no path segments are defined, the function returns just `/`.
  */
-internal fun Route.extractEndpointPath(): String {
+internal fun Route.extractRoutePath(): String {
     val segments: MutableList<String> = mutableListOf()
     var currentRoute: Route? = this
 
     // Traverse the parent chain of the current route and collect path segments.
-    while (currentRoute != null && currentRoute.selector !is RootRouteSelector) {
-        val segment: String = when (val selector: RouteSelector = currentRoute.selector) {
+    while (currentRoute != null) {
+        val selector: RouteSelector = when (this) {
+            is RoutingRoot -> this.selector
+            is RoutingNode -> this.selector
+            else -> break
+        }
+
+        val segment: String = when (selector) {
             is PathSegmentConstantRouteSelector -> selector.value
             is PathSegmentParameterRouteSelector -> "{${selector.name}}"
             is PathSegmentOptionalParameterRouteSelector -> "{${selector.name}?}"

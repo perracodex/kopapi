@@ -22,8 +22,14 @@ internal fun <T : Any> Application.collectRouteAttributes(attributeKey: Attribut
         this.attributes.getOrNull(key = attributeKey)?.let {
             attributeValues.add(it)
         }
-        // Recursively collect attributes from child routes.
-        this.children.forEach { it.collectAttributes() }
+
+        val nodes: List<RoutingNode> = when (this) {
+            is RoutingRoot -> this.children
+            is RoutingNode -> this.children
+            else -> emptyList()
+        }
+
+        nodes.forEach { it.collectAttributes() }
     }
 
     // Start collecting from the root route.
