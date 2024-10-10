@@ -15,8 +15,6 @@ import kotlin.reflect.KType
  * encapsulate all necessary information to construct OpenAPI-compliant schemas.
  *
  * This class delegates the core type traversal and schema resolution logic to the [TypeSchemaBuilder] class.
- * The [SchemaConflicts] instance manages and logs any schema naming conflicts  detected during
- * the inspection process.
  *
  * @see [TypeSchemaBuilder]
  * @see [SchemaConflicts]
@@ -24,7 +22,7 @@ import kotlin.reflect.KType
  */
 @OptIn(TypeInspectorAPI::class)
 internal class TypeInspector {
-    /** Instance of [SchemaConflicts] to manage conflicting [TypeSchema] objects. */
+    /** Instance of [SchemaConflicts] to keep track of conflicting [TypeSchema] objects. */
     private val conflicts = SchemaConflicts(typeInspector = this)
 
     /** Instance of [TypeSchemaBuilder] to handle type traversal and schema resolution. */

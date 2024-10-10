@@ -24,7 +24,8 @@ import kotlin.reflect.full.isSubclassOf
  * into [TypeSchema] objects containing the necessary information to construct OpenAPI schemas.
  *
  * ### Key Features
- * - Recursive Inspection: Capable of recursively traversing complex types, including nested objects.
+ * - Recursive Inspection: Capable of recursively traversing complex types, including nested objects,
+ *   self-referencing and cross-referencing types.
  * - Comprehensive Type Support: Handles all primitive types, enums, and common Kotlin and Java types.
  * - Collections and Maps: Supports collections such as `List`, `Set`, including primitive and typed arrays,
  *   and maps with both primitive and complex object values.
