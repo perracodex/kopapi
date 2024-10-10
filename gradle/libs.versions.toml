@@ -8,7 +8,7 @@ kotlin = "2.0.21"                       # https://github.com/JetBrains/kotlin/re
 kotlinx-datetime = "0.6.1"              # https://github.com/Kotlin/kotlinx-datetime/releases
 kotlinx-serialization = "1.7.3"         # https://github.com/Kotlin/kotlinx.serialization/releases
 ktor = "2.3.12"                         # https://ktor.io/docs/releases.html#release-details
-mockk = "1.13.12"                       # https://github.com/mockk/mockk/releases
+mockk = "1.13.13"                       # https://github.com/mockk/mockk/releases
 mockito-kotlin = "5.4.0"                # https://github.com/mockito/mockito-kotlin/releases
 vanniktech = "0.29.0"                   # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
 
