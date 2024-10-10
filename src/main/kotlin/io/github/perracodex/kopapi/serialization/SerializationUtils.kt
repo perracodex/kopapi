@@ -6,11 +6,11 @@ package io.github.perracodex.kopapi.serialization
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.fasterxml.jackson.module.kotlin.kotlinModule
 import io.github.perracodex.kopapi.serialization.serializers.*
 import io.ktor.http.*
 import kotlin.reflect.KType
@@ -19,22 +19,24 @@ import kotlin.reflect.KType
  * Provides utility functions for serialization.
  */
 internal object SerializationUtils {
-    /**
-     * Configured Jackson ObjectMapper.
-     */
-    private val jsonJackson: ObjectMapper = jacksonObjectMapper()
-        .registerKotlinModule()
-        .configure(SerializationFeature.INDENT_OUTPUT, true)
-        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-        .setSerializationInclusion(JsonInclude.Include.ALWAYS)
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .registerModule(SimpleModule().apply {
-            addSerializer(ContentType::class.java, ContentTypeSerializer)
-            addSerializer(HttpMethod::class.java, HttpMethodSerializer)
-            addSerializer(HttpStatusCode::class.java, HttpStatusCodeSerializer)
-            addSerializer(KType::class.java, KTypeSerializer)
-            addSerializer(Url::class.java, UrlSerializer)
-        })
+    /** Configured Jackson Mapper. */
+    private val jsonJackson: JsonMapper = JsonMapper.builder()
+        .addModule(kotlinModule())
+        .enable(SerializationFeature.INDENT_OUTPUT)
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .serializationInclusion(JsonInclude.Include.ALWAYS)
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+        .enable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
+        .addModule(
+            SimpleModule().apply {
+                addSerializer(ContentType::class.java, ContentTypeSerializer)
+                addSerializer(HttpMethod::class.java, HttpMethodSerializer)
+                addSerializer(HttpStatusCode::class.java, HttpStatusCodeSerializer)
+                addSerializer(KType::class.java, KTypeSerializer)
+                addSerializer(Url::class.java, UrlSerializer)
+            }
+        ).build()
 
     /**
      * Serializes the given object [instance] to a JSON string.
