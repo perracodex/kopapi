@@ -7,8 +7,8 @@ package inspection.array
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
-import io.github.perracodex.kopapi.keys.DataFormat
-import io.github.perracodex.kopapi.keys.DataType
+import io.github.perracodex.kopapi.keys.ApiFormat
+import io.github.perracodex.kopapi.keys.ApiType
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
@@ -21,27 +21,27 @@ class TypedPrimitiveArrayTest {
 
     private data class PrimitiveTypeInfo(
         val kClass: KClass<*>,
-        val type: DataType,
-        val format: DataFormat?
+        val type: ApiType,
+        val format: ApiFormat?
     )
 
     @Test
     fun `test typed primitive arrays`() {
-        // Define a list of primitive types and their expected DataType and DataFormat.
+        // Define a list of primitive types and their expected ApiType and ApiFormat.
         val primitiveTypes: List<PrimitiveTypeInfo> = listOf(
-            PrimitiveTypeInfo(kClass = Int::class, type = DataType.INTEGER, format = DataFormat.INT32),
-            PrimitiveTypeInfo(kClass = Long::class, type = DataType.INTEGER, format = DataFormat.INT64),
-            PrimitiveTypeInfo(kClass = Float::class, type = DataType.NUMBER, format = DataFormat.FLOAT),
-            PrimitiveTypeInfo(kClass = Double::class, type = DataType.NUMBER, format = DataFormat.DOUBLE),
-            PrimitiveTypeInfo(kClass = Short::class, type = DataType.INTEGER, format = DataFormat.INT32),
-            PrimitiveTypeInfo(kClass = Byte::class, type = DataType.STRING, format = DataFormat.BYTE),
-            PrimitiveTypeInfo(kClass = UByte::class, type = DataType.INTEGER, format = DataFormat.INT32),
-            PrimitiveTypeInfo(kClass = Char::class, type = DataType.STRING, format = null),
-            PrimitiveTypeInfo(kClass = Boolean::class, type = DataType.BOOLEAN, format = null),
-            PrimitiveTypeInfo(kClass = UByte::class, type = DataType.INTEGER, format = DataFormat.INT32),
-            PrimitiveTypeInfo(kClass = UInt::class, type = DataType.INTEGER, format = DataFormat.INT32),
-            PrimitiveTypeInfo(kClass = ULong::class, type = DataType.INTEGER, format = DataFormat.INT64),
-            PrimitiveTypeInfo(kClass = UShort::class, type = DataType.INTEGER, format = DataFormat.INT32)
+            PrimitiveTypeInfo(kClass = Int::class, type = ApiType.INTEGER, format = ApiFormat.INT32),
+            PrimitiveTypeInfo(kClass = Long::class, type = ApiType.INTEGER, format = ApiFormat.INT64),
+            PrimitiveTypeInfo(kClass = Float::class, type = ApiType.NUMBER, format = ApiFormat.FLOAT),
+            PrimitiveTypeInfo(kClass = Double::class, type = ApiType.NUMBER, format = ApiFormat.DOUBLE),
+            PrimitiveTypeInfo(kClass = Short::class, type = ApiType.INTEGER, format = ApiFormat.INT32),
+            PrimitiveTypeInfo(kClass = Byte::class, type = ApiType.STRING, format = ApiFormat.BYTE),
+            PrimitiveTypeInfo(kClass = UByte::class, type = ApiType.INTEGER, format = ApiFormat.INT32),
+            PrimitiveTypeInfo(kClass = Char::class, type = ApiType.STRING, format = null),
+            PrimitiveTypeInfo(kClass = Boolean::class, type = ApiType.BOOLEAN, format = null),
+            PrimitiveTypeInfo(kClass = UByte::class, type = ApiType.INTEGER, format = ApiFormat.INT32),
+            PrimitiveTypeInfo(kClass = UInt::class, type = ApiType.INTEGER, format = ApiFormat.INT32),
+            PrimitiveTypeInfo(kClass = ULong::class, type = ApiType.INTEGER, format = ApiFormat.INT64),
+            PrimitiveTypeInfo(kClass = UShort::class, type = ApiType.INTEGER, format = ApiFormat.INT32)
         )
 
         for (typeInfo in primitiveTypes) {
@@ -72,14 +72,14 @@ class TypedPrimitiveArrayTest {
                 message = "Items schema should be a Schema.Primitive for Array<${typeInfo.kClass.simpleName}>"
             )
 
-            // Check the expected DataType.
+            // Check the expected ApiType.
             assertEquals(
                 expected = typeInfo.type,
                 actual = typeSchema.schema.items.type,
                 message = "Items type mismatch for Array<${typeInfo.kClass.simpleName}>"
             )
 
-            // Check the expected DataFormat.
+            // Check the expected ApiFormat.
             assertEquals(
                 expected = typeInfo.format?.value,
                 actual = typeSchema.schema.items.format,

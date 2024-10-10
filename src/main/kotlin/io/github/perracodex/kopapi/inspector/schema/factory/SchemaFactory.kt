@@ -6,14 +6,14 @@ package io.github.perracodex.kopapi.inspector.schema.factory
 
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.schema.Schema
-import io.github.perracodex.kopapi.keys.DataFormat
-import io.github.perracodex.kopapi.keys.DataType
+import io.github.perracodex.kopapi.keys.ApiFormat
+import io.github.perracodex.kopapi.keys.ApiType
 
 /**
  * Provides factory methods for creating [Schema] instances.
  *
- * @see [DataType]
- * @see [DataFormat]
+ * @see [ApiType]
+ * @see [ApiFormat]
  */
 @TypeInspectorAPI
 internal object SchemaFactory {
@@ -22,55 +22,55 @@ internal object SchemaFactory {
     }
 
     fun ofString(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.STRING)
+        return Schema.Primitive(type = ApiType.STRING)
     }
 
     fun ofChar(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.STRING, minLength = 1, maxLength = 1)
+        return Schema.Primitive(type = ApiType.STRING, minLength = 1, maxLength = 1)
     }
 
     fun ofInt32(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.INTEGER, format = DataFormat.INT32())
+        return Schema.Primitive(type = ApiType.INTEGER, format = ApiFormat.INT32())
     }
 
     fun ofInt64(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.INTEGER, format = DataFormat.INT64())
+        return Schema.Primitive(type = ApiType.INTEGER, format = ApiFormat.INT64())
     }
 
     fun ofFloat(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.NUMBER, format = DataFormat.FLOAT())
+        return Schema.Primitive(type = ApiType.NUMBER, format = ApiFormat.FLOAT())
     }
 
     fun ofDouble(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.NUMBER, format = DataFormat.DOUBLE())
+        return Schema.Primitive(type = ApiType.NUMBER, format = ApiFormat.DOUBLE())
     }
 
     fun ofUuid(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.STRING, format = DataFormat.UUID())
+        return Schema.Primitive(type = ApiType.STRING, format = ApiFormat.UUID())
     }
 
     fun ofDate(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.STRING, format = DataFormat.DATE())
+        return Schema.Primitive(type = ApiType.STRING, format = ApiFormat.DATE())
     }
 
     fun ofDateTime(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.STRING, format = DataFormat.DATETIME())
+        return Schema.Primitive(type = ApiType.STRING, format = ApiFormat.DATETIME())
     }
 
     fun ofTime(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.STRING, format = DataFormat.TIME())
+        return Schema.Primitive(type = ApiType.STRING, format = ApiFormat.TIME())
     }
 
     fun ofUri(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.STRING, format = DataFormat.URI())
+        return Schema.Primitive(type = ApiType.STRING, format = ApiFormat.URI())
     }
 
     fun ofByte(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.STRING, format = DataFormat.BYTE())
+        return Schema.Primitive(type = ApiType.STRING, format = ApiFormat.BYTE())
     }
 
     fun ofBoolean(): Schema.Primitive {
-        return Schema.Primitive(type = DataType.BOOLEAN)
+        return Schema.Primitive(type = ApiType.BOOLEAN)
     }
 
     /**

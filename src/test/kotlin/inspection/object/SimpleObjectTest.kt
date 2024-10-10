@@ -10,8 +10,8 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
-import io.github.perracodex.kopapi.keys.DataFormat
-import io.github.perracodex.kopapi.keys.DataType
+import io.github.perracodex.kopapi.keys.ApiFormat
+import io.github.perracodex.kopapi.keys.ApiType
 import kotlin.reflect.full.createType
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -63,9 +63,9 @@ class SimpleObjectTest {
         assertEquals(expected = 3, actual = properties.size, message = "Properties should contain exactly three entries")
 
         // Assert each of the properties.
-        validateProperty(properties = properties, propertyName = "color", expectedType = DataType.STRING)
-        validateProperty(properties = properties, propertyName = "weight", expectedType = DataType.INTEGER, DataFormat.INT32)
-        validateProperty(properties = properties, propertyName = "isFragile", expectedType = DataType.BOOLEAN)
+        validateProperty(properties = properties, propertyName = "color", expectedType = ApiType.STRING)
+        validateProperty(properties = properties, propertyName = "weight", expectedType = ApiType.INTEGER, ApiFormat.INT32)
+        validateProperty(properties = properties, propertyName = "isFragile", expectedType = ApiType.BOOLEAN)
     }
 
     /**
@@ -73,14 +73,14 @@ class SimpleObjectTest {
      *
      * @param properties The complete properties map.
      * @param propertyName The name of the property to validate.
-     * @param expectedType The expected [DataType] of the property.
-     * @param expectedFormat (Optional) The expected [DataFormat] of the property.
+     * @param expectedType The expected [ApiType] of the property.
+     * @param expectedFormat (Optional) The expected [ApiFormat] of the property.
      */
     private fun validateProperty(
         properties: Map<String, SchemaProperty>,
         propertyName: String,
-        expectedType: DataType,
-        expectedFormat: DataFormat? = null
+        expectedType: ApiType,
+        expectedFormat: ApiFormat? = null
     ) {
         val property: SchemaProperty = properties[propertyName]
             ?: fail("Property '$propertyName' is missing")

@@ -5,8 +5,8 @@
 package io.github.perracodex.kopapi.plugin.builders
 
 import io.github.perracodex.kopapi.inspector.custom.CustomType
-import io.github.perracodex.kopapi.keys.DataFormat
-import io.github.perracodex.kopapi.keys.DataType
+import io.github.perracodex.kopapi.keys.ApiFormat
+import io.github.perracodex.kopapi.keys.ApiType
 import io.github.perracodex.kopapi.plugin.KopapiConfig
 import io.github.perracodex.kopapi.utils.trimOrNull
 import kotlin.reflect.KType
@@ -19,16 +19,16 @@ import kotlin.reflect.KType
  *
  * #### Sample Usage
  * ```
- * addType<Quote>(DataType.STRING) {
+ * addType<Quote>(ApiType.STRING) {
  *      maxLength = 256
  * }
  *
- * addType<DiscountRate>(DataType.NUMBER, "percentage") {
+ * addType<DiscountRate>(ApiType.NUMBER, "percentage") {
  *      minimum = 0,
  *      maximum = 100
  * }
  *
- * addType<Pin>(DataType.NUMBER, DataFormat.INT32) {
+ * addType<Pin>(ApiType.NUMBER, ApiFormat.INT32) {
  *      minimum = 4,
  *      maximum = 6
  * }
@@ -57,41 +57,41 @@ public data class CustomTypeBuilder(
      * Builds an [CustomType] instance from the current builder state.
      *
      * @param type The [KType] of the parameter that specifies the target type.
-     * @param dataType The [DataType] to be used in the OpenAPI schema.
+     * @param apiType The [ApiType] to be used in the OpenAPI schema.
      * @return The constructed [CustomType] instance.
      */
     @PublishedApi
-    internal fun build(type: KType, dataType: DataType): CustomType {
-        return build(type = type, dataType = dataType, format = null)
+    internal fun build(type: KType, apiType: ApiType): CustomType {
+        return build(type = type, apiType = apiType, apiFormat = null)
     }
 
     /**
      * Builds an [CustomType] instance from the current builder state.
      *
      * @param type The [KType] of the parameter that specifies the target type.
-     * @param dataType The [DataType] to be used in the OpenAPI schema.
-     * @param format The [DataFormat] to be used in the OpenAPI schema.
+     * @param apiType The [ApiType] to be used in the OpenAPI schema.
+     * @param apiFormat The [ApiFormat] to be used in the OpenAPI schema.
      * @return The constructed [CustomType] instance.
      */
     @PublishedApi
-    internal fun build(type: KType, dataType: DataType, format: DataFormat): CustomType {
-        return build(type = type, dataType = dataType, format = format.value)
+    internal fun build(type: KType, apiType: ApiType, apiFormat: ApiFormat): CustomType {
+        return build(type = type, apiType = apiType, apiFormat = apiFormat.value)
     }
 
     /**
      * Builds an [CustomType] instance from the current builder state.
      *
      * @param type The [KType] of the parameter that specifies the target type.
-     * @param dataType The [DataType] to be used in the OpenAPI schema.
-     * @property format The format to be used in the OpenAPI schema, either standard or custom.
+     * @param apiType The [ApiType] to be used in the OpenAPI schema.
+     * @property apiFormat The format to be used in the OpenAPI schema, either standard or custom.
      * @return The constructed [CustomType] instance.
      */
     @PublishedApi
-    internal fun build(type: KType, dataType: DataType, format: String?): CustomType {
+    internal fun build(type: KType, apiType: ApiType, apiFormat: String?): CustomType {
         return CustomType(
             type = type,
-            dataType = dataType,
-            dataFormat = format.trimOrNull(),
+            apiType = apiType,
+            apiFormat = apiFormat.trimOrNull(),
             minLength = minLength,
             maxLength = maxLength,
             minimum = minimum,

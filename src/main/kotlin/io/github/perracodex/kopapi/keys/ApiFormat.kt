@@ -12,9 +12,9 @@ import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
  * @property value The string value of the format as defined by the OpenAPI specification.
  *
  * @see [SchemaFactory]
- * @see [DataType]
+ * @see [ApiType]
  */
-public enum class DataFormat(internal val value: String) {
+public enum class ApiFormat(internal val value: String) {
     /** Represents a schema for a `byte` type, allowing base64-encoded binary data. */
     BYTE(value = "byte"),
 

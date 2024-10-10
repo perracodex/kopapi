@@ -7,16 +7,16 @@ package io.github.perracodex.kopapi.keys
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 
 /**
- * Enum representing the data types used in OpenAPI specifications.
+ * Enum representing the api types used in OpenAPI specifications.
  *
  * Each type corresponds to a valid OpenAPI schema type as defined in the OpenAPI 3.1 specification.
  *
  * @property value The string representation of the OpenAPI type.
  *
  * @see [SchemaFactory] For schema creation using these types.
- * @see [DataFormat] For additional format constraints.
+ * @see [ApiFormat] For additional format constraints.
  */
-public enum class DataType(internal val value: String) {
+public enum class ApiType(internal val value: String) {
 
     /** Represents a schema for an `array` type, defining a collection of ordered items. */
     ARRAY(value = "array"),

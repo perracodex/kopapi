@@ -8,8 +8,8 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
-import io.github.perracodex.kopapi.keys.DataFormat
-import io.github.perracodex.kopapi.keys.DataType
+import io.github.perracodex.kopapi.keys.ApiFormat
+import io.github.perracodex.kopapi.keys.ApiType
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 import kotlin.test.Test
@@ -113,15 +113,15 @@ class TypedArrayTest {
         validateProperty(
             properties = boxSchema.schema.properties,
             propertyName = "label",
-            expectedType = DataType.STRING,
+            expectedType = ApiType.STRING,
             isRequired = true
         )
 
         validateProperty(
             properties = boxSchema.schema.properties,
             propertyName = "weight",
-            expectedType = DataType.NUMBER,
-            expectedFormat = DataFormat.DOUBLE,
+            expectedType = ApiType.NUMBER,
+            expectedFormat = ApiFormat.DOUBLE,
             isRequired = true
         )
     }
@@ -129,8 +129,8 @@ class TypedArrayTest {
     private fun validateProperty(
         properties: Map<String, SchemaProperty>,
         propertyName: String,
-        expectedType: DataType,
-        expectedFormat: DataFormat? = null,
+        expectedType: ApiType,
+        expectedFormat: ApiFormat? = null,
         isNullable: Boolean = false,
         isRequired: Boolean = true,
         isReference: Boolean = false,

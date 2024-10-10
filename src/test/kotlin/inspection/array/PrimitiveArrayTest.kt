@@ -7,8 +7,8 @@ package inspection.array
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
-import io.github.perracodex.kopapi.keys.DataFormat
-import io.github.perracodex.kopapi.keys.DataType
+import io.github.perracodex.kopapi.keys.ApiFormat
+import io.github.perracodex.kopapi.keys.ApiType
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
@@ -20,26 +20,26 @@ class PrimitiveArrayTest {
 
     private data class PrimitiveArrayInfo(
         val kClass: KClass<*>,
-        val type: DataType,
-        val format: DataFormat?
+        val type: ApiType,
+        val format: ApiFormat?
     )
 
     @Test
     fun `test primitive arrays`() {
-        // Define a list of primitive array types and their expected DataType and DataFormat.
+        // Define a list of primitive array types and their expected ApiType and ApiFormat.
         val primitiveTypes: List<PrimitiveArrayInfo> = listOf(
-            PrimitiveArrayInfo(kClass = IntArray::class, type = DataType.INTEGER, DataFormat.INT32),
-            PrimitiveArrayInfo(kClass = LongArray::class, type = DataType.INTEGER, DataFormat.INT64),
-            PrimitiveArrayInfo(kClass = FloatArray::class, type = DataType.NUMBER, DataFormat.FLOAT),
-            PrimitiveArrayInfo(kClass = DoubleArray::class, type = DataType.NUMBER, DataFormat.DOUBLE),
-            PrimitiveArrayInfo(kClass = ShortArray::class, type = DataType.INTEGER, DataFormat.INT32),
-            PrimitiveArrayInfo(kClass = ByteArray::class, type = DataType.STRING, DataFormat.BYTE),
-            PrimitiveArrayInfo(kClass = CharArray::class, type = DataType.STRING, format = null),
-            PrimitiveArrayInfo(kClass = BooleanArray::class, type = DataType.BOOLEAN, format = null),
-            PrimitiveArrayInfo(kClass = UIntArray::class, type = DataType.INTEGER, DataFormat.INT32),
-            PrimitiveArrayInfo(kClass = ULongArray::class, type = DataType.INTEGER, DataFormat.INT64),
-            PrimitiveArrayInfo(kClass = UShortArray::class, type = DataType.INTEGER, DataFormat.INT32),
-            PrimitiveArrayInfo(kClass = UByteArray::class, type = DataType.STRING, DataFormat.BYTE)
+            PrimitiveArrayInfo(kClass = IntArray::class, type = ApiType.INTEGER, ApiFormat.INT32),
+            PrimitiveArrayInfo(kClass = LongArray::class, type = ApiType.INTEGER, ApiFormat.INT64),
+            PrimitiveArrayInfo(kClass = FloatArray::class, type = ApiType.NUMBER, ApiFormat.FLOAT),
+            PrimitiveArrayInfo(kClass = DoubleArray::class, type = ApiType.NUMBER, ApiFormat.DOUBLE),
+            PrimitiveArrayInfo(kClass = ShortArray::class, type = ApiType.INTEGER, ApiFormat.INT32),
+            PrimitiveArrayInfo(kClass = ByteArray::class, type = ApiType.STRING, ApiFormat.BYTE),
+            PrimitiveArrayInfo(kClass = CharArray::class, type = ApiType.STRING, format = null),
+            PrimitiveArrayInfo(kClass = BooleanArray::class, type = ApiType.BOOLEAN, format = null),
+            PrimitiveArrayInfo(kClass = UIntArray::class, type = ApiType.INTEGER, ApiFormat.INT32),
+            PrimitiveArrayInfo(kClass = ULongArray::class, type = ApiType.INTEGER, ApiFormat.INT64),
+            PrimitiveArrayInfo(kClass = UShortArray::class, type = ApiType.INTEGER, ApiFormat.INT32),
+            PrimitiveArrayInfo(kClass = UByteArray::class, type = ApiType.STRING, ApiFormat.BYTE)
         )
 
         for (arrayInfo in primitiveTypes) {
@@ -68,14 +68,14 @@ class PrimitiveArrayTest {
                 message = "Items schema should be a Schema.Primitive for ${arrayInfo.kClass.simpleName}"
             )
 
-            // Check the expected DataType.
+            // Check the expected ApiType.
             assertEquals(
                 expected = arrayInfo.type,
                 actual = typeSchema.schema.items.type,
                 message = "Items type mismatch for ${arrayInfo.kClass.simpleName}"
             )
 
-            // Check the expected DataFormat.
+            // Check the expected ApiFormat.
             assertEquals(
                 expected = arrayInfo.format?.value,
                 actual = typeSchema.schema.items.format,

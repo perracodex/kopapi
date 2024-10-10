@@ -10,8 +10,8 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
-import io.github.perracodex.kopapi.keys.DataFormat
-import io.github.perracodex.kopapi.keys.DataType
+import io.github.perracodex.kopapi.keys.ApiFormat
+import io.github.perracodex.kopapi.keys.ApiType
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 import kotlin.test.Test
@@ -76,21 +76,21 @@ class ComplexObjectTest {
         validateProperty(
             properties = userSchema.schema.properties,
             propertyName = "id",
-            expectedType = DataType.INTEGER,
-            expectedFormat = DataFormat.INT32
+            expectedType = ApiType.INTEGER,
+            expectedFormat = ApiFormat.INT32
         )
 
         validateProperty(
             properties = userSchema.schema.properties,
             propertyName = "name",
-            expectedType = DataType.STRING,
+            expectedType = ApiType.STRING,
             isRequired = true
         )
 
         validateProperty(
             properties = userSchema.schema.properties,
             propertyName = "email",
-            expectedType = DataType.STRING,
+            expectedType = ApiType.STRING,
             isNullable = true,
             isRequired = true
         )
@@ -98,7 +98,7 @@ class ComplexObjectTest {
         validateProperty(
             properties = userSchema.schema.properties,
             propertyName = "status",
-            expectedType = DataType.OBJECT,
+            expectedType = ApiType.OBJECT,
             isEnum = true,
             itemsRef = "${Schema.Reference.PATH}Status"
         )
@@ -106,15 +106,15 @@ class ComplexObjectTest {
         validateProperty(
             properties = userSchema.schema.properties,
             propertyName = "addresses",
-            expectedType = DataType.ARRAY,
-            itemsType = DataType.OBJECT,
+            expectedType = ApiType.ARRAY,
+            itemsType = ApiType.OBJECT,
             itemsRef = "${Schema.Reference.PATH}Address"
         )
 
         validateProperty(
             properties = userSchema.schema.properties,
             propertyName = "attributes",
-            expectedType = DataType.OBJECT,
+            expectedType = ApiType.OBJECT,
             hasAdditionalProperties = true
         )
 
@@ -130,21 +130,21 @@ class ComplexObjectTest {
         validateProperty(
             properties = addressProperties,
             propertyName = "street",
-            expectedType = DataType.STRING,
+            expectedType = ApiType.STRING,
             isRequired = true
         )
 
         validateProperty(
             properties = addressProperties,
             propertyName = "city",
-            expectedType = DataType.STRING,
+            expectedType = ApiType.STRING,
             isRequired = true
         )
 
         validateProperty(
             properties = addressProperties,
             propertyName = "zipCode",
-            expectedType = DataType.STRING,
+            expectedType = ApiType.STRING,
             isNullable = true,
             isRequired = true
         )
@@ -167,13 +167,13 @@ class ComplexObjectTest {
     private fun validateProperty(
         properties: Map<String, SchemaProperty>,
         propertyName: String,
-        expectedType: DataType,
-        expectedFormat: DataFormat? = null,
+        expectedType: ApiType,
+        expectedFormat: ApiFormat? = null,
         isNullable: Boolean = false,
         isRequired: Boolean = true,
         isEnum: Boolean = false,
         enumValues: List<String>? = null,
-        itemsType: DataType? = null,
+        itemsType: ApiType? = null,
         itemsRef: String? = null,
         hasAdditionalProperties: Boolean = false
     ) {

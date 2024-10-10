@@ -7,8 +7,8 @@ package io.github.perracodex.kopapi.plugin
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
-import io.github.perracodex.kopapi.keys.DataFormat
-import io.github.perracodex.kopapi.keys.DataType
+import io.github.perracodex.kopapi.keys.ApiFormat
+import io.github.perracodex.kopapi.keys.ApiType
 import io.github.perracodex.kopapi.plugin.builders.CustomTypeBuilder
 import io.github.perracodex.kopapi.plugin.builders.Servers
 import io.ktor.http.*
@@ -68,27 +68,27 @@ public class KopapiConfig {
      *
      * #### Syntax
      * ```
-     * addType<T>(DataType) { configuration }
+     * addType<T>(ApiType) { configuration }
      * ```
-     * Where `T` is the new Object class to register, `DataType` is the type to be used in the OpenAPI schema.
+     * Where `T` is the new Object class to register, `ApiType` is the type to be used in the OpenAPI schema.
      *
      * #### Sample
      * ```
-     * addType<Quote>(DataType.STRING) {
+     * addType<Quote>(ApiType.STRING) {
      *      maxLength = 256
      * }
      * ```
      *
      * @param T The new type to register. [Unit] and [Any] are not allowed.
-     * @param type The [DataType] to be used in the OpenAPI schema.
+     * @param type The [ApiType] to be used in the OpenAPI schema.
      * @param configure A lambda receiver to configure the [CustomTypeBuilder].
      *
      * @see [CustomTypeBuilder]
      */
     @OptIn(TypeInspectorAPI::class)
-    public inline fun <reified T : Any> addType(type: DataType, configure: CustomTypeBuilder.() -> Unit = {}) {
+    public inline fun <reified T : Any> addType(type: ApiType, configure: CustomTypeBuilder.() -> Unit = {}) {
         val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
-        val newCustomType: CustomType = builder.build(type = typeOf<T>(), dataType = type)
+        val newCustomType: CustomType = builder.build(type = typeOf<T>(), apiType = type)
         CustomTypeRegistry.register(newCustomType)
     }
 
@@ -97,30 +97,30 @@ public class KopapiConfig {
      *
      * #### Syntax
      * ```
-     * addType<T>(DataType, String) { configuration }
+     * addType<T>(ApiType, String) { configuration }
      * ```
-     * Where `T` is the new Object class to register, `DataType` is the type to be used in the OpenAPI schema,
-     * and `format` is a free-text to define the expected data format.
+     * Where `T` is the new Object class to register, `ApiType` is the type to be used in the OpenAPI schema,
+     * and `format` is a free-text to define the expected api format.
      *
      * #### Sample
      * ```
-     * addType<DiscountRate>(DataType.NUMBER, "percentage") {
+     * addType<DiscountRate>(ApiType.NUMBER, "percentage") {
      *      minimum = 0,
      *      maximum = 100
      * }
      * ```
      *
      * @param T The new type to register. [Unit] and [Any] are not allowed.
-     * @param type The [DataType] to be used in the OpenAPI schema.
-     * @param format Free-text to define expected data formats, either standard or custom.
+     * @param type The [ApiType] to be used in the OpenAPI schema.
+     * @param format Free-text to define expected api format, either standard or custom.
      * @param configure A lambda receiver to configure the [CustomTypeBuilder].
      *
      * @see [CustomTypeBuilder]
      */
     @OptIn(TypeInspectorAPI::class)
-    public inline fun <reified T : Any> addType(type: DataType, format: String, configure: CustomTypeBuilder.() -> Unit = {}) {
+    public inline fun <reified T : Any> addType(type: ApiType, format: String, configure: CustomTypeBuilder.() -> Unit = {}) {
         val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
-        val newCustomType: CustomType = builder.build(type = typeOf<T>(), dataType = type, format = format)
+        val newCustomType: CustomType = builder.build(type = typeOf<T>(), apiType = type, apiFormat = format)
         CustomTypeRegistry.register(newCustomType)
     }
 
@@ -129,30 +129,30 @@ public class KopapiConfig {
      *
      * #### Syntax
      * ```
-     * addType<T>(DataType, DataFormat) { configuration }
+     * addType<T>(ApiType, ApiFormat) { configuration }
      * ```
-     * Where `T` is the new Object class to register, `DataType` is the type to be used in the OpenAPI schema,
-     * and `format` is a field to define the expected data format.
+     * Where `T` is the new Object class to register, `ApiType` is the type to be used in the OpenAPI schema,
+     * and `format` is a field to define the expected api format.
      *
      * #### Sample
      * ```
-     * addType<Pin>(DataType.NUMBER, DataFormat.INT32) {
+     * addType<Pin>(ApiType.NUMBER, ApiFormat.INT32) {
      *      minimum = 4,
      *      maximum = 6
      * }
      * ```
      *
      * @param T The new type to register. [Unit] and [Any] are not allowed.
-     * @param type The [DataType] to be used in the OpenAPI schema.
-     * @param format The [DataFormat] to be used in the OpenAPI schema.
+     * @param type The [ApiType] to be used in the OpenAPI schema.
+     * @param format The [ApiFormat] to be used in the OpenAPI schema.
      * @param configure A lambda receiver to configure the [CustomTypeBuilder].
      *
      * @see [CustomTypeBuilder]
      */
     @OptIn(TypeInspectorAPI::class)
-    public inline fun <reified T : Any> addType(type: DataType, format: DataFormat, configure: CustomTypeBuilder.() -> Unit = {}) {
+    public inline fun <reified T : Any> addType(type: ApiType, format: ApiFormat, configure: CustomTypeBuilder.() -> Unit = {}) {
         val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
-        val newCustomType: CustomType = builder.build(type = typeOf<T>(), dataType = type, format = format)
+        val newCustomType: CustomType = builder.build(type = typeOf<T>(), apiType = type, apiFormat = format)
         CustomTypeRegistry.register(newCustomType)
     }
 }
