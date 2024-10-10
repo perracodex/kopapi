@@ -41,7 +41,7 @@ class SimpleObjectTest {
         // Validate that schemeRef.schema is a Schema.Reference
         assertTrue(actual = schemeRef.schema is Schema.Reference, message = "Expected schema to be a Schema.Reference")
         assertEquals(
-            expected = "${Schema.REFERENCE_PATH}${schemeRef.name}",
+            expected = "${Schema.Reference.PATH}${schemeRef.name}",
             actual = schemeRef.schema.ref,
             message = "Reference value is incorrect"
         )

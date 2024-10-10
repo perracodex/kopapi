@@ -120,6 +120,6 @@ internal object SchemaFactory {
      * @return The [Schema.Reference]] instance for the schema reference.
      */
     fun ofReference(schemaName: String): Schema.Reference {
-        return Schema.Reference(ref = "${Schema.REFERENCE_PATH}$schemaName")
+        return Schema.Reference(schemaName = schemaName)
     }
 }

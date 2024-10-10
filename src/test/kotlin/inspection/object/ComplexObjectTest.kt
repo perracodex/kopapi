@@ -55,7 +55,7 @@ class ComplexObjectTest {
         // Verify that the TypeSchema is a reference to the User schema.
         assertTrue(actual = typeSchema.schema is Schema.Reference, message = "Expected schema to be a Schema.Reference")
         assertEquals(
-            expected = "${Schema.REFERENCE_PATH}${typeSchema.name}",
+            expected = "${Schema.Reference.PATH}${typeSchema.name}",
             actual = typeSchema.schema.ref,
             message = "Reference value is incorrect"
         )
@@ -100,7 +100,7 @@ class ComplexObjectTest {
             propertyName = "status",
             expectedType = DataType.OBJECT,
             isEnum = true,
-            itemsRef = "${Schema.REFERENCE_PATH}Status"
+            itemsRef = "${Schema.Reference.PATH}Status"
         )
 
         validateProperty(
@@ -108,7 +108,7 @@ class ComplexObjectTest {
             propertyName = "addresses",
             expectedType = DataType.ARRAY,
             itemsType = DataType.OBJECT,
-            itemsRef = "${Schema.REFERENCE_PATH}Address"
+            itemsRef = "${Schema.Reference.PATH}Address"
         )
 
         validateProperty(

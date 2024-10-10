@@ -68,7 +68,6 @@ internal class CustomTypeResolver(private val typeSchemaBuilder: TypeSchemaBuild
                 exclusiveMinimum = customType.exclusiveMinimum,
                 exclusiveMaximum = customType.exclusiveMaximum,
                 multipleOf = customType.multipleOf,
-                additional = customType.additional // Additional properties, if any.
             )
 
             val schemaType: TypeSchema = TypeSchema.of(

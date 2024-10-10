@@ -44,7 +44,7 @@ class TypedArrayTest {
             message = "Expected schema to be a Schema.Reference"
         )
         assertEquals(
-            expected = "${Schema.REFERENCE_PATH}${typeSchema.name}",
+            expected = "${Schema.Reference.PATH}${typeSchema.name}",
             actual = typeSchema.schema.ref,
             message = "Reference value is incorrect"
         )
@@ -89,7 +89,7 @@ class TypedArrayTest {
             message = "Items schema should be a Schema.Reference"
         )
         assertEquals(
-            expected = "${Schema.REFERENCE_PATH}Box",
+            expected = "${Schema.Reference.PATH}Box",
             actual = dataProperty.schema.items.ref,
             message = "Items schema reference should be to Box"
         )

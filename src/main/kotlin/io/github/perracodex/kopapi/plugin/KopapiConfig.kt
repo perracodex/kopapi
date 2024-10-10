@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.plugin
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
+import io.github.perracodex.kopapi.keys.DataFormat
 import io.github.perracodex.kopapi.keys.DataType
 import io.github.perracodex.kopapi.plugin.builders.CustomTypeBuilder
 import io.github.perracodex.kopapi.plugin.builders.Servers
@@ -64,81 +65,17 @@ public class KopapiConfig {
 
     /**
      * Registers a new `custom type` to be used when generating the OpenAPI schema.
-     * It can be a new unhandled type or an existing standard type with custom specifications.
      *
      * #### Syntax
      * ```
      * addType<T>(DataType) { configuration }
      * ```
-     * Where `T` is the new Object class to register and `DataType` is the type to be used in the OpenAPI schema.
+     * Where `T` is the new Object class to register, `DataType` is the type to be used in the OpenAPI schema.
      *
-     * #### Samples
+     * #### Sample
      * ```
-     * addType<Data>(DataType.STRING)
-     * addType<Length>(DataType.NUMBER) { format = "float" }
-     * addType<Password>(DataType.STRING) { minLength = 8, maxLength = 12 }
-     * ```
-     *
-     * #### Example
-     * Let's say you want to register two new custom types: `CurrencyCode` and `DiscountRate`.
-     *
-     * - You wish to represent `CurrencyCode` as a `string` type with a specific length.
-     * - You wish to represent `DiscountRate` as a `number` type with a percentage format.
-     *
-     * You can register these custom types as follows:
-     * ```
-     * addType<CurrencyCode>(DataType.STRING) {
-     *     minLength = 3
-     *     maxLength = 3
-     * }
-     *
-     * addType<DiscountRate>(DataType.NUMBER) {
-     *     format = "percentage"
-     *     additional = mapOf("minimum" to "0", "maximum" to "100")
-     * }
-     * ```
-     *
-     * Now, if we have a class `Transaction` that uses both the `CurrencyCode` and `DiscountRate` types:
-     * ```
-     * data class Transaction(
-     *     val id: Uuid,
-     *     val currency: CurrencyCode,
-     *     val discount: DiscountRate
-     * )
-     * ```
-     *
-     * This will produce the following OpenAPI schema for the `Transaction` class:
-     * ```
-     * "Transaction": {
-     *    "type": "object",
-     *    "properties": {
-     *       "id": {
-     *          "type": "string",
-     *          "format": "uuid"
-     *       },
-     *       "currency": {
-     *          "$ref": "#/components/schemas/CustomTypeOfCurrencyCode"
-     *       },
-     *       "discount": {
-     *          "$ref": "#/components/schemas/CustomTypeOfDiscountRate"
-     *       }
-     *    }
-     * }
-     * ```
-     *
-     * In addition, the OpenAPI specification will include the schema for each custom type as follows:
-     * ```
-     * "CustomTypeOfCurrencyCode": {
-     *    "type": "string",
-     *    "minLength": 3,
-     *    "maxLength": 3
-     * }
-     *
-     * "CustomTypeOfDiscountRate": {
-     *    "type": "number",
-     *    "format": "percentage",
-     *    "minimum": 0,
-     *    "maximum": 100
+     * addType<Quote>(DataType.STRING) {
+     *      maxLength = 256
      * }
      * ```
      *
@@ -152,6 +89,70 @@ public class KopapiConfig {
     public inline fun <reified T : Any> addType(type: DataType, configure: CustomTypeBuilder.() -> Unit = {}) {
         val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
         val newCustomType: CustomType = builder.build(type = typeOf<T>(), dataType = type)
+        CustomTypeRegistry.register(newCustomType)
+    }
+
+    /**
+     * Registers a new `custom type` to be used when generating the OpenAPI schema.
+     *
+     * #### Syntax
+     * ```
+     * addType<T>(DataType, String) { configuration }
+     * ```
+     * Where `T` is the new Object class to register, `DataType` is the type to be used in the OpenAPI schema,
+     * and `format` is a free-text to define the expected data format.
+     *
+     * #### Sample
+     * ```
+     * addType<DiscountRate>(DataType.NUMBER, "percentage") {
+     *      minimum = 0,
+     *      maximum = 100
+     * }
+     * ```
+     *
+     * @param T The new type to register. [Unit] and [Any] are not allowed.
+     * @param type The [DataType] to be used in the OpenAPI schema.
+     * @param format Free-text to define expected data formats, either standard or custom.
+     * @param configure A lambda receiver to configure the [CustomTypeBuilder].
+     *
+     * @see [CustomTypeBuilder]
+     */
+    @OptIn(TypeInspectorAPI::class)
+    public inline fun <reified T : Any> addType(type: DataType, format: String, configure: CustomTypeBuilder.() -> Unit = {}) {
+        val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
+        val newCustomType: CustomType = builder.build(type = typeOf<T>(), dataType = type, format = format)
+        CustomTypeRegistry.register(newCustomType)
+    }
+
+    /**
+     * Registers a new `custom type` to be used when generating the OpenAPI schema.
+     *
+     * #### Syntax
+     * ```
+     * addType<T>(DataType, DataFormat) { configuration }
+     * ```
+     * Where `T` is the new Object class to register, `DataType` is the type to be used in the OpenAPI schema,
+     * and `format` is a field to define the expected data format.
+     *
+     * #### Sample
+     * ```
+     * addType<Pin>(DataType.NUMBER, DataFormat.INT32) {
+     *      minimum = 4,
+     *      maximum = 6
+     * }
+     * ```
+     *
+     * @param T The new type to register. [Unit] and [Any] are not allowed.
+     * @param type The [DataType] to be used in the OpenAPI schema.
+     * @param format The [DataFormat] to be used in the OpenAPI schema.
+     * @param configure A lambda receiver to configure the [CustomTypeBuilder].
+     *
+     * @see [CustomTypeBuilder]
+     */
+    @OptIn(TypeInspectorAPI::class)
+    public inline fun <reified T : Any> addType(type: DataType, format: DataFormat, configure: CustomTypeBuilder.() -> Unit = {}) {
+        val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
+        val newCustomType: CustomType = builder.build(type = typeOf<T>(), dataType = type, format = format)
         CustomTypeRegistry.register(newCustomType)
     }
 }

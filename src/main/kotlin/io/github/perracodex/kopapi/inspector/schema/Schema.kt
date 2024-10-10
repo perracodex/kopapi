@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.schema
 
+import io.github.perracodex.kopapi.inspector.descriptor.SchemaConstraints
 import io.github.perracodex.kopapi.keys.DataType
 
 /**
@@ -12,20 +13,20 @@ import io.github.perracodex.kopapi.keys.DataType
  * Each subclass corresponds to a specific kind of schema in OpenAPI
  * and contains the necessary properties to fully describe that schema.
  */
+@PublishedApi
 internal sealed class Schema(open val type: DataType) {
     /**
      * Represents a schema for primitive types (e.g., `string`, `integer`, etc.).
      *
      * @property type The primitive data type (e.g., `string`, `integer`).
      * @property format An optional format to further define the data type (e.g., `date-time`, `uuid`).
-     * @property minLength Minimum length for string values.
-     * @property maxLength Maximum length for string values.
+     * @property minLength Minimum length for string types.
+     * @property maxLength Maximum length for string types.
      * @property minimum Minimum value for numeric types. Defines the inclusive lower bound.
      * @property maximum Maximum value for numeric types. Defines the inclusive upper bound.
      * @property exclusiveMinimum Exclusive lower bound for numeric types. The value is strictly greater.
      * @property exclusiveMaximum Exclusive upper bound for numeric types. The value is strictly less.
      * @property multipleOf Factor that constrains the value to be a multiple of a number.
-     * @property additional Map for specifying any additional custom properties not covered by the above fields.
      */
     data class Primitive(
         override val type: DataType,
@@ -37,8 +38,20 @@ internal sealed class Schema(open val type: DataType) {
         val exclusiveMinimum: Number? = null,
         val exclusiveMaximum: Number? = null,
         val multipleOf: Number? = null,
-        val additional: Map<String, Any>? = null
-    ) : Schema(type = type)
+    ) : Schema(type = type) {
+        init {
+            SchemaConstraints.validate(
+                dataType = type,
+                minLength = minLength,
+                maxLength = maxLength,
+                minimum = minimum,
+                maximum = maximum,
+                exclusiveMinimum = exclusiveMinimum,
+                exclusiveMaximum = exclusiveMaximum,
+                multipleOf = multipleOf
+            )
+        }
+    }
 
     /**
      * Represents an enumeration schema, defining a set of allowed values for a data type.
@@ -74,15 +87,24 @@ internal sealed class Schema(open val type: DataType) {
      * Represents a reference to another schema defined elsewhere.
      * This is used to avoid duplication by referencing a schema definition using a `$ref` pointer.
      *
-     * @property ref The reference string pointing to the schema definition (e.g., `#/components/schemas/MySchema`).
+     * @property schemaName The name of the schema being referenced.
+     * @property ref The reference path to the schema definition.
      */
     data class Reference(
-        val ref: String
-    ) : Schema(type = DataType.OBJECT)
+        val schemaName: String
+    ) : Schema(type = DataType.OBJECT) {
+        val ref: String = "$PATH$schemaName"
 
-    /**
-     * Represents a schema with additional properties (for maps).
-     */
+        companion object {
+            /** The path to the schema definitions in the OpenAPI specification. */
+            const val PATH: String = "#/components/schemas/"
+
+            /** The key used to reference another schema. */
+            @Suppress("unused")
+            const val REFERENCE: String = "\$ref"
+        }
+    }
+
     /**
      * Represents a schema that allows for additional properties of a specified schema.
      * This is used for maps or dictionaries where the property names are dynamic,
@@ -93,13 +115,4 @@ internal sealed class Schema(open val type: DataType) {
     data class AdditionalProperties(
         val additionalProperties: Schema
     ) : Schema(type = DataType.OBJECT)
-
-    companion object {
-        /** The key used to reference another schema. */
-        @Suppress("unused")
-        const val REFERENCE: String = "\$ref"
-
-        /** The path to the schema definitions in the OpenAPI specification. */
-        const val REFERENCE_PATH: String = "#/components/schemas/"
-    }
 }
