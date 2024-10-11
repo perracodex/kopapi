@@ -24,12 +24,12 @@ import kotlin.reflect.KType
  * }
  *
  * addType<DiscountRate>(ApiType.NUMBER, "percentage") {
- *      minimum = 0,
+ *      minimum = 0
  *      maximum = 100
  * }
  *
  * addType<Pin>(ApiType.NUMBER, ApiFormat.INT32) {
- *      minimum = 4,
+ *      minimum = 4
  *      maximum = 6
  * }
  * ```

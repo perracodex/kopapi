@@ -68,35 +68,6 @@ public class KopapiConfig {
      *
      * #### Syntax
      * ```
-     * addType<T>(ApiType) { configuration }
-     * ```
-     * Where `T` is the new Object class to register, `ApiType` is the type to be used in the OpenAPI schema.
-     *
-     * #### Sample
-     * ```
-     * addType<Quote>(ApiType.STRING) {
-     *      maxLength = 256
-     * }
-     * ```
-     *
-     * @param T The new type to register. [Unit] and [Any] are not allowed.
-     * @param type The [ApiType] to be used in the OpenAPI schema.
-     * @param configure A lambda receiver to configure the [CustomTypeBuilder].
-     *
-     * @see [CustomTypeBuilder]
-     */
-    @OptIn(TypeInspectorAPI::class)
-    public inline fun <reified T : Any> addType(type: ApiType, configure: CustomTypeBuilder.() -> Unit = {}) {
-        val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
-        val newCustomType: CustomType = builder.build(type = typeOf<T>(), apiType = type)
-        CustomTypeRegistry.register(newCustomType)
-    }
-
-    /**
-     * Registers a new `custom type` to be used when generating the OpenAPI schema.
-     *
-     * #### Syntax
-     * ```
      * addType<T>(ApiType, String) { configuration }
      * ```
      * Where `T` is the new Object class to register, `ApiType` is the type to be used in the OpenAPI schema,
@@ -104,8 +75,12 @@ public class KopapiConfig {
      *
      * #### Sample
      * ```
+     * addType<Quote>(ApiType.STRING) {
+     *      maxLength = 256
+     * }
+     *
      * addType<DiscountRate>(ApiType.NUMBER, "percentage") {
-     *      minimum = 0,
+     *      minimum = 0
      *      maximum = 100
      * }
      * ```
@@ -118,7 +93,11 @@ public class KopapiConfig {
      * @see [CustomTypeBuilder]
      */
     @OptIn(TypeInspectorAPI::class)
-    public inline fun <reified T : Any> addType(type: ApiType, format: String, configure: CustomTypeBuilder.() -> Unit = {}) {
+    public inline fun <reified T : Any> addType(
+        type: ApiType,
+        format: String? = null,
+        configure: CustomTypeBuilder.() -> Unit = {}
+    ) {
         val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
         val newCustomType: CustomType = builder.build(type = typeOf<T>(), apiType = type, apiFormat = format)
         CustomTypeRegistry.register(newCustomType)
@@ -137,7 +116,7 @@ public class KopapiConfig {
      * #### Sample
      * ```
      * addType<Pin>(ApiType.NUMBER, ApiFormat.INT32) {
-     *      minimum = 4,
+     *      minimum = 4
      *      maximum = 6
      * }
      * ```
@@ -150,7 +129,11 @@ public class KopapiConfig {
      * @see [CustomTypeBuilder]
      */
     @OptIn(TypeInspectorAPI::class)
-    public inline fun <reified T : Any> addType(type: ApiType, format: ApiFormat, configure: CustomTypeBuilder.() -> Unit = {}) {
+    public inline fun <reified T : Any> addType(
+        type: ApiType,
+        format: ApiFormat,
+        configure: CustomTypeBuilder.() -> Unit = {}
+    ) {
         val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
         val newCustomType: CustomType = builder.build(type = typeOf<T>(), apiType = type, apiFormat = format)
         CustomTypeRegistry.register(newCustomType)
