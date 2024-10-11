@@ -23,27 +23,25 @@ internal fun Route.extractRoutePath(): String {
     var currentRoute: Route? = this
 
     // Traverse the parent chain of the current route and collect path segments.
-    while (currentRoute != null) {
-        val selector: RouteSelector = when (this) {
-            is RoutingRoot -> this.selector
-            is RoutingNode -> this.selector
-            else -> break
-        }
+    while (currentRoute is RoutingNode) {
+        val selector: RouteSelector = currentRoute.selector
 
-        val segment: String = when (selector) {
+        when (selector) {
             is PathSegmentConstantRouteSelector -> selector.value
             is PathSegmentParameterRouteSelector -> "{${selector.name}}"
             is PathSegmentOptionalParameterRouteSelector -> "{${selector.name}?}"
             is PathSegmentWildcardRouteSelector -> "*"
-            is TrailingSlashRouteSelector -> ""
-            is HttpMethodRouteSelector -> "" // Skip HTTP method selectors
+            is TrailingSlashRouteSelector -> ""  // Ignored for path construction
+            is HttpMethodRouteSelector -> ""     // Ignored for path construction
             else -> ""
+        }.let { segment ->
+            if (segment.isNotEmpty()) {
+                segments.add(segment)
+            }
         }
-        if (segment.isNotEmpty()) {
-            segments.add(segment)
-        }
+
         currentRoute = currentRoute.parent
     }
 
-    return segments.reversed().joinToString(separator = "/", prefix = "/").trim()
+    return segments.asReversed().joinToString(separator = "/", prefix = "/").trimEnd('/')
 }

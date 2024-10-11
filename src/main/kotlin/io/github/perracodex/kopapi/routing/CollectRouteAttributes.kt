@@ -18,23 +18,16 @@ internal fun <T : Any> Application.collectRouteAttributes(attributeKey: Attribut
     val attributeValues: MutableList<T> = mutableListOf()
 
     // Helper function to recursively traverse routes and collect attribute values.
-    fun Route.collectAttributes() {
+    fun RoutingNode.collectAttributes() {
         this.attributes.getOrNull(key = attributeKey)?.let {
             attributeValues.add(it)
         }
 
-        val nodes: List<RoutingNode> = when (this) {
-            is RoutingRoot -> this.children
-            is RoutingNode -> this.children
-            else -> emptyList()
-        }
-
-        nodes.forEach { it.collectAttributes() }
+        this.children.forEach { it.collectAttributes() }
     }
 
     // Start collecting from the root route.
-    this.routing { }.collectAttributes()
+    this.routing { }.children.forEach { it.collectAttributes() }
 
     return attributeValues
 }
-

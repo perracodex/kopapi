@@ -37,14 +37,12 @@ import io.ktor.server.routing.*
  * @see [ApiMetadata]
  */
 public infix fun Route.api(configure: ApiMetadata.() -> Unit): Route {
-    val selector: RouteSelector = when (this) {
-        is RoutingRoot -> this.selector
-        is RoutingNode -> this.selector
-        else -> throw KopapiException(message = buildApiErrorMessage(route = this))
+    if (this !is RoutingNode) {
+        throw KopapiException(message = buildApiErrorMessage(route = this))
     }
 
     // Resolve the HTTP method of the route: GET, POST, PUT, DELETE, etc.
-    val method: HttpMethod = (selector as? HttpMethodRouteSelector)?.method
+    val method: HttpMethod = (this.selector as? HttpMethodRouteSelector)?.method
         ?: throw KopapiException(message = buildApiErrorMessage(route = this))
 
     // Create an instance of ApiMetadata and apply the configuration.
