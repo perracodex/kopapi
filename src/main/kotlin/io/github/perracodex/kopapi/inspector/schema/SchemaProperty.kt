@@ -15,8 +15,8 @@ package io.github.perracodex.kopapi.inspector.schema
  */
 internal data class SchemaProperty(
     val schema: Schema,
-    val isNullable: Boolean = false,
-    val isRequired: Boolean = true,
-    val originalName: String? = null,
-    val isTransient: Boolean = false
+    val isNullable: Boolean,
+    val isRequired: Boolean,
+    val originalName: String?,
+    val isTransient: Boolean
 )
