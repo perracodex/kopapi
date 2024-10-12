@@ -42,6 +42,7 @@ internal data class ApiParameter(
         require(name.isNotBlank()) { "Name must not be empty." }
         require(type.classifier != Any::class) { "Parameters cannot be of type 'Any'. Define an explicit type." }
         require(type.classifier != Unit::class) { "Parameters cannot be of type 'Unit'. Define an explicit type." }
+        require(type.classifier != Nothing::class) { "Parameters cannot be of type 'Nothing'. Define an explicit type." }
     }
 
     /**

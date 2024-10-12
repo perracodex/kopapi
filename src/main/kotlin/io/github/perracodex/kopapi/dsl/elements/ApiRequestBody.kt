@@ -26,4 +26,10 @@ internal data class ApiRequestBody internal constructor(
     val required: Boolean,
     val contentType: ContentType,
     val deprecated: Boolean
-)
+) {
+    init {
+        require(type.classifier != Any::class) { "Request body cannot be of type 'Any'. Define an explicit type." }
+        require(type.classifier != Unit::class) { "Request body cannot be of type 'Unit'. Define an explicit type." }
+        require(type.classifier != Nothing::class) { "Request body cannot be of type 'Nothing'. Define an explicit type." }
+    }
+}

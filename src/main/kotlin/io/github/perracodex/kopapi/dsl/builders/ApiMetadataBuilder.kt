@@ -5,6 +5,8 @@
 package io.github.perracodex.kopapi.dsl.builders
 
 import io.github.perracodex.kopapi.core.ApiMetadata
+import io.github.perracodex.kopapi.dsl.builders.attributes.HeaderBuilder
+import io.github.perracodex.kopapi.dsl.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.builders.parameter.CookieParameterBuilder
 import io.github.perracodex.kopapi.dsl.builders.parameter.HeaderParameterBuilder
 import io.github.perracodex.kopapi.dsl.builders.parameter.PathParameterBuilder
@@ -22,6 +24,7 @@ import io.github.perracodex.kopapi.utils.MultilineString
 import io.github.perracodex.kopapi.utils.SpacedString
 import io.ktor.http.*
 import java.util.*
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 /**
@@ -261,7 +264,7 @@ public data class ApiMetadataBuilder internal constructor(
                     "Found '$requestBody' already defined in '${this.endpoint}'"
         }
         val builder: RequestBodyBuilder = RequestBodyBuilder().apply(configure)
-        requestBody = builder.build(typeOf<T>())
+        requestBody = builder.build(type = typeOf<T>())
     }
 
     /**
@@ -294,14 +297,21 @@ public data class ApiMetadataBuilder internal constructor(
      * @param configure A lambda receiver for configuring the [ResponseBuilder].
      *
      * @see [ResponseBuilder]
+     * @see [HeaderBuilder]
+     * @see [LinkBuilder]
      */
     @JvmName(name = "responseWithType")
     public inline fun <reified T : Any> ApiMetadataBuilder.response(
         status: HttpStatusCode,
         configure: ResponseBuilder.() -> Unit = {}
     ) {
+        val type: KType = when (T::class) {
+            Unit::class -> typeOf<Unit>()
+            Nothing::class -> typeOf<Unit>() // Treat Nothing as Unit for "no content".
+            else -> typeOf<T>()
+        }
         val builder: ResponseBuilder = ResponseBuilder().apply(configure)
-        responses.add(builder.build(status = status, type = typeOf<T>()))
+        responses.add(builder.build(status = status, type = type))
     }
 
     /**
@@ -333,6 +343,8 @@ public data class ApiMetadataBuilder internal constructor(
      * @param configure A lambda receiver for configuring the [ResponseBuilder].
      *
      * @see [ResponseBuilder]
+     * @see [HeaderBuilder]
+     * @see [LinkBuilder]
      */
     @JvmName(name = "responseWithoutType")
     public fun ApiMetadataBuilder.response(
