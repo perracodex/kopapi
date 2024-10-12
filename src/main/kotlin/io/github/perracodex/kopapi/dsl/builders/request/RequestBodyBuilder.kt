@@ -13,7 +13,8 @@ import io.ktor.http.*
 import kotlin.reflect.KType
 
 /**
- * A builder for constructing a request body in an API endpoint's metadata.
+ * Builds a request body for an API endpoint's metadata.
+ * Note that only one request body can be defined per API endpoint.
  *
  * @property description A description of the request body's content and what it represents.
  * @property required Indicates whether the request body is mandatory for the API call.

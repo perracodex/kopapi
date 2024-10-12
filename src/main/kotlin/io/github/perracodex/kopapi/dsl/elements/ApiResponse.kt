@@ -25,8 +25,8 @@ import kotlin.reflect.KType
 internal data class ApiResponse(
     val type: KType,
     val status: HttpStatusCode,
-    val description: String? = null,
-    val contentType: ContentType = ContentType.Application.Json,
-    val headers: Set<ApiHeader>? = null,
-    val links: Set<ApiLink>? = null
+    val description: String?,
+    val contentType: ContentType,
+    val headers: Set<ApiHeader>?,
+    val links: Set<ApiLink>?
 )

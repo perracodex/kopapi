@@ -22,8 +22,8 @@ import kotlin.reflect.KType
 @PublishedApi
 internal data class ApiRequestBody internal constructor(
     val type: KType,
-    val description: String? = null,
-    val required: Boolean = true,
-    val contentType: ContentType = ContentType.Application.Json,
-    val deprecated: Boolean = false
+    val description: String?,
+    val required: Boolean,
+    val contentType: ContentType,
+    val deprecated: Boolean
 )

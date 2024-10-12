@@ -31,12 +31,12 @@ internal data class ApiParameter(
     val type: KType,
     val location: Location,
     val name: String,
-    val description: String? = null,
-    val required: Boolean = true,
-    val defaultValue: Any? = null,
-    val explode: Boolean? = null,
-    val style: ParameterStyle? = null,
-    val deprecated: Boolean = false
+    val description: String?,
+    val required: Boolean,
+    val defaultValue: Any?,
+    val explode: Boolean?,
+    val style: ParameterStyle?,
+    val deprecated: Boolean
 ) {
     init {
         require(name.isNotBlank()) { "Name must not be empty." }

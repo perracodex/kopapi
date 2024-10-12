@@ -12,7 +12,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
 import kotlin.reflect.KType
 
 /**
- * A builder for constructing path parameters in an API endpoint's metadata.
+ * Builds a path parameter for an API endpoint's metadata.
  *
  * @property description A description of the parameter's purpose and usage.
  * @property required Indicates whether the parameter is mandatory for the API call.
@@ -47,7 +47,8 @@ public data class PathParameterBuilder(
             required = required,
             defaultValue = defaultValue,
             style = style,
-            deprecated = deprecated
+            deprecated = deprecated,
+            explode = null
         )
     }
 }

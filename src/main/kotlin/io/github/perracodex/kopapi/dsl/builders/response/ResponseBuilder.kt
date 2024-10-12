@@ -5,6 +5,8 @@
 package io.github.perracodex.kopapi.dsl.builders.response
 
 import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.builders.attributes.HeaderBuilder
+import io.github.perracodex.kopapi.dsl.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.elements.ApiHeader
 import io.github.perracodex.kopapi.dsl.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.elements.ApiResponse
@@ -26,8 +28,8 @@ public data class ResponseBuilder(
 ) {
     var description: String by MultilineString()
 
-    private val headersSet: MutableSet<ApiHeader> = mutableSetOf()
-    private val linksSet: MutableSet<ApiLink> = mutableSetOf()
+    private val headers: MutableSet<ApiHeader> = mutableSetOf()
+    private val links: MutableSet<ApiLink> = mutableSetOf()
 
     /**
      * Builds an [ApiResponse] instance from the current builder state.
@@ -43,8 +45,8 @@ public data class ResponseBuilder(
             status = status,
             description = description.trimOrNull(),
             contentType = contentType,
-            headers = headersSet.takeIf { it.isNotEmpty() },
-            links = linksSet.takeIf { it.isNotEmpty() }
+            headers = headers.takeIf { it.isNotEmpty() },
+            links = links.takeIf { it.isNotEmpty() }
         )
     }
 
@@ -60,11 +62,11 @@ public data class ResponseBuilder(
      * ```
      *
      * @param name The name of the header.
-     * @param configure A lambda receiver for configuring the [ApiHeader].
+     * @param configure A lambda receiver for configuring the [HeaderBuilder].
      */
-    public fun header(name: String, configure: ApiHeader.() -> Unit) {
-        val header: ApiHeader = ApiHeader(name = name).apply(configure)
-        headersSet.add(header)
+    public fun header(name: String, configure: HeaderBuilder.() -> Unit) {
+        val header: ApiHeader = HeaderBuilder(name = name).apply(configure).build()
+        headers.add(header)
     }
 
     /**
@@ -78,10 +80,10 @@ public data class ResponseBuilder(
      * ```
      *
      * @param operationId The name of an existing, resolvable OAS operation.
-     * @param configure A lambda receiver for configuring the [ApiLink].
+     * @param configure A lambda receiver for configuring the [LinkBuilder].
      */
-    public fun link(operationId: String, configure: ApiLink.() -> Unit) {
-        val link: ApiLink = ApiLink(operationId = operationId).apply(configure)
-        linksSet.add(link)
+    public fun link(operationId: String, configure: LinkBuilder.() -> Unit) {
+        val link: ApiLink = LinkBuilder(operationId = operationId).apply(configure).build()
+        links.add(link)
     }
 }

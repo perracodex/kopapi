@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.utils.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
- * A builder for constructing an OAuth2 security scheme in an API endpoint's metadata.
+ * Builds an OAuth2 security scheme in an API endpoint's metadata.
  *
  * @property description A description of the security scheme.
  *

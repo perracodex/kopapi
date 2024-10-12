@@ -25,7 +25,7 @@ import java.util.*
 import kotlin.reflect.typeOf
 
 /**
- * Builder to construct API metadata for a Ktor route.
+ * Builder for constructing API metadata for a route endpoint.
  *
  * Usage involves defining a Ktor route and attaching API metadata using the `Route.api` infix
  * function to enrich the route with operational details and documentation specifications.

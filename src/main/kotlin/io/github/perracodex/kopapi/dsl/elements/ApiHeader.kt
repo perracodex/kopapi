@@ -4,8 +4,6 @@
 
 package io.github.perracodex.kopapi.dsl.elements
 
-import io.github.perracodex.kopapi.utils.MultilineString
-
 /**
  * Represents the metadata of a response header.
  *
@@ -16,14 +14,13 @@ import io.github.perracodex.kopapi.utils.MultilineString
  *
  * @see [ApiResponse]
  */
-public data class ApiHeader(
+internal data class ApiHeader(
     val name: String,
-    var required: Boolean = false,
-    var deprecated: Boolean = false
+    val description: String?,
+    val required: Boolean,
+    val deprecated: Boolean
 ) {
     init {
         require(name.isNotBlank()) { "Name must not be empty." }
     }
-
-    public var description: String by MultilineString()
 }

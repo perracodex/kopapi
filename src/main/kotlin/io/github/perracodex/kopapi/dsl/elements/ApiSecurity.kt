@@ -28,7 +28,7 @@ import io.ktor.http.*
  */
 internal data class ApiSecurity(
     val name: String,
-    val description: String? = null,
+    val description: String?,
     val scheme: Scheme,
     val authenticationMethod: AuthenticationMethod? = null, // Only applicable for HTTP scheme.
     val location: SecurityLocation? = null, // Only required for API_KEY scheme.

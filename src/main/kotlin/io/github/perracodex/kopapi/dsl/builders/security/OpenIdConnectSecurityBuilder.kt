@@ -11,7 +11,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 
 /**
- * A builder for constructing an OpenID Connect security scheme in an API endpoint's metadata.
+ * Builds an OpenID Connect security scheme in an API endpoint's metadata.
  *
  * @property description A description of the security scheme.
  *

@@ -11,7 +11,7 @@ import io.github.perracodex.kopapi.utils.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
- * A builder for constructing an HTTP security scheme in an API endpoint's metadata.
+ * Builds an HTTP security scheme in an API endpoint's metadata.
  *
  * @property description A description of the security scheme.
  *
