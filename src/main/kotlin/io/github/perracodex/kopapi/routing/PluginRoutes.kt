@@ -6,7 +6,6 @@ package io.github.perracodex.kopapi.routing
 
 import io.github.perracodex.kopapi.core.SchemaProvider
 import io.ktor.http.*
-import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 

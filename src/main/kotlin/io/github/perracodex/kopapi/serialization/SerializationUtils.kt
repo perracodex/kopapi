@@ -26,8 +26,9 @@ internal object SerializationUtils {
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         .serializationInclusion(JsonInclude.Include.ALWAYS)
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
+        .enable(MapperFeature.SORT_CREATOR_PROPERTIES_BY_DECLARATION_ORDER)
+        .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
         .addModule(
             SimpleModule().apply {
                 addSerializer(ContentType::class.java, ContentTypeSerializer)

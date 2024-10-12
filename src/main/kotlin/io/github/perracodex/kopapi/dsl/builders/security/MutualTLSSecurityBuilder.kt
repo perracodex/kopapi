@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.builders.security
 
-import io.github.perracodex.kopapi.dsl.ApiMetadata
-import io.github.perracodex.kopapi.dsl.ApiSecurity
+import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.elements.ApiSecurity
 import io.github.perracodex.kopapi.utils.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 
@@ -14,7 +14,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  *
  * @property description A description of the security scheme.
  *
- * @see [ApiMetadata.mutualTLSSecurity]
+ * @see [ApiMetadataBuilder.mutualTLSSecurity]
  */
 public class MutualTLSSecurityBuilder {
     public var description: String by MultilineString()

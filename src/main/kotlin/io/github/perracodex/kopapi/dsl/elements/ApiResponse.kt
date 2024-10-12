@@ -2,8 +2,9 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl
+package io.github.perracodex.kopapi.dsl.elements
 
+import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
 import io.ktor.http.*
 import kotlin.reflect.KType
 
@@ -17,7 +18,7 @@ import kotlin.reflect.KType
  * @property headers A list of [ApiHeader] objects representing the headers that may be included in the response.
  * @property links A list of [ApiLink] objects representing possible links to other operations.
  *
- * @see [ApiMetadata.response]
+ * @see [ApiMetadataBuilder.response]
  * @see [ApiHeader]
  * @see [ApiLink]
  */

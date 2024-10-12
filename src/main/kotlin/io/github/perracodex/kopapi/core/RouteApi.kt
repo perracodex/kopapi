@@ -4,8 +4,9 @@
 
 package io.github.perracodex.kopapi.core
 
-import io.github.perracodex.kopapi.dsl.ApiMetadata
+import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
 import io.github.perracodex.kopapi.routing.extractRoutePath
+import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import io.ktor.server.routing.*
 
@@ -22,7 +23,7 @@ import io.ktor.server.routing.*
  * } api {
  *     summary = "Retrieve data items."
  *     description = "Fetches all items for a group."
- *     tags = Tags("Items", "Data")
+ *     tags("Items", "Data")
  *     pathParameter<Uuid>("group_id") { description = "The Id of the group." }
  *     queryParameter<String>("item_id") { description = "Optional item Id." }
  *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful" }
@@ -30,13 +31,13 @@ import io.ktor.server.routing.*
  * }
  * ```
  *
- * @param configure A lambda receiver for configuring the [ApiMetadata].
+ * @param configure A lambda receiver for configuring the [ApiMetadataBuilder].
  * @return The current [Route] instance with attached metadata.
  * @throws IllegalArgumentException If the route does not have an HTTP method selector.
  *
  * @see [ApiMetadata]
  */
-public infix fun Route.api(configure: ApiMetadata.() -> Unit): Route {
+public infix fun Route.api(configure: ApiMetadataBuilder.() -> Unit): Route {
     if (this !is RoutingNode) {
         throw KopapiException(message = buildApiErrorMessage(route = this))
     }
@@ -45,14 +46,26 @@ public infix fun Route.api(configure: ApiMetadata.() -> Unit): Route {
     val method: HttpMethod = (this.selector as? HttpMethodRouteSelector)?.method
         ?: throw KopapiException(message = buildApiErrorMessage(route = this))
 
-    // Create an instance of ApiMetadata and apply the configuration.
-    val metadata: ApiMetadata = ApiMetadata(
-        path = this.extractRoutePath(),
-        method = method
+    val endpointPath: String = this.extractRoutePath()
+
+    // Build the metadata using the provided configuration.
+    val builder: ApiMetadataBuilder = ApiMetadataBuilder(
+        endpoint = "[$method] $endpointPath"
     ).apply(configure)
+    val apiMetadata = ApiMetadata(
+        path = endpointPath,
+        method = method,
+        summary = builder.summary.trimOrNull(),
+        description = builder.description.trimOrNull(),
+        tags = builder.tags.takeIf { it.isNotEmpty() },
+        parameters = builder.parameters.takeIf { it.isNotEmpty() },
+        requestBody = builder.requestBody,
+        responses = builder.responses.takeIf { it.isNotEmpty() },
+        securitySchemes = builder.securitySchemes.takeIf { it.isNotEmpty() }
+    )
 
     // Store the metadata in the route's attributes.
-    this.attributes.put(key = SchemaProvider.ApiMetadataKey, value = metadata)
+    this.attributes.put(key = SchemaProvider.ApiMetadataKey, value = apiMetadata)
     return this
 }
 
@@ -83,7 +96,7 @@ private fun buildApiErrorMessage(route: Route): String {
             } api { 
                 summary = "Retrieve data items."
                 description = "Fetches all items for a group."
-                tags = Tags("Items", "Data")
+                tags("Items", "Data")
                 pathParameter<Uuid>("group_id") { description = "The Id of the group to resolve." }
                 queryParameter<String>("item_id") { description = "Optional item Id to locate." }
                 response<List<Item>>(HttpStatusCode.OK) { description = "Successful fetch" }

@@ -2,9 +2,10 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl
+package io.github.perracodex.kopapi.dsl.elements
 
-import io.github.perracodex.kopapi.dsl.ApiParameter.Location
+import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.elements.ApiParameter.Location
 import io.github.perracodex.kopapi.dsl.types.ParameterStyle
 import kotlin.reflect.KType
 
@@ -21,10 +22,10 @@ import kotlin.reflect.KType
  * @property style Describes how the parameter value is formatted when sent in a request.
  * @property deprecated Indicates whether the parameter is deprecated and should be avoided.
  *
- * @see [ApiMetadata.headerParameter]
- * @see [ApiMetadata.queryParameter]
- * @see [ApiMetadata.pathParameter]
- * @see [ApiMetadata.cookieParameter]
+ * @see [ApiMetadataBuilder.headerParameter]
+ * @see [ApiMetadataBuilder.queryParameter]
+ * @see [ApiMetadataBuilder.pathParameter]
+ * @see [ApiMetadataBuilder.cookieParameter]
  */
 internal data class ApiParameter(
     val type: KType,

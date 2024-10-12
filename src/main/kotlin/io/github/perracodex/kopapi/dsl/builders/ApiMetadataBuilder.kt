@@ -2,8 +2,9 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl
+package io.github.perracodex.kopapi.dsl.builders
 
+import io.github.perracodex.kopapi.core.ApiMetadata
 import io.github.perracodex.kopapi.dsl.builders.parameter.CookieParameterBuilder
 import io.github.perracodex.kopapi.dsl.builders.parameter.HeaderParameterBuilder
 import io.github.perracodex.kopapi.dsl.builders.parameter.PathParameterBuilder
@@ -11,20 +12,28 @@ import io.github.perracodex.kopapi.dsl.builders.parameter.QueryParameterBuilder
 import io.github.perracodex.kopapi.dsl.builders.request.RequestBodyBuilder
 import io.github.perracodex.kopapi.dsl.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.builders.security.*
+import io.github.perracodex.kopapi.dsl.elements.ApiParameter
+import io.github.perracodex.kopapi.dsl.elements.ApiRequestBody
+import io.github.perracodex.kopapi.dsl.elements.ApiResponse
+import io.github.perracodex.kopapi.dsl.elements.ApiSecurity
 import io.github.perracodex.kopapi.dsl.types.AuthenticationMethod
 import io.github.perracodex.kopapi.dsl.types.SecurityLocation
 import io.github.perracodex.kopapi.utils.MultilineString
 import io.github.perracodex.kopapi.utils.SpacedString
 import io.ktor.http.*
+import java.util.*
 import kotlin.reflect.typeOf
 
 /**
- * Provides structured metadata for defining and documenting API endpoints.
- * This class is designed to be used in conjunction with Ktor routes,
- * enabling detailed descriptions of endpoint behaviors, parameters, responses, and operational characteristics.
+ * Builder to construct API metadata for a Ktor route.
  *
  * Usage involves defining a Ktor route and attaching API metadata using the `Route.api` infix
  * function to enrich the route with operational details and documentation specifications.
+ *
+ * #### Information
+ * - [summary]: Optional short description of the endpoint's purpose.
+ * - [description]: Optional detailed explanation of the endpoint and its functionality.
+ * - [tags]: Optional set of descriptive tags for categorizing the endpoint in API documentation.
  *
  * #### Parameters
  * - [pathParameter]: Adds a path parameter to the API endpoint's metadata.
@@ -52,7 +61,7 @@ import kotlin.reflect.typeOf
  * } api {
  *     summary = "Retrieve data items."
  *     description = "Fetches all items for a group."
- *     tags = Tags("Items", "Data")
+ *     tags("Items", "Data")
  *     pathParameter<Uuid>("group_id") { description = "The Id of the group." }
  *     queryParameter<String>("item_id") { description = "Optional item Id." }
  *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful" }
@@ -60,28 +69,37 @@ import kotlin.reflect.typeOf
  * }
  * ```
  *
- * @property path The URL path for the endpoint. Automatically derived from the Ktor route.
- * @property method The endpoint [HttpMethod] (GET, POST, etc.). Automatically derived from the Ktor route.
- * @property summary Optional short description of the endpoint's purpose.
- * @property description Optional detailed explanation of the endpoint and its functionality.
- * @property tags Optional set of descriptive [Tags] for categorizing the endpoint in API documentation.
+ * @see [ApiMetadata]
  */
-public data class ApiMetadata internal constructor(
-    @PublishedApi internal val path: String,
-    @PublishedApi internal val method: HttpMethod,
+public data class ApiMetadataBuilder internal constructor(
+    @PublishedApi internal val endpoint: String
 ) {
-    init {
-        require(path.isNotBlank()) { "Endpoint path must not be empty." }
-    }
-
+    /**
+     * Optional short description of the endpoint's purpose.
+     *
+     * Declaring the `summary` multiple times will concatenate all the summaries
+     * delimited by a `space` character between each one.
+     */
     public var summary: String by SpacedString()
+
+    /**
+     * Optional detailed explanation of the endpoint and its functionality.
+     *
+     * Declaring the `description` multiple times will concatenate all the descriptions
+     * delimited by a `newline` character between each one.
+     */
     public var description: String by MultilineString()
-    public var tags: Tags by TagsDelegate()
+
+    /**
+     * Optional set of descriptive tags for categorizing the endpoint in API documentation.
+     */
+    internal val tags: TreeSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
 
     /**
      * Optional set of parameters detailing type, necessity, and location in the request.
      */
-    internal var parameters: LinkedHashSet<ApiParameter>? = null
+    @PublishedApi
+    internal var parameters: LinkedHashSet<ApiParameter> = linkedSetOf()
 
     /**
      * Optional structure and type of the request body.
@@ -93,27 +111,27 @@ public data class ApiMetadata internal constructor(
      * Optional set of possible responses, outlining expected status codes and content types.
      */
     @PublishedApi
-    internal var responses: LinkedHashSet<ApiResponse>? = null
+    internal var responses: LinkedHashSet<ApiResponse> = linkedSetOf()
 
     /**
      * Optional set of security schemes detailing the authentication requirements for the endpoint.
      */
-    internal var security: LinkedHashSet<ApiSecurity>? = null
+    internal var securitySchemes: LinkedHashSet<ApiSecurity> = linkedSetOf()
 
-    /** Internal helper function to add a parameter to the API endpoint's metadata. */
-    @PublishedApi
-    internal fun addParameter(parameter: ApiParameter) {
-        val parameters: LinkedHashSet<ApiParameter> = parameters
-            ?: linkedSetOf<ApiParameter>().also { parameters = it }
-        parameters.add(parameter)
-    }
-
-    /** Internal helper function to add a security scheme to the API endpoint's metadata. */
-    @PublishedApi
-    internal fun addSecurity(scheme: ApiSecurity) {
-        val securities: LinkedHashSet<ApiSecurity> = security
-            ?: linkedSetOf<ApiSecurity>().also { security = it }
-        securities.add(scheme)
+    /**
+     * Optional set of descriptive tags for categorizing the endpoint in API documentation.
+     *
+     * Declaring multiple `tags` will append all the of them to the existing list.
+     * Repeated tags are discarded in a case-insensitive manner.
+     *
+     * #### Sample Usage
+     * ```
+     * tags("Items", "Data")
+     * tags("Items", "Data", "Items")
+     * ```
+     */
+    public fun ApiMetadataBuilder.tags(vararg tags: String) {
+        this.tags.addAll(tags.map { it.trim() }.filter { it.isNotBlank() })
     }
 
     /**
@@ -132,12 +150,12 @@ public data class ApiMetadata internal constructor(
      *
      * @see [PathParameterBuilder]
      */
-    public inline fun <reified T : Any> ApiMetadata.pathParameter(
+    public inline fun <reified T : Any> ApiMetadataBuilder.pathParameter(
         name: String,
         configure: PathParameterBuilder.() -> Unit = {}
     ) {
         val builder: PathParameterBuilder = PathParameterBuilder().apply(configure)
-        addParameter(parameter = builder.build(name = name, type = typeOf<T>()))
+        parameters.add(builder.build(name = name, type = typeOf<T>()))
     }
 
     /**
@@ -161,12 +179,12 @@ public data class ApiMetadata internal constructor(
      *
      * @see [QueryParameterBuilder]
      */
-    public inline fun <reified T : Any> ApiMetadata.queryParameter(
+    public inline fun <reified T : Any> ApiMetadataBuilder.queryParameter(
         name: String,
         configure: QueryParameterBuilder.() -> Unit = {}
     ) {
         val builder: QueryParameterBuilder = QueryParameterBuilder().apply(configure)
-        addParameter(parameter = builder.build(name = name, type = typeOf<T>()))
+        parameters.add(builder.build(name = name, type = typeOf<T>()))
     }
 
     /**
@@ -186,12 +204,12 @@ public data class ApiMetadata internal constructor(
      *
      * @see [HeaderParameterBuilder]
      */
-    public inline fun <reified T : Any> ApiMetadata.headerParameter(
+    public inline fun <reified T : Any> ApiMetadataBuilder.headerParameter(
         name: String,
         configure: HeaderParameterBuilder.() -> Unit = {}
     ) {
         val builder: HeaderParameterBuilder = HeaderParameterBuilder().apply(configure)
-        addParameter(parameter = builder.build(name = name, type = typeOf<T>()))
+        parameters.add(builder.build(name = name, type = typeOf<T>()))
     }
 
     /**
@@ -210,12 +228,12 @@ public data class ApiMetadata internal constructor(
      *
      * @see [CookieParameterBuilder]
      */
-    public inline fun <reified T : Any> ApiMetadata.cookieParameter(
+    public inline fun <reified T : Any> ApiMetadataBuilder.cookieParameter(
         name: String,
         configure: CookieParameterBuilder.() -> Unit = {}
     ) {
         val builder: CookieParameterBuilder = CookieParameterBuilder().apply(configure)
-        addParameter(parameter = builder.build(name = name, type = typeOf<T>()))
+        parameters.add(builder.build(name = name, type = typeOf<T>()))
     }
 
     /**
@@ -235,12 +253,12 @@ public data class ApiMetadata internal constructor(
      *
      * @see [RequestBodyBuilder]
      */
-    public inline fun <reified T : Any> ApiMetadata.requestBody(
+    public inline fun <reified T : Any> ApiMetadataBuilder.requestBody(
         configure: RequestBodyBuilder.() -> Unit = {}
     ) {
         require(value = (requestBody == null)) {
             "Only one request body is allowed per API endpoint. " +
-                    "Found '$requestBody' already defined in '${this.path}' / ${this.method}"
+                    "Found '$requestBody' already defined in '${this.endpoint}'"
         }
         val builder: RequestBodyBuilder = RequestBodyBuilder().apply(configure)
         requestBody = builder.build(typeOf<T>())
@@ -278,12 +296,10 @@ public data class ApiMetadata internal constructor(
      * @see [ResponseBuilder]
      */
     @JvmName(name = "responseWithType")
-    public inline fun <reified T : Any> ApiMetadata.response(
+    public inline fun <reified T : Any> ApiMetadataBuilder.response(
         status: HttpStatusCode,
         configure: ResponseBuilder.() -> Unit = {}
     ) {
-        val responses: LinkedHashSet<ApiResponse> = responses
-            ?: linkedSetOf<ApiResponse>().also { responses = it }
         val builder: ResponseBuilder = ResponseBuilder().apply(configure)
         responses.add(builder.build(status = status, type = typeOf<T>()))
     }
@@ -319,7 +335,7 @@ public data class ApiMetadata internal constructor(
      * @see [ResponseBuilder]
      */
     @JvmName(name = "responseWithoutType")
-    public fun ApiMetadata.response(
+    public fun ApiMetadataBuilder.response(
         status: HttpStatusCode,
         configure: ResponseBuilder.() -> Unit = {}
     ) {
@@ -342,13 +358,13 @@ public data class ApiMetadata internal constructor(
      *
      * @see [HttpSecurityBuilder]
      */
-    public fun ApiMetadata.httpSecurity(
+    public fun ApiMetadataBuilder.httpSecurity(
         name: String,
         method: AuthenticationMethod,
         configure: HttpSecurityBuilder.() -> Unit = {}
     ) {
         val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
-        addSecurity(scheme = builder.build(name = name, method = method))
+        securitySchemes.add(builder.build(name = name, method = method))
     }
 
     /**
@@ -367,13 +383,13 @@ public data class ApiMetadata internal constructor(
      *
      * @see [ApiKeySecurityBuilder]
      */
-    public fun ApiMetadata.apiKeySecurity(
+    public fun ApiMetadataBuilder.apiKeySecurity(
         name: String,
         location: SecurityLocation,
         configure: ApiKeySecurityBuilder.() -> Unit = {}
     ) {
         val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
-        addSecurity(scheme = builder.build(name = name, location = location))
+        securitySchemes.add(builder.build(name = name, location = location))
     }
 
     /**
@@ -391,12 +407,12 @@ public data class ApiMetadata internal constructor(
      *
      * @see [OAuth2SecurityBuilder]
      */
-    public fun ApiMetadata.oauth2Security(
+    public fun ApiMetadataBuilder.oauth2Security(
         name: String,
         configure: OAuth2SecurityBuilder.() -> Unit = {}
     ) {
         val builder: OAuth2SecurityBuilder = OAuth2SecurityBuilder().apply(configure)
-        addSecurity(scheme = builder.build(name = name))
+        securitySchemes.add(builder.build(name = name))
     }
 
     /**
@@ -416,13 +432,13 @@ public data class ApiMetadata internal constructor(
      *
      * @see [OpenIdConnectSecurityBuilder]
      */
-    public fun ApiMetadata.openIdConnectSecurity(
+    public fun ApiMetadataBuilder.openIdConnectSecurity(
         name: String,
         url: Url,
         configure: OpenIdConnectSecurityBuilder.() -> Unit = {}
     ) {
         val builder: OpenIdConnectSecurityBuilder = OpenIdConnectSecurityBuilder().apply(configure)
-        addSecurity(scheme = builder.build(name = name, url = url))
+        securitySchemes.add(builder.build(name = name, url = url))
     }
 
     /**
@@ -440,11 +456,11 @@ public data class ApiMetadata internal constructor(
      *
      * @see [MutualTLSSecurityBuilder]
      */
-    public fun ApiMetadata.mutualTLSSecurity(
+    public fun ApiMetadataBuilder.mutualTLSSecurity(
         name: String,
         configure: MutualTLSSecurityBuilder.() -> Unit = {}
     ) {
         val builder: MutualTLSSecurityBuilder = MutualTLSSecurityBuilder().apply(configure)
-        addSecurity(scheme = builder.build(name = name))
+        securitySchemes.add(builder.build(name = name))
     }
 }

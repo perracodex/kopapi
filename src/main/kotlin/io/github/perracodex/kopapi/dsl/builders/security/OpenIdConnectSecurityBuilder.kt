@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.builders.security
 
-import io.github.perracodex.kopapi.dsl.ApiMetadata
-import io.github.perracodex.kopapi.dsl.ApiSecurity
+import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.elements.ApiSecurity
 import io.github.perracodex.kopapi.utils.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
@@ -15,7 +15,7 @@ import io.ktor.http.*
  *
  * @property description A description of the security scheme.
  *
- * @see [ApiMetadata.openIdConnectSecurity]
+ * @see [ApiMetadataBuilder.openIdConnectSecurity]
  */
 public class OpenIdConnectSecurityBuilder {
     public var description: String by MultilineString()

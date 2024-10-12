@@ -2,9 +2,10 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl
+package io.github.perracodex.kopapi.dsl.elements
 
-import io.github.perracodex.kopapi.dsl.ApiSecurity.Scheme
+import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.elements.ApiSecurity.Scheme
 import io.github.perracodex.kopapi.dsl.types.AuthenticationMethod
 import io.github.perracodex.kopapi.dsl.types.SecurityLocation
 import io.ktor.http.*
@@ -19,11 +20,11 @@ import io.ktor.http.*
  * @property location The location where the API key is passed (only applicable for API Key schemes).
  * @property openIdConnectUrl The [Url] for the OpenID Connect configuration (only applicable for OpenID Connect schemes).
  *
- * @see [ApiMetadata.httpSecurity]
- * @see [ApiMetadata.apiKeySecurity]
- * @see [ApiMetadata.oauth2Security]
- * @see [ApiMetadata.openIdConnectSecurity]
- * @see [ApiMetadata.mutualTLSSecurity]
+ * @see [ApiMetadataBuilder.httpSecurity]
+ * @see [ApiMetadataBuilder.apiKeySecurity]
+ * @see [ApiMetadataBuilder.oauth2Security]
+ * @see [ApiMetadataBuilder.openIdConnectSecurity]
+ * @see [ApiMetadataBuilder.mutualTLSSecurity]
  */
 internal data class ApiSecurity(
     val name: String,

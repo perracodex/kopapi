@@ -4,10 +4,10 @@
 
 package io.github.perracodex.kopapi.dsl.builders.response
 
-import io.github.perracodex.kopapi.dsl.ApiHeader
-import io.github.perracodex.kopapi.dsl.ApiLink
-import io.github.perracodex.kopapi.dsl.ApiMetadata
-import io.github.perracodex.kopapi.dsl.ApiResponse
+import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.elements.ApiHeader
+import io.github.perracodex.kopapi.dsl.elements.ApiLink
+import io.github.perracodex.kopapi.dsl.elements.ApiResponse
 import io.github.perracodex.kopapi.utils.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
@@ -19,7 +19,7 @@ import kotlin.reflect.KType
  * @property description A description of the response content and what it represents.
  * @property contentType The [ContentType] of the response data, such as JSON or XML.
  *
- * @see [ApiMetadata.response]
+ * @see [ApiMetadataBuilder.response]
  */
 public data class ResponseBuilder(
     var contentType: ContentType = ContentType.Application.Json

@@ -4,9 +4,9 @@
 
 package io.github.perracodex.kopapi.dsl.builders.request
 
-import io.github.perracodex.kopapi.dsl.ApiMetadata
-import io.github.perracodex.kopapi.dsl.ApiRequestBody
-import io.github.perracodex.kopapi.dsl.ApiResponse
+import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.elements.ApiRequestBody
+import io.github.perracodex.kopapi.dsl.elements.ApiResponse
 import io.github.perracodex.kopapi.utils.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
@@ -20,7 +20,7 @@ import kotlin.reflect.KType
  * @property contentType The [ContentType] of the request body data, such as JSON or XML.
  * @property deprecated Indicates if the request body is deprecated and should be avoided.
  *
- * @see [ApiMetadata.requestBody]
+ * @see [ApiMetadataBuilder.requestBody]
  */
 public data class RequestBodyBuilder(
     var required: Boolean = true,

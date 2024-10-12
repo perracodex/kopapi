@@ -2,8 +2,9 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl
+package io.github.perracodex.kopapi.dsl.elements
 
+import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
 import io.ktor.http.*
 import kotlin.reflect.KType
 
@@ -16,7 +17,7 @@ import kotlin.reflect.KType
  * @property contentType The [ContentType] specifying how the data is represented (e.g., application/json).
  * @property deprecated Indicates whether the request body is deprecated and should be avoided.
  *
- * @see [ApiMetadata.requestBody]
+ * @see [ApiMetadataBuilder.requestBody]
  */
 @PublishedApi
 internal data class ApiRequestBody internal constructor(

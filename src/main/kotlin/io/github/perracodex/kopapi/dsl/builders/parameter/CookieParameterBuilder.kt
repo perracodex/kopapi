@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.builders.parameter
 
-import io.github.perracodex.kopapi.dsl.ApiMetadata
-import io.github.perracodex.kopapi.dsl.ApiParameter
+import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.types.ParameterStyle
 import io.github.perracodex.kopapi.utils.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -21,7 +21,7 @@ import kotlin.reflect.KType
  * @property style The style in which the parameter is serialized in the URL.
  * @property deprecated Indicates if the parameter is deprecated and should be avoided.
  *
- * @see [ApiMetadata.cookieParameter]
+ * @see [ApiMetadataBuilder.cookieParameter]
  */
 public data class CookieParameterBuilder(
     var required: Boolean = true,
