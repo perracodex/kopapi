@@ -54,17 +54,9 @@ internal class TypeInspector {
     fun getConflicts(): Set<SchemaConflicts.Conflict> = conflicts.get()
 
     /**
-     * Retrieves the currently cached [TypeSchema] objects.
+     * Retrieve all the [TypeSchema] objects that have been inspected.
      *
      * @return A set of [TypeSchema] objects.
      */
-    fun getTypeSchemas(): Set<TypeSchema> = typeSchemaBuilder.typeSchemaCache
-
-    /**
-     * Resets the instance by clearing all processed data, including conflicts.
-     */
-    fun reset() {
-        typeSchemaBuilder.typeSchemaCache.clear()
-        conflicts.clear()
-    }
+    fun getTypeSchemas(): Set<TypeSchema> = typeSchemaBuilder.getTypeSchemas()
 }

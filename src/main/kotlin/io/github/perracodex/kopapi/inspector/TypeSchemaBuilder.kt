@@ -45,7 +45,7 @@ internal class TypeSchemaBuilder {
     private val tracer = Tracer<TypeSchemaBuilder>()
 
     /** Cache of [TypeSchema] objects that have been processed. */
-    val typeSchemaCache: MutableSet<TypeSchema> = mutableSetOf()
+    private val typeSchemaCache: MutableSet<TypeSchema> = mutableSetOf()
 
     private val arrayResolver = ArrayResolver(typeSchemaBuilder = this)
     private val collectionResolver = CollectionResolver(typeSchemaBuilder = this)
@@ -55,6 +55,11 @@ internal class TypeSchemaBuilder {
     private val mapResolver = MapResolver(typeSchemaBuilder = this)
     private val objectResolver = ObjectResolver(typeSchemaBuilder = this)
     private val propertyResolver = PropertyResolver(typeSchemaBuilder = this)
+
+    /**
+     * Retrieves the cached [TypeSchema] objects.
+     */
+    fun getTypeSchemas(): Set<TypeSchema> = typeSchemaCache
 
     /**
      * Traverses and resolves the given [kType], handling both simple and complex types,

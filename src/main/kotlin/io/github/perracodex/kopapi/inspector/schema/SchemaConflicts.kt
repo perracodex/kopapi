@@ -22,14 +22,6 @@ internal class SchemaConflicts(private val typeInspector: TypeInspector) {
     fun get(): Set<Conflict> = conflicts
 
     /**
-     * Clears the conflicts cache.
-     */
-    @TypeInspectorAPI
-    fun clear() {
-        conflicts.clear()
-    }
-
-    /**
      * Updates the cache by detecting conflicting [TypeSchema] objects
      * with the same name but different types.
      *
