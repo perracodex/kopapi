@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.core
 
 import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 
@@ -12,17 +13,24 @@ import io.github.perracodex.kopapi.serialization.SerializationUtils
  * Builder for the API metadata and schemas.
  */
 internal object SchemaProvider {
+
+    private enum class SectionType {
+        API_METADATA,
+        SCHEMAS,
+        SCHEMA_CONFLICTS
+    }
+
     /** The list of registered routes [ApiMetadata]. */
     private val apiMetadata: MutableSet<ApiMetadata> = mutableSetOf()
 
     /** The list of generated schemas from the all the registered [ApiMetadata] objects. */
     private val schemas: MutableSet<TypeSchema> = mutableSetOf()
 
-    /** The full API metadata in JSON format. */
-    private var apiMetadataJson: String? = null
+    /** The list of detected conflicts when generating the schemas. */
+    private val schemaConflicts: MutableSet<SchemaConflicts.Conflict> = mutableSetOf()
 
-    /** The raw not finalized  schema in JSON format. */
-    private var schemaRawJson: String? = null
+    /** The raw pre-process JSON data for debugging purposes. */
+    private val debugJson: MutableMap<SectionType, String> = mutableMapOf()
 
     /** Registers a new [ApiMetadata] object.*/
     fun register(apiMetadata: ApiMetadata) {
@@ -31,43 +39,43 @@ internal object SchemaProvider {
 
     /**
      * Processes and collects the [TypeSchema] objects from the registered [ApiMetadata] objects.
-     *
-     * @return The list of [TypeSchema] objects.
      */
-    fun getSchema(): Set<TypeSchema> {
-        if (schemas.isEmpty()) {
-            val inspector = TypeInspector()
+    private fun processSchemas() {
+        if (schemas.isNotEmpty()) {
+            return
+        }
 
-            apiMetadata.forEach { metadata ->
-                // Inspect parameters.
-                metadata.parameters?.forEach { parameter ->
-                    if (parameter.type.classifier != Unit::class) {
-                        inspector.inspect(kType = parameter.type)
-                    }
-                }
+        val inspector = TypeInspector()
 
-                // Inspect request body.
-                metadata.requestBody?.let { requestBody ->
-                    if (requestBody.type.classifier != Unit::class) {
-                        inspector.inspect(kType = requestBody.type)
-                    }
-                }
-
-                // Inspect responses.
-                metadata.responses?.forEach { response ->
-                    if (response.type.classifier != Unit::class) {
-                        inspector.inspect(kType = response.type)
-                    }
+        apiMetadata.forEach { metadata ->
+            // Inspect parameters.
+            metadata.parameters?.forEach { parameter ->
+                if (parameter.type.classifier != Unit::class) {
+                    inspector.inspect(kType = parameter.type)
                 }
             }
 
-            // Add the collected schemas to the set.
-            inspector.getTypeSchemas().forEach { schema ->
-                schemas.add(schema)
+            // Inspect request body.
+            metadata.requestBody?.let { requestBody ->
+                if (requestBody.type.classifier != Unit::class) {
+                    inspector.inspect(kType = requestBody.type)
+                }
+            }
+
+            // Inspect responses.
+            metadata.responses?.forEach { response ->
+                if (response.type.classifier != Unit::class) {
+                    inspector.inspect(kType = response.type)
+                }
             }
         }
 
-        return schemas
+        // Add the collected schemas to the set.
+        inspector.getTypeSchemas().forEach { schema ->
+            schemas.add(schema)
+        }
+
+        schemaConflicts.addAll(inspector.getConflicts())
     }
 
     /**
@@ -77,7 +85,8 @@ internal object SchemaProvider {
         return """
             {
                 "routes-metadata": ${getApiMetadataJson()},
-                "object-schemas": ${getSchemasJson(debug = true)}
+                "object-schemas": ${getSchemasJson()},
+                "object-schema-conflicts": ${getSchemaConflictsJson()}
             }
         """.trimIndent()
     }
@@ -88,9 +97,9 @@ internal object SchemaProvider {
      * @return The JSON string of the list of [ApiMetadata] objects.
      */
     private fun getApiMetadataJson(): String {
-        return apiMetadataJson ?: run {
+        return debugJson[SectionType.API_METADATA] ?: run {
             val json: String = SerializationUtils.toJson(instance = apiMetadata)
-            apiMetadataJson = json
+            debugJson[SectionType.API_METADATA] = json
             json
         }
     }
@@ -98,14 +107,22 @@ internal object SchemaProvider {
     /**
      * Get the schemas in JSON format.
      *
-     * @param debug `True` to return them in raw not finalized format.
      * @return The JSON string of the list of [ApiMetadata] objects.
      */
-    private fun getSchemasJson(debug: Boolean): String {
-        return schemaRawJson ?: run {
-            val schemas: Set<TypeSchema> = getSchema()
+    private fun getSchemasJson(): String {
+        return debugJson[SectionType.SCHEMAS] ?: run {
+            processSchemas()
             val json: String = SerializationUtils.toJson(instance = schemas)
-            schemaRawJson = json
+            debugJson[SectionType.SCHEMAS] = json
+            json
+        }
+    }
+
+    private fun getSchemaConflictsJson(): String {
+        return debugJson[SectionType.SCHEMA_CONFLICTS] ?: run {
+            processSchemas()
+            val json: String = SerializationUtils.toJson(instance = schemaConflicts)
+            debugJson[SectionType.SCHEMA_CONFLICTS] = json
             json
         }
     }

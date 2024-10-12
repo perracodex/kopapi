@@ -44,6 +44,16 @@ internal class TypeInspector {
     }
 
     /**
+     * Retrieves the conflicts that have been detected during the inspection process.
+     *
+     * These can be for example when two types with the same name but different types are detected,
+     * which would result in incorrect objects `reference` generation.
+     *
+     * @return A set of [SchemaConflicts.Conflict] objects.
+     */
+    fun getConflicts(): Set<SchemaConflicts.Conflict> = conflicts.get()
+
+    /**
      * Retrieves the currently cached [TypeSchema] objects.
      *
      * @return A set of [TypeSchema] objects.
