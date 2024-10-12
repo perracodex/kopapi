@@ -59,13 +59,13 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
      *
      * @param kType The [KType] representing the type to resolve.
      * @param kClass The [KClass] corresponding to the type to resolve.
-     * @param typeParameterMap A map of type parameters' [KClassifier] to their corresponding [KType].
+     * @param typeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
      * @return The resolved [TypeSchema] for the complex or basic type.
      */
     fun traverse(
         kType: KType,
         kClass: KClass<*>,
-        typeParameterMap: Map<KClassifier, KType>
+        typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
         val className: String = MetadataDescriptor.getClassName(kClass = kClass)
 
@@ -83,7 +83,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
             className = className,
             kType = kType,
             kClass = kClass,
-            typeParameterMap = typeParameterMap
+            typeArgumentBindings = typeArgumentBindings
         )
     }
 
@@ -93,7 +93,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
      * @param className The name of the class to process.
      * @param kType The [KType] representing the complex type.
      * @param kClass The [KClass] representing the complex type.
-     * @param typeParameterMap A map of type parameters' [KClassifier] to their corresponding [KType].
+     * @param typeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
      * @return The resolved [TypeSchema] for the complex type.
      */
     @Suppress("DuplicatedCode")
@@ -101,7 +101,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
         className: String,
         kType: KType,
         kClass: KClass<*>,
-        typeParameterMap: Map<KClassifier, KType>
+        typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
         // Prevent infinite recursion for self-referencing objects.
         if (semaphore.contains(kType.nativeName())) {
@@ -133,7 +133,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
             val (name: String, schemaProperty: SchemaProperty) = typeInspector.traverseProperty(
                 classKType = kType,
                 property = property,
-                typeParameterMap = typeParameterMap
+                typeArgumentBindings = typeArgumentBindings
             )
             propertiesSchemas.properties[name] = schemaProperty
         }

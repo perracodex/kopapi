@@ -38,7 +38,7 @@ internal class TypeSchemaProvider {
         if (kType.classifier == Unit::class) {
             throw IllegalArgumentException("Type 'Unit' cannot be inspected.")
         }
-        val result: TypeSchema = typeInspector.traverseType(kType = kType, typeParameterMap = emptyMap())
+        val result: TypeSchema = typeInspector.traverseType(kType = kType, typeArgumentBindings = emptyMap())
         conflicts.analyze(newSchema = result)
         return result
     }

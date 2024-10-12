@@ -19,9 +19,9 @@ import kotlin.reflect.*
  * - Action:
  *      - Generate Unique Name:
  *          Creates a unique name for the generic type (e.g., `PageOfEmployee`).
- *      - Type Parameter Map:
- *          - Create Local Map: Maps the generic type parameters to their concrete types.
- *          - Merge Maps: Merges the local map with the inherited type parameter map to maintain accurate type substitutions.
+ *      - Type Argument Bindings:
+ *          - Create Local Bindings Map: Maps the generic type parameters to their concrete types.
+ *          - Merge Binding Maps: Merges the local map with the inherited bindings to maintain accurate type substitutions.
  *      - Traverse Properties:
  *          - Retrieve Properties: Gets the properties of the generic type.
  *          - Traverse Each Property: Uses `TypeInspector` to traverse each property, substituting types as needed.
@@ -29,7 +29,7 @@ import kotlin.reflect.*
  *      - Caching: Adds the schema to the `TypeInspector` cache.
  *      - Result: Constructs and returns the generic type schema.
  *
- * #### Type Parameter Map
+ * #### Type Argument Bindings
  * - Purpose:
  *      - Manages type substitutions for generic types during traversal.
  * - Behavior:
@@ -39,7 +39,7 @@ import kotlin.reflect.*
  *      - If inspecting `Container<T>`, and `T` is for example mapped to `String`,
  *        the map `{ T -> String }` is used to substitute `T` with `String`.
  *
- * `Generics` processing relies on the `typeParameterMap` arguments being passed across traversal.
+ * `Generics` processing relies on the `typeArgumentBindings` being passed across traversal.
  * This mapping is crucial for resolving `Generics` types during type inspection.
  * It is a mapping between the `Generics` type parameter (such as `T`, `K`, etc.), and its actual
  * real type argument.
@@ -48,8 +48,8 @@ import kotlin.reflect.*
  * This map is propagated through recursive inspections to maintain consistency in type resolution
  * across the entire type hierarchy.
  *
- * #### Type Parameter Map Scope
- * The `typeParameterMap` is scoped per traversal context, ensuring that type substitutions
+ * #### Type Argument Bindings Scope
+ * The `typeArgumentBindings` is scoped per traversal context, ensuring that type substitutions
  * are isolated and consistent within each generic inspection. This prevents type parameter
  * mappings from different generics from interfering with one another.
  *
@@ -81,10 +81,10 @@ import kotlin.reflect.*
  * **Flow Explanation:**
  * 1. **Inspecting `Page<Employee>`:**
  *    - **`Generics` Detection:** Identifies `Page` as a `Generics` class with type parameter `T`.
- *    - **Type Argument Mapping:** Creates `typeParameterMap = { T -> Employee }`.
+ *    - **Type Argument Mapping:** Creates `typeArgumentBindings = { T -> Employee }`.
  *    - **Property Traversal:**
  *      - **`content: T`:**
- *        - Substitutes `T` with `Employee` using `typeParameterMap`.
+ *        - Substitutes `T` with `Employee` using `typeArgumentBindings`.
  *        - Delegates to `ObjectResolver` to process `Employee`, generating its schema.
  *      - **`pageNumber: Int` & `pageSize: Int`:**
  *        - Identified as primitive types and mapped directly to OpenAPI `integer` type.
@@ -124,8 +124,8 @@ import kotlin.reflect.*
  * **Example Key Points:**
  *
  * - **`Generics` Class Handling:** `Page<T>` is a `Generics` class with type parameter `T`.
- *   When inspecting `Page<Employee>`, `typeParameterMap` is utilized to substitute `T` with `Employee`.
- * - **Type Replacement:** The `typeParameterMap` enables substituting `T` in the `content` property with `Employee`.
+ *   When inspecting `Page<Employee>`, `typeArgumentBindings` is utilized to substitute `T` with `Employee`.
+ * - **Type Replacement:** The `typeArgumentBindings` enables substituting `T` in the `content` property with `Employee`.
  * - **Delegation to Specific Resolvers:**
  *   - `content: T` (now `content: Employee`) is delegated to `ObjectResolver` to process the concrete type `Employee`.
  *   - Primitive properties like `pageNumber` and `pageSize` are handled directly without needing type substitution.
@@ -142,13 +142,13 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
      *
      * @param kType The KType representing the generics type.
      * @param kClass The KClass representing the generics type.
-     * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] for replacement.
+     * @param typeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
      * @return The [TypeSchema] for the generics type.
      */
     fun traverse(
         kType: KType,
         kClass: KClass<*>,
-        typeParameterMap: Map<KClassifier, KType>
+        typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
         val genericsTypeName: String = generateTypeName(kType = kType, kClass = kClass)
 
@@ -159,7 +159,7 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
                 kType = kType,
                 kClass = kClass,
                 genericsTypeName = genericsTypeName,
-                inheritedTypeParameterMap = typeParameterMap,
+                inheritedTypeArgumentBindings = typeArgumentBindings,
                 typeInspector = typeInspector
             )
         }
@@ -200,15 +200,15 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
     /**
      * Traverses a `Generics` type to resolve its properties and cache their schema.
      *
-     * #### Type Parameter Map Details
-     * - `inheritedTypeParameterMap` Carries type mappings from the outer traversal context.
-     * - `localTypeParameterMap` Maps the current `Generics` type parameters to their concrete type arguments.
-     * - `mergedTypeParameterMap` Combines inherited and local type parameters to maintain context-specific substitutions.
+     * #### Type Argument Bindings
+     * - `inheritedTypeArgumentBindings` Carries type mappings from the outer traversal context.
+     * - `localTypeArgumentBindings` Maps the current `Generics` type parameters to their concrete type arguments.
+     * - `mergedTypeArgumentBindings` Combines inherited and local type parameters to maintain context-specific substitutions.
      *
-     * #### Type Parameter Map Lifecycle
-     * - `inheritedTypeParameterMap` is received from the caller and remains unchanged within this scope.
-     * - `localTypeParameterMap` is created for each new `Generics` traversal.
-     * - `mergedTypeParameterMap` is used within the current traversal and passed only downwards to nested traversals.
+     * #### Type Argument Bindings Lifecycle
+     * - `inheritedTypeArgumentBindings` is received from the caller and remains unchanged within this scope.
+     * - `localTypeArgumentBindings` is created for each new `Generics` traversal.
+     * - `mergedTypeArgumentBindings` is used within the current traversal and passed only downwards to nested traversals.
      *    Does not affect the inherited map in upper context scopes.
      *
      * This ensures type parameters from different `Generics` remain isolated, preventing mix-ups
@@ -217,7 +217,7 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
      * @param kType The [KType] containing the actual type arguments for the `Generics`.
      * @param kClass The [KClass] representing the `Generics` type.
      * @param genericsTypeName The generated name for the `Generics` type schema.
-     * @param inheritedTypeParameterMap A map of type parameter classifiers to their concrete [KType]s from the outer context.
+     * @param inheritedTypeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
      * @param typeInspector The [TypeInspector] instance to cache resolved schemas.
      */
     @Suppress("DuplicatedCode")
@@ -225,9 +225,10 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
         kType: KType,
         kClass: KClass<*>,
         genericsTypeName: String,
-        inheritedTypeParameterMap: Map<KClassifier, KType>,
+        inheritedTypeArgumentBindings: Map<KClassifier, KType>,
         typeInspector: TypeInspector
     ) {
+
         // Create a schema placeholder and cache it to handle potential circular references.
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
             name = genericsTypeName,
@@ -247,13 +248,13 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
         }
 
         // Map each type parameter to its actual type argument.
-        val localTypeParameterMap: Map<KClassifier, KType> = typeParameters
+        val localTypeArgumentBindings: Map<KClassifier, KType> = typeParameters
             .mapIndexed { index, typeParameter ->
                 typeParameter as KClassifier to typeArguments[index]
             }.toMap()
 
-        // Merge inherited type parameters with the local context type parameter mappings.
-        val mergedTypeParameterMap: Map<KClassifier, KType> = inheritedTypeParameterMap + localTypeParameterMap
+        // Merge inherited type parameters with the local context type argument bindings.
+        val mergedTypeArgumentBindings: Map<KClassifier, KType> = inheritedTypeArgumentBindings + localTypeArgumentBindings
 
         // Get the placeholder schema to place each property.
         val propertiesSchemas: Schema.Object = schemaPlaceholder.schema as Schema.Object
@@ -266,7 +267,7 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
             val (name: String, schemaProperty: SchemaProperty) = typeInspector.traverseProperty(
                 classKType = kType,
                 property = property,
-                typeParameterMap = mergedTypeParameterMap
+                typeArgumentBindings = mergedTypeArgumentBindings
             )
 
             propertiesSchemas.properties[name] = schemaProperty

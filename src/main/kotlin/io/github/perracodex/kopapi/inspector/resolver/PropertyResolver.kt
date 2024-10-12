@@ -9,7 +9,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
-import io.github.perracodex.kopapi.inspector.utils.resolveGenerics
+import io.github.perracodex.kopapi.inspector.utils.resolveArgumentBinding
 import io.github.perracodex.kopapi.utils.Tracer
 import java.lang.reflect.Field
 import kotlin.reflect.*
@@ -42,26 +42,26 @@ internal class PropertyResolver(private val typeInspector: TypeInspector) {
      *
      * @param classKType The [KType] of the class declaring the property.
      * @param property The [KProperty1] to process.
-     * @param typeParameterMap A map of type parameter classifiers to actual [KType] for replacement.
+     * @param typeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
      * @return A [SchemaProperty] containing information about the property.
      */
     fun traverse(
         classKType: KType,
         property: KProperty1<out Any, *>,
-        typeParameterMap: Map<KClassifier, KType>
+        typeArgumentBindings: Map<KClassifier, KType>
     ): Pair<String, SchemaProperty> {
         val metadata: MetadataDescriptor = MetadataDescriptor.of(
             classKType = classKType,
             property = property
         )
 
-        val propertyType: KType = property.returnType.resolveGenerics(
-            typeParameterMap = typeParameterMap
+        val propertyType: KType = property.returnType.resolveArgumentBinding(
+            typeArgumentBindings = typeArgumentBindings
         )
 
         val typeSchema: TypeSchema = typeInspector.traverseType(
             kType = propertyType,
-            typeParameterMap = typeParameterMap
+            typeArgumentBindings = typeArgumentBindings
         )
 
         // Create the SchemaProperty with metadata

@@ -68,9 +68,9 @@ internal class TypeInspector {
      * Returns a [TypeSchema] representing the structure of the [kType], considering `Generics`,
      * optional properties, nullable properties, and some concrete annotations (see [PrimitiveFactory]).
      *
-     * #### Type Parameter Map Details
+     * #### Type Argument Bindings
      *
-     * The [typeParameterMap] is a crucial component for resolving `Generics` types during traversal
+     * The [typeArgumentBindings] is a crucial component for resolving `Generics` types during traversal
      * and type inspections. This map is propagated through recursive inspections to maintain
      * consistency in type resolution across the entire type hierarchy.
      * See [GenericsResolver] for more detailed information on how this map is used.
@@ -152,8 +152,8 @@ internal class TypeInspector {
      *     |    |       - `GenericsResolver` processes the type.
      *     |    |       - Generate unique name for the generic type.
      *     |    |       - If not cached:
-     *     |    |           - Map type parameters to actual types.
-     *     |    |           - Merge type parameter maps.
+     *     |    |           - Map type arguments to actual types.
+     *     |    |           - Merge type argument bindings from outer context.
      *     |    |           - Traverse properties:
      *     |    |              - For each property:
      *     |    |                - Traverse property type using `TypeInspector`.
@@ -184,17 +184,17 @@ internal class TypeInspector {
      * ```
      *
      * @param kType The [KType] to resolve into a [TypeSchema].
-     * @param typeParameterMap A map of type parameters' [KClassifier] to their actual [KType] replacements.
+     * @param typeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
      * @return The resolved [TypeSchema] for the [kType].
      */
     fun traverseType(
         kType: KType,
-        typeParameterMap: Map<KClassifier, KType>
+        typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
         // Resolve the type's classifier, if unavailable, log an error and return an unknown type.
         val classifier: KClassifier = kType.classifier
             ?: run {
-                tracer.error("Missing classifier. kType=$kType. typeParameterMap=$typeParameterMap.")
+                tracer.error("Missing classifier. kType=$kType. typeArgumentBindings=$typeArgumentBindings.")
                 return TypeSchema.ofUnknown(kType = kType)
             }
 
@@ -209,7 +209,7 @@ internal class TypeInspector {
                 arrayResolver.traverse(
                     kType = kType,
                     classifier = classifier,
-                    typeParameterMap = typeParameterMap
+                    typeArgumentBindings = typeArgumentBindings
                 )
 
             // Handle collections (e.g., List<String>, Set<Int>, etc.).
@@ -217,12 +217,12 @@ internal class TypeInspector {
                 collectionResolver.traverse(
                     kType = kType,
                     classifier = classifier,
-                    typeParameterMap = typeParameterMap
+                    typeArgumentBindings = typeArgumentBindings
                 )
 
             // Handle maps (e.g., Map<String, Int>).
             classifier == Map::class ->
-                mapResolver.traverse(kType = kType, typeParameterMap = typeParameterMap)
+                mapResolver.traverse(kType = kType, typeArgumentBindings = typeArgumentBindings)
 
             // Handle enums.
             classifier is KClass<*> && classifier.isSubclassOf(Enum::class) ->
@@ -234,7 +234,7 @@ internal class TypeInspector {
                 genericsResolver.traverse(
                     kType = kType,
                     kClass = classifier as KClass<*>,
-                    typeParameterMap = typeParameterMap
+                    typeArgumentBindings = typeArgumentBindings
                 )
 
             // Handle basic types and complex objects.
@@ -244,12 +244,12 @@ internal class TypeInspector {
                 objectResolver.traverse(
                     kType = kType,
                     kClass = classifier,
-                    typeParameterMap = typeParameterMap
+                    typeArgumentBindings = typeArgumentBindings
                 )
 
             // Fallback for unknown types. This should never be reached.
             else -> {
-                tracer.error("Unexpected type: $kType. typeParameterMap=$typeParameterMap.")
+                tracer.error("Unexpected type: $kType. typeArgumentBindings=$typeArgumentBindings.")
                 TypeSchema.ofUnknown(kType = kType)
             }
         }
@@ -263,18 +263,18 @@ internal class TypeInspector {
      *
      * @param kType The [KType] representing the collection type.
      * @param classifier The [KClassifier] representing the [Collection]  type.
-     * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
+     * @param typeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
      * @return The resolved [TypeSchema] for the collection type.
      */
     fun traverseCollection(
         kType: KType,
         classifier: KClassifier,
-        typeParameterMap: Map<KClassifier, KType>
+        typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
         return collectionResolver.traverse(
             kType = kType,
             classifier = classifier,
-            typeParameterMap = typeParameterMap
+            typeArgumentBindings = typeArgumentBindings
         )
     }
 
@@ -283,18 +283,18 @@ internal class TypeInspector {
      *
      * @param classKType The [KType] of the class declaring the property.
      * @param property The [KProperty1] to process.
-     * @param typeParameterMap A map of type parameter classifiers to actual [KType] for replacement.
+     * @param typeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
      * @return A [SchemaProperty] containing information about the property.
      */
     fun traverseProperty(
         classKType: KType,
         property: KProperty1<out Any, *>,
-        typeParameterMap: Map<KClassifier, KType>
+        typeArgumentBindings: Map<KClassifier, KType>
     ): Pair<String, SchemaProperty> {
         return propertyResolver.traverse(
             classKType = classKType,
             property = property,
-            typeParameterMap = typeParameterMap
+            typeArgumentBindings = typeArgumentBindings
         )
     }
 

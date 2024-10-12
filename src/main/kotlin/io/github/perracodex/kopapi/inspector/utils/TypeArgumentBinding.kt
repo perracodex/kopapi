@@ -9,7 +9,7 @@ import kotlin.reflect.KType
 
 /**
  * [KType] extension function to substitute the current [KType] with a corresponding type
- * from the provided [typeParameterMap] if its classifier exists within the map.
+ * from the provided [typeArgumentBindings] if its classifier exists within the map.
  *
  * Primarily used to resolve `Generics` type parameters to their actual concrete types during
  * type inspection and schema generation. By replacing type parameters with their mapped types,
@@ -32,18 +32,18 @@ import kotlin.reflect.KType
  *   - The function replaces generic type parameters (`T`, `K`, etc.) with their actual concrete types.
  *
  * - **How It Works:**
- *   - The function checks if the classifier of the current `KType` exists in the provided `typeParameterMap`.
+ *   - The function checks if the classifier of the current `KType` exists in the provided [typeArgumentBindings].
  *   - If a match is found, it substitutes the generic type with the corresponding concrete type from the map.
  *   - If no match is found, it returns the original `KType`, ensuring that non-generic or already-resolved types remain unaffected.
  *
  * @receiver The [KType] instance on which the substitution is to be performed.
- * @param typeParameterMap A map where each key is a [KClassifier] representing a `Generics` type
+ * @param typeArgumentBindings A map where each key is a [KClassifier] representing a `binding` type
  * parameter (e.g., `T`, `K`), and the corresponding value is the [KType] to substitute in place of the type parameter.
- * @return The substituted [KType] if its classifier is present in the [typeParameterMap];
+ * @return The substituted [KType] if its classifier is present in the [typeArgumentBindings];
  * otherwise, returns the original [KType].
  */
-internal fun KType.resolveGenerics(typeParameterMap: Map<KClassifier, KType>): KType {
+internal fun KType.resolveArgumentBinding(typeArgumentBindings: Map<KClassifier, KType>): KType {
     return classifier?.let {
-        typeParameterMap.getOrDefault(key = classifier, defaultValue = this)
+        typeArgumentBindings.getOrDefault(key = classifier, defaultValue = this)
     } ?: this
 }

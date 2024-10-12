@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
-import io.github.perracodex.kopapi.inspector.utils.resolveGenerics
+import io.github.perracodex.kopapi.inspector.utils.resolveArgumentBinding
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
@@ -38,18 +38,18 @@ internal class CollectionResolver(private val typeInspector: TypeInspector) {
      *
      * @param kType The [KType] representing the collection type.
      * @param classifier The [KClassifier] representing the [Collection]  type.
-     * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
+     * @param typeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
      * @return The resolved [TypeSchema] for the collection type.
      */
     fun traverse(
         kType: KType,
         classifier: KClassifier,
-        typeParameterMap: Map<KClassifier, KType>
+        typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
         val className: String = MetadataDescriptor.getClassName(kClass = (classifier as KClass<*>))
 
-        val argumentType: KType = kType.arguments.firstOrNull()?.type?.resolveGenerics(
-            typeParameterMap = typeParameterMap
+        val argumentType: KType = kType.arguments.firstOrNull()?.type?.resolveArgumentBinding(
+            typeArgumentBindings = typeArgumentBindings
         ) ?: run {
             // Collections always have an argument type, so if not found,
             // log an error and treat it as an object type.
@@ -64,7 +64,7 @@ internal class CollectionResolver(private val typeInspector: TypeInspector) {
         // Traverse the collection argument element to resolve its respective TypeSchema.
         val typeSchema: TypeSchema = typeInspector.traverseType(
             kType = argumentType,
-            typeParameterMap = typeParameterMap
+            typeArgumentBindings = typeArgumentBindings
         )
 
         // Distinguishing names between Array<T> and Collections is solely for clarity and debugging,

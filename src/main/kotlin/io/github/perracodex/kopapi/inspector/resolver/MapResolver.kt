@@ -8,7 +8,7 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
-import io.github.perracodex.kopapi.inspector.utils.resolveGenerics
+import io.github.perracodex.kopapi.inspector.utils.resolveArgumentBinding
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
@@ -34,16 +34,16 @@ internal class MapResolver(private val typeInspector: TypeInspector) {
      * Resolves a [Map] type to a [TypeSchema].
      *
      * @param kType The [KType] representing the map type.
-     * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
+     * @param typeArgumentBindings A map of type arguments' [KClassifier] to actual [KType] items for replacement.
      * @return The resolved [TypeSchema] for the map, with additionalProperties for the value type.
      */
     fun traverse(
         kType: KType,
-        typeParameterMap: Map<KClassifier, KType>
+        typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
         val mapArguments: List<KTypeProjection> = kType.arguments
-        val keyType: KType? = mapArguments.getOrNull(index = 0)?.type?.resolveGenerics(typeParameterMap = typeParameterMap)
-        val valueType: KType? = mapArguments.getOrNull(index = 1)?.type?.resolveGenerics(typeParameterMap = typeParameterMap)
+        val keyType: KType? = mapArguments.getOrNull(index = 0)?.type?.resolveArgumentBinding(typeArgumentBindings = typeArgumentBindings)
+        val valueType: KType? = mapArguments.getOrNull(index = 1)?.type?.resolveArgumentBinding(typeArgumentBindings = typeArgumentBindings)
 
         // OpenAPI requires keys to be strings.
         // The key is actually not needed for processing since for maps we only traverse the value type,
@@ -57,7 +57,7 @@ internal class MapResolver(private val typeInspector: TypeInspector) {
 
         // Process the value type.
         val typeSchema: TypeSchema = valueType?.let {
-            typeInspector.traverseType(kType = valueType, typeParameterMap = typeParameterMap)
+            typeInspector.traverseType(kType = valueType, typeArgumentBindings = typeArgumentBindings)
         } ?: TypeSchema.of(name = "MapOf${kType}", kType = kType, schema = SchemaFactory.ofObject())
 
         return TypeSchema.of(

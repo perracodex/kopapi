@@ -39,13 +39,13 @@ internal class ArrayResolver(private val typeInspector: TypeInspector) {
      *
      * @param kType The [KType] representing the collection type.
      * @param classifier The [KClassifier] representing the `Collection` or typed array `Array<T>`.
-     * @param typeParameterMap A map of type parameters' [KClassifier] to actual [KType] items for replacement.
+     * @param typeArgumentBindings A map of type arguments' [KClassifier] to actual [KType] items for replacement.
      * @return The resolved [TypeSchema] for the collection type.
      */
     fun traverse(
         kType: KType,
         classifier: KClassifier,
-        typeParameterMap: Map<KClassifier, KType>
+        typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
         val className: String = MetadataDescriptor.getClassName(kClass = (classifier as KClass<*>))
 
@@ -74,7 +74,7 @@ internal class ArrayResolver(private val typeInspector: TypeInspector) {
         return typeInspector.traverseCollection(
             kType = kType,
             classifier = classifier,
-            typeParameterMap = typeParameterMap
+            typeArgumentBindings = typeArgumentBindings
         )
     }
 }
