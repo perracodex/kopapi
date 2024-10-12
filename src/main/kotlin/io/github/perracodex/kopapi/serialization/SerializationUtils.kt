@@ -45,7 +45,7 @@ internal object SerializationUtils {
      * @param instance The object instance to serialize.
      * @return The JSON string representation of the object [instance].
      */
-    inline fun <reified T> toJson(instance: T): String {
+    fun toJson(instance: Any): String {
         return jsonJackson.writeValueAsString(instance)
     }
 }

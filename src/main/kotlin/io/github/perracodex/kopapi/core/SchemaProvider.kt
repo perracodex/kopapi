@@ -33,7 +33,7 @@ internal object SchemaProvider {
     private val schemaConflicts: MutableSet<SchemaConflicts.Conflict> = mutableSetOf()
 
     /** The raw pre-process JSON data for debugging purposes. */
-    private val debugJson: MutableMap<SectionType, String> = mutableMapOf()
+    private val debugJson: MutableMap<SectionType, List<String>> = mutableMapOf()
 
     /** Registers a new [ApiMetadata] object.*/
     fun register(apiMetadata: ApiMetadata) {
@@ -76,51 +76,64 @@ internal object SchemaProvider {
         }
 
         // Add the collected schemas to the set.
-        inspector.getTypeSchemas().forEach { schema ->
+        inspector.getTypeSchemas().sortedWith(
+            compareBy { it.name }
+        ).forEach { schema ->
             schemas.add(schema)
         }
 
-        schemaConflicts.addAll(inspector.getConflicts())
+        // Add the collected conflicts to the set.
+        inspector.getConflicts().sortedWith(
+            compareBy { it.name }
+        ).forEach { conflict ->
+            schemaConflicts.add(conflict)
+        }
     }
 
     /**
      * Get the full API metadata in JSON format.
      *
-     * @return The JSON string of the list of [ApiMetadata] objects.
+     * @return The [ApiMetadata] objects as a list of JSON strings.
      */
-    fun getApiMetadataJson(): String {
-        return debugJson[SectionType.API_METADATA] ?: run {
-            val json: String = SerializationUtils.toJson(instance = apiMetadata)
-            debugJson[SectionType.API_METADATA] = json
-            json
-        }
+    fun getApiMetadataJson(): List<String> {
+        return getDebugJson(instance = apiMetadata, key = SectionType.API_METADATA)
     }
 
     /**
      * Get the schemas in JSON format.
      *
-     * @return The JSON string of the list of [ApiMetadata] objects.
+     * @return The [TypeSchema] objects as a list of JSON strings.
      */
-    fun getSchemasJson(): String {
-        return debugJson[SectionType.SCHEMAS] ?: run {
-            processSchemas()
-            val json: String = SerializationUtils.toJson(instance = schemas)
-            debugJson[SectionType.SCHEMAS] = json
-            json
-        }
+    fun getSchemasJson(): List<String> {
+        return getDebugJson(instance = schemas, key = SectionType.SCHEMAS)
     }
 
     /**
      * Get the schema conflicts in JSON format.
      *
-     * @return The JSON string of the list of [SchemaConflicts.Conflict] objects.
+     * @return The [SchemaConflicts.Conflict] objects as a list of JSON strings.
      */
-    fun getSchemaConflictsJson(): String {
-        return debugJson[SectionType.SCHEMA_CONFLICTS] ?: run {
+    fun getSchemaConflictsJson(): List<String> {
+        return getDebugJson(instance = schemaConflicts, key = SectionType.SCHEMA_CONFLICTS)
+    }
+
+    /**
+     * Serializes a set of raw not-processed objects into a list of JSON strings,
+     * caching the result for future requests.
+     *
+     * @param T The type of objects to serialize. Must extend [Any].
+     * @param instance The set of objects to serialize into JSON.
+     * @param key The [SectionType] representing the type of JSON to cache.
+     * @return A list of JSON strings representing the serialized [instance].
+     */
+    private fun <T : Any> getDebugJson(instance: MutableSet<T>, key: SectionType): List<String> {
+        return debugJson[key] ?: run {
             processSchemas()
-            val json: String = SerializationUtils.toJson(instance = schemaConflicts)
-            debugJson[SectionType.SCHEMA_CONFLICTS] = json
-            json
+            instance.map { item ->
+                SerializationUtils.toJson(instance = item)
+            }.also {
+                debugJson[key] = it
+            }
         }
     }
 

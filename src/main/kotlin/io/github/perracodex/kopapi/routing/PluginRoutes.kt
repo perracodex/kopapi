@@ -19,7 +19,7 @@ internal fun Routing.kopapiRoutes(
     swaggerUrl: String,
     debugUrl: String
 ) {
-    staticResources(remotePath = "/static-kopapi", basePackage = "styles")
+    staticResources(remotePath = "/static-kopapi", basePackage = "debug")
 
     /** Provide the OpenAPI schema in JSON format. */
     get(openapiJsonUrl) {
