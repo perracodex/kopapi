@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.plugin
 
+import io.github.perracodex.kopapi.core.SchemaProvider
 import io.github.perracodex.kopapi.routing.kopapiRoutes
 import io.github.perracodex.kopapi.utils.Tracer
 import io.ktor.server.application.*
@@ -17,6 +18,22 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     createConfiguration = ::KopapiConfig
 ) {
     val tracer = Tracer<KopapiConfig>()
+
+    // Set the schema provider to enabled/disabled based on the plugin configuration,
+    // so that the Routes API definitions can be collected or discarded.
+    SchemaProvider.isEnabled = this.pluginConfig.enabled
+
+    // Exit early if the plugin is disabled.
+    if (!this.pluginConfig.enabled) {
+        // `Routes.api` definitions can happen before or after the plugin is installed,
+        // so we need to also clear the schema provider when the application starts
+        // to ensure all unused resources are freed.
+        this.application.monitor.subscribe(ApplicationStarted) {
+            SchemaProvider.clear()
+        }
+
+        return@createApplicationPlugin
+    }
 
     val openapiJsonUrl: String = this.pluginConfig.openapiJsonUrl.trim()
     val openapiYamlUrl: String = this.pluginConfig.openapiYamlUrl.trim()

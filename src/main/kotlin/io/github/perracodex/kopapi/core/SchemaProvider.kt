@@ -13,12 +13,15 @@ import io.github.perracodex.kopapi.serialization.SerializationUtils
  * Builder for the API metadata and schemas.
  */
 internal object SchemaProvider {
-
+    /** The different sections of the debug JSON. */
     private enum class SectionType {
         API_METADATA,
         SCHEMAS,
         SCHEMA_CONFLICTS
     }
+
+    /** Whether the provider is enabled. If disabled, no metadata will be collected. */
+    var isEnabled: Boolean = true
 
     /** The list of registered routes [ApiMetadata]. */
     private val apiMetadata: MutableSet<ApiMetadata> = mutableSetOf()
@@ -34,7 +37,9 @@ internal object SchemaProvider {
 
     /** Registers a new [ApiMetadata] object.*/
     fun register(apiMetadata: ApiMetadata) {
-        this.apiMetadata.add(apiMetadata)
+        if (isEnabled) {
+            this.apiMetadata.add(apiMetadata)
+        }
     }
 
     /**
@@ -125,5 +130,15 @@ internal object SchemaProvider {
             debugJson[SectionType.SCHEMA_CONFLICTS] = json
             json
         }
+    }
+
+    /**
+     * Clears all the registered metadata and schemas.
+     */
+    fun clear() {
+        apiMetadata.clear()
+        schemas.clear()
+        schemaConflicts.clear()
+        debugJson.clear()
     }
 }

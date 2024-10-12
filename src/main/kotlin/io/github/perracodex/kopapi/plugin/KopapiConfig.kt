@@ -19,6 +19,16 @@ import kotlin.reflect.typeOf
  */
 public class KopapiConfig {
     /**
+     * Whether the plugin should be enabled (Default is `true`).
+     *
+     * - When disabled, the plugin will not register any of the configuration URLs,
+     *  and all the Routes API schema definitions will be discarded.
+     *
+     * - This is useful when you want to disable the plugin in certain environments, such as production.
+     */
+    public var enabled: Boolean = true
+
+    /**
      * The URL to provide the OpenAPI schema in JSON format.
      * Relative to the server root URL. Default is `openapi/json`.
      */
