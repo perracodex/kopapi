@@ -53,22 +53,26 @@ internal object DebugPanelView {
                         jsonDataList = apiMetadataList,
                         keys = listOf("method", "path")
                     )
-                    buildPanel(
-                        htmlTag = this,
-                        title = "Object Schemas",
-                        panelId = "objects-schemas",
-                        jsonData = Json.encodeToString(schemasList),
-                        jsonDataList = schemasList,
-                        keys = listOf("name")
-                    )
-                    buildPanel(
-                        htmlTag = this,
-                        title = "Schema Conflicts",
-                        panelId = "schema-conflicts",
-                        jsonData = Json.encodeToString(schemaConflictsList),
-                        jsonDataList = schemaConflictsList,
-                        keys = listOf("name")
-                    )
+                    if (schemasList.isNotEmpty()) {
+                        buildPanel(
+                            htmlTag = this,
+                            title = "Object Schemas",
+                            panelId = "objects-schemas",
+                            jsonData = Json.encodeToString(schemasList),
+                            jsonDataList = schemasList,
+                            keys = listOf("name")
+                        )
+                    }
+                    if (schemaConflictsList.isNotEmpty()) {
+                        buildPanel(
+                            htmlTag = this,
+                            title = "Schema Conflicts",
+                            panelId = "schema-conflicts",
+                            jsonData = Json.encodeToString(schemaConflictsList),
+                            jsonDataList = schemaConflictsList,
+                            keys = listOf("name")
+                        )
+                    }
                 }
 
                 // Include Prism.js for syntax highlighting.
