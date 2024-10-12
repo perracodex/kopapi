@@ -29,34 +29,49 @@ internal class SchemaConflicts(private val schemaProvider: TypeSchemaProvider) {
      */
     @TypeInspectorAPI
     fun analyze(newSchema: TypeSchema) {
-        schemaProvider.getTypeSchemas().filter { schema ->
-            schema.name.equals(other = newSchema.name, ignoreCase = true)
-                    && !schema.type.equals(other = newSchema.type, ignoreCase = true)
-        }.forEach { existing ->
-            conflicts.find {
-                it.name.equals(other = newSchema.name, ignoreCase = true)
-            }?.conflicts?.add(existing)
-                ?: conflicts.add(
+        // Retrieve all existing TypeSchemas and filter out those that have the same name
+        // as newSchema (case-insensitive) but a different type (also case-insensitive).
+        val conflictingSchemas: List<TypeSchema> = schemaProvider.getTypeSchemas().filter { existingSchema ->
+            existingSchema.name.equals(newSchema.name, ignoreCase = true) &&
+                    !existingSchema.type.equals(newSchema.type, ignoreCase = true)
+        }
+
+        conflictingSchemas.forEach { existingSchema ->
+            // Attempt to find an existing Conflict entry that matches the newSchema's name.
+            val conflict: Conflict? = conflicts.find { conflict ->
+                conflict.name.equals(newSchema.name, ignoreCase = true)
+            }
+
+            if (conflict != null) {
+                // If a Conflict entry exists, add the conflicting type of the existing schema
+                // and the new schema's type to the conflictingTypes set.
+                conflict.conflictingTypes.add(existingSchema.type)
+                conflict.conflictingTypes.add(newSchema.type)
+            } else {
+                // If no Conflict entry exists for the newSchema's name, create a new Conflict
+                // instance with the differing types.
+                conflicts.add(
                     Conflict(
                         name = newSchema.name,
-                        conflicts = mutableSetOf(
-                            existing,
-                            newSchema
+                        conflictingTypes = mutableSetOf(
+                            existingSchema.type,
+                            newSchema.type
                         )
                     )
                 )
+            }
         }
     }
 
     /**
-     * Represents a conflict for inspected [TypeSchema] that shares the same name
-     * but have different type from another cached [TypeSchema].
+     * Represents a conflict among [TypeSchema] objects that share the same name
+     * but have different types.
      *
-     * @param name The conflicting common name.
-     * @param conflicts A set of [TypeSchema] items with the same name but different types.
+     * @param name The common name shared by the conflicting [TypeSchema] objects.
+     * @param conflictingTypes A set of type identifiers that are in conflict.
      */
     internal data class Conflict(
         val name: String,
-        val conflicts: MutableSet<TypeSchema>
+        val conflictingTypes: MutableSet<String>
     )
 }
