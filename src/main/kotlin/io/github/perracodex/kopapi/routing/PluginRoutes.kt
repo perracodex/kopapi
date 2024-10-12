@@ -42,7 +42,7 @@ internal fun Routing.kopapiRoutes(
     /** Provide the raw pre-processed API metadata in JSON format. */
     get(debugUrl) {
         call.respondHtml(status = HttpStatusCode.OK) {
-            DebugPanelView.build(html = this)
+            DebugPanelView().build(html = this)
         }
     }
 }

@@ -16,18 +16,21 @@ import kotlinx.serialization.json.jsonPrimitive
 /**
  * Handles the generation of the debug panel view.
  */
-internal object DebugPanelView {
+/**
+ * Handles the generation of the debug panel view.
+ */
+internal class DebugPanelView {
+    private val apiMetadataJson: List<String> = SchemaProvider.getApiMetadataJson()
+    private val schemasJson: List<String> = SchemaProvider.getSchemasJson()
+    private val schemaConflictsJson: List<String> = SchemaProvider.getSchemaConflictsJson()
+    private val json = Json { prettyPrint = true }
+
     /**
      * Builds the debug panel view.
      *
      * @param html The HTML DSL builder used to construct the view.
      */
     fun build(html: HTML) {
-        // Fetch JSON data from SchemaProvider.
-        val apiMetadataJson: List<String> = SchemaProvider.getApiMetadataJson()
-        val schemasJson: List<String> = SchemaProvider.getSchemasJson()
-        val schemaConflictsJson: List<String> = SchemaProvider.getSchemaConflictsJson()
-
         // Parse JSON strings into JsonObject lists.
         val apiMetadataList: List<JsonObject> = apiMetadataJson.map { Json.parseToJsonElement(it).jsonObject }
         val schemasList: List<JsonObject> = schemasJson.map { Json.parseToJsonElement(it).jsonObject }
@@ -49,7 +52,6 @@ internal object DebugPanelView {
                         htmlTag = this,
                         title = "Routes API Metadata",
                         panelId = "routes-api-metadata",
-                        jsonData = Json.encodeToString(apiMetadataList),
                         jsonDataList = apiMetadataList,
                         keys = listOf("method", "path")
                     )
@@ -58,7 +60,6 @@ internal object DebugPanelView {
                             htmlTag = this,
                             title = "Object Schemas",
                             panelId = "objects-schemas",
-                            jsonData = Json.encodeToString(schemasList),
                             jsonDataList = schemasList,
                             keys = listOf("name")
                         )
@@ -68,7 +69,6 @@ internal object DebugPanelView {
                             htmlTag = this,
                             title = "Schema Conflicts",
                             panelId = "schema-conflicts",
-                            jsonData = Json.encodeToString(schemaConflictsList),
                             jsonDataList = schemaConflictsList,
                             keys = listOf("name")
                         )
@@ -92,7 +92,6 @@ internal object DebugPanelView {
      * @param htmlTag The HTML tag used for building the panel.
      * @param title The title of the panel.
      * @param panelId The panel content ID.
-     * @param jsonData The JSON data to display in the panel.
      * @param jsonDataList The list of JSON objects used for the dropdown.
      * @param keys The keys used for populating the dropdown from JSON (e.g., 'path', 'method').
      */
@@ -100,10 +99,11 @@ internal object DebugPanelView {
         htmlTag: FlowContent,
         title: String,
         panelId: String,
-        jsonData: String,
         jsonDataList: List<JsonObject>,
         keys: List<String>
     ) {
+        val jsonData: String = json.encodeToString(jsonDataList)
+
         with(htmlTag) {
             div(classes = "panel") {
                 h2(classes = "panel-title") {
@@ -113,25 +113,26 @@ internal object DebugPanelView {
                         +"📋" // Copy icon.
                     }
                 }
-                // Dropdown for filtering the JSON based on specific keys
+                // Dropdown for filtering the JSON based on specific keys.
                 select(classes = "filter-dropdown") {
                     id = "$panelId-filter"
 
                     // Add an "All" option to display all JSON data.
                     option {
-                        value = jsonData // Store the full JSON data as value for "All".
+                        value = "ALL" // Use a constant string for "All"
+                        attributes["data-full-json"] = jsonData // Store full JSON in a data attribute.
                         +"All"
                     }
 
-                    // Populate dropdown with options, including hidden JSON data.
+                    // Populate dropdown with options, including pretty-printed JSON data.
                     jsonDataList.forEach { jsonObject ->
                         // Build a composite key from the specified keys.
                         val compositeKey: String = keys.joinToString(separator = " | ") { key ->
                             jsonObject[key]?.jsonPrimitive?.content.orEmpty()
                         }
                         option {
-                            value = jsonObject.toString() // Store the full JSON object as a value
-                            +compositeKey // Display the key in the dropdown
+                            value = json.encodeToString(jsonObject) // Store the pretty-printed JSON object as a value.
+                            +compositeKey // Display the key in the dropdown.
                         }
                     }
                 }
@@ -139,11 +140,8 @@ internal object DebugPanelView {
                 pre(classes = "panel-content") {
                     id = panelId
                     code(classes = "language-json") {
-                        // Initial value is the full JSON data.
-                        // This is replaced by the selected JSON object when the dropdown changes.
-                        val json = Json { prettyPrint = true }
-                        val prettyPrintedJson: String = json.encodeToString(Json.parseToJsonElement(jsonData))
-                        +prettyPrintedJson
+                        // Initial value is the full pretty-printed JSON data.
+                        +jsonData
                     }
                 }
             }
