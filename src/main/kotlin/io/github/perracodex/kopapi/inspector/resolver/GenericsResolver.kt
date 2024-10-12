@@ -21,7 +21,7 @@ import kotlin.reflect.*
  *          Creates a unique name for the generic type (e.g., `PageOfEmployee`).
  *      - Type Argument Bindings:
  *          - Create Local Bindings Map: Maps the generic type parameters to their concrete types.
- *          - Merge Binding Maps: Merges the local map with the inherited bindings to maintain accurate type substitutions.
+ *          - Merge Argument Bindings: Merges local and inherited bindings for new traversal a context scope.
  *      - Traverse Properties:
  *          - Retrieve Properties: Gets the properties of the generic type.
  *          - Traverse Each Property: Uses `TypeInspector` to traverse each property, substituting types as needed.
@@ -31,27 +31,24 @@ import kotlin.reflect.*
  *
  * #### Type Argument Bindings
  * - Purpose:
- *      - Manages type substitutions for generic types during traversal.
+ *      - Keeps track of substitutions for generic type arguments during traversal.
  * - Behavior:
- *      - Isolation: Each traversal context maintains its own map to prevent conflicts.
+ *      - Isolation: Each traversal context maintains its own bindings to prevent interference between different contexts.
  *      - Propagation: Passed down during recursive traversal to ensure correct substitutions.
  * - Example:
  *      - If inspecting `Container<T>`, and `T` is for example mapped to `String`,
  *        the map `{ T -> String }` is used to substitute `T` with `String`.
  *
  * `Generics` processing relies on the `typeArgumentBindings` being passed across traversal.
- * This mapping is crucial for resolving `Generics` types during type inspection.
- * It is a mapping between the `Generics` type parameter (such as `T`, `K`, etc.), and its actual
- * real type argument.
+ * The argument bindings are crucial for resolving `Generics` types during type inspection.
+ * It's a mapping between a type argument (such as `T`, `K`, etc.), and its actual real type.
  * This mapping ensures that when the resolver encounters a type argument, it can substitute
  * it with the appropriate actual type.
- * This map is propagated through recursive inspections to maintain consistency in type resolution
- * across the entire type hierarchy.
  *
  * #### Type Argument Bindings Scope
  * The `typeArgumentBindings` is scoped per traversal context, ensuring that type substitutions
- * are isolated and consistent within each generic inspection. This prevents type parameter
- * mappings from different generics from interfering with one another.
+ * are isolated and consistent within each traversal inspection. This prevents type argument
+ * bindings from different context traversals from interfering with one another.
  *
  * #### Flow
  *
