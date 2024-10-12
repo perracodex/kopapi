@@ -15,6 +15,10 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @property description A description of the security scheme.
  *
  * @see [ApiMetadataBuilder.oauth2Security]
+ * @see [ApiKeySecurityBuilder]
+ * @see [HttpSecurityBuilder]
+ * @see [OpenIdConnectSecurityBuilder]
+ * @see [MutualTLSSecurityBuilder]
  */
 public class OAuth2SecurityBuilder {
     public var description: String by MultilineString()

@@ -16,6 +16,10 @@ import io.ktor.http.*
  * @property description A description of the security scheme.
  *
  * @see [ApiMetadataBuilder.openIdConnectSecurity]
+ * @see [ApiKeySecurityBuilder]
+ * @see [HttpSecurityBuilder]
+ * @see [OAuth2SecurityBuilder]
+ * @see [MutualTLSSecurityBuilder]
  */
 public class OpenIdConnectSecurityBuilder {
     public var description: String by MultilineString()

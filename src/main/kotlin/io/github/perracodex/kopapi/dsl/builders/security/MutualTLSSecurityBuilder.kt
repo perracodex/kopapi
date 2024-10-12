@@ -15,6 +15,10 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @property description A description of the security scheme.
  *
  * @see [ApiMetadataBuilder.mutualTLSSecurity]
+ * @see [ApiKeySecurityBuilder]
+ * @see [HttpSecurityBuilder]
+ * @see [OAuth2SecurityBuilder]
+ * @see [OpenIdConnectSecurityBuilder]
  */
 public class MutualTLSSecurityBuilder {
     public var description: String by MultilineString()

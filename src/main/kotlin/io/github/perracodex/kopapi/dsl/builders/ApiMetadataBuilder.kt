@@ -82,6 +82,14 @@ public data class ApiMetadataBuilder internal constructor(
      *
      * Declaring the `summary` multiple times will concatenate all the summaries
      * delimited by a `space` character between each one.
+     *
+     * #### Sample Usage
+     * ```
+     * summary = "Retrieve data items."
+     * ```
+     *
+     * @see [description]
+     * @see [tags]
      */
     public var summary: String by SpacedString()
 
@@ -90,6 +98,15 @@ public data class ApiMetadataBuilder internal constructor(
      *
      * Declaring the `description` multiple times will concatenate all the descriptions
      * delimited by a `newline` character between each one.
+     *
+     * #### Sample Usage
+     * ```
+     * description = "Fetches all items for a group."
+     * description = "In addition, it can fetch a specific item."
+     * ```
+     *
+     * @see [summary]
+     * @see [tags]
      */
     public var description: String by MultilineString()
 
@@ -130,8 +147,10 @@ public data class ApiMetadataBuilder internal constructor(
      * #### Sample Usage
      * ```
      * tags("Items", "Data")
-     * tags("Items", "Data", "Items")
      * ```
+     *
+     * @see [summary]
+     * @see [description]
      */
     public fun ApiMetadataBuilder.tags(vararg tags: String) {
         this.tags.addAll(tags.map { it.trim() }.filter { it.isNotBlank() })
@@ -152,6 +171,10 @@ public data class ApiMetadataBuilder internal constructor(
      * @param configure A lambda receiver for configuring the [PathParameterBuilder].
      *
      * @see [PathParameterBuilder]
+     * @see [cookieParameter]
+     * @see [headerParameter]
+     * @see [queryParameter]
+     * @see [requestBody]
      */
     public inline fun <reified T : Any> ApiMetadataBuilder.pathParameter(
         name: String,
@@ -181,6 +204,10 @@ public data class ApiMetadataBuilder internal constructor(
      * @param configure A lambda receiver for configuring the [QueryParameterBuilder].
      *
      * @see [QueryParameterBuilder]
+     * @see [cookieParameter]
+     * @see [headerParameter]
+     * @see [pathParameter]
+     * @see [requestBody]
      */
     public inline fun <reified T : Any> ApiMetadataBuilder.queryParameter(
         name: String,
@@ -206,6 +233,10 @@ public data class ApiMetadataBuilder internal constructor(
      * @param configure A lambda receiver for configuring the [HeaderParameterBuilder].
      *
      * @see [HeaderParameterBuilder]
+     * @see [cookieParameter]
+     * @see [pathParameter]
+     * @see [queryParameter]
+     * @see [requestBody]
      */
     public inline fun <reified T : Any> ApiMetadataBuilder.headerParameter(
         name: String,
@@ -230,6 +261,10 @@ public data class ApiMetadataBuilder internal constructor(
      * @param configure A lambda receiver for configuring the [CookieParameterBuilder].
      *
      * @see [CookieParameterBuilder]
+     * @see [headerParameter]
+     * @see [pathParameter]
+     * @see [queryParameter]
+     * @see [requestBody]
      */
     public inline fun <reified T : Any> ApiMetadataBuilder.cookieParameter(
         name: String,
@@ -255,6 +290,11 @@ public data class ApiMetadataBuilder internal constructor(
      * @param configure A lambda receiver for configuring the [RequestBodyBuilder].
      *
      * @see [RequestBodyBuilder]
+     * @see [cookieParameter]
+     * @see [headerParameter]
+     * @see [pathParameter]
+     * @see [queryParameter]
+     * @see [response]
      */
     public inline fun <reified T : Any> ApiMetadataBuilder.requestBody(
         configure: RequestBodyBuilder.() -> Unit = {}
@@ -369,6 +409,10 @@ public data class ApiMetadataBuilder internal constructor(
      * @param configure A lambda receiver for configuring the [HttpSecurityBuilder].
      *
      * @see [HttpSecurityBuilder]
+     * @see [apiKeySecurity]
+     * @see [mutualTLSSecurity]
+     * @see [oauth2Security]
+     * @see [openIdConnectSecurity]
      */
     public fun ApiMetadataBuilder.httpSecurity(
         name: String,
@@ -394,6 +438,10 @@ public data class ApiMetadataBuilder internal constructor(
      * @param configure A lambda receiver for configuring the [ApiKeySecurityBuilder].
      *
      * @see [ApiKeySecurityBuilder]
+     * @see [httpSecurity]
+     * @see [mutualTLSSecurity]
+     * @see [oauth2Security]
+     * @see [openIdConnectSecurity]
      */
     public fun ApiMetadataBuilder.apiKeySecurity(
         name: String,
@@ -418,6 +466,10 @@ public data class ApiMetadataBuilder internal constructor(
      * @param configure A lambda receiver for configuring the [OAuth2SecurityBuilder].
      *
      * @see [OAuth2SecurityBuilder]
+     * @see [apiKeySecurity]
+     * @see [httpSecurity]
+     * @see [mutualTLSSecurity]
+     * @see [openIdConnectSecurity]
      */
     public fun ApiMetadataBuilder.oauth2Security(
         name: String,
@@ -443,6 +495,10 @@ public data class ApiMetadataBuilder internal constructor(
      * @param configure A lambda receiver for configuring the [OpenIdConnectSecurityBuilder].
      *
      * @see [OpenIdConnectSecurityBuilder]
+     * @see [apiKeySecurity]
+     * @see [httpSecurity]
+     * @see [mutualTLSSecurity]
+     * @see [oauth2Security]
      */
     public fun ApiMetadataBuilder.openIdConnectSecurity(
         name: String,
@@ -467,6 +523,10 @@ public data class ApiMetadataBuilder internal constructor(
      * @param configure A lambda receiver for configuring the [MutualTLSSecurityBuilder].
      *
      * @see [MutualTLSSecurityBuilder]
+     * @see [apiKeySecurity]
+     * @see [httpSecurity]
+     * @see [oauth2Security]
+     * @see [openIdConnectSecurity]
      */
     public fun ApiMetadataBuilder.mutualTLSSecurity(
         name: String,

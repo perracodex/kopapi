@@ -22,6 +22,9 @@ import kotlin.reflect.KType
  * @property deprecated Indicates if the parameter is deprecated and should be avoided.
  *
  * @see [ApiMetadataBuilder.queryParameter]
+ * @see [CookieParameterBuilder]
+ * @see [HeaderParameterBuilder]
+ * @see [PathParameterBuilder]
  */
 public data class QueryParameterBuilder(
     var required: Boolean = true,
