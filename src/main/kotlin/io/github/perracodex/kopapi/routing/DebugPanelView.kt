@@ -1,7 +1,4 @@
-/*
- * Copyright (c) 2024-Present Perracodex.
- * Use of this source code is governed by an MIT license.
- */
+// DebugPanelView.kt
 
 package io.github.perracodex.kopapi.routing
 
@@ -103,8 +100,16 @@ internal class DebugPanelView {
 
         with(htmlTag) {
             div(classes = "panel") {
+                id = panelId
+
                 h2(classes = "panel-title") {
+                    // Add the toggle icon on the left.
+                    span(classes = "toggle-icon") {
+                        onClick = "togglePanel('$panelId')"
+                        +"+" // Initially expanded.
+                    }
                     +"$title (${jsonDataList.size})"
+                    // Add the copy icon on the right.
                     span(classes = "copy-icon") {
                         onClick = "copyToClipboard('$panelId')"
                         +"📋" // Copy icon.
@@ -116,7 +121,7 @@ internal class DebugPanelView {
 
                     // Add an "All" option to display all JSON data.
                     option {
-                        value = "ALL" // Use a constant string for "All". Must match the filter logic in selection.js.
+                        value = "ALL" // Must match the filter logic in selection.js.
                         attributes["data-full-json"] = jsonData // Store full JSON in a data attribute.
                         +"All"
                     }
@@ -135,7 +140,6 @@ internal class DebugPanelView {
                 }
                 // JSON content panel.
                 pre(classes = "panel-content") {
-                    id = panelId
                     code(classes = "language-json") {
                         // Initial value is the full pretty-printed JSON data.
                         +jsonData

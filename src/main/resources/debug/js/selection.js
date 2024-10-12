@@ -1,4 +1,4 @@
-// noinspection JSUnresolvedReference
+// noinspection JSUnusedGlobalSymbols,JSUnresolvedReference
 
 /*
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
@@ -45,6 +45,54 @@ function filterJsonContent(panelId) {
     // Re-apply syntax highlighting using Prism.js to ensure the JSON is properly formatted.
     Prism.highlightElement(codeElement);
 }
+
+/**
+ * Toggles the visibility of panels.
+ * When a panel is expanded, other panels are hidden. Clicking again restores the original layout.
+ *
+ * @param {string} panelId - The ID of the panel to toggle.
+ */
+function togglePanel(panelId) {
+    const panels = document.querySelectorAll('.panel');
+    const targetPanel = document.getElementById(panelId);
+    const toggleIcon = targetPanel.querySelector('.toggle-icon');
+
+    if (!targetPanel || !toggleIcon) {
+        console.error(`Panel or toggle icon with ID '${panelId}' not found.`);
+        return;
+    }
+
+    const isExpanded = targetPanel.classList.contains('expanded');
+
+    if (isExpanded) {
+        // Restore all panels.
+        panels.forEach(panel => {
+            panel.classList.remove('hidden', 'expanded');
+            const icon = panel.querySelector('.toggle-icon');
+            if (icon) {
+                icon.textContent = "+";
+            }
+        });
+        // Restore the gap.
+        document.querySelector('.panel-container').style.gap = '20px';
+    } else {
+        // Hide all other panels and expand the target.
+        panels.forEach(panel => {
+            if (panel.id === panelId) {
+                panel.classList.add('expanded');
+                const icon = panel.querySelector('.toggle-icon');
+                if (icon) {
+                    icon.textContent = "-";
+                }
+            } else {
+                panel.classList.add('hidden');
+            }
+        });
+        // Remove the gap when only one panel is visible.
+        document.querySelector('.panel-container').style.gap = '0';
+    }
+}
+
 
 /**
  * Initializes event listeners for all filter dropdowns once the DOM content is fully loaded.
