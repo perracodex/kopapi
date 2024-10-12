@@ -26,7 +26,7 @@ function copyToClipboard(elementId) {
     if (navigator.clipboard) {
         navigator.clipboard.writeText(textToCopy)
             .then(() => {
-                showNotification('Content copied to clipboard!', 'success');
+                showNotification('Content copied to clipboard', 'success');
             })
             .catch(() => {
                 showNotification('Failed to copy content', 'error');
@@ -35,7 +35,7 @@ function copyToClipboard(elementId) {
         try {
             // noinspection JSDeprecatedSymbols
             document.execCommand('copy');
-            showNotification('Content copied to clipboard!', 'success');
+            showNotification('Content copied to clipboard', 'success');
         } catch (e) {
             showNotification('Failed to copy content', 'error');
         }
