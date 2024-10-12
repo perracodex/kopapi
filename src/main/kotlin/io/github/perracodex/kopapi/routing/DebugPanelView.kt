@@ -16,9 +16,6 @@ import kotlinx.serialization.json.jsonPrimitive
 /**
  * Handles the generation of the debug panel view.
  */
-/**
- * Handles the generation of the debug panel view.
- */
 internal class DebugPanelView {
     private val apiMetadataJson: List<String> = SchemaProvider.getApiMetadataJson()
     private val schemasJson: List<String> = SchemaProvider.getSchemasJson()
@@ -119,7 +116,7 @@ internal class DebugPanelView {
 
                     // Add an "All" option to display all JSON data.
                     option {
-                        value = "ALL" // Use a constant string for "All"
+                        value = "ALL" // Use a constant string for "All". Must match the filter logic in selection.js.
                         attributes["data-full-json"] = jsonData // Store full JSON in a data attribute.
                         +"All"
                     }
