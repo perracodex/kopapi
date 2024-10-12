@@ -58,7 +58,7 @@ internal class CustomTypeResolver(private val typeSchemaBuilder: TypeSchemaBuild
         // If the custom type has not been processed yet, create a schema for it and cache it.
         if (!typeSchemaBuilder.isCached(kType = kType)) {
             val primitiveSchema: Schema.Primitive = Schema.Primitive(
-                type = customType.apiType,
+                apiType = customType.apiType,
                 format = customType.apiFormat.trimOrNull(),
                 minLength = customType.minLength,
                 maxLength = customType.maxLength,

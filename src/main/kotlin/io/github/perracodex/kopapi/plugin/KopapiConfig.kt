@@ -37,7 +37,7 @@ public class KopapiConfig {
     public var swaggerUrl: String = "swagger"
 
     /**
-     * The URL to provide the API metadata, for debugging purposes.
+     * The URL to provide the raw pre-processed API metadata, for debugging purposes.
      * Relative to the server root URL. Default is `openapi/debug`.
      */
     public var debugUrl: String = "openapi/debug"

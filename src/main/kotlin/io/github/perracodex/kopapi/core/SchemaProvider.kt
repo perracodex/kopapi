@@ -4,57 +4,109 @@
 
 package io.github.perracodex.kopapi.core
 
-import io.github.perracodex.kopapi.dsl.ApiMetadata
-import io.github.perracodex.kopapi.routing.collectRouteAttributes
+import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
-import io.ktor.server.application.*
-import io.ktor.server.routing.*
-import io.ktor.util.*
 
 /**
  * Builder for the API metadata and schemas.
  */
 internal object SchemaProvider {
-    /**
-     * Defines the key used to store and retrieve API metadata associated with a specific [Route].
-     *
-     * This key is used as part of the routing configuration process, where API metadata is attached to routes
-     * using the `api` extension function.
-     */
-    val ApiMetadataKey: AttributeKey<ApiMetadata> = AttributeKey(name = "ApiMetadata")
+    /** The list of registered routes [ApiMetadata]. */
+    private val apiMetadata: MutableSet<ApiMetadata> = mutableSetOf()
 
-    /** The full API metadata. */
-    private var apiMetadata: List<ApiMetadata>? = null
+    /** The list of generated schemas from the all the registered [ApiMetadata] objects. */
+    private val schemas: MutableSet<TypeSchema> = mutableSetOf()
 
     /** The full API metadata in JSON format. */
     private var apiMetadataJson: String? = null
 
+    /** The raw not finalized  schema in JSON format. */
+    private var schemaRawJson: String? = null
+
+    /** Registers a new [ApiMetadata] object.*/
+    fun register(apiMetadata: ApiMetadata) {
+        this.apiMetadata.add(apiMetadata)
+    }
+
     /**
-     * Get the full API metadata.
+     * Processes and collects the [TypeSchema] objects from the registered [ApiMetadata] objects.
      *
-     * @param application The [Application] reference with the routes to traverse.
-     * @return The list of [ApiMetadata] objects.
+     * @return The list of [TypeSchema] objects.
      */
-    fun getApiMetadata(application: Application): List<ApiMetadata> {
-        return apiMetadata ?: run {
-            val collectedApiMetadata: List<ApiMetadata> = application.collectRouteAttributes(attributeKey = ApiMetadataKey)
-            apiMetadata = collectedApiMetadata
-            collectedApiMetadata
+    fun getSchema(): Set<TypeSchema> {
+        if (schemas.isEmpty()) {
+            val inspector = TypeInspector()
+
+            apiMetadata.forEach { metadata ->
+                // Inspect parameters.
+                metadata.parameters?.forEach { parameter ->
+                    if (parameter.type.classifier != Unit::class) {
+                        inspector.inspect(kType = parameter.type)
+                    }
+                }
+
+                // Inspect request body.
+                metadata.requestBody?.let { requestBody ->
+                    if (requestBody.type.classifier != Unit::class) {
+                        inspector.inspect(kType = requestBody.type)
+                    }
+                }
+
+                // Inspect responses.
+                metadata.responses?.forEach { response ->
+                    if (response.type.classifier != Unit::class) {
+                        inspector.inspect(kType = response.type)
+                    }
+                }
+            }
+
+            // Add the collected schemas to the set.
+            inspector.getTypeSchemas().forEach { schema ->
+                schemas.add(schema)
+            }
         }
+
+        return schemas
+    }
+
+    /**
+     * Returns the collected API metadata in JSON format.
+     */
+    fun getDebugJson(): String {
+        return """
+            {
+                "routes-metadata": ${getApiMetadataJson()},
+                "object-schemas": ${getSchemasJson(debug = true)}
+            }
+        """.trimIndent()
     }
 
     /**
      * Get the full API metadata in JSON format.
      *
-     * @param application The [Application] reference with the routes to traverse.
      * @return The JSON string of the list of [ApiMetadata] objects.
      */
-    fun getApiMetadataJson(application: Application): String {
+    private fun getApiMetadataJson(): String {
         return apiMetadataJson ?: run {
-            val apiMetadata: List<ApiMetadata> = getApiMetadata(application = application)
-            val apiMetadataJsonResult: String = SerializationUtils.toJson(instance = apiMetadata)
-            apiMetadataJson = apiMetadataJsonResult
-            apiMetadataJsonResult
+            val json: String = SerializationUtils.toJson(instance = apiMetadata)
+            apiMetadataJson = json
+            json
+        }
+    }
+
+    /**
+     * Get the schemas in JSON format.
+     *
+     * @param debug `True` to return them in raw not finalized format.
+     * @return The JSON string of the list of [ApiMetadata] objects.
+     */
+    private fun getSchemasJson(debug: Boolean): String {
+        return schemaRawJson ?: run {
+            val schemas: Set<TypeSchema> = getSchema()
+            val json: String = SerializationUtils.toJson(instance = schemas)
+            schemaRawJson = json
+            json
         }
     }
 }

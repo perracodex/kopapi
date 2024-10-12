@@ -18,27 +18,27 @@ internal fun Routing.kopapiRoutes(
     swaggerUrl: String,
     debugUrl: String
 ) {
-    // Provide the OpenAPI schema in JSON format.
+    /** Provide the OpenAPI schema in JSON format. */
     get(openapiJsonUrl) {
         val openapiJson = ""
         call.respondText(text = openapiJson, contentType = ContentType.Application.Json)
     }
 
-    // Provide the OpenAPI schema in YAML format.
+    /** Provide the OpenAPI schema in YAML format. */
     get(openapiYamlUrl) {
         val openapiYaml = ""
         call.respondText(text = openapiYaml, contentType = ContentType.Application.Json)
     }
 
-    // Provide the Swagger UI.
+    /** Provide the Swagger UI. */
     get(swaggerUrl) {
         val swaggerUi = ""
         call.respondText(text = swaggerUi, contentType = ContentType.Text.Html)
     }
 
-    // Provide the API metadata, for debugging purposes.
+    /** Provide the raw pre-processed API metadata in JSON format. */
     get(debugUrl) {
-        val apiMetadataJson: String = SchemaProvider.getApiMetadataJson(application = call.application)
-        call.respondText(text = apiMetadataJson, contentType = ContentType.Application.Json)
+        val json: String = SchemaProvider.getDebugJson()
+        call.respondText(text = json, contentType = ContentType.Application.Json)
     }
 }

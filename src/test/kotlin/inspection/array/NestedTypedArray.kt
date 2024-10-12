@@ -149,7 +149,7 @@ class NestedTypedArrayTest {
         // Check the schema type.
         assertEquals(
             expected = expectedType,
-            actual = property.schema.type,
+            actual = property.schema.apiType,
             message = "Property '$propertyName' should have type '$expectedType'"
         )
 

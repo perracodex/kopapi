@@ -64,8 +64,9 @@ public infix fun Route.api(configure: ApiMetadataBuilder.() -> Unit): Route {
         securitySchemes = builder.securitySchemes.takeIf { it.isNotEmpty() }
     )
 
-    // Store the metadata in the route's attributes.
-    this.attributes.put(key = SchemaProvider.ApiMetadataKey, value = apiMetadata)
+    // Register the metadata for later retrieval.
+    SchemaProvider.register(apiMetadata)
+
     return this
 }
 

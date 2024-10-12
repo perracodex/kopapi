@@ -35,6 +35,9 @@ internal class TypeInspector {
      * @return The resolved [TypeSchema] for the given [kType].
      */
     fun inspect(kType: KType): TypeSchema {
+        if (kType.classifier == Unit::class) {
+            throw IllegalArgumentException("Type 'Unit' cannot be inspected.")
+        }
         val result: TypeSchema = typeSchemaBuilder.traverseType(kType = kType, typeParameterMap = emptyMap())
         conflicts.analyze(newSchema = result)
         return result

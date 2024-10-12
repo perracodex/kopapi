@@ -90,7 +90,7 @@ class SimpleObjectTest {
         // Check the schema type.
         assertEquals(
             expected = expectedType,
-            actual = schema.type,
+            actual = schema.apiType,
             message = "Property '$propertyName' should have type '$expectedType'"
         )
 
