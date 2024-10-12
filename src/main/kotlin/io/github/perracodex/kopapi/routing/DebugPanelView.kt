@@ -33,14 +33,14 @@ internal object DebugPanelView {
                     // Panel 1: Routes Metadata.
                     div(classes = "panel") {
                         h2(classes = "panel-title") {
-                            +"Routes Metadata"
+                            +"Routes API Metadata"
                             span(classes = "copy-icon") {
-                                onClick = "copyToClipboard('routes-metadata')"
+                                onClick = "copyToClipboard('routes-api-metadata')"
                                 +"📋"
                             }
                         }
                         pre(classes = "panel-content") {
-                            id = "routes-metadata"
+                            id = "routes-api-metadata"
                             code(classes = "language-json") {
                                 +apiMetadataJson
                             }
