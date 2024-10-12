@@ -1,0 +1,122 @@
+/*
+ * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
+ */
+
+/* For Firefox */
+body, .panel-content {
+    scrollbar-width: auto;
+    scrollbar-color: #4b4e58 #1c1e26; /* thumb color and track color */
+}
+
+/* For WebKit-based browsers (Chrome, Edge, Safari) */
+body::-webkit-scrollbar,
+.panel-content::-webkit-scrollbar {
+    width: 16px; /* Scrollbar width */
+}
+
+body::-webkit-scrollbar-track,
+.panel-content::-webkit-scrollbar-track {
+    background-color: #1c1e26; /* Dark background for the track */
+}
+
+body::-webkit-scrollbar-thumb,
+.panel-content::-webkit-scrollbar-thumb {
+    background-color: #4b4e58; /* Darker thumb */
+    border-radius: 10px; /* Rounded scrollbar */
+}
+
+body::-webkit-scrollbar-thumb:hover,
+.panel-content::-webkit-scrollbar-thumb:hover {
+    background-color: #60636b; /* Slightly lighter on hover */
+}
+
+body {
+    background-color: #1c1e26; /* Dark background */
+    color: #d5d6db; /* Light text */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    height: 90vh; /* Full viewport height */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 2. Header Styling */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* 3. Panel Container */
+.panel-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px; /* Space between panels */
+    flex: 1; /* Take up remaining space */
+    overflow: hidden; /* Prevent overflow */
+}
+
+/* 4. Individual Panel Styling */
+.panel {
+    flex: 1;
+    border: 1px solid #3c3f4a;
+    background-color: #282c34;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Ensure children don't overflow */
+}
+
+/* 5. Panel Title */
+.panel-title {
+    display: flex; /* Use Flexbox to align the content */
+    justify-content: space-between; /* Align text to the left and icon to the right */
+    align-items: center; /* Vertically center both text and icon */
+    padding: 10px;
+    background-color: #2e323d;
+    border-bottom: 1px solid #3c3f4a;
+    flex-shrink: 0; /* Prevent shrinking */
+    font-size: 1.2em;
+    margin: 0; /* Remove default margins */
+    width: 100%; /* Ensure it takes the full width of the column */
+    box-sizing: border-box; /* Ensure padding and borders are included in width calculation */
+    overflow: hidden; /* Prevent the icon from spilling out of the column */
+}
+
+
+.copy-icon {
+    cursor: pointer; /* Makes the icon clickable */
+    margin-left: 10px; /* Adds space between the text and icon */
+    flex-shrink: 0; /* Prevent the icon from shrinking */
+}
+
+/* 6. Panel Content */
+.panel-content {
+    padding: 10px;
+    background-color: #1c1e26;
+    overflow: auto; /* Enable both vertical and horizontal scrolling */
+    flex: 1; /* Fill remaining space */
+    margin: 0; /* Remove default margins */
+}
+
+/* 7. Code Blocks */
+
+.panel-content pre {
+    margin: 0;
+    white-space: pre; /* Preserve formatting */
+    overflow: auto; /* Enable scrolling within code blocks */
+    max-width: 100%; /* Prevent overflow */
+}
+
+.panel-content pre code {
+    display: block;
+}
+
+/* 8. Responsive Design */
+@media screen and (max-width: 800px) {
+    .panel-container {
+        flex-direction: column;
+    }
+}

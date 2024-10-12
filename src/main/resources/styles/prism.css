@@ -1,0 +1,115 @@
+code[class*="language-"],
+pre[class*="language-"] {
+    color: #f8f8f2; /* Bright text color */
+    background: none;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    tab-size: 4;
+    hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: 0.5em 0;
+    overflow: auto;
+    border-radius: 0.3em;
+    font-size: 0.9em;
+    background-color: #1d1f27; /* Darker background for better contrast */
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #1a1a22; /* Slightly lighter background */
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: 0.1em;
+    border-radius: 0.3em;
+    white-space: normal;
+    background: #212329; /* Slightly lighter inline background */
+}
+
+/* Comment, Prolog, Doctype, CData */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: #6a7381; /* Muted blue for comments */
+}
+
+/* Punctuation */
+.token.punctuation {
+    color: #f8f8f2; /* Default bright color for punctuation */
+}
+
+/* Property, Tag, Constant, Symbol, Deleted */
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #fb527b; /* Strong magenta-pink for syntax elements */
+}
+
+/* Boolean, Number */
+.token.boolean,
+.token.number {
+    color: #ffcb6b; /* Warm yellow for numbers and booleans */
+}
+
+/* String, Char, Built-in, Inserted */
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #76c7b7; /* Soft cyan for strings */
+}
+
+/* Operator, Entity, URL, Variables */
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable {
+    color: #d4d4d4; /* Light grey for operators */
+}
+
+/* Function and Class names */
+.token.function,
+.token.class-name {
+    color: #ffd700; /* Golden color for function names */
+}
+
+/* Keyword */
+.token.keyword {
+    color: #c792ea; /* Violet for keywords */
+}
+
+/* Regex, Important */
+.token.regex,
+.token.important {
+    color: #ffb86c; /* Orange for regex and important elements */
+}
+
+/* Bold and Italic */
+.token.bold {
+    font-weight: bold;
+}
+
+.token.italic {
+    font-style: italic;
+}
+
+/* Entity cursor help */
+.token.entity {
+    cursor: help;
+}

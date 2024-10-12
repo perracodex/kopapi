@@ -4,8 +4,9 @@
 
 package io.github.perracodex.kopapi.routing
 
-import io.github.perracodex.kopapi.core.SchemaProvider
 import io.ktor.http.*
+import io.ktor.server.html.*
+import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -18,6 +19,8 @@ internal fun Routing.kopapiRoutes(
     swaggerUrl: String,
     debugUrl: String
 ) {
+    staticResources(remotePath = "/static-kopapi", basePackage = "styles")
+
     /** Provide the OpenAPI schema in JSON format. */
     get(openapiJsonUrl) {
         val openapiJson = ""
@@ -38,7 +41,8 @@ internal fun Routing.kopapiRoutes(
 
     /** Provide the raw pre-processed API metadata in JSON format. */
     get(debugUrl) {
-        val json: String = SchemaProvider.getDebugJson()
-        call.respondText(text = json, contentType = ContentType.Application.Json)
+        call.respondHtml(status = HttpStatusCode.OK) {
+            DebugPanelView.build(html = this)
+        }
     }
 }

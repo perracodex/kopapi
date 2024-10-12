@@ -84,24 +84,11 @@ internal object SchemaProvider {
     }
 
     /**
-     * Returns the collected API metadata in JSON format.
-     */
-    fun getDebugJson(): String {
-        return """
-            {
-                "routes-metadata": ${getApiMetadataJson()},
-                "object-schemas": ${getSchemasJson()},
-                "object-schema-conflicts": ${getSchemaConflictsJson()}
-            }
-        """.trimIndent()
-    }
-
-    /**
      * Get the full API metadata in JSON format.
      *
      * @return The JSON string of the list of [ApiMetadata] objects.
      */
-    private fun getApiMetadataJson(): String {
+    fun getApiMetadataJson(): String {
         return debugJson[SectionType.API_METADATA] ?: run {
             val json: String = SerializationUtils.toJson(instance = apiMetadata)
             debugJson[SectionType.API_METADATA] = json
@@ -114,7 +101,7 @@ internal object SchemaProvider {
      *
      * @return The JSON string of the list of [ApiMetadata] objects.
      */
-    private fun getSchemasJson(): String {
+    fun getSchemasJson(): String {
         return debugJson[SectionType.SCHEMAS] ?: run {
             processSchemas()
             val json: String = SerializationUtils.toJson(instance = schemas)
@@ -123,7 +110,12 @@ internal object SchemaProvider {
         }
     }
 
-    private fun getSchemaConflictsJson(): String {
+    /**
+     * Get the schema conflicts in JSON format.
+     *
+     * @return The JSON string of the list of [SchemaConflicts.Conflict] objects.
+     */
+    fun getSchemaConflictsJson(): String {
         return debugJson[SectionType.SCHEMA_CONFLICTS] ?: run {
             processSchemas()
             val json: String = SerializationUtils.toJson(instance = schemaConflicts)
