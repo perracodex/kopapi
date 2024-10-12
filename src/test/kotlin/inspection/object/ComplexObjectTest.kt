@@ -6,7 +6,7 @@ package inspection.`object`/*
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
@@ -47,10 +47,10 @@ class ComplexObjectTest {
 
     @Test
     fun `test complex schema inspection with nested objects and collections`() {
-        // Initialize the TypeInspector.
-        val inspector = TypeInspector()
+        // Inspect the type.
+        val schemaProvider = TypeSchemaProvider()
         val userType: KType = User::class.createType()
-        val typeSchema: TypeSchema = inspector.inspect(kType = userType)
+        val typeSchema: TypeSchema = schemaProvider.inspect(kType = userType)
 
         // Verify that the TypeSchema is a reference to the User schema.
         assertTrue(actual = typeSchema.schema is Schema.Reference, message = "Expected schema to be a Schema.Reference")
@@ -61,7 +61,7 @@ class ComplexObjectTest {
         )
 
         // Retrieve the registered schemas.
-        val schemasSet: Set<TypeSchema> = inspector.getTypeSchemas()
+        val schemasSet: Set<TypeSchema> = schemaProvider.getTypeSchemas()
         assertTrue(actual = schemasSet.size >= 3, message = "Expected at least three schemas (User, Address, Status)")
 
         // Find the User schema.

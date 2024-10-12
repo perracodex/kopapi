@@ -4,7 +4,7 @@
 
 package inspection.array
 
-import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
@@ -34,9 +34,9 @@ class NestedTypedArrayTest {
         // Define the type to inspect.
         val nestedBoxArrayType: KType = NestedBoxArray::class.createType()
 
-        // Initialize the TypeInspector.
-        val inspector = TypeInspector()
-        val typeSchema: TypeSchema = inspector.inspect(kType = nestedBoxArrayType)
+        // Inspect the type.
+        val schemaProvider = TypeSchemaProvider()
+        val typeSchema: TypeSchema = schemaProvider.inspect(kType = nestedBoxArrayType)
 
         // Verify that the typeSchema is a reference to the NestedBoxArray schema.
         assertTrue(
@@ -50,7 +50,7 @@ class NestedTypedArrayTest {
         )
 
         // Retrieve the registered schemas.
-        val schemasSet: Set<TypeSchema> = inspector.getTypeSchemas()
+        val schemasSet: Set<TypeSchema> = schemaProvider.getTypeSchemas()
         assertEquals(
             expected = 2,
             actual = schemasSet.size,

@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeSchemaBuilder
+import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
@@ -22,14 +22,14 @@ import kotlin.reflect.KType
  * - Action:
  *      - Check Registration: Determines if the type is registered as a [CustomType].
  *      - Construct Schema: If registered, constructs the custom schema.
- *      - Caching: Adds the schema to the `TypeSchemaBuilder` cache to avoid redundant processing.
+ *      - Caching: Adds the schema to the `TypeInspector` cache to avoid redundant processing.
  *      - Result: Returns the constructed schema.
  *
  * @see [CustomType]
- * @see [TypeSchemaBuilder]
+ * @see [TypeInspector]
  */
 @TypeInspectorAPI
-internal class CustomTypeResolver(private val typeSchemaBuilder: TypeSchemaBuilder) {
+internal class CustomTypeResolver(private val typeInspector: TypeInspector) {
     private val tracer = Tracer<CustomTypeResolver>()
 
     /**
@@ -56,7 +56,7 @@ internal class CustomTypeResolver(private val typeSchemaBuilder: TypeSchemaBuild
             }
 
         // If the custom type has not been processed yet, create a schema for it and cache it.
-        if (!typeSchemaBuilder.isCached(kType = kType)) {
+        if (!typeInspector.isCached(kType = kType)) {
             val primitiveSchema: Schema.Primitive = Schema.Primitive(
                 apiType = customType.apiType,
                 format = customType.apiFormat.trimOrNull(),
@@ -75,7 +75,7 @@ internal class CustomTypeResolver(private val typeSchemaBuilder: TypeSchemaBuild
                 schema = primitiveSchema
             )
 
-            typeSchemaBuilder.addToCache(schema = schemaType)
+            typeInspector.addToCache(schema = schemaType)
         }
 
         // Return a reference to the custom type schema.

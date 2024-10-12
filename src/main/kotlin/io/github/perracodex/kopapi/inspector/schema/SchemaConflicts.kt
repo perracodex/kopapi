@@ -4,13 +4,13 @@
 
 package io.github.perracodex.kopapi.inspector.schema
 
-import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 
 /**
  * Manager caching conflicting [TypeSchema] objects.
  */
-internal class SchemaConflicts(private val typeInspector: TypeInspector) {
+internal class SchemaConflicts(private val schemaProvider: TypeSchemaProvider) {
     /** Holds Conflict generated during the inspection process. */
     private val conflicts: MutableSet<Conflict> = mutableSetOf()
 
@@ -29,7 +29,7 @@ internal class SchemaConflicts(private val typeInspector: TypeInspector) {
      */
     @TypeInspectorAPI
     fun analyze(newSchema: TypeSchema) {
-        typeInspector.getTypeSchemas().filter { schema ->
+        schemaProvider.getTypeSchemas().filter { schema ->
             schema.name.equals(other = newSchema.name, ignoreCase = true)
                     && !schema.type.equals(other = newSchema.type, ignoreCase = true)
         }.forEach { existing ->

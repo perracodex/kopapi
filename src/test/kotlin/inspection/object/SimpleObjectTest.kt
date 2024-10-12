@@ -6,7 +6,7 @@ package inspection.`object`/*
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
@@ -30,9 +30,9 @@ class SimpleObjectTest {
     @Test
     fun `test a simple schema inspection by verifying the schema structure`() {
 
-        // Inspect the Type Schema.
-        val inspector = TypeInspector()
-        val schemeRef: TypeSchema = inspector.inspect(kType = Box::class.createType())
+        // Inspect the type.
+        val schemaProvider = TypeSchemaProvider()
+        val schemeRef: TypeSchema = schemaProvider.inspect(kType = Box::class.createType())
 
         // Basic definition validation.
         assertEquals(expected = Box::class.simpleName, actual = schemeRef.name, message = "Schema name should match the class name")
@@ -47,7 +47,7 @@ class SimpleObjectTest {
         )
 
         // Retrieve and assert registered schemas.
-        val schemasSet: Set<TypeSchema> = inspector.getTypeSchemas()
+        val schemasSet: Set<TypeSchema> = schemaProvider.getTypeSchemas()
         assertEquals(expected = 1, actual = schemasSet.size, message = "There should be exactly one registered schema")
 
         // Get the actual schema for Box.

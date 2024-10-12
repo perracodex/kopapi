@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeSchemaBuilder
+import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
@@ -26,15 +26,15 @@ import kotlin.reflect.full.superclasses
  *      - Process Each Property:
  *          - Extract Metadata: Retrieves information such as name, nullability, and annotations.
  *          - Resolve Property Type: Determines the property's type, substituting generics as necessary.
- *          - Traverse Property Type: Uses `TypeSchemaBuilder` to traverse the property's type.
+ *          - Traverse Property Type: Uses `TypeInspector` to traverse the property's type.
  *          - Apply Metadata: Incorporates metadata into the property's schema.
  *      - Result: Collects property schemas to be included in the parent object schema.
  *
- * @see [TypeSchemaBuilder]
+ * @see [TypeInspector]
  * @see [MetadataDescriptor]
  */
 @TypeInspectorAPI
-internal class PropertyResolver(private val typeSchemaBuilder: TypeSchemaBuilder) {
+internal class PropertyResolver(private val typeInspector: TypeInspector) {
     private val tracer = Tracer<PropertyResolver>()
 
     /**
@@ -59,7 +59,7 @@ internal class PropertyResolver(private val typeSchemaBuilder: TypeSchemaBuilder
             typeParameterMap = typeParameterMap
         )
 
-        val typeSchema: TypeSchema = typeSchemaBuilder.traverseType(
+        val typeSchema: TypeSchema = typeInspector.traverseType(
             kType = propertyType,
             typeParameterMap = typeParameterMap
         )

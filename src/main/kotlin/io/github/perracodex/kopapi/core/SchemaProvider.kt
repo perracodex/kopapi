@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.core
 
-import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
@@ -50,7 +50,7 @@ internal object SchemaProvider {
             return
         }
 
-        val inspector = TypeInspector()
+        val inspector = TypeSchemaProvider()
 
         apiMetadata.forEach { metadata ->
             // Inspect parameters.

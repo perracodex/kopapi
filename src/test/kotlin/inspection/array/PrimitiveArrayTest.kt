@@ -4,7 +4,7 @@
 
 package inspection.array
 
-import io.github.perracodex.kopapi.inspector.TypeInspector
+import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.keys.ApiFormat
@@ -45,9 +45,9 @@ class PrimitiveArrayTest {
         for (arrayInfo in primitiveTypes) {
             val arrayType: KType = arrayInfo.kClass.createType()
 
-            // Initialize the TypeInspector.
-            val inspector = TypeInspector()
-            val typeSchema: TypeSchema = inspector.inspect(kType = arrayType)
+            // Inspect the type.
+            val schemaProvider = TypeSchemaProvider()
+            val typeSchema: TypeSchema = schemaProvider.inspect(kType = arrayType)
 
             // Verify that the TypeSchema is of type array.
             assertTrue(
@@ -56,7 +56,7 @@ class PrimitiveArrayTest {
             )
 
             // Retrieve the registered schemas.
-            val schemasSet: Set<TypeSchema> = inspector.getTypeSchemas()
+            val schemasSet: Set<TypeSchema> = schemaProvider.getTypeSchemas()
             assertTrue(
                 actual = schemasSet.isEmpty(),
                 message = "Expected no registered schemas for ${arrayInfo.kClass.simpleName}"

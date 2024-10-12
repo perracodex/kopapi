@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeSchemaBuilder
+import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
@@ -20,14 +20,14 @@ import kotlin.reflect.KTypeProjection
  * - Action:
  *      - Validate Key Type: Verifies that the map's key type is a `String`, logging an error if not.
  *      - Resolve Value Type: Determines the value type of the map.
- *      - Traverse Value Type: Uses `TypeSchemaBuilder` to traverse the value type.
+ *      - Traverse Value Type: Uses `TypeInspector` to traverse the value type.
  *      - Construct Schema: Creates a schema with `additionalProperties` representing the value schema.
  *      - Result: Constructs and returns the map schema.
  *
- * @see [TypeSchemaBuilder]
+ * @see [TypeInspector]
  */
 @TypeInspectorAPI
-internal class MapResolver(private val typeSchemaBuilder: TypeSchemaBuilder) {
+internal class MapResolver(private val typeInspector: TypeInspector) {
     private val tracer = Tracer<MapResolver>()
 
     /**
@@ -57,7 +57,7 @@ internal class MapResolver(private val typeSchemaBuilder: TypeSchemaBuilder) {
 
         // Process the value type.
         val typeSchema: TypeSchema = valueType?.let {
-            typeSchemaBuilder.traverseType(kType = valueType, typeParameterMap = typeParameterMap)
+            typeInspector.traverseType(kType = valueType, typeParameterMap = typeParameterMap)
         } ?: TypeSchema.of(name = "MapOf${kType}", kType = kType, schema = SchemaFactory.ofObject())
 
         return TypeSchema.of(

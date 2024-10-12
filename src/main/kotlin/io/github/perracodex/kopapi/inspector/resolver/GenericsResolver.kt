@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.inspector.TypeSchemaBuilder
+import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.Schema
@@ -24,9 +24,9 @@ import kotlin.reflect.*
  *          - Merge Maps: Merges the local map with the inherited type parameter map to maintain accurate type substitutions.
  *      - Traverse Properties:
  *          - Retrieve Properties: Gets the properties of the generic type.
- *          - Traverse Each Property: Uses `TypeSchemaBuilder` to traverse each property, substituting types as needed.
+ *          - Traverse Each Property: Uses `TypeInspector` to traverse each property, substituting types as needed.
  *      - Construct Schema: Builds the schema for the generic type.
- *      - Caching: Adds the schema to the `TypeSchemaBuilder` cache.
+ *      - Caching: Adds the schema to the `TypeInspector` cache.
  *      - Result: Constructs and returns the generic type schema.
  *
  * #### Type Parameter Map
@@ -133,10 +133,10 @@ import kotlin.reflect.*
  *   ensuring the final `PageOfEmployee` schema accurately reflects its structure.
  *
  * @see [PropertyResolver]
- * @see [TypeSchemaBuilder]
+ * @see [TypeInspector]
  */
 @TypeInspectorAPI
-internal class GenericsResolver(private val typeSchemaBuilder: TypeSchemaBuilder) {
+internal class GenericsResolver(private val typeInspector: TypeInspector) {
     /**
      * Handles generics types, considering nested and complex generics.
      *
@@ -154,13 +154,13 @@ internal class GenericsResolver(private val typeSchemaBuilder: TypeSchemaBuilder
 
         // Check if the generics type has already been processed,
         // if not, traverse the generics type to resolve its properties and cache it.
-        if (!typeSchemaBuilder.isCached(kType = kType)) {
+        if (!typeInspector.isCached(kType = kType)) {
             traverse(
                 kType = kType,
                 kClass = kClass,
                 genericsTypeName = genericsTypeName,
                 inheritedTypeParameterMap = typeParameterMap,
-                typeSchemaBuilder = typeSchemaBuilder
+                typeInspector = typeInspector
             )
         }
 
@@ -218,7 +218,7 @@ internal class GenericsResolver(private val typeSchemaBuilder: TypeSchemaBuilder
      * @param kClass The [KClass] representing the `Generics` type.
      * @param genericsTypeName The generated name for the `Generics` type schema.
      * @param inheritedTypeParameterMap A map of type parameter classifiers to their concrete [KType]s from the outer context.
-     * @param typeSchemaBuilder The [TypeSchemaBuilder] instance to cache resolved schemas.
+     * @param typeInspector The [TypeInspector] instance to cache resolved schemas.
      */
     @Suppress("DuplicatedCode")
     private fun traverse(
@@ -226,7 +226,7 @@ internal class GenericsResolver(private val typeSchemaBuilder: TypeSchemaBuilder
         kClass: KClass<*>,
         genericsTypeName: String,
         inheritedTypeParameterMap: Map<KClassifier, KType>,
-        typeSchemaBuilder: TypeSchemaBuilder
+        typeInspector: TypeInspector
     ) {
         // Create a schema placeholder and cache it to handle potential circular references.
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
@@ -234,7 +234,7 @@ internal class GenericsResolver(private val typeSchemaBuilder: TypeSchemaBuilder
             kType = kType,
             schema = SchemaFactory.ofObject()
         )
-        typeSchemaBuilder.addToCache(schema = schemaPlaceholder)
+        typeInspector.addToCache(schema = schemaPlaceholder)
 
         // Extract `Generic` type parameters and their corresponding type arguments.
         val typeParameters: List<KTypeParameter> = kClass.typeParameters
@@ -259,11 +259,11 @@ internal class GenericsResolver(private val typeSchemaBuilder: TypeSchemaBuilder
         val propertiesSchemas: Schema.Object = schemaPlaceholder.schema as Schema.Object
 
         // Retrieve all relevant properties of the generic class.
-        val classProperties: List<KProperty1<out Any, *>> = typeSchemaBuilder.getClassProperties(kClass = kClass)
+        val classProperties: List<KProperty1<out Any, *>> = typeInspector.getClassProperties(kClass = kClass)
 
         // Traverse each property to resolve its schema using the merged type parameters.
         classProperties.forEach { property ->
-            val (name: String, schemaProperty: SchemaProperty) = typeSchemaBuilder.traverseProperty(
+            val (name: String, schemaProperty: SchemaProperty) = typeInspector.traverseProperty(
                 classKType = kType,
                 property = property,
                 typeParameterMap = mergedTypeParameterMap
