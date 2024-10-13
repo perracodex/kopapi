@@ -4,14 +4,14 @@
 
 package io.github.perracodex.kopapi.plugin
 
-import io.github.perracodex.kopapi.api.debugRoute
-import io.github.perracodex.kopapi.api.openApiRoutes
-import io.github.perracodex.kopapi.api.swaggerRoute
 import io.github.perracodex.kopapi.core.SchemaProvider
 import io.github.perracodex.kopapi.plugin.KopapiConfig.Companion.DEFAULT_DEBUG_URL
 import io.github.perracodex.kopapi.plugin.KopapiConfig.Companion.DEFAULT_OPENAPI_JSON_URL
 import io.github.perracodex.kopapi.plugin.KopapiConfig.Companion.DEFAULT_OPENAPI_YAML_URL
 import io.github.perracodex.kopapi.plugin.KopapiConfig.Companion.DEFAULT_SWAGGER_URL
+import io.github.perracodex.kopapi.routing.debugRoute
+import io.github.perracodex.kopapi.routing.openApiRoutes
+import io.github.perracodex.kopapi.routing.swaggerRoute
 import io.github.perracodex.kopapi.utils.trimOrDefault
 import io.ktor.server.application.*
 import io.ktor.server.routing.*

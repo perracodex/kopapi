@@ -4,11 +4,11 @@
 
 package io.github.perracodex.kopapi.core
 
-import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
-import io.github.perracodex.kopapi.dsl.elements.ApiParameter
-import io.github.perracodex.kopapi.dsl.elements.ApiRequestBody
-import io.github.perracodex.kopapi.dsl.elements.ApiResponse
-import io.github.perracodex.kopapi.dsl.elements.ApiSecurity
+import io.github.perracodex.kopapi.core.dsl.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.core.dsl.elements.ApiParameter
+import io.github.perracodex.kopapi.core.dsl.elements.ApiRequestBody
+import io.github.perracodex.kopapi.core.dsl.elements.ApiResponse
+import io.github.perracodex.kopapi.core.dsl.elements.ApiSecurity
 import io.ktor.http.*
 
 /**
