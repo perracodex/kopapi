@@ -60,7 +60,7 @@ internal class DebugPanelView {
                             htmlTag = this,
                             title = "Object Schemas",
                             panelId = "objects-schemas",
-                            keys = listOf("name"),
+                            keys = listOf("name", "type"),
                             jsonDataList = schemasList
                         )
                     }
@@ -138,12 +138,14 @@ internal class DebugPanelView {
                     // Populate dropdown with options, including pretty-printed JSON data.
                     jsonDataList.forEach { jsonObject ->
                         // Build a composite key from the specified keys.
-                        val compositeKey: String = keys.joinToString(separator = " | ") { key ->
+                        val compositeKey: String = keys.joinToString(separator = " → ") { key ->
                             jsonObject[key]?.jsonPrimitive?.content.orEmpty()
                         }
                         option {
-                            value = json.encodeToString(jsonObject) // Store the pretty-printed JSON object as a value.
-                            +compositeKey // Display the key in the dropdown.
+                            // Store the pretty-printed JSON object as a value.
+                            value = json.encodeToString(jsonObject)
+                            // Display the key in the dropdown.
+                            +compositeKey
                         }
                     }
                 }
