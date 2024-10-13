@@ -20,9 +20,9 @@ import kotlinx.serialization.json.jsonPrimitive
  * Each panel includes a dropdown for filtering the displayed JSON data and syntax highlighting.
  */
 internal class DebugPanelView {
-    private val apiMetadataJson: List<String> = SchemaProvider.getApiMetadataJson()
-    private val schemasJson: List<String> = SchemaProvider.getSchemasJson()
-    private val schemaConflictsJson: List<String> = SchemaProvider.getSchemaConflictsJson()
+    private val apiMetadataJson: Set<String> = SchemaProvider.getApiMetadataJson()
+    private val schemasJson: Set<String> = SchemaProvider.getSchemasJson()
+    private val schemaConflictsJson: Set<String> = SchemaProvider.getSchemaConflictsJson()
     private val json = Json { prettyPrint = true }
 
     /**

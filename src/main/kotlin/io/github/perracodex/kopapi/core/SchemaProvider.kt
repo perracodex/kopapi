@@ -11,61 +11,80 @@ import io.github.perracodex.kopapi.plugin.dsl.elements.ApiInfo
 import io.github.perracodex.kopapi.plugin.dsl.elements.ApiServerConfig
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import kotlin.collections.set
+import kotlin.reflect.KType
 
 /**
- * Builder for the API metadata and schemas.
+ * Singleton for registering and serving API information, server configurations, and endpoint metadata.
+ *
+ * Provides JSON representations of the registered data. JSONs are generated on the first request
+ * and cached for subsequent requests to avoid redundant processing.
  */
 internal object SchemaProvider {
-    /** The different sections of the debug JSON. */
+    /** Represents the different sections in the debug JSON output. */
     private enum class SectionType {
+        API_INFO,
+        API_SERVERS,
         API_METADATA,
         SCHEMAS,
         SCHEMA_CONFLICTS
     }
 
-    /** Whether the provider is enabled. If disabled, no metadata will be collected. */
+    /** Flag to enable or disable the schema provider. If disabled, metadata collection is skipped. */
     var isEnabled: Boolean = true
 
-    /** The list of registered routes [ApiMetadata]. */
+    /** Set of registered API metadata objects. */
     private val apiMetadata: MutableSet<ApiMetadata> = mutableSetOf()
 
-    /** The list of generated schemas from the all the registered [ApiMetadata] objects. */
+    /** Set of generated type schemas derived from registered API metadata. */
     private val schemas: MutableSet<TypeSchema> = mutableSetOf()
 
-    /** The list of detected conflicts when generating the schemas. */
+    /** Set of detected schema conflicts during schema generation. */
     private val schemaConflicts: MutableSet<SchemaConflicts.Conflict> = mutableSetOf()
 
-    /** The raw pre-process JSON data for debugging purposes. */
-    private val debugJson: MutableMap<SectionType, List<String>> = mutableMapOf()
+    /** Cached JSON representations for debugging, categorized by section type. */
+    private val debugJsonCache: MutableMap<SectionType, Set<String>> = mutableMapOf()
 
-
-    /** The API documentation information. */
+    /** Information about the API, such as title, version, and description. */
     var apiInfo: ApiInfo? = null
         private set
 
-    /**
-     * Holds the set of server configurations.
-     */
+    /** Configuration details for the API servers. */
     var apiServers: Set<ApiServerConfig>? = null
         private set
 
     /**
-     * Registers the [ApiInfo] for the API.
+     * Registers the API information.
      *
-     * @param info The [ApiInfo] object representing the metadata of the API.
+     * @param info The [ApiInfo] object containing metadata about the API.
      */
     fun registerApiInfo(info: ApiInfo?) {
-        apiInfo = info
+        if (isEnabled) {
+            synchronized(this) {
+                if (apiInfo != null) {
+                    throw KopapiException("API information has already been registered.")
+                }
+                apiInfo = info
+            }
+        }
     }
 
     /**
-     * Assign the set of server configurations once.
-     * This method can only be called once; subsequent calls will throw an exception.
+     * Registers the API server configurations.
      *
-     * @param servers The set of server configurations to assign.
+     * This method can only be called once. Subsequent calls will throw an [IllegalStateException].
+     *
+     * @param servers A set of [ApiServerConfig] objects representing server configurations.
+     * @throws IllegalStateException if server configurations have already been registered.
      */
     fun registerServers(servers: Set<ApiServerConfig>) {
-        apiServers = servers
+        if (isEnabled) {
+            synchronized(this) {
+                if (apiServers != null) {
+                    throw KopapiException("API servers have already been registered.")
+                }
+                apiServers = servers
+            }
+        }
     }
 
     /**
@@ -75,7 +94,9 @@ internal object SchemaProvider {
      */
     fun registerApiMetadata(metadata: ApiMetadata) {
         if (isEnabled) {
-            this.apiMetadata.add(metadata)
+            synchronized(apiMetadata) {
+                apiMetadata.add(metadata)
+            }
         }
     }
 
@@ -90,36 +111,30 @@ internal object SchemaProvider {
         val inspector = TypeSchemaProvider()
 
         apiMetadata.forEach { metadata ->
-            // Inspect parameters.
+            // Inspect each parameter type.
             metadata.parameters?.forEach { parameter ->
-                if (parameter.type.classifier != Unit::class) {
-                    inspector.inspect(kType = parameter.type)
-                }
+                inspectType(inspector = inspector, type = parameter.type)
             }
 
-            // Inspect request body.
+            // Inspect the request body type.
             metadata.requestBody?.let { requestBody ->
-                if (requestBody.type.classifier != Unit::class) {
-                    inspector.inspect(kType = requestBody.type)
-                }
+                inspectType(inspector = inspector, type = requestBody.type)
             }
 
-            // Inspect responses.
+            // Inspect each response type.
             metadata.responses?.forEach { response ->
-                if (response.type.classifier != Unit::class) {
-                    inspector.inspect(kType = response.type)
-                }
+                inspectType(inspector = inspector, type = response.type)
             }
         }
 
-        // Add the collected schemas to the set.
+        // Collect and store sorted schemas.
         inspector.getTypeSchemas().sortedWith(
             compareBy { it.name }
         ).forEach { schema ->
             schemas.add(schema)
         }
 
-        // Add the collected conflicts to the set.
+        // Collect and store sorted schema conflicts.
         inspector.getConflicts().sortedWith(
             compareBy { it.name }
         ).forEach { conflict ->
@@ -128,59 +143,110 @@ internal object SchemaProvider {
     }
 
     /**
-     * Get the full API metadata in JSON format.
+     * Inspects a type using the provided [TypeSchemaProvider] if it's not of type [Unit].
      *
-     * @return The [ApiMetadata] objects as a list of JSON strings.
+     * @param inspector The [TypeSchemaProvider] instance used for inspection.
+     * @param type The [KType] to inspect.
      */
-    fun getApiMetadataJson(): List<String> {
-        return getDebugJson(instance = apiMetadata, key = SectionType.API_METADATA)
-    }
-
-    /**
-     * Get the schemas in JSON format.
-     *
-     * @return The [TypeSchema] objects as a list of JSON strings.
-     */
-    fun getSchemasJson(): List<String> {
-        return getDebugJson(instance = schemas, key = SectionType.SCHEMAS)
-    }
-
-    /**
-     * Get the schema conflicts in JSON format.
-     *
-     * @return The [SchemaConflicts.Conflict] objects as a list of JSON strings.
-     */
-    fun getSchemaConflictsJson(): List<String> {
-        return getDebugJson(instance = schemaConflicts, key = SectionType.SCHEMA_CONFLICTS)
-    }
-
-    /**
-     * Serializes a set of raw not-processed objects into a list of JSON strings,
-     * caching the result for future requests.
-     *
-     * @param T The type of objects to serialize. Must extend [Any].
-     * @param instance The set of objects to serialize into JSON.
-     * @param key The [SectionType] representing the type of JSON to cache.
-     * @return A list of JSON strings representing the serialized [instance].
-     */
-    private fun <T : Any> getDebugJson(instance: MutableSet<T>, key: SectionType): List<String> {
-        return debugJson[key] ?: run {
-            processSchemas()
-            instance.map { item ->
-                SerializationUtils.toJson(instance = item)
-            }.also {
-                debugJson[key] = it
-            }
+    private fun inspectType(inspector: TypeSchemaProvider, type: KType) {
+        if (type.classifier != Unit::class) {
+            inspector.inspect(kType = type)
         }
     }
 
     /**
-     * Clears all the registered metadata and schemas.
+     * Retrieves the API information in JSON format.
+     *
+     * @return A set of JSON strings representing the [ApiInfo].
+     */
+    fun getApiInfoJson(): Set<String> {
+        return getOrGenerateDebugJson(instance = apiInfo, section = SectionType.API_INFO)
+    }
+
+    /**
+     * Retrieves the API server configurations in JSON format.
+     *
+     * @return A set of JSON strings representing the [ApiServerConfig] objects.
+     */
+    fun getApiServersJson(): Set<String> {
+        return getOrGenerateDebugJson(instance = apiServers, section = SectionType.API_SERVERS)
+    }
+
+    /**
+     * Retrieves the API metadata in JSON format.
+     *
+     * @return A set of JSON strings representing the registered [ApiMetadata].
+     */
+    fun getApiMetadataJson(): Set<String> {
+        return getOrGenerateDebugJson(instance = apiMetadata, section = SectionType.API_METADATA)
+    }
+
+    /**
+     * Retrieves the generated schemas in JSON format.
+     *
+     * @return A set of JSON strings representing the [TypeSchema] objects.
+     */
+    fun getSchemasJson(): Set<String> {
+        return getOrGenerateDebugJson(instance = schemas, section = SectionType.SCHEMAS)
+    }
+
+    /**
+     * Retrieves the schema conflicts in JSON format.
+     *
+     * @return A list of JSON strings representing the [SchemaConflicts.Conflict] objects.
+     */
+    fun getSchemaConflictsJson(): Set<String> {
+        return getOrGenerateDebugJson(instance = schemaConflicts, section = SectionType.SCHEMA_CONFLICTS)
+    }
+
+    /**
+     * Serializes an object into a JSON string, utilizing caching for efficiency.
+     *
+     * @param T The type of the object to serialize.
+     * @param instance The object to serialize.
+     * @param section The [SectionType] indicating the category of the object.
+     * @return A list containing a single JSON string representing the serialized object.
+     */
+    private fun <T : Any> getOrGenerateDebugJson(instance: T?, section: SectionType): Set<String> {
+        if (instance == null) {
+            return emptySet()
+        }
+
+        return debugJsonCache[section] ?: run {
+            val json: String = SerializationUtils.toJson(instance)
+            debugJsonCache[section] = setOf(json)
+            setOf(json)
+        }
+    }
+
+    /**
+     * Serializes a set of objects into a list of JSON strings, utilizing caching for efficiency.
+     *
+     * @param T The type of objects to serialize.
+     * @param instance The set of objects to serialize.
+     * @param section The [SectionType] indicating the category of objects.
+     * @return A list of JSON strings representing the serialized objects.
+     */
+    private fun <T : Any> getOrGenerateDebugJson(instance: Set<T>, section: SectionType): Set<String> {
+        processSchemas()
+
+        return debugJsonCache[section] ?: run {
+            instance
+                .map { SerializationUtils.toJson(instance = it) }
+                .toSortedSet()
+                .also { sortedSet ->
+                    debugJsonCache[section] = sortedSet
+                }
+        }
+    }
+
+    /**
+     * Clears all registered metadata, schemas, conflicts, and cached JSON data.
      */
     fun clear() {
         apiMetadata.clear()
         schemas.clear()
         schemaConflicts.clear()
-        debugJson.clear()
+        debugJsonCache.clear()
     }
 }
