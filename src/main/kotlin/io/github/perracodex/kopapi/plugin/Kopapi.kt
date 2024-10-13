@@ -40,16 +40,16 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     }
 
     // Set th API documentation info.
-    SchemaProvider.apiInfo = this.pluginConfig.apiInfo
+    SchemaProvider.registerApiInfo(info = this.pluginConfig.apiInfo)
     // Add the servers to the schema provider.
-    SchemaProvider.servers.addAll(this.pluginConfig.servers.get())
+    SchemaProvider.registerServers(servers = this.pluginConfig.getServers())
 
     // Get the URLs from the plugin configuration.
     // If any of the URLs are empty, restore the default values.
-    val openapiJsonUrl: String = this.pluginConfig.openapiJsonUrl.trimOrDefault(DEFAULT_OPENAPI_JSON_URL)
-    val openapiYamlUrl: String = this.pluginConfig.openapiYamlUrl.trimOrDefault(DEFAULT_OPENAPI_YAML_URL)
-    val swaggerUrl: String = this.pluginConfig.swaggerUrl.trimOrDefault(DEFAULT_SWAGGER_URL)
-    val debugUrl: String = this.pluginConfig.debugUrl.trimOrDefault(DEFAULT_DEBUG_URL)
+    val openapiJsonUrl: String = this.pluginConfig.openapiJsonUrl.trimOrDefault(defaultValue = DEFAULT_OPENAPI_JSON_URL)
+    val openapiYamlUrl: String = this.pluginConfig.openapiYamlUrl.trimOrDefault(defaultValue = DEFAULT_OPENAPI_YAML_URL)
+    val swaggerUrl: String = this.pluginConfig.swaggerUrl.trimOrDefault(defaultValue = DEFAULT_SWAGGER_URL)
+    val debugUrl: String = this.pluginConfig.debugUrl.trimOrDefault(defaultValue = DEFAULT_DEBUG_URL)
 
     // Configure the plugin endpoints using the extracted function.
     application.routing {

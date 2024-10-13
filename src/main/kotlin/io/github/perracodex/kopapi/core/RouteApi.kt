@@ -65,7 +65,7 @@ public infix fun Route.api(configure: ApiMetadataBuilder.() -> Unit): Route {
     )
 
     // Register the metadata for later retrieval.
-    SchemaProvider.register(apiMetadata)
+    SchemaProvider.registerApiMetadata(metadata = apiMetadata)
 
     return this
 }

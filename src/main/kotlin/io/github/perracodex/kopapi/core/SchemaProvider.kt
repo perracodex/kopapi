@@ -8,8 +8,9 @@ import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.plugin.dsl.elements.ApiInfo
+import io.github.perracodex.kopapi.plugin.dsl.elements.ApiServerConfig
 import io.github.perracodex.kopapi.serialization.SerializationUtils
-import io.ktor.http.*
+import kotlin.collections.set
 
 /**
  * Builder for the API metadata and schemas.
@@ -25,12 +26,6 @@ internal object SchemaProvider {
     /** Whether the provider is enabled. If disabled, no metadata will be collected. */
     var isEnabled: Boolean = true
 
-    /** The API documentation information. */
-    var apiInfo: ApiInfo? = null
-
-    /** The set of servers where the API is hosted. */
-    val servers: MutableSet<Url> = mutableSetOf()
-
     /** The list of registered routes [ApiMetadata]. */
     private val apiMetadata: MutableSet<ApiMetadata> = mutableSetOf()
 
@@ -43,10 +38,44 @@ internal object SchemaProvider {
     /** The raw pre-process JSON data for debugging purposes. */
     private val debugJson: MutableMap<SectionType, List<String>> = mutableMapOf()
 
-    /** Registers a new [ApiMetadata] object.*/
-    fun register(apiMetadata: ApiMetadata) {
+
+    /** The API documentation information. */
+    var apiInfo: ApiInfo? = null
+        private set
+
+    /**
+     * Holds the set of server configurations.
+     */
+    var apiServers: Set<ApiServerConfig>? = null
+        private set
+
+    /**
+     * Registers the [ApiInfo] for the API.
+     *
+     * @param info The [ApiInfo] object representing the metadata of the API.
+     */
+    fun registerApiInfo(info: ApiInfo?) {
+        apiInfo = info
+    }
+
+    /**
+     * Assign the set of server configurations once.
+     * This method can only be called once; subsequent calls will throw an exception.
+     *
+     * @param servers The set of server configurations to assign.
+     */
+    fun registerServers(servers: Set<ApiServerConfig>) {
+        apiServers = servers
+    }
+
+    /**
+     * Registers the [ApiMetadata] for a concrete API endpoint.
+     *
+     * @param metadata The [ApiMetadata] object representing the metadata of the API endpoint.
+     */
+    fun registerApiMetadata(metadata: ApiMetadata) {
         if (isEnabled) {
-            this.apiMetadata.add(apiMetadata)
+            this.apiMetadata.add(metadata)
         }
     }
 

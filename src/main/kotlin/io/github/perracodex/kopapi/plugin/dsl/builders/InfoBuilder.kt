@@ -61,7 +61,6 @@ import io.github.perracodex.kopapi.utils.string.MultilineString
  * @property contact The contact information for the API.
  * @property license The license information for the API.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class InfoBuilder {
     public var title: String = "API Title"
     public var description: String by MultilineString()

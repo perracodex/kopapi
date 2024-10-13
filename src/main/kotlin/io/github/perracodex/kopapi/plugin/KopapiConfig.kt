@@ -11,9 +11,9 @@ import io.github.perracodex.kopapi.keys.ApiFormat
 import io.github.perracodex.kopapi.keys.ApiType
 import io.github.perracodex.kopapi.plugin.dsl.builders.CustomTypeBuilder
 import io.github.perracodex.kopapi.plugin.dsl.builders.InfoBuilder
-import io.github.perracodex.kopapi.plugin.dsl.builders.ServersBuilder
+import io.github.perracodex.kopapi.plugin.dsl.builders.ServerBuilder
 import io.github.perracodex.kopapi.plugin.dsl.elements.ApiInfo
-import io.ktor.http.*
+import io.github.perracodex.kopapi.plugin.dsl.elements.ApiServerConfig
 import kotlin.reflect.typeOf
 
 /**
@@ -57,15 +57,29 @@ public class KopapiConfig {
     /**
      * The list of servers to include in the OpenAPI schema.
      */
-    internal val servers: ServersBuilder = ServersBuilder()
+    private val servers: MutableSet<ApiServerConfig> = mutableSetOf()
 
     /**
      * The [ApiInfo] metadata for the OpenAPI schema.
      */
     internal var apiInfo: ApiInfo? = null
+        private set
 
     /**
-     * DSL block for setting up OpenAPI metadata.
+     * Returns the ser of server configurations.
+     * If no servers are added, a default server is returned.
+     *
+     * @return The set [ApiServerConfig] instances.
+     */
+    internal fun getServers(): Set<ApiServerConfig> {
+        if (servers.isEmpty()) {
+            return setOf(ServerBuilder.defaultServer())
+        }
+        return servers
+    }
+
+    /**
+     * Sets up the OpenAPI metadata.
      *
      * #### Sample Usage
      * ```
@@ -85,25 +99,52 @@ public class KopapiConfig {
      *      }
      *  }
      * ```
+     *
+     * @see [InfoBuilder]
      */
     public fun info(init: InfoBuilder.() -> Unit) {
         apiInfo = InfoBuilder().apply(init).build()
     }
 
     /**
-     * Appends a list of servers to the configuration.
-     * Can be defined as strings or [Url] objects.
+     * Sets up servers, with optional support for variables.
      *
      * #### Sample Usage
      * ```
      * servers {
-     *      add("http://localhost:8080")
-     *      add(Url("http://localhost:8081"))
+     *     add("http://localhost:8080") {
+     *         description = "Local server for development."
+     *     }
+     *
+     *     add("https://{environment}.example.com") {
+     *         description = "The server for the API with environment variable."
+     *         variable("environment") {
+     *             description = "Specifies the environment (production, etc.)"
+     *             defaultValue = "production"
+     *             choices = setOf("production", "staging", "development")
+     *         }
+     *         variable("version") {
+     *             description = "The version of the API."
+     *             defaultValue = "v1"
+     *             choices = setOf("v1", "v2")
+     *         }
+     *     }
+     *
+     *     add("https://{region}.api.example.com") {
+     *         description = "Server for the API by region."
+     *         variable("region") {
+     *             description = "Specifies the region for the API (us, eu)."
+     *             defaultValue = "us"
+     *             choices = setOf("us", "eu")
+     *         }
+     *     }
      * }
      * ```
+     *
+     * @see [ServerBuilder]
      */
-    public fun servers(init: ServersBuilder.() -> Unit) {
-        servers.init()
+    public fun servers(init: ServerBuilder.() -> Unit) {
+        servers.addAll(ServerBuilder().apply(init).build())
     }
 
     /**
