@@ -20,8 +20,8 @@ import io.github.perracodex.kopapi.dsl.elements.ApiResponse
 import io.github.perracodex.kopapi.dsl.elements.ApiSecurity
 import io.github.perracodex.kopapi.dsl.types.AuthenticationMethod
 import io.github.perracodex.kopapi.dsl.types.SecurityLocation
-import io.github.perracodex.kopapi.utils.MultilineString
-import io.github.perracodex.kopapi.utils.SpacedString
+import io.github.perracodex.kopapi.utils.string.MultilineString
+import io.github.perracodex.kopapi.utils.string.SpacedString
 import io.ktor.http.*
 import java.util.*
 import kotlin.reflect.KType

@@ -4,8 +4,10 @@
 
 package io.github.perracodex.kopapi.plugin
 
+import io.github.perracodex.kopapi.api.debugRoute
+import io.github.perracodex.kopapi.api.openApiRoutes
+import io.github.perracodex.kopapi.api.swaggerRoute
 import io.github.perracodex.kopapi.core.SchemaProvider
-import io.github.perracodex.kopapi.routing.kopapiRoutes
 import io.github.perracodex.kopapi.utils.Tracer
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -61,11 +63,11 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
 
     // Configure the plugin endpoints using the extracted function.
     application.routing {
-        kopapiRoutes(
+        debugRoute(debugUrl = debugUrl)
+        openApiRoutes(
             openapiJsonUrl = openapiJsonUrl,
-            openapiYamlUrl = openapiYamlUrl,
-            swaggerUrl = swaggerUrl,
-            debugUrl = debugUrl
+            openapiYamlUrl = openapiYamlUrl
         )
+        swaggerRoute(swaggerUrl = swaggerUrl)
     }
 }

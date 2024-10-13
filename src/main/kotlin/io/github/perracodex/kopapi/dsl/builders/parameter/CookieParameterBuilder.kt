@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.dsl.builders.parameter
 import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
 import io.github.perracodex.kopapi.dsl.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.types.ParameterStyle
-import io.github.perracodex.kopapi.utils.MultilineString
+import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import kotlin.reflect.KType
 

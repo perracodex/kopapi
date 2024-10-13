@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.dsl.builders.attributes
 import io.github.perracodex.kopapi.dsl.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.elements.ApiLinkParameter
-import io.github.perracodex.kopapi.utils.MultilineString
+import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**

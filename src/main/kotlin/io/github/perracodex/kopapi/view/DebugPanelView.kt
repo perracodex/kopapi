@@ -1,6 +1,6 @@
 // DebugPanelView.kt
 
-package io.github.perracodex.kopapi.routing
+package io.github.perracodex.kopapi.view
 
 import io.github.perracodex.kopapi.core.SchemaProvider
 import kotlinx.html.*

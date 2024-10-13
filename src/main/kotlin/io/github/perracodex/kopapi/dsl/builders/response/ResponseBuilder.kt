@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.dsl.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.elements.ApiHeader
 import io.github.perracodex.kopapi.dsl.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.elements.ApiResponse
-import io.github.perracodex.kopapi.utils.MultilineString
+import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import kotlin.reflect.KType

@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.core
 
 import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
-import io.github.perracodex.kopapi.routing.extractRoutePath
+import io.github.perracodex.kopapi.utils.extractRoutePath
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import io.ktor.server.routing.*

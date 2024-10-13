@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.dsl.builders.security
 import io.github.perracodex.kopapi.dsl.builders.ApiMetadataBuilder
 import io.github.perracodex.kopapi.dsl.elements.ApiSecurity
 import io.github.perracodex.kopapi.dsl.types.AuthenticationMethod
-import io.github.perracodex.kopapi.utils.MultilineString
+import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
