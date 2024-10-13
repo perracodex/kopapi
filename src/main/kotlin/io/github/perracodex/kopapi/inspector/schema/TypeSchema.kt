@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.inspector.schema
 
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 import io.github.perracodex.kopapi.inspector.utils.nativeName
 import kotlin.reflect.KType
@@ -12,12 +13,14 @@ import kotlin.reflect.KType
 /**
  * Represents a type schema for an inspected type.
  *
- * @property name The name representing the type, usually the class or property name without qualifiers.
+ * @property name The current name of the type. If renamed, this reflects the updated name.
+ * @property renamedFrom The original name of the type before renaming. It is `null` if the name was not changed.
  * @property type The fully qualified type name, typically obtained from [KType.nativeName].
  * @property schema The processed [Schema] specification for the type.
  */
 internal data class TypeSchema private constructor(
     val name: String,
+    val renamedFrom: String?,
     val type: String,
     val schema: Schema
 ) {
@@ -41,9 +44,14 @@ internal data class TypeSchema private constructor(
          * @return A new instance of [TypeSchema].
          */
         @TypeInspectorAPI
-        fun of(name: String, kType: KType, schema: Schema): TypeSchema {
+        fun of(name: ElementName, kType: KType, schema: Schema): TypeSchema {
             val qualifiedName: String = kType.nativeName()
-            return TypeSchema(name = name, type = qualifiedName, schema = schema)
+            return TypeSchema(
+                name = name.name,
+                renamedFrom = name.renamedFrom,
+                type = qualifiedName,
+                schema = schema
+            )
         }
 
         /**
@@ -57,7 +65,7 @@ internal data class TypeSchema private constructor(
             kType: KType,
         ): TypeSchema {
             return of(
-                name = "Unknown_$kType",
+                name = ElementName(name = "Unknown_$kType"),
                 kType = kType,
                 schema = SchemaFactory.ofObject()
             )

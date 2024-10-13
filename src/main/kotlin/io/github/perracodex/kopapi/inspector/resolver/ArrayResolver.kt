@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.schema.Schema
@@ -47,7 +48,7 @@ internal class ArrayResolver(private val typeInspector: TypeInspector) {
         classifier: KClassifier,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
-        val className: String = MetadataDescriptor.getClassName(kClass = (classifier as KClass<*>))
+        val className: ElementName = MetadataDescriptor.getClassName(kClass = (classifier as KClass<*>))
 
         // Check if dealing with a primitive array first, such as IntArray, ByteArray, etc.,
         // and return the corresponding schema if it is.

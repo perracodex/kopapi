@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
@@ -46,7 +47,7 @@ internal class CollectionResolver(private val typeInspector: TypeInspector) {
         classifier: KClassifier,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
-        val className: String = MetadataDescriptor.getClassName(kClass = (classifier as KClass<*>))
+        val className: ElementName = MetadataDescriptor.getClassName(kClass = (classifier as KClass<*>))
 
         val argumentType: KType = kType.arguments.firstOrNull()?.resolveTypeBinding(
             bindings = typeArgumentBindings
@@ -76,7 +77,7 @@ internal class CollectionResolver(private val typeInspector: TypeInspector) {
         }
 
         return TypeSchema.of(
-            name = name,
+            name = ElementName(name = name),
             kType = kType,
             schema = SchemaFactory.ofCollection(items = typeSchema.schema)
         )

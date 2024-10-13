@@ -22,8 +22,8 @@ import kotlin.reflect.full.primaryConstructor
 /**
  * Represents metadata for an element basic properties.
  *
- * @property name The name of the element.
- * @property renamedFrom The original name of the element, if it was renamed. Null if the name was not changed.
+ * @property name The current name of the element. If renamed, this reflects the updated name.
+ * @property renamedFrom The original name of the element before renaming. It is `null` if the name was not changed.
  * @property isRequired Indicates whether the element is required. Defaults to true.
  * @property isNullable Indicates whether the element is nullable. Defaults to false.
  * @property isTransient Indicates whether the element should be ignored. Defaults to false.
@@ -45,8 +45,8 @@ internal data class MetadataDescriptor(
          * @param kClass The [KClass] to process for name resolution.
          * @return The resolved class name.
          */
-        fun getClassName(kClass: KClass<*>): String {
-            return geElementName(target = kClass).first
+        fun getClassName(kClass: KClass<*>): ElementName {
+            return geElementName(target = kClass)
         }
 
         /**
@@ -60,7 +60,7 @@ internal data class MetadataDescriptor(
             classKType: KType,
             property: KProperty1<out Any, *>
         ): MetadataDescriptor {
-            val elementName: Pair<String, String?> = geElementName(target = property)
+            val elementName: ElementName = geElementName(target = property)
 
             val isTransient: Boolean = property.isTransient()
             val isNullable: Boolean = property.isNullable()
@@ -71,8 +71,8 @@ internal data class MetadataDescriptor(
             )
 
             return MetadataDescriptor(
-                name = elementName.first,
-                renamedFrom = elementName.second,
+                name = elementName.name,
+                renamedFrom = elementName.renamedFrom,
                 isRequired = isRequired,
                 isNullable = isNullable,
                 isTransient = isTransient
@@ -107,19 +107,19 @@ internal data class MetadataDescriptor(
          * @return The resolved name from annotations or the target's own name if no annotation is found.
          * @throws IllegalArgumentException if the target is not a supported type.
          */
-        private fun geElementName(target: Any): Pair<String, String?> {
+        private fun geElementName(target: Any): ElementName {
             val originalName: String = when (target) {
                 is KClass<*> -> target.safeName()
                 is KProperty1<*, *> -> target.name
                 else -> {
                     tracer.error("Unable to resolve element name. Unsupported target type: $target")
-                    return Pair(createFallbackName(target = target), null)
+                    return createFallbackName(target = target)
                 }
             }
 
             if (originalName.isBlank()) {
                 tracer.error("Unable to resolve element name. Empty or blank name for target: $target")
-                return Pair(createFallbackName(target = target), null)
+                return createFallbackName(target = target)
             }
 
             // List of pairs containing annotation lookup functions and the way to extract the relevant value.
@@ -142,19 +142,19 @@ internal data class MetadataDescriptor(
             annotationCheckers.forEach { checker ->
                 checker(target)?.let { serialName ->
                     if (serialName.isNotBlank() && serialName != originalName) {
-                        return Pair(serialName, originalName)
+                        return ElementName(name = serialName, renamedFrom = originalName)
                     }
                 }
             }
 
-            return Pair(originalName, null)
+            return ElementName(name = originalName)
         }
 
         /**
          * Creates a fallback name for an element based on the target's type.
          */
-        private fun createFallbackName(target: Any): String {
-            return "UnknownElement_${target.toString().cleanName()}"
+        private fun createFallbackName(target: Any): ElementName {
+            return ElementName(name = "UnknownElement_${target.toString().cleanName()}")
         }
 
         /**
@@ -170,7 +170,7 @@ internal data class MetadataDescriptor(
         private fun determineIfRequired(
             classKType: KType,
             property: KProperty1<out Any, *>,
-            elementName: Pair<String, String?>
+            elementName: ElementName
         ): Boolean {
             return try {
                 // First check if the property is annotated.
@@ -180,7 +180,7 @@ internal data class MetadataDescriptor(
                     property.hasAnnotation<JsonIgnore>() -> false // Jackson's @JsonIgnore
                     else -> {
                         val classSerializer: KSerializer<Any?> = serializer(type = classKType)
-                        val index: Int = classSerializer.descriptor.getElementIndex(name = elementName.first)
+                        val index: Int = classSerializer.descriptor.getElementIndex(name = elementName.name)
                         !classSerializer.descriptor.isElementOptional(index = index)
                     }
                 }

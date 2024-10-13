@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
@@ -38,7 +39,7 @@ internal class EnumResolver(private val typeInspector: TypeInspector) {
         } ?: emptyList()
 
         // Create the TypeSchema for the enum as a separate object.
-        val enumClassName: String = MetadataDescriptor.getClassName(kClass = enumClass)
+        val enumClassName: ElementName = MetadataDescriptor.getClassName(kClass = enumClass)
         val enumKType: KType = enumClass.createType()
 
         // If the enum type has not been processed yet,
@@ -57,7 +58,7 @@ internal class EnumResolver(private val typeInspector: TypeInspector) {
         return TypeSchema.of(
             name = enumClassName,
             kType = enumKType,
-            schema = SchemaFactory.ofReference(schemaName = enumClassName)
+            schema = SchemaFactory.ofReference(schemaName = enumClassName.name)
         )
     }
 }

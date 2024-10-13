@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
+import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
@@ -41,7 +42,7 @@ internal class CustomTypeResolver(private val typeInspector: TypeInspector) {
      * @return The resolved [TypeSchema] for the custom type.
      */
     fun process(kType: KType): TypeSchema {
-        val typeName = "CustomTypeOf${kType.safeName()}"
+        val typeName = ElementName(name = "CustomTypeOf${kType.safeName()}")
 
         // If attempting to resolve a custom type that does not exist, log an error
         // and return a basic object schema.
@@ -82,7 +83,7 @@ internal class CustomTypeResolver(private val typeInspector: TypeInspector) {
         return TypeSchema.of(
             name = typeName,
             kType = kType,
-            schema = SchemaFactory.ofReference(schemaName = typeName)
+            schema = SchemaFactory.ofReference(schemaName = typeName.name)
         )
     }
 }

@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
@@ -163,7 +164,7 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
 
         // Return a reference to the generics type schema.
         return TypeSchema.of(
-            name = genericsTypeName,
+            name = ElementName(name = genericsTypeName),
             kType = kType,
             schema = SchemaFactory.ofReference(schemaName = genericsTypeName)
         )
@@ -182,15 +183,15 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
      */
     private fun generateTypeName(kType: KType, kClass: KClass<*>): String {
         val arguments: List<KClass<*>> = kType.arguments.mapNotNull { it.type?.classifier as? KClass<*> }
-        val className: String = MetadataDescriptor.getClassName(kClass = kClass)
-        val argumentsNames: List<String> = arguments.map {
+        val className: ElementName = MetadataDescriptor.getClassName(kClass = kClass)
+        val argumentsNames: List<ElementName> = arguments.map {
             MetadataDescriptor.getClassName(kClass = it)
         }
 
         return if (argumentsNames.size == 1) {
-            "${className}Of${argumentsNames.first()}"
+            "${className.name}Of${argumentsNames.first().name}"
         } else {
-            "${className}Of${argumentsNames.joinToString(separator = "Of")}"
+            "${className.name}Of${argumentsNames.joinToString(separator = "Of") { it.name }}"
         }
     }
 
@@ -227,7 +228,7 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
     ) {
         // Create a schema placeholder and cache it to handle potential circular references.
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
-            name = genericsTypeName,
+            name = ElementName(name = genericsTypeName),
             kType = kType,
             schema = SchemaFactory.ofObject()
         )

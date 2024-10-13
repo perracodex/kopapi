@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 import io.github.perracodex.kopapi.inspector.utils.resolveTypeBinding
@@ -57,12 +58,18 @@ internal class MapResolver(private val typeInspector: TypeInspector) {
         }
 
         // Process the value type.
+        // If the value type is null, default to an object schema with the name
+        // of the kType to highlight the issue.
         val typeSchema: TypeSchema = valueType?.let {
             typeInspector.traverseType(kType = valueType, typeArgumentBindings = typeArgumentBindings)
-        } ?: TypeSchema.of(name = "MapOf${kType}", kType = kType, schema = SchemaFactory.ofObject())
+        } ?: TypeSchema.of(
+            name = ElementName(name = "MapOf${kType}"),
+            kType = kType,
+            schema = SchemaFactory.ofObject()
+        )
 
         return TypeSchema.of(
-            name = "MapOf${typeSchema.name}",
+            name = ElementName(name = "MapOf${typeSchema.name}"),
             kType = kType,
             schema = SchemaFactory.ofAdditionalProperties(value = typeSchema.schema)
         )

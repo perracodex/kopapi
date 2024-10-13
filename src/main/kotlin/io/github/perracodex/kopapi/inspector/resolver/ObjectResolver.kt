@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
@@ -67,7 +68,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
         kClass: KClass<*>,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
-        val className: String = MetadataDescriptor.getClassName(kClass = kClass)
+        val className: ElementName = MetadataDescriptor.getClassName(kClass = kClass)
 
         // Handle primitive types.
         PrimitiveFactory.newSchema(kClass = kClass)?.let { schema ->
@@ -98,7 +99,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
      */
     @Suppress("DuplicatedCode")
     private fun handleComplexType(
-        className: String,
+        className: ElementName,
         kType: KType,
         kClass: KClass<*>,
         typeArgumentBindings: Map<KClassifier, KType>
@@ -108,7 +109,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
             return TypeSchema.of(
                 name = className,
                 kType = kType,
-                schema = SchemaFactory.ofReference(schemaName = className)
+                schema = SchemaFactory.ofReference(schemaName = className.name)
             )
         }
         semaphore.add(kType.nativeName())
@@ -145,7 +146,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
         return TypeSchema.of(
             name = className,
             kType = kType,
-            schema = SchemaFactory.ofReference(schemaName = className)
+            schema = SchemaFactory.ofReference(schemaName = className.name)
         )
     }
 }
