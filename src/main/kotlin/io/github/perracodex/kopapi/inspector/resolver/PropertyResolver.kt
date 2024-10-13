@@ -73,7 +73,7 @@ internal class PropertyResolver(private val typeInspector: TypeInspector) {
                 schema = typeSchema.schema,
                 isNullable = metadata.isNullable,
                 isRequired = metadata.isRequired,
-                originalName = metadata.originalName,
+                renamedFrom = metadata.renamedFrom,
                 isTransient = metadata.isTransient
             )
         )

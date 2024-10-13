@@ -23,7 +23,7 @@ import kotlin.reflect.full.primaryConstructor
  * Represents metadata for an element basic properties.
  *
  * @property name The name of the element.
- * @property originalName The original name if changed by an annotations, or null if it is the same as [name].
+ * @property renamedFrom The original name of the element, if it was renamed. Null if the name was not changed.
  * @property isRequired Indicates whether the element is required. Defaults to true.
  * @property isNullable Indicates whether the element is nullable. Defaults to false.
  * @property isTransient Indicates whether the element should be ignored. Defaults to false.
@@ -31,7 +31,7 @@ import kotlin.reflect.full.primaryConstructor
 @TypeInspectorAPI
 internal data class MetadataDescriptor(
     val name: String,
-    val originalName: String? = null,
+    val renamedFrom: String? = null,
     val isRequired: Boolean = true,
     val isNullable: Boolean = false,
     val isTransient: Boolean = false
@@ -72,7 +72,7 @@ internal data class MetadataDescriptor(
 
             return MetadataDescriptor(
                 name = elementName.first,
-                originalName = elementName.second,
+                renamedFrom = elementName.second,
                 isRequired = isRequired,
                 isNullable = isNullable,
                 isTransient = isTransient

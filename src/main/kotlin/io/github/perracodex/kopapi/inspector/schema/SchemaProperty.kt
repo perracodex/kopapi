@@ -10,13 +10,13 @@ package io.github.perracodex.kopapi.inspector.schema
  * @property schema The [Schema] for the property.
  * @property isNullable Whether the property is nullable.
  * @property isRequired Whether the property is required.
- * @property originalName The original name of the property, if different from the name.
  * @property isTransient Whether the property is transient, meaning it should be excluded from the schema.
+ * @property renamedFrom The original name of the property, if it was renamed. Null if the name was not changed.
  */
 internal data class SchemaProperty(
     val schema: Schema,
     val isNullable: Boolean,
     val isRequired: Boolean,
-    val originalName: String?,
-    val isTransient: Boolean
+    val isTransient: Boolean,
+    val renamedFrom: String?
 )
