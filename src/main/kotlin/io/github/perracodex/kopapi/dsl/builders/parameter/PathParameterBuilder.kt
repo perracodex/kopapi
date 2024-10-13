@@ -25,13 +25,14 @@ import kotlin.reflect.KType
  * @see [HeaderParameterBuilder]
  * @see [QueryParameterBuilder]
  */
-public data class PathParameterBuilder(
-    var required: Boolean = true,
-    var defaultValue: Any? = null,
-    var style: ParameterStyle = ParameterStyle.SIMPLE,
-    var deprecated: Boolean = false
+@Suppress("MemberVisibilityCanBePrivate")
+public class PathParameterBuilder(
+    public var required: Boolean = true,
+    public var defaultValue: Any? = null,
+    public var style: ParameterStyle = ParameterStyle.SIMPLE,
+    public var deprecated: Boolean = false
 ) {
-    var description: String by MultilineString()
+    public var description: String by MultilineString()
 
     /**
      * Builds an [ApiParameter] instance from the current builder state.

@@ -23,12 +23,13 @@ import kotlin.reflect.KType
  *
  * @see [ApiMetadataBuilder.requestBody]
  */
-public data class RequestBodyBuilder(
-    var required: Boolean = true,
-    var contentType: ContentType = ContentType.Application.Json,
-    var deprecated: Boolean = false
+@Suppress("MemberVisibilityCanBePrivate")
+public class RequestBodyBuilder(
+    public var required: Boolean = true,
+    public var contentType: ContentType = ContentType.Application.Json,
+    public var deprecated: Boolean = false
 ) {
-    var description: String by MultilineString()
+    public var description: String by MultilineString()
 
     /**
      * Builds an [ApiResponse] instance from the current builder state.

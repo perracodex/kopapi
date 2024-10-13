@@ -74,7 +74,7 @@ import kotlin.reflect.typeOf
  *
  * @see [ApiMetadata]
  */
-public data class ApiMetadataBuilder internal constructor(
+public class ApiMetadataBuilder internal constructor(
     @PublishedApi internal val endpoint: String
 ) {
     /**

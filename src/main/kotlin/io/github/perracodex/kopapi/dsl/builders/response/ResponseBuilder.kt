@@ -23,10 +23,10 @@ import kotlin.reflect.KType
  *
  * @see [ApiMetadataBuilder.response]
  */
-public data class ResponseBuilder(
-    var contentType: ContentType = ContentType.Application.Json
+public class ResponseBuilder(
+    public var contentType: ContentType = ContentType.Application.Json
 ) {
-    var description: String by MultilineString()
+    public var description: String by MultilineString()
 
     private val headers: MutableSet<ApiHeader> = mutableSetOf()
     private val links: MutableSet<ApiLink> = mutableSetOf()

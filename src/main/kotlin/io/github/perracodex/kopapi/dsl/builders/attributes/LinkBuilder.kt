@@ -19,8 +19,8 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [ResponseBuilder]
  * @see [HeaderBuilder]
  */
-public data class LinkBuilder(
-    val operationId: String
+public class LinkBuilder(
+    public val operationId: String
 ) {
     init {
         require(operationId.isNotBlank()) { "Operation ID must not be empty." }

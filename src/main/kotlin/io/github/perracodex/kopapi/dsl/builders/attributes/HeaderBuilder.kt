@@ -20,10 +20,11 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [ResponseBuilder]
  * @see [HeaderBuilder]
  */
-public data class HeaderBuilder(
-    val name: String,
-    var required: Boolean = false,
-    var deprecated: Boolean = false
+@Suppress("MemberVisibilityCanBePrivate")
+public class HeaderBuilder(
+    public val name: String,
+    public var required: Boolean = false,
+    public var deprecated: Boolean = false
 ) {
     init {
         require(name.isNotBlank()) { "Name must not be empty." }

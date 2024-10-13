@@ -26,14 +26,15 @@ import kotlin.reflect.KType
  * @see [PathParameterBuilder]
  * @see [QueryParameterBuilder]
  */
-public data class CookieParameterBuilder(
-    var required: Boolean = true,
-    var defaultValue: Any? = null,
-    var explode: Boolean = false,
-    var style: ParameterStyle = ParameterStyle.FORM,
-    var deprecated: Boolean = false
+@Suppress("MemberVisibilityCanBePrivate")
+public class CookieParameterBuilder(
+    public var required: Boolean = true,
+    public var defaultValue: Any? = null,
+    public var explode: Boolean = false,
+    public var style: ParameterStyle = ParameterStyle.FORM,
+    public var deprecated: Boolean = false
 ) {
-    var description: String by MultilineString()
+    public var description: String by MultilineString()
 
     /**
      * Builds an [ApiParameter] instance from the current builder state.
