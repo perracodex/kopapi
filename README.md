@@ -26,7 +26,7 @@ get("/items/{group_id}/{item_id?}") {
 * Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) serialization annotations.
 * Partial support for [Jackson](https://github.com/FasterXML/jackson-module-kotlin) serialization annotations.
 * Output in `YAML` or `JSON` format.
-* Debug panel to identify potential Schema generation.
+* Debug panel to identify issues with the Schema generation.
 
 ---
 
