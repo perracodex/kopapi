@@ -8,7 +8,7 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
-import io.github.perracodex.kopapi.inspector.utils.resolveArgumentBinding
+import io.github.perracodex.kopapi.inspector.utils.resolveTypeBinding
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
@@ -41,9 +41,10 @@ internal class MapResolver(private val typeInspector: TypeInspector) {
         kType: KType,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
-        val mapArguments: List<KTypeProjection> = kType.arguments
-        val keyType: KType? = mapArguments.getOrNull(index = 0)?.type?.resolveArgumentBinding(typeArgumentBindings = typeArgumentBindings)
-        val valueType: KType? = mapArguments.getOrNull(index = 1)?.type?.resolveArgumentBinding(typeArgumentBindings = typeArgumentBindings)
+        val (keyType: KType?, valueType: KType?) = resolveMapComponents(
+            kType = kType,
+            typeArgumentBindings = typeArgumentBindings
+        )
 
         // OpenAPI requires keys to be strings.
         // The key is actually not needed for processing since for maps we only traverse the value type,
@@ -65,5 +66,29 @@ internal class MapResolver(private val typeInspector: TypeInspector) {
             kType = kType,
             schema = SchemaFactory.ofAdditionalProperties(value = typeSchema.schema)
         )
+    }
+
+    /**
+     * Resolves the component types of a [Map] type, such as its key and value types, by
+     * returning the resolved types of the generic arguments. The first element represents
+     * the type at index 0 (commonly the key), and the second element represents the type
+     * at index 1 (commonly the value).
+     *
+     * #### Example:
+     * Given a `Map<String, Int>`, this returns a pair with `String` as the first type
+     * and `Int` as the second.
+     *
+     * @param kType The [KType] representing the map type.
+     * @param typeArgumentBindings A map of type arguments' [KClassifier] to [KType] replacements.
+     * @return A [Pair] of resolved [KType?] elements, representing the first and second type arguments.
+     */
+    private fun resolveMapComponents(
+        kType: KType,
+        typeArgumentBindings: Map<KClassifier, KType>
+    ): Pair<KType?, KType?> {
+        val mapArguments: List<KTypeProjection> = kType.arguments
+        val keyType: KType? = mapArguments.getOrNull(index = 0)?.resolveTypeBinding(bindings = typeArgumentBindings)
+        val valueType: KType? = mapArguments.getOrNull(index = 1)?.resolveTypeBinding(bindings = typeArgumentBindings)
+        return keyType to valueType
     }
 }

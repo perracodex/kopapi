@@ -225,7 +225,6 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
         inheritedTypeArgumentBindings: Map<KClassifier, KType>,
         typeInspector: TypeInspector
     ) {
-
         // Create a schema placeholder and cache it to handle potential circular references.
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
             name = genericsTypeName,
@@ -240,7 +239,7 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
 
         // Validate that each type parameter has a corresponding type argument.
         require(typeParameters.size == typeArguments.size) {
-            "Generics type parameter count mismatch for $kClass. " +
+            "Generics type argument count mismatch for $kClass. " +
                     "Expected ${typeParameters.size}, but got ${typeArguments.size}."
         }
 

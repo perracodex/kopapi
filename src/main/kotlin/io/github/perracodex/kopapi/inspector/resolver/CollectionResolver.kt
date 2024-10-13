@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
-import io.github.perracodex.kopapi.inspector.utils.resolveArgumentBinding
+import io.github.perracodex.kopapi.inspector.utils.resolveTypeBinding
 import io.github.perracodex.kopapi.utils.Tracer
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
@@ -48,8 +48,8 @@ internal class CollectionResolver(private val typeInspector: TypeInspector) {
     ): TypeSchema {
         val className: String = MetadataDescriptor.getClassName(kClass = (classifier as KClass<*>))
 
-        val argumentType: KType = kType.arguments.firstOrNull()?.type?.resolveArgumentBinding(
-            typeArgumentBindings = typeArgumentBindings
+        val argumentType: KType = kType.arguments.firstOrNull()?.resolveTypeBinding(
+            bindings = typeArgumentBindings
         ) ?: run {
             // Collections always have an argument type, so if not found,
             // log an error and treat it as an object type.

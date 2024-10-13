@@ -55,10 +55,13 @@ internal class PropertyResolver(private val typeInspector: TypeInspector) {
             property = property
         )
 
+        // Resolves the property type, substituting type arguments if applicable,
+        // or retaining the original type if no matching binding is found.
         val propertyType: KType = property.returnType.resolveArgumentBinding(
-            typeArgumentBindings = typeArgumentBindings
+            bindings = typeArgumentBindings
         )
 
+        // Traverse the property type to obtain its schema.
         val typeSchema: TypeSchema = typeInspector.traverseType(
             kType = propertyType,
             typeArgumentBindings = typeArgumentBindings

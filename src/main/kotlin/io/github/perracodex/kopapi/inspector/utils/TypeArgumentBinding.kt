@@ -6,44 +6,61 @@ package io.github.perracodex.kopapi.inspector.utils
 
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
+import kotlin.reflect.KTypeProjection
 
 /**
- * [KType] extension function to substitute the current [KType] with a corresponding type
- * from the provided [typeArgumentBindings] if its classifier exists within the map.
+ * Resolves the current [KType] by substituting any type parameters with their actual types
+ * based on the provided [bindings].
  *
- * Primarily used to resolve `Generics` type parameters to their actual concrete types during
- * type inspection and schema generation. By replacing type parameters with their mapped types,
- * it ensures accurate and consistent type resolution across the entire type hierarchy.
+ * If no matching type is found in the [bindings], the original [KType] is returned unchanged.
  *
- * #### Usage Scenarios
- * 1. **Single Type Parameter Substitution:**
- *    Consider a generic class `Page<T>`. When inspecting an instance like `Page<Employee>`,
- *    this function replaces the type parameter `T` with `Employee`, facilitating the correct
- *    schema generation for `Page<Employee>`.
+ * This is used primarily for resolving generics where type parameters such as `T`, `K` are
+ * mapped to their concrete types. If the current [KType] has a classifier that exists
+ * within the [bindings], it will be replaced by the corresponding concrete [KType].
+ * Otherwise, the original [KType] is returned unchanged.
  *
- * 2. **Multiple Type Parameters Substitution:**
- *    Consider a generic class `Container<T, U>` with concrete classes `Employee` and `Department`.
- *    When inspecting an instance like `Container<Employee, Department>`, this function replaces
- *    the type parameters `T` and `U` with `Employee` and `Department` respectively, facilitating
- *    the correct schema generation for `Container<Employee, Department>`.
+ * #### Usage Example:
+ * ```kotlin
+ * val resolvedType = someKType.resolveArgumentBinding(typeArgumentBindings)
+ * ```
+ * - If the type is a generic like `Page<T>` and `T -> Employee` is present in the bindings,
+ *   it will replace `T` with `Employee`.
  *
- * #### Detailed Explanation
- * - **Purpose:**
- *   - The function replaces generic type parameters (`T`, `K`, etc.) with their actual concrete types.
+ * @param bindings A map where each key is a [KClassifier] representing a generic type
+ * parameter (e.g., `T`, `K`), and the corresponding value is the [KType] to substitute for the type parameter.
+ * @return The substituted [KType] if a corresponding type exists in the [bindings];
+ * otherwise, the original [KType].
  *
- * - **How It Works:**
- *   - The function checks if the classifier of the current `KType` exists in the provided [typeArgumentBindings].
- *   - If a match is found, it substitutes the generic type with the corresponding concrete type from the map.
- *   - If no match is found, it returns the original `KType`, ensuring that non-generic or already-resolved types remain unaffected.
- *
- * @receiver The [KType] instance on which the substitution is to be performed.
- * @param typeArgumentBindings A map where each key is a [KClassifier] representing a `binding` type
- * parameter (e.g., `T`, `K`), and the corresponding value is the [KType] to substitute in place of the type parameter.
- * @return The substituted [KType] if its classifier is present in the [typeArgumentBindings];
- * otherwise, returns the original [KType].
+ * @see [KTypeProjection.resolveTypeBinding]
  */
-internal fun KType.resolveArgumentBinding(typeArgumentBindings: Map<KClassifier, KType>): KType {
+internal fun KType.resolveArgumentBinding(bindings: Map<KClassifier, KType>): KType {
     return classifier?.let {
-        typeArgumentBindings.getOrDefault(key = classifier, defaultValue = this)
+        bindings.getOrDefault(key = classifier, defaultValue = this)
     } ?: this
+}
+
+/**
+ * Resolves the [KType] within this [KTypeProjection] by applying the provided [bindings].
+ *
+ * If no matching type is found in the [bindings], the original [KType] is returned unchanged.
+ *
+ * This function is specifically designed for resolving generic type arguments that are represented
+ * as projections (like `in T`, `out T`, or `*`). It retrieves the [KType] from the projection and
+ * then resolves any potential generic type parameters using the bindings.
+ *
+ * #### Usage Example:
+ * ```kotlin
+ * val keyType = mapKTypeProjection.resolveTypeBinding(typeArgumentBindings)
+ * ```
+ * - If the projection refers to a generic type like `T`, and `T -> Employee` is in the bindings,
+ *   it will resolve `T` to `Employee`.
+ *
+ * @param bindings A map where each key is a [KClassifier] representing a generic type
+ * parameter (e.g., `T`, `K`), and the corresponding value is the [KType] to substitute for the type parameter.
+ * @return The resolved [KType] for the projection, or `null` if the projection doesn't have a type.
+ *
+ * @see [KType.resolveArgumentBinding]
+ */
+internal fun KTypeProjection.resolveTypeBinding(bindings: Map<KClassifier, KType>): KType? {
+    return this.type?.resolveArgumentBinding(bindings)
 }
