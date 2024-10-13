@@ -1,0 +1,89 @@
+/*
+ * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
+ */
+
+/* Panel Container */
+.panel-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start; /* Align panels to the start */
+    gap: 20px; /* Consistent spacing between panels */
+    flex: 1; /* Take up remaining space */
+    overflow: hidden; /* Prevent overflow */
+}
+
+/* Individual Panel Styling */
+.panel {
+    flex: 1; /* Panels take equal space when visible */
+    border: 1px solid #3c3f4a;
+    background-color: #282c34;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Ensure children don't overflow */
+    padding: 0; /* Removed padding */
+    transition: flex 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* Hidden Panels */
+.panel.hidden {
+    flex: 0; /* Collapse the panel's width */
+    opacity: 0; /* Fade out the panel */
+    overflow: hidden; /* Hide overflowing content */
+    transition: flex 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* Panel Title */
+.panel-title {
+    white-space: nowrap; /* Prevent text from wrapping */
+    display: flex; /* Use Flexbox to align the content */
+    justify-content: space-between; /* Align text to the left and icons to the right */
+    align-items: center; /* Vertically center both text and icons */
+    padding: 10px;
+    background-color: #2e323d;
+    border-bottom: 1px solid #3c3f4a;
+    flex-shrink: 0; /* Prevent shrinking */
+    font-size: 1.2em;
+    margin: 0; /* Remove default margins */
+    width: 100%; /* Ensure it takes the full width of the column */
+    box-sizing: border-box; /* Ensure padding and borders are included in width calculation */
+    overflow: hidden; /* Prevent the icon from spilling out of the column */
+}
+
+/* Panel Content */
+.panel-content {
+    padding: 10px;
+    background-color: #1c1e26;
+    overflow: auto; /* Enable both vertical and horizontal scrolling */
+    flex: 1; /* Fill remaining space */
+    margin: 0; /* Remove default margins */
+}
+
+/* Code Blocks */
+.panel-content pre {
+    margin: 0;
+    white-space: pre; /* Preserve formatting */
+    overflow: auto; /* Enable scrolling within code blocks */
+    max-width: 100%; /* Prevent overflow */
+}
+
+.panel-content pre code {
+    display: block;
+}
+
+/* Toggle Icon Styling */
+.toggle-icon {
+    cursor: pointer;
+    margin-left: 6px;
+    margin-right: 10px;
+    font-size: 1.25em;
+}
+
+/* Copy Action Styling */
+.copy-action {
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 6px;
+    flex-shrink: 0;
+    font-size: 0.7em;
+}

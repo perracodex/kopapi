@@ -1,0 +1,22 @@
+/*
+ * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
+ */
+
+/* Body Styling */
+body {
+    background-color: #1c1e26; /* Dark background */
+    color: #d5d6db; /* Light text */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    height: 90vh; /* Full viewport height */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Styling */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    flex-shrink: 0; /* Prevent shrinking */
+}
