@@ -1,6 +1,8 @@
-# [Kopapi](https://github.com/perracodex/kopapi)
+<a href="https://github.com/perracodex/kopapi">
+    <img src=".wiki/images/logo.png" width="256" alt="Kopapi">
+</a>
 
-Kopapi is library to generate OpenAPI documentation from [Ktor](https://ktor.io/) routes using `DSL`.
+Kopapi is library to generatethe OpenAPI documentation from [Ktor](https://ktor.io/) routes using `DSL`.
 
 **Quick sample usage before diving into the Wiki:**
 
