@@ -19,8 +19,8 @@ import kotlin.reflect.KTypeProjection
  * within the [bindings], it will be replaced by the corresponding concrete [KType].
  * Otherwise, the original [KType] is returned unchanged.
  *
- * #### Usage Example:
- * ```kotlin
+ * #### Sample Usage
+ * ```
  * val resolvedType = someKType.resolveArgumentBinding(typeArgumentBindings)
  * ```
  * - If the type is a generic like `Page<T>` and `T -> Employee` is present in the bindings,
@@ -48,8 +48,8 @@ internal fun KType.resolveArgumentBinding(bindings: Map<KClassifier, KType>): KT
  * as projections (like `in T`, `out T`, or `*`). It retrieves the [KType] from the projection and
  * then resolves any potential generic type parameters using the bindings.
  *
- * #### Usage Example:
- * ```kotlin
+ *  #### Sample Usage
+ * ```
  * val keyType = mapKTypeProjection.resolveTypeBinding(typeArgumentBindings)
  * ```
  * - If the projection refers to a generic type like `T`, and `T -> Employee` is in the bindings,

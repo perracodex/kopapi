@@ -16,6 +16,6 @@ internal fun String?.trimOrNull(): String? {
  * Trim a nullable string, returning a default value if the trimmed result
  * is empty or the original string is null.
  */
-internal fun String?.trimOrDefault(default: String): String {
-    return this?.trimOrNull() ?: default
+internal fun String?.trimOrDefault(defaultValue: String): String {
+    return this?.trimOrNull() ?: defaultValue
 }

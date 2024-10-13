@@ -12,7 +12,6 @@ import kotlin.reflect.jvm.javaMethod
 /**
  * A simple tracer wrapper to provide a consistent logging interface.
  */
-@Suppress("unused")
 internal class Tracer(private val logger: Logger) {
     /**
      * Logs a message with debug severity level.
