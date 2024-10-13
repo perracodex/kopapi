@@ -2,8 +2,6 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-// DebugPanelView.kt
-
 package io.github.perracodex.kopapi.view
 
 import io.github.perracodex.kopapi.core.SchemaProvider
