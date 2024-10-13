@@ -142,7 +142,7 @@ class TypedArrayTest {
         // Check the schema type.
         assertEquals(
             expected = expectedType,
-            actual = property.schema.apiType,
+            actual = property.schema.schemaType,
             message = "Property '$propertyName' should have type '$expectedType'"
         )
 

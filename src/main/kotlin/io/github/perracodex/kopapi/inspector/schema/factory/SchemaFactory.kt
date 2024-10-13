@@ -22,55 +22,55 @@ internal object SchemaFactory {
     }
 
     fun ofString(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.STRING)
+        return Schema.Primitive(schemaType = ApiType.STRING)
     }
 
     fun ofChar(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.STRING, minLength = 1, maxLength = 1)
+        return Schema.Primitive(schemaType = ApiType.STRING, minLength = 1, maxLength = 1)
     }
 
     fun ofInt32(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.INTEGER, format = ApiFormat.INT32())
+        return Schema.Primitive(schemaType = ApiType.INTEGER, format = ApiFormat.INT32())
     }
 
     fun ofInt64(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.INTEGER, format = ApiFormat.INT64())
+        return Schema.Primitive(schemaType = ApiType.INTEGER, format = ApiFormat.INT64())
     }
 
     fun ofFloat(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.NUMBER, format = ApiFormat.FLOAT())
+        return Schema.Primitive(schemaType = ApiType.NUMBER, format = ApiFormat.FLOAT())
     }
 
     fun ofDouble(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.NUMBER, format = ApiFormat.DOUBLE())
+        return Schema.Primitive(schemaType = ApiType.NUMBER, format = ApiFormat.DOUBLE())
     }
 
     fun ofUuid(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.STRING, format = ApiFormat.UUID())
+        return Schema.Primitive(schemaType = ApiType.STRING, format = ApiFormat.UUID())
     }
 
     fun ofDate(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.STRING, format = ApiFormat.DATE())
+        return Schema.Primitive(schemaType = ApiType.STRING, format = ApiFormat.DATE())
     }
 
     fun ofDateTime(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.STRING, format = ApiFormat.DATETIME())
+        return Schema.Primitive(schemaType = ApiType.STRING, format = ApiFormat.DATETIME())
     }
 
     fun ofTime(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.STRING, format = ApiFormat.TIME())
+        return Schema.Primitive(schemaType = ApiType.STRING, format = ApiFormat.TIME())
     }
 
     fun ofUri(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.STRING, format = ApiFormat.URI())
+        return Schema.Primitive(schemaType = ApiType.STRING, format = ApiFormat.URI())
     }
 
     fun ofByte(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.STRING, format = ApiFormat.BYTE())
+        return Schema.Primitive(schemaType = ApiType.STRING, format = ApiFormat.BYTE())
     }
 
     fun ofBoolean(): Schema.Primitive {
-        return Schema.Primitive(apiType = ApiType.BOOLEAN)
+        return Schema.Primitive(schemaType = ApiType.BOOLEAN)
     }
 
     /**

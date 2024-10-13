@@ -75,7 +75,7 @@ class TypedPrimitiveArrayTest {
             // Check the expected ApiType.
             assertEquals(
                 expected = typeInfo.type,
-                actual = typeSchema.schema.items.apiType,
+                actual = typeSchema.schema.items.schemaType,
                 message = "Items type mismatch for Array<${typeInfo.kClass.simpleName}>"
             )
 

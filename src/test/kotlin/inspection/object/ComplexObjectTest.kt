@@ -183,7 +183,7 @@ class ComplexObjectTest {
         // Check the schema type.
         assertEquals(
             expected = expectedType,
-            actual = property.schema.apiType,
+            actual = property.schema.schemaType,
             message = "Property '$propertyName' should have type '$expectedType'"
         )
 
@@ -236,7 +236,7 @@ class ComplexObjectTest {
             if (property.schema is Schema.Array) {
                 assertEquals(
                     expected = itemsType,
-                    actual = property.schema.items.apiType,
+                    actual = property.schema.items.schemaType,
                     message = "Items of '$propertyName' should have type '$itemsType'"
                 )
 

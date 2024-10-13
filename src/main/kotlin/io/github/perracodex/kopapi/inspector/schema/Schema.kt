@@ -13,19 +13,19 @@ import io.github.perracodex.kopapi.keys.ApiType
  * Each subclass corresponds to a specific kind of schema in OpenAPI
  * and contains the necessary properties to fully describe that schema.
  *
- * @property apiType The API type of the schema.
- * @property schemaType A string identifier representing the specific type of schema.
+ * @property definition A string identifier representing the specific type of schema.
  *                      Used for debugging and clarity when converting to JSON.
+ * @property schemaType The API type of the schema as defined in the OpenAPI specification.
  */
 @PublishedApi
 internal sealed class Schema(
-    open val apiType: ApiType,
-    val schemaType: String
+    open val definition: String,
+    open val schemaType: ApiType
 ) {
     /**
      * Represents a schema for primitive types (e.g., `string`, `integer`, etc.).
      *
-     * @property apiType The primitive api type (e.g., `string`, `integer`).
+     * @property schemaType The primitive [ApiType] as defined in the OpenAPI specification.
      * @property format An optional format to further define the api type (e.g., `date-time`, `uuid`).
      * @property minLength Minimum length for string types.
      * @property maxLength Maximum length for string types.
@@ -36,7 +36,8 @@ internal sealed class Schema(
      * @property multipleOf Factor that constrains the value to be a multiple of a number.
      */
     data class Primitive(
-        override val apiType: ApiType,
+        override val definition: String = "Primitive",
+        override val schemaType: ApiType,
         val format: String? = null,
         val minLength: Int? = null,
         val maxLength: Int? = null,
@@ -45,10 +46,10 @@ internal sealed class Schema(
         val exclusiveMinimum: Number? = null,
         val exclusiveMaximum: Number? = null,
         val multipleOf: Number? = null,
-    ) : Schema(apiType = apiType, schemaType = "Primitive") {
+    ) : Schema(definition = definition, schemaType = schemaType) {
         init {
             SchemaConstraints.validate(
-                apiType = apiType,
+                apiType = schemaType,
                 minLength = minLength,
                 maxLength = maxLength,
                 minimum = minimum,
@@ -66,8 +67,10 @@ internal sealed class Schema(
      * @property values The list of allowed values for the enumeration.
      */
     data class Enum(
+        override val definition: String = "Enum",
+        override val schemaType: ApiType = ApiType.STRING,
         val values: List<String>
-    ) : Schema(apiType = ApiType.STRING, schemaType = "Enum")
+    ) : Schema(definition = definition, schemaType = schemaType)
 
     /**
      * Represents an array schema, defining a collection of items of a specified schema.
@@ -75,8 +78,10 @@ internal sealed class Schema(
      * @property items The schema of the items contained in the array.
      */
     data class Array(
+        override val definition: String = "Array",
+        override val schemaType: ApiType = ApiType.ARRAY,
         val items: Schema
-    ) : Schema(apiType = ApiType.ARRAY, schemaType = "Array")
+    ) : Schema(definition = definition, schemaType = schemaType)
 
     /**
      * Represents an object schema with a set of named properties.
@@ -86,8 +91,10 @@ internal sealed class Schema(
      * @property properties A map of property names to their corresponding schemas and metadata.
      */
     data class Object(
+        override val definition: String = "Object",
+        override val schemaType: ApiType = ApiType.OBJECT,
         val properties: MutableMap<String, SchemaProperty> = mutableMapOf()
-    ) : Schema(apiType = ApiType.OBJECT, schemaType = "Object")
+    ) : Schema(definition = definition, schemaType = schemaType)
 
     /**
      * Represents a reference to another schema defined elsewhere.
@@ -97,8 +104,10 @@ internal sealed class Schema(
      * @property ref The reference path to the schema definition.
      */
     data class Reference(
+        override val definition: String = "Reference",
+        override val schemaType: ApiType = ApiType.OBJECT,
         val schemaName: String
-    ) : Schema(apiType = ApiType.OBJECT, schemaType = "Reference") {
+    ) : Schema(definition = definition, schemaType = schemaType) {
         val ref: String = "$PATH$schemaName"
 
         companion object {
@@ -119,6 +128,8 @@ internal sealed class Schema(
      * @property additionalProperties The schema that defines the allowed types of the additional properties.
      */
     data class AdditionalProperties(
+        override val definition: String = "AdditionalProperties",
+        override val schemaType: ApiType = ApiType.OBJECT,
         val additionalProperties: Schema
-    ) : Schema(apiType = ApiType.OBJECT, schemaType = "AdditionalProperties")
+    ) : Schema(definition = definition, schemaType = schemaType)
 }
