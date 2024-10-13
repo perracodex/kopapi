@@ -9,8 +9,10 @@ import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
 import io.github.perracodex.kopapi.keys.ApiFormat
 import io.github.perracodex.kopapi.keys.ApiType
-import io.github.perracodex.kopapi.plugin.builders.CustomTypeBuilder
-import io.github.perracodex.kopapi.plugin.builders.Servers
+import io.github.perracodex.kopapi.plugin.dsl.builders.CustomTypeBuilder
+import io.github.perracodex.kopapi.plugin.dsl.builders.InfoBuilder
+import io.github.perracodex.kopapi.plugin.dsl.builders.ServersBuilder
+import io.github.perracodex.kopapi.plugin.dsl.elements.ApiInfo
 import io.ktor.http.*
 import kotlin.reflect.typeOf
 
@@ -32,30 +34,61 @@ public class KopapiConfig {
      * The URL to provide the OpenAPI schema in JSON format.
      * Relative to the server root URL. Default is `openapi/json`.
      */
-    public var openapiJsonUrl: String = "openapi/json"
+    public var openapiJsonUrl: String = DEFAULT_OPENAPI_JSON_URL
 
     /**
      * The URL to provide the OpenAPI schema in YAML format.
      * Relative to the server root URL. Default is `openapi/yaml`.
      */
-    public var openapiYamlUrl: String = "openapi/yaml"
+    public var openapiYamlUrl: String = DEFAULT_OPENAPI_YAML_URL
 
     /**
      * The URL to provide the Swagger UI.
      * Relative to the server root URL. Default is `swagger`.
      */
-    public var swaggerUrl: String = "swagger"
+    public var swaggerUrl: String = DEFAULT_SWAGGER_URL
 
     /**
      * The URL to provide the raw pre-processed API metadata, for debugging purposes.
      * Relative to the server root URL. Default is `openapi/debug`.
      */
-    public var debugUrl: String = "openapi/debug"
+    public var debugUrl: String = DEFAULT_DEBUG_URL
 
     /**
      * The list of servers to include in the OpenAPI schema.
      */
-    internal val servers: Servers = Servers()
+    internal val servers: ServersBuilder = ServersBuilder()
+
+    /**
+     * The [ApiInfo] metadata for the OpenAPI schema.
+     */
+    internal var apiInfo: ApiInfo? = null
+
+    /**
+     * DSL block for setting up OpenAPI metadata.
+     *
+     * #### Sample Usage
+     * ```
+     *  info {
+     *      title = "API Title"
+     *      description = "API Description"
+     *      version = "1.0.0"
+     *      termsOfService = "https://example.com/terms"
+     *      contact {
+     *          name = "API Support"
+     *          url = "https://example.com/support"
+     *          email = "example@email.com"
+     *      }
+     *      license {
+     *          name = "MIT"
+     *          url = "https://opensource.org/licenses/MIT"
+     *      }
+     *  }
+     * ```
+     */
+    public fun info(init: InfoBuilder.() -> Unit) {
+        apiInfo = InfoBuilder().apply(init).build()
+    }
 
     /**
      * Appends a list of servers to the configuration.
@@ -69,7 +102,7 @@ public class KopapiConfig {
      * }
      * ```
      */
-    public fun servers(init: Servers.() -> Unit) {
+    public fun servers(init: ServersBuilder.() -> Unit) {
         servers.init()
     }
 
@@ -147,5 +180,12 @@ public class KopapiConfig {
         val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
         val newCustomType: CustomType = builder.build(type = typeOf<T>(), apiType = type, apiFormat = format)
         CustomTypeRegistry.register(newCustomType)
+    }
+
+    internal companion object {
+        const val DEFAULT_OPENAPI_JSON_URL: String = "openapi/json"
+        const val DEFAULT_OPENAPI_YAML_URL: String = "openapi/yaml"
+        const val DEFAULT_SWAGGER_URL: String = "swagger"
+        const val DEFAULT_DEBUG_URL: String = "openapi/debug"
     }
 }

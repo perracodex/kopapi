@@ -11,3 +11,11 @@ package io.github.perracodex.kopapi.utils
 internal fun String?.trimOrNull(): String? {
     return this?.trim().takeIf { it?.isNotBlank() == true }
 }
+
+/**
+ * Trim a nullable string, returning a default value if the trimmed result
+ * is empty or the original string is null.
+ */
+internal fun String?.trimOrDefault(default: String): String {
+    return this?.trimOrNull() ?: default
+}

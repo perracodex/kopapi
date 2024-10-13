@@ -2,14 +2,14 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.plugin.builders
+package io.github.perracodex.kopapi.plugin.dsl.builders
 
 import io.ktor.http.*
 
 /**
  * Represents a collection of servers with enforced uniqueness.
  */
-public class Servers {
+public class ServersBuilder {
     /** The internal set of servers. */
     private val internalSet: MutableSet<Url> = mutableSetOf()
 
@@ -36,17 +36,15 @@ public class Servers {
     }
 
     /**
-     * Adds a default server.
-     */
-    internal fun addDefault(): String {
-        add(DEFAULT_SERVER)
-        return DEFAULT_SERVER
-    }
-
-    /**
      * Returns a read-only view of the servers.
+     * If no servers are registered, a default server is returned.
+     *
+     * @return A read-only set of the servers.
      */
     internal fun get(): Set<Url> {
+        if (this.internalSet.isEmpty()) {
+            return setOf(Url(DEFAULT_SERVER))
+        }
         return internalSet.toSet()
     }
 

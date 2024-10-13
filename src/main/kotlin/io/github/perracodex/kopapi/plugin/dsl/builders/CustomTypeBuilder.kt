@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.plugin.builders
+package io.github.perracodex.kopapi.plugin.dsl.builders
 
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.keys.ApiFormat
@@ -44,15 +44,16 @@ import kotlin.reflect.KType
  *
  * @see [KopapiConfig.addType]
  */
-public data class CustomTypeBuilder(
-    var minLength: Int? = null,
-    var maxLength: Int? = null,
-    var minimum: Number? = null,
-    var maximum: Number? = null,
-    var exclusiveMinimum: Number? = null,
-    var exclusiveMaximum: Number? = null,
-    var multipleOf: Number? = null
-) {
+@Suppress("MemberVisibilityCanBePrivate")
+public class CustomTypeBuilder {
+    public var minLength: Int? = null
+    public var maxLength: Int? = null
+    public var minimum: Number? = null
+    public var maximum: Number? = null
+    public var exclusiveMinimum: Number? = null
+    public var exclusiveMaximum: Number? = null
+    public var multipleOf: Number? = null
+
     /**
      * Builds an [CustomType] instance from the current builder state.
      *

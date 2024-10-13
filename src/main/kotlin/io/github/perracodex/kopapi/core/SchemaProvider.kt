@@ -7,7 +7,9 @@ package io.github.perracodex.kopapi.core
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.plugin.dsl.elements.ApiInfo
 import io.github.perracodex.kopapi.serialization.SerializationUtils
+import io.ktor.http.*
 
 /**
  * Builder for the API metadata and schemas.
@@ -22,6 +24,12 @@ internal object SchemaProvider {
 
     /** Whether the provider is enabled. If disabled, no metadata will be collected. */
     var isEnabled: Boolean = true
+
+    /** The API documentation information. */
+    var apiInfo: ApiInfo? = null
+
+    /** The set of servers where the API is hosted. */
+    val servers: MutableSet<Url> = mutableSetOf()
 
     /** The list of registered routes [ApiMetadata]. */
     private val apiMetadata: MutableSet<ApiMetadata> = mutableSetOf()

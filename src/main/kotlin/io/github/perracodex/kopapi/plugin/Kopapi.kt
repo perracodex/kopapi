@@ -8,7 +8,11 @@ import io.github.perracodex.kopapi.api.debugRoute
 import io.github.perracodex.kopapi.api.openApiRoutes
 import io.github.perracodex.kopapi.api.swaggerRoute
 import io.github.perracodex.kopapi.core.SchemaProvider
-import io.github.perracodex.kopapi.utils.Tracer
+import io.github.perracodex.kopapi.plugin.KopapiConfig.Companion.DEFAULT_DEBUG_URL
+import io.github.perracodex.kopapi.plugin.KopapiConfig.Companion.DEFAULT_OPENAPI_JSON_URL
+import io.github.perracodex.kopapi.plugin.KopapiConfig.Companion.DEFAULT_OPENAPI_YAML_URL
+import io.github.perracodex.kopapi.plugin.KopapiConfig.Companion.DEFAULT_SWAGGER_URL
+import io.github.perracodex.kopapi.utils.trimOrDefault
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 
@@ -19,8 +23,6 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     name = "Kopapi",
     createConfiguration = ::KopapiConfig
 ) {
-    val tracer = Tracer<KopapiConfig>()
-
     // Set the schema provider to enabled/disabled based on the plugin configuration,
     // so that the Routes API definitions can be collected or discarded.
     SchemaProvider.isEnabled = this.pluginConfig.enabled
@@ -37,29 +39,17 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
         return@createApplicationPlugin
     }
 
-    val openapiJsonUrl: String = this.pluginConfig.openapiJsonUrl.trim()
-    val openapiYamlUrl: String = this.pluginConfig.openapiYamlUrl.trim()
-    val swaggerUrl: String = this.pluginConfig.swaggerUrl.trim()
-    val debugUrl: String = this.pluginConfig.debugUrl.trim()
+    // Set th API documentation info.
+    SchemaProvider.apiInfo = this.pluginConfig.apiInfo
+    // Add the servers to the schema provider.
+    SchemaProvider.servers.addAll(this.pluginConfig.servers.get())
 
-    // Validate the configuration.
-    require(openapiJsonUrl.isNotBlank()) { "The OpenAPI JSON URL must not be empty." }
-    require(openapiYamlUrl.isNotBlank()) { "The OpenAPI YAML URL must not be empty." }
-    require(swaggerUrl.isNotBlank()) { "The Swagger UI URL must not be empty." }
-    require(debugUrl.isNotBlank()) { "The debug URL must not be empty." }
-    require(setOf(openapiJsonUrl, openapiYamlUrl, swaggerUrl, debugUrl).size == 4) {
-        "Each URL in must be unique. Duplicate URLs detected: " +
-                "OpenAPI JSON URL: $openapiJsonUrl, " +
-                "OpenAPI YAML URL: $openapiYamlUrl, " +
-                "Swagger UI URL: $swaggerUrl, " +
-                "Debug URL: $debugUrl"
-    }
-
-    // If no servers are provided, add a default one.
-    if (this.pluginConfig.servers.isEmpty()) {
-        val server: String = this.pluginConfig.servers.addDefault()
-        tracer.warning("No servers were provided. Added a default server: $server")
-    }
+    // Get the URLs from the plugin configuration.
+    // If any of the URLs are empty, restore the default values.
+    val openapiJsonUrl: String = this.pluginConfig.openapiJsonUrl.trimOrDefault(DEFAULT_OPENAPI_JSON_URL)
+    val openapiYamlUrl: String = this.pluginConfig.openapiYamlUrl.trimOrDefault(DEFAULT_OPENAPI_YAML_URL)
+    val swaggerUrl: String = this.pluginConfig.swaggerUrl.trimOrDefault(DEFAULT_SWAGGER_URL)
+    val debugUrl: String = this.pluginConfig.debugUrl.trimOrDefault(DEFAULT_DEBUG_URL)
 
     // Configure the plugin endpoints using the extracted function.
     application.routing {
