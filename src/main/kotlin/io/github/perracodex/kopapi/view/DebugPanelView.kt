@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
+ */
+
 // DebugPanelView.kt
 
 package io.github.perracodex.kopapi.view
@@ -11,7 +15,11 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 /**
- * Handles the generation of the debug panel view.
+ * Generates the HTML view of the debug panel, displaying API metadata, object schemas,
+ * and schema conflicts in a structured, interactive format.
+ *
+ * The HTML page is built using Kotlin's HTML DSL, with separate panels for each data type.
+ * Each panel includes a dropdown for filtering the displayed JSON data and syntax highlighting.
  */
 internal class DebugPanelView {
     private val apiMetadataJson: List<String> = SchemaProvider.getApiMetadataJson()
@@ -20,9 +28,9 @@ internal class DebugPanelView {
     private val json = Json { prettyPrint = true }
 
     /**
-     * Builds the debug panel view.
+     * Constructs the full debug panel HTML view.
      *
-     * @param html The HTML DSL builder used to construct the view.
+     * @param html The [HTML] DSL builder used to create the view.
      */
     fun build(html: HTML) {
         // Parse JSON strings into JsonObject lists.
@@ -37,7 +45,7 @@ internal class DebugPanelView {
                 link(rel = "stylesheet", type = "text/css", href = "/static-kopapi/styles/prism.css")
                 link(rel = "stylesheet", type = "text/css", href = "/static-kopapi/styles/view.css")
             }
-            // Build the body of the HTML page
+            // Build the body of the HTML page.
             body {
                 h1(classes = "header") { +"Kopapi Debug Information" }
                 div(classes = "panel-container") {
@@ -46,16 +54,16 @@ internal class DebugPanelView {
                         htmlTag = this,
                         title = "Routes API Metadata",
                         panelId = "routes-api-metadata",
-                        jsonDataList = apiMetadataList,
-                        keys = listOf("method", "path")
+                        keys = listOf("method", "path"),
+                        jsonDataList = apiMetadataList
                     )
                     if (schemasList.isNotEmpty()) {
                         buildPanel(
                             htmlTag = this,
                             title = "Object Schemas",
                             panelId = "objects-schemas",
-                            jsonDataList = schemasList,
-                            keys = listOf("name")
+                            keys = listOf("name"),
+                            jsonDataList = schemasList
                         )
                     }
                     if (schemaConflictsList.isNotEmpty()) {
@@ -63,8 +71,8 @@ internal class DebugPanelView {
                             htmlTag = this,
                             title = "Schema Conflicts",
                             panelId = "schema-conflicts",
-                            jsonDataList = schemaConflictsList,
-                            keys = listOf("name")
+                            keys = listOf("name"),
+                            jsonDataList = schemaConflictsList
                         )
                     }
                 }
@@ -81,20 +89,20 @@ internal class DebugPanelView {
     }
 
     /**
-     * A common method to build each panel.
+     * Constructs an individual panel in the debug view.
      *
-     * @param htmlTag The HTML tag used for building the panel.
+     * @param htmlTag The parent HTML element to append the panel to.
      * @param title The title of the panel.
-     * @param panelId The panel content ID.
-     * @param jsonDataList The list of JSON objects used for the dropdown.
-     * @param keys The keys used for populating the dropdown from JSON (e.g., 'path', 'method').
+     * @param panelId The unique identifier for the panel element.
+     * @param jsonDataList The list of JSON objects to be displayed in the panel.
+     * @param keys The keys used for building dropdown options from the JSON objects.
      */
     private fun buildPanel(
         htmlTag: FlowContent,
         title: String,
         panelId: String,
-        jsonDataList: List<JsonObject>,
-        keys: List<String>
+        keys: List<String>,
+        jsonDataList: List<JsonObject>
     ) {
         val jsonData: String = json.encodeToString(jsonDataList)
 
@@ -108,20 +116,23 @@ internal class DebugPanelView {
                         onClick = "togglePanel('$panelId')"
                         +"+" // Initially expanded.
                     }
+
                     +"$title (${jsonDataList.size})"
-                    // Add the copy icon on the right.
-                    span(classes = "copy-icon") {
+
+                    // Add the copy action on the right.
+                    span(classes = "copy-action") {
                         onClick = "copyToClipboard('$panelId')"
-                        +"📋" // Copy icon.
+                        +"copy"
                     }
                 }
+
                 // Dropdown for filtering the JSON based on specific keys.
                 select(classes = "filter-dropdown") {
                     id = "$panelId-filter"
 
                     // Add an "All" option to display all JSON data.
                     option {
-                        value = "ALL" // Must match the filter logic in selection.js.
+                        value = "ALL" // This constant must match the filter logic in `selection.js`.
                         attributes["data-full-json"] = jsonData // Store full JSON in a data attribute.
                         +"All"
                     }
@@ -138,7 +149,8 @@ internal class DebugPanelView {
                         }
                     }
                 }
-                // JSON content panel.
+
+                // JSON code content panel.
                 pre(classes = "panel-content") {
                     code(classes = "language-json") {
                         // Initial value is the full pretty-printed JSON data.
