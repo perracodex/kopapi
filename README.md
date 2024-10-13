@@ -10,7 +10,7 @@ get("/items/{group_id}/{item_id?}") {
 } api { 
     summary = "Retrieve data items."
     description = "Fetches all items for a group."
-  tags("Items", "Data")
+    tags("Items", "Data")
     pathParameter<Uuid>("group_id") { description = "The Id of the group to resolve." }
     queryParameter<String>("item_id") { description = "Optional item Id to locate." }
     response<List<Item>>(HttpStatusCode.OK) { description = "Successful fetch" }
