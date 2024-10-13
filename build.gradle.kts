@@ -43,8 +43,8 @@ dependencies {
     implementation(libs.kotlinx.serialization)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.html.builder)
-    implementation(libs.ktor.server.test.host)
 
+    testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.test.mockk)
     testImplementation(libs.test.kotlin.junit)
 }
