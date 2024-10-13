@@ -46,7 +46,7 @@ dependencies {
     implementation(libs.ktor.server.test.host)
 
     testImplementation(libs.test.mockk)
-    testImplementation(kotlin("test"))
+    testImplementation(libs.test.kotlin.junit)
 }
 
 tasks.test {
@@ -108,7 +108,7 @@ signing {
         println("MAVEN_SIGNING_KEY_PATH is not set. Skipping signing.")
     else if (passphrase.isNullOrBlank()) {
         println("MAVEN_SIGNING_KEY_PASSPHRASE is not set. Skipping signing.")
-    }  else {
+    } else {
         val privateKey: String = File(privateKeyPath).readText()
         useInMemoryPgpKeys(privateKey, passphrase)
         sign(publishing.publications)

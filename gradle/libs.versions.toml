@@ -9,7 +9,6 @@ kotlinx-datetime = "0.6.1"              # https://github.com/Kotlin/kotlinx-date
 kotlinx-serialization = "1.7.3"         # https://github.com/Kotlin/kotlinx.serialization/releases
 ktor = "3.0.0"                          # https://ktor.io/docs/releases.html#release-details
 mockk = "1.13.13"                       # https://github.com/mockk/mockk/releases
-mockito-kotlin = "5.4.0"                # https://github.com/mockito/mockito-kotlin/releases
 vanniktech = "0.29.0"                   # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
 
 
@@ -48,9 +47,6 @@ ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref 
 
 # Testing.
 # https://github.com/mockk/mockk
-# https://github.com/mockito/mockito-kotlin
 # https://github.com/mockk/mockk/releases
-# https://github.com/mockito/mockito-kotlin/releases
-test-kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+test-kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 test-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-test-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
