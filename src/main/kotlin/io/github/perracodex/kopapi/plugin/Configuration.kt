@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.plugin
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurity
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
@@ -25,7 +26,7 @@ internal data class Configuration(
         val urls: List<String> = listOf(debugUrl, openapiJsonUrl, openapiYamlUrl, swaggerUrl)
         val duplicates: Map<String, Int> = urls.groupingBy { it }.eachCount().filter { it.value > 1 }
         if (duplicates.isNotEmpty()) {
-            throw IllegalArgumentException("Duplicate URLs found: ${duplicates.keys}")
+            throw KopapiException("Duplicate URLs found: ${duplicates.keys}")
         }
     }
 }
