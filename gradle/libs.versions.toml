@@ -25,7 +25,9 @@ vanniktech = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech" }
 # Jackson Serialization.
 # https://github.com/FasterXML/jackson-module-kotlin
 # https://github.com/FasterXML/jackson-module-kotlin/tags
-jackson = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson_version" }
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson_version" }
+jackson-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson_version" }
+
 
 # Serializable DateTime.
 # https://github.com/Kotlin/kotlinx-datetime
