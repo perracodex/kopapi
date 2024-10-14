@@ -4,10 +4,10 @@
 
 package io.github.perracodex.kopapi.inspector.custom
 
+import io.github.perracodex.kopapi.dsl.plugin.builders.CustomTypeBuilder
 import io.github.perracodex.kopapi.inspector.utils.SchemaConstraints
 import io.github.perracodex.kopapi.keys.ApiType
 import io.github.perracodex.kopapi.plugin.KopapiConfig
-import io.github.perracodex.kopapi.plugin.dsl.builders.CustomTypeBuilder
 import kotlin.reflect.KType
 
 /**

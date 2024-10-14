@@ -4,10 +4,11 @@
 
 package plugin.state
 
-import io.github.perracodex.kopapi.core.SchemaProvider
+import io.github.perracodex.kopapi.core.SchemaComposer
+import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurity
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.plugin.Kopapi
-import io.github.perracodex.kopapi.plugin.dsl.elements.ApiInfo
-import io.github.perracodex.kopapi.plugin.dsl.elements.ApiServerConfig
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import kotlin.test.Test
@@ -45,17 +46,24 @@ class KopapiPluginDisabledTest {
             )
 
             // Ensure that ApiInfo is not set (should be null)
-            val apiInfo: ApiInfo? = SchemaProvider.apiInfo
+            val apiInfo: ApiInfo? = SchemaComposer.configuration?.apiInfo
             assertNull(
                 actual = apiInfo,
                 message = "Expected ApiInfo to be null when plugin is disabled."
             )
 
             // Ensure that servers are not set (should be null)
-            val servers: Set<ApiServerConfig>? = SchemaProvider.apiServers
+            val servers: Set<ApiServerConfig>? = SchemaComposer.configuration?.apiServers
             assertNull(
                 actual = servers,
                 message = "Expected servers to be null when plugin is disabled."
+            )
+
+            // Ensure that global security schemes are not set (should be null)
+            val securitySchemes: Set<ApiSecurity>? = SchemaComposer.configuration?.apiSecuritySchemes
+            assertNull(
+                actual = securitySchemes,
+                message = "Expected security schemes to be null when plugin is disabled."
             )
         }
     }

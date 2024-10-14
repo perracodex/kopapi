@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.core
 
-import io.github.perracodex.kopapi.core.dsl.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
 import io.github.perracodex.kopapi.utils.extractRoutePath
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
@@ -35,7 +35,7 @@ import io.ktor.server.routing.*
  * @return The current [Route] instance with attached metadata.
  * @throws IllegalArgumentException If the route does not have an HTTP method selector.
  *
- * @see [ApiMetadata]
+ * @see [ApiMetadataBuilder]
  */
 public infix fun Route.api(configure: ApiMetadataBuilder.() -> Unit): Route {
     if (this !is RoutingNode) {
@@ -65,7 +65,7 @@ public infix fun Route.api(configure: ApiMetadataBuilder.() -> Unit): Route {
     )
 
     // Register the metadata for later retrieval.
-    SchemaProvider.registerApiMetadata(metadata = apiMetadata)
+    SchemaComposer.registerApiMetadata(metadata = apiMetadata)
 
     return this
 }

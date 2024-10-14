@@ -4,10 +4,10 @@
 
 package plugin.servers
 
-import io.github.perracodex.kopapi.core.SchemaProvider
+import io.github.perracodex.kopapi.core.SchemaComposer
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.plugin.Kopapi
-import io.github.perracodex.kopapi.plugin.dsl.elements.ApiServerConfig
-import io.github.perracodex.kopapi.plugin.dsl.elements.ApiServerVariable
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import kotlin.test.Test
@@ -57,7 +57,7 @@ class ServerConfigurationTest {
             )
 
             // Validate the servers exist.
-            val servers: Set<ApiServerConfig>? = SchemaProvider.apiServers
+            val servers: Set<ApiServerConfig>? = SchemaComposer.configuration?.apiServers
             assertNotNull(
                 actual = servers,
                 message = "Expected server configurations to be non-null."

@@ -2,7 +2,11 @@
     <img src=".wiki/images/logo.png" width="256" alt="Kopapi">
 </a>
 
-Kopapi is library to generatethe OpenAPI documentation from [Ktor](https://ktor.io/) routes using `DSL`.
+Kopapi is library to generate the OpenAPI documentation from [Ktor](https://ktor.io/) routes using `DSL`.
+
+| Ktor Version |
+|--------------|
+| \>= 3.0.0    |
 
 **Quick sample usage before diving into the Wiki:**
 
@@ -32,23 +36,36 @@ get("/items/{group_id}/{item_id?}") {
 
 ---
 
+## Installation
+
+Add the library to your project gradle dependencies. Make sure to replace `1.0.0` with the latest version.
+
+```kotlin
+dependencies {
+  implementation("io.github.perracodex:kopapi:1.0.0")
+}
+```
+
+---
+
 ### Wiki
 
-* ### [Plugin Configuration](./.wiki/01.plugin-configuration.md)
+* ### [Plugin Configuration](./.wiki/01.0.plugin-configuration.md)
+  - #### [Servers](./.wiki/01.1.servers.md)
+  - #### [Security](./.wiki/01.2.security.md)
+  - #### [Custom Types](./.wiki/01.3.custom-types.md)
 
-* ### [Custom Types](./.wiki/02.custom-types.md)
+* ### [API Usage](./.wiki/02.0.api-usage.md)
+  - #### [Summary and Description](./.wiki/02.1.api-usage-summary-description.md)
+  - #### [Tags](./.wiki/02.2.api-usage-tags.md)
+  - #### [Parameters](./.wiki/02.3.api-usage-parameters.md)
+  - #### [Request Bodies](./.wiki/02.4.api-usage-request-body.md)
+  - #### [Responses](./.wiki/02.5.api-usage-responses.md)
+  - #### [Security](./.wiki/02.6.api-usage-security.md)
 
-* ### [API Usage](./.wiki/03.api-usage.md)
-    - #### [Summary and Description](./.wiki/04.api-usage-summary-description.md)
-    - #### [Tags](./.wiki/05.api-usage-tags.md)
-    - #### [Parameters](./.wiki/06.api-usage-parameters.md)
-    - #### [Request Bodies](./.wiki/07.api-usage-request-body.md)
-    - #### [Responses](./.wiki/08.api-usage-responses.md)
-    - #### [Security](./.wiki/09.api-usage-security.md)
+* ### [Type Conflicts](./.wiki/03.type-conflicts.md)
 
-* ### [Type Conflicts](./.wiki/10.type-conflicts.md)
-
-* ### [Type Introspection](./.wiki/11.type-introspection.md)
+* ### [Type Introspection](./.wiki/04.type-introspection.md)
 
 ---
 

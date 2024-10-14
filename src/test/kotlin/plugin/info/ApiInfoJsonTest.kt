@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiContact
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense
 import io.github.perracodex.kopapi.plugin.Kopapi
+import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import kotlin.test.Test
@@ -16,16 +17,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @Suppress("SameParameterValue")
-class ApiInfoConfigurationTest {
+class ApiInfoJsonTest {
 
     @Test
-    fun `test plugin API info configuration`() = testApplication {
+    fun `test plugin API info raw Json`() = testApplication {
         application {
             install(Kopapi) {
                 info {
                     title = "Test API"
                     description = "This is a test API."
-                    description = "It has a multi-line description."
                     version = "2.0.0"
                     termsOfService = "https://example.com/terms"
 
@@ -49,30 +49,26 @@ class ApiInfoConfigurationTest {
             )
 
             // Validate the API info exists.
-            val apiInfo: ApiInfo? = SchemaComposer.configuration?.apiInfo
+            val jsonApiInfo: String? = SchemaComposer.getApiInfoJson()
             assertNotNull(
-                actual = apiInfo,
+                actual = jsonApiInfo,
                 message = "Expected API info to be non-null."
             )
 
-            // Validate the API info fields.
+            val apiInfo: ApiInfo = SerializationUtils.fromJson(json = jsonApiInfo)
             validateApiInfo(
                 info = apiInfo,
                 expectedTitle = "Test API",
-                expectedDescription = "This is a test API.\nIt has a multi-line description.",
+                expectedDescription = "This is a test API.",
                 expectedVersion = "2.0.0",
                 expectedTermsOfService = "https://example.com/terms"
             )
-
-            // Validate the contact info.
             validateContactInfo(
                 contact = apiInfo.contact,
                 expectedName = "John Doe",
                 expectedUrl = "https://example.com/support",
                 expectedEmail = "support@example.com"
             )
-
-            // Validate the license info.
             validateLicenseInfo(
                 license = apiInfo.license,
                 expectedName = "MIT",

@@ -4,22 +4,24 @@
 
 package io.github.perracodex.kopapi.plugin
 
+import io.github.perracodex.kopapi.dsl.common.SecuritySchemeConfigurable
+import io.github.perracodex.kopapi.dsl.plugin.builders.CustomTypeBuilder
+import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
+import io.github.perracodex.kopapi.dsl.plugin.builders.ServerBuilder
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
 import io.github.perracodex.kopapi.keys.ApiFormat
 import io.github.perracodex.kopapi.keys.ApiType
-import io.github.perracodex.kopapi.plugin.dsl.builders.CustomTypeBuilder
-import io.github.perracodex.kopapi.plugin.dsl.builders.InfoBuilder
-import io.github.perracodex.kopapi.plugin.dsl.builders.ServerBuilder
-import io.github.perracodex.kopapi.plugin.dsl.elements.ApiInfo
-import io.github.perracodex.kopapi.plugin.dsl.elements.ApiServerConfig
+import io.github.perracodex.kopapi.utils.trimOrDefault
 import kotlin.reflect.typeOf
 
 /**
  * Configuration for the [Kopapi] plugin.
  */
-public class KopapiConfig {
+public class KopapiConfig : SecuritySchemeConfigurable() {
     /**
      * Whether the plugin should be enabled (Default is `true`).
      *
@@ -62,21 +64,7 @@ public class KopapiConfig {
     /**
      * The [ApiInfo] metadata for the OpenAPI schema.
      */
-    internal var apiInfo: ApiInfo? = null
-        private set
-
-    /**
-     * Returns the ser of server configurations.
-     * If no servers are added, a default server is returned.
-     *
-     * @return The set [ApiServerConfig] instances.
-     */
-    internal fun getServers(): Set<ApiServerConfig> {
-        if (servers.isEmpty()) {
-            return setOf(ServerBuilder.defaultServer())
-        }
-        return servers
-    }
+    private var apiInfo: ApiInfo? = null
 
     /**
      * Sets up the OpenAPI metadata.
@@ -223,7 +211,23 @@ public class KopapiConfig {
         CustomTypeRegistry.register(newCustomType)
     }
 
-    internal companion object {
+    /**
+     * Builds the final immutable [Configuration] instance.
+     */
+    internal fun build(): Configuration {
+        return Configuration(
+            isEnabled = enabled,
+            debugUrl = debugUrl.trimOrDefault(defaultValue = DEFAULT_DEBUG_URL),
+            openapiJsonUrl = openapiJsonUrl.trimOrDefault(defaultValue = DEFAULT_OPENAPI_JSON_URL),
+            openapiYamlUrl = openapiYamlUrl.trimOrDefault(defaultValue = DEFAULT_OPENAPI_YAML_URL),
+            swaggerUrl = swaggerUrl.trimOrDefault(defaultValue = DEFAULT_SWAGGER_URL),
+            apiInfo = apiInfo,
+            apiServers = servers.takeIf { it.isNotEmpty() } ?: setOf(ServerBuilder.defaultServer()),
+            apiSecuritySchemes = securitySchemes.takeIf { it.isNotEmpty() }
+        )
+    }
+
+    private companion object {
         const val DEFAULT_OPENAPI_JSON_URL: String = "openapi/json"
         const val DEFAULT_OPENAPI_YAML_URL: String = "openapi/yaml"
         const val DEFAULT_SWAGGER_URL: String = "swagger"

@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.view
 
-import io.github.perracodex.kopapi.core.SchemaProvider
+import io.github.perracodex.kopapi.core.SchemaComposer
 import kotlinx.html.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -20,9 +20,9 @@ import kotlinx.serialization.json.jsonPrimitive
  * Each panel includes a dropdown for filtering the displayed JSON data and syntax highlighting.
  */
 internal class DebugPanelView {
-    private val apiMetadataJson: Set<String> = SchemaProvider.getApiMetadataJson()
-    private val schemasJson: Set<String> = SchemaProvider.getSchemasJson()
-    private val schemaConflictsJson: Set<String> = SchemaProvider.getSchemaConflictsJson()
+    private val apiMetadataJson: Set<String> = SchemaComposer.getApiMetadataJson()
+    private val schemasJson: Set<String> = SchemaComposer.getSchemasJson()
+    private val schemaConflictsJson: Set<String> = SchemaComposer.getSchemaConflictsJson()
     private val json = Json { prettyPrint = true }
 
     /**

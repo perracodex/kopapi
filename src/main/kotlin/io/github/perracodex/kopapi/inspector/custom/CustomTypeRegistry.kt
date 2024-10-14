@@ -4,9 +4,9 @@
 
 package io.github.perracodex.kopapi.inspector.custom
 
+import io.github.perracodex.kopapi.dsl.plugin.builders.CustomTypeBuilder
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.plugin.KopapiConfig
-import io.github.perracodex.kopapi.plugin.dsl.builders.CustomTypeBuilder
 import kotlin.reflect.KType
 
 /**
