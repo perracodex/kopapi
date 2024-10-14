@@ -20,7 +20,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 
 /**
- * Class for introspecting various Kotlin types capable of traversing and mapping [KType] objects
+ * Class for introspecting various Kotlin types, capable of traversing and mapping [KType] objects
  * into [TypeSchema] objects containing the necessary information to construct OpenAPI schemas.
  *
  * ### Key Features
@@ -30,7 +30,7 @@ import kotlin.reflect.full.isSubclassOf
  * - Collections and Maps: Supports collections such as `List`, `Set`, including primitive and typed arrays,
  *   and maps with both primitive and complex object values.
  * - Generics Handling: Resolves generics, including nested and complex generic types.
- * - Annotation Support: Recognizes and processes `Kotlinx` and `Jackson` annotations.
+ * - Annotation Support: Recognizes `Kotlinx` annotations, with partial support for `Jackson`.
  * - Caching Mechanism: Caches resolved schemas to prevent duplication and improve performance.
  * - Ensures unique processing of types, even if they appear multiple times across different contexts.
  *
