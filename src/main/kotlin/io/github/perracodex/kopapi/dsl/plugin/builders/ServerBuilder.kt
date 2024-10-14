@@ -16,11 +16,10 @@ import io.ktor.http.*
  * ```
  * servers {
  *      add("https://{environment}.example.com") {
- *          description = "Server with environment variable"
- *          variable("environment") {
- *              description = "API environment"
- *              defaultValue = "production"
+ *          description = "Server with environment variable."
+ *          variable("environment", "production") {
  *              choices = setOf("production", "staging", "development")
+ *              description = "API environment."
  *          }
  *      }
  * }
@@ -47,24 +46,21 @@ public class ServerBuilder {
      *
      *     add("https://{environment}.example.com") {
      *         description = "The server for the API with environment variable."
-     *         variable("environment") {
-     *             description = "Specifies the environment (production, etc.)"
-     *             defaultValue = "production"
+     *         variable("environment", "production") {
      *             choices = setOf("production", "staging", "development")
+     *             description = "Specifies the environment (production, etc.)"
      *         }
-     *         variable("version") {
-     *             description = "The version of the API."
-     *             defaultValue = "v1"
+     *         variable("version", "v1") {
      *             choices = setOf("v1", "v2")
+     *             description = "The version of the API."
      *         }
      *     }
      *
      *     add("https://{region}.api.example.com") {
      *         description = "Server for the API by region."
-     *         variable("region") {
-     *             description = "Specifies the region for the API (us, eu)."
-     *             defaultValue = "us"
+     *         variable("region", "us") {
      *             choices = setOf("us", "eu")
+     *             description = "Specifies the region for the API (us, eu)."
      *         }
      *     }
      * }
@@ -112,7 +108,7 @@ public class ServerBuilder {
          */
         internal fun defaultServer(): ApiServerConfig {
             return ApiServerConfig(
-                url = Url(DEFAULT_SERVER),
+                url = DEFAULT_SERVER,
                 description = "Default Server", emptyMap()
             )
         }

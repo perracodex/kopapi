@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.builders
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -22,24 +23,21 @@ import io.ktor.http.*
  *
  *     add("https://{environment}.example.com") {
  *         description = "The server for the API with environment variable."
- *         variable("environment") {
- *             description = "Specifies the environment (production, etc.)"
- *             defaultValue = "production"
+ *         variable("environment", "production") {
  *             choices = setOf("production", "staging", "development")
+ *             description = "Specifies the environment (production, etc.)"
  *         }
- *         variable("version") {
- *             description = "The version of the API"
- *             defaultValue = "v1"
+ *         variable("version", "v1") {
  *             choices = setOf("v1", "v2")
+ *             description = "The version of the API."
  *         }
  *     }
  *
  *     add("https://{region}.api.example.com") {
  *         description = "Server for the API by region"
- *         variable("region") {
- *             description = "Specifies the region for the API (us, eu)."
- *             defaultValue = "us"
+ *         variable("region", "us") {
  *             choices = setOf("us", "eu")
+ *             description = "Specifies the region for the API (us, eu)."
  *         }
  *     }
  * }
@@ -63,32 +61,43 @@ public class ServerConfigBuilder(
      *
      * ### Sample Usage
      * ```
-     * variable("environment") {
-     *      description = "Specifies the environment (production, etc.)"
-     *      defaultValue = "production"
+     * variable("environment", "production") {
      *      choices = setOf("production", "staging", "development")
+     *      description = "Specifies the environment (production, etc.)"
      * }
      * ```
      * Multiple descriptions can be defined to construct a final multiline description.
      *
      * @param name The name of the variable.
+     * @param defaultValue The default value of the variable.
      * @param configure The configuration block for the variable.
      *
      * @see [ServerVariableBuilder]
      * @see [ServerBuilder]
      * @see [ServerConfigBuilder]
      */
-    public fun variable(name: String, configure: ServerVariableBuilder.() -> Unit) {
-        require(name.isNotBlank()) { "Server variable name cannot be blank." }
-        variables[name.trim()] = ServerVariableBuilder().apply(configure).build()
+    public fun variable(
+        name: String,
+        defaultValue: String,
+        configure: ServerVariableBuilder.() -> Unit
+    ) {
+        if (name.isBlank()) {
+            throw KopapiException("Server variable name cannot be blank.")
+        }
+        if (defaultValue.isBlank()) {
+            throw KopapiException("Server variable default value cannot be blank.")
+        }
+        variables[name.trim()] = ServerVariableBuilder(
+            defaultValue = defaultValue.trim()
+        ).apply(configure).build()
     }
 
     /**
      * Builds the final immutable [ApiServerConfig].
      */
     internal fun build(): ApiServerConfig = ApiServerConfig(
-        url = url,
+        url = url.toString(),
         description = description.trimOrNull(),
-        variables = variables.toMap()
+        variables = variables.takeIf { it.isNotEmpty() }?.toMap()
     )
 }

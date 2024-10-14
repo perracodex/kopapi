@@ -2,8 +2,10 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.core
+package io.github.perracodex.kopapi.core.composer
 
+import io.github.perracodex.kopapi.core.ApiMetadata
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
@@ -21,6 +23,9 @@ import kotlin.reflect.KType
  */
 internal object SchemaComposer {
     private val tracer = Tracer<SchemaComposer>()
+
+    /** The version of the OpenAPI specification used by the plugin. */
+    private const val OPEN_API_VERSION = "3.1.0"
 
     /**
      * Represents the format of the final OpenAPI schema output.
@@ -61,6 +66,9 @@ internal object SchemaComposer {
     /** Cached JSON representations for debugging, categorized by section type. */
     private val debugJsonCache: MutableMap<SectionType, Set<String>> = mutableMapOf()
 
+    /** Cached OpenAPI schema representations, categorized by format. */
+    private val openApiSchemaCache: MutableMap<Format, String> = mutableMapOf()
+
     /** Information about the API, such as title, version, and description. */
     var configuration: Configuration? = null
         private set
@@ -74,12 +82,12 @@ internal object SchemaComposer {
      */
     fun registerConfiguration(configuration: Configuration) {
         synchronized(this) {
-            if (this.configuration != null) {
+            if (SchemaComposer.configuration != null) {
                 throw KopapiException("Configuration has already been registered.")
             }
-            this.isEnabled = configuration.isEnabled
-            if (this.isEnabled) {
-                this.configuration = configuration
+            isEnabled = configuration.isEnabled
+            if (isEnabled) {
+                SchemaComposer.configuration = configuration
             }
         }
     }
@@ -91,7 +99,7 @@ internal object SchemaComposer {
      */
     fun registerApiMetadata(metadata: ApiMetadata) {
         synchronized(apiMetadata) {
-            if (this.isEnabled) {
+            if (isEnabled) {
                 apiMetadata.add(metadata)
             }
         }
@@ -232,7 +240,7 @@ internal object SchemaComposer {
         }
 
         return debugJsonCache[section] ?: run {
-            val json: String = SerializationUtils.toJson(instance)
+            val json: String = SerializationUtils.toRawJson(instance)
             debugJsonCache[section] = setOf(json)
             setOf(json)
         }
@@ -251,7 +259,7 @@ internal object SchemaComposer {
 
         return debugJsonCache[section] ?: run {
             instance
-                .map { SerializationUtils.toJson(instance = it) }
+                .map { SerializationUtils.toRawJson(instance = it) }
                 .toSortedSet()
                 .also { sortedSet ->
                     debugJsonCache[section] = sortedSet
@@ -269,4 +277,55 @@ internal object SchemaComposer {
         debugJsonCache.clear()
         configuration = null
     }
+
+    /**
+     * Serves the OpenAPI schema in the specified format.
+     *
+     * @param format The [Format] of the OpenAPI schema to serve.
+     * @return The OpenAPI schema in the specified format.
+     */
+    fun getOpenApiSchema(format: Format): String {
+        if (!isEnabled) {
+            return ""
+        }
+        openApiSchemaCache.getOrDefault(key = format, defaultValue = null)?.let { schema ->
+            return schema
+        }
+
+        processSchemas()
+
+        return configuration?.let { configuration ->
+            // Compose the `Info` section.
+            val infoSection: ApiInfo = InfoSectionComposer.compose(
+                apiInfo = configuration.apiInfo,
+                schemaConflicts = schemaConflicts
+            )
+
+            // Get the `Servers` section.
+            val serversSection: List<ApiServerConfig>? = configuration.apiServers?.toList()
+
+            val openApiSchema = OpenAPiSchema(
+                openapi = OPEN_API_VERSION,
+                info = infoSection,
+                servers = serversSection
+            )
+
+            val schema: String = when (format) {
+                Format.JSON -> SerializationUtils.toRawJson(instance = openApiSchema)
+                Format.YAML -> SerializationUtils.toYaml(instance = openApiSchema)
+            }
+
+            openApiSchemaCache[format] = schema
+            return@let schema
+        } ?: run {
+            tracer.warning("No configuration found.")
+            return ""
+        }
+    }
+
+    private data class OpenAPiSchema(
+        val openapi: String,
+        val info: ApiInfo,
+        val servers: List<ApiServerConfig>?
+    )
 }

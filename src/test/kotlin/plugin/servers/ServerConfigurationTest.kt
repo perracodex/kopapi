@@ -4,7 +4,7 @@
 
 package plugin.servers
 
-import io.github.perracodex.kopapi.core.SchemaComposer
+import io.github.perracodex.kopapi.core.composer.SchemaComposer
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.plugin.Kopapi
@@ -27,24 +27,21 @@ class ServerConfigurationTest {
 
                     add(urlString = "https://{environment}.example.com") {
                         description = "The server for the API with environment variable."
-                        variable(name = "environment") {
-                            description = "Specifies the environment (production, staging, etc.)."
-                            defaultValue = "production"
+                        variable(name = "environment", defaultValue = "production") {
                             choices = setOf("production", "staging", "development")
+                            description = "Specifies the environment (production, staging, etc.)."
                         }
-                        variable(name = "version") {
-                            description = "The version of the API."
-                            defaultValue = "v1"
+                        variable(name = "version", defaultValue = "v1") {
                             choices = setOf("v1", "v2")
+                            description = "The version of the API."
                         }
                     }
 
                     add(urlString = "https://{region}.api.example.com") {
                         description = "Server for the API by region."
-                        variable(name = "region") {
-                            description = "Specifies the region for the API (us, eu)."
-                            defaultValue = "us"
+                        variable(name = "region", defaultValue = "us") {
                             choices = setOf("us", "eu")
+                            description = "Specifies the region for the API (us, eu)."
                         }
                     }
                 }
@@ -122,7 +119,7 @@ class ServerConfigurationTest {
         )
         assertEquals(
             expected = expectedUrl,
-            actual = server.url.toString(),
+            actual = server.url,
             message = "Expected server URL to match."
         )
         assertEquals(
@@ -132,19 +129,19 @@ class ServerConfigurationTest {
         )
 
         expectedVariables?.forEach { (variableName, expectation) ->
-            val variable: ApiServerVariable? = server.variables[variableName]
+            val variable: ApiServerVariable? = server.variables?.get(variableName)
             assertNotNull(
                 actual = variable,
                 message = "Expected '$variableName' variable to be present."
             )
             assertEquals(
                 expected = expectation.defaultValue,
-                actual = variable.defaultValue,
+                actual = variable.default,
                 message = "Expected default value for '$variableName'."
             )
             assertEquals(
                 expected = expectation.choices,
-                actual = variable.choices,
+                actual = variable.enum,
                 message = "Expected choices for '$variableName'."
             )
         }

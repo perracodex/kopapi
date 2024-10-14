@@ -4,17 +4,20 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.elements
 
-import io.ktor.http.*
-
 /**
  * Represents an immutable server configuration.
  *
- * @property url The [Url] of the server.
+ * #### IMPORTANT
+ * The naming, order and nullability of properties are defined
+ * as per the OpenAPI specification, so no transformations are
+ * needed generating the OpenAPI schema.
+ *
+ * @property url The Url of the server.
  * @property description A human-readable description of the server.
- * @property variables A map of [ApiServerVariable] objects representing the server's variables.
+ * @property variables Optional map of [ApiServerVariable] objects representing the server's variables.
  */
 internal data class ApiServerConfig(
-    val url: Url,
+    val url: String,
     val description: String?,
-    val variables: Map<String, ApiServerVariable>
+    val variables: Map<String, ApiServerVariable>?
 )

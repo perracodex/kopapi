@@ -4,7 +4,7 @@
 
 package plugin.info
 
-import io.github.perracodex.kopapi.core.SchemaComposer
+import io.github.perracodex.kopapi.core.composer.SchemaComposer
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiContact
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense

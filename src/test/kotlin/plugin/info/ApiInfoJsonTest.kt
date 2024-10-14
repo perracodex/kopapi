@@ -4,7 +4,7 @@
 
 package plugin.info
 
-import io.github.perracodex.kopapi.core.SchemaComposer
+import io.github.perracodex.kopapi.core.composer.SchemaComposer
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiContact
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense
@@ -55,7 +55,7 @@ class ApiInfoJsonTest {
                 message = "Expected API info to be non-null."
             )
 
-            val apiInfo: ApiInfo = SerializationUtils.fromJson(json = jsonApiInfo)
+            val apiInfo: ApiInfo = SerializationUtils.fromRawJson(json = jsonApiInfo)
             validateApiInfo(
                 info = apiInfo,
                 expectedTitle = "Test API",

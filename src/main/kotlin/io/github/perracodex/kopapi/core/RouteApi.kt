@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.core
 
+import io.github.perracodex.kopapi.core.composer.SchemaComposer
 import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
 import io.github.perracodex.kopapi.utils.extractRoutePath
 import io.github.perracodex.kopapi.utils.trimOrNull

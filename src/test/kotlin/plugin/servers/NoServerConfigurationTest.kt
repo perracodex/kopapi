@@ -4,7 +4,7 @@
 
 package plugin.servers
 
-import io.github.perracodex.kopapi.core.SchemaComposer
+import io.github.perracodex.kopapi.core.composer.SchemaComposer
 import io.github.perracodex.kopapi.dsl.plugin.builders.ServerBuilder
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.plugin.Kopapi
@@ -45,7 +45,7 @@ class NoServerConfigurationTest {
             val defaultServer: ApiServerConfig = ServerBuilder.defaultServer()
             validateServerConfig(
                 server = servers.first(),
-                expectedUrl = defaultServer.url.toString(),
+                expectedUrl = defaultServer.url,
                 expectedDescription = defaultServer.description
             )
         }
@@ -65,7 +65,7 @@ class NoServerConfigurationTest {
         )
         assertEquals(
             expected = expectedUrl,
-            actual = server.url.toString(),
+            actual = server.url,
             message = "Expected server URL to match."
         )
         assertEquals(

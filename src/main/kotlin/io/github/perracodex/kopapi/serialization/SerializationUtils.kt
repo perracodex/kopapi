@@ -10,7 +10,10 @@ import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.perracodex.kopapi.serialization.serializers.*
 import io.ktor.http.*
 import kotlin.reflect.KType
@@ -20,7 +23,7 @@ import kotlin.reflect.KType
  */
 internal object SerializationUtils {
     /** Configured Jackson Mapper. */
-    private val jsonJackson: JsonMapper = JsonMapper.builder()
+    private val rawJson: JsonMapper = JsonMapper.builder()
         .addModule(kotlinModule())
         .enable(SerializationFeature.INDENT_OUTPUT)
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -40,12 +43,56 @@ internal object SerializationUtils {
         ).build()
 
     /**
+     * Configured Jackson YAML Mapper, strictly for OpenAPI schema serialization.
+     */
+    private val yamlMapper: YAMLMapper = YAMLMapper.builder()
+        .addModule(kotlinModule())
+        .enable(SerializationFeature.INDENT_OUTPUT)
+        .serializationInclusion(JsonInclude.Include.NON_NULL)
+        .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
+        .enable(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE)
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .enable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
+        .enable(MapperFeature.SORT_CREATOR_PROPERTIES_BY_DECLARATION_ORDER)
+        .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+        .addModule(
+            SimpleModule().apply {
+                addSerializer(ContentType::class.java, ContentTypeSerializer)
+                addSerializer(HttpMethod::class.java, HttpMethodSerializer)
+                addSerializer(HttpStatusCode::class.java, HttpStatusCodeSerializer)
+                addSerializer(KType::class.java, KTypeSerializer)
+                addSerializer(Url::class.java, UrlSerializer)
+            }
+        )
+        .build()
+
+    /**
      * Serializes the given object [instance] to a JSON string.
      *
      * @param instance The object instance to serialize.
      * @return The JSON string representation of the object [instance].
      */
-    fun toJson(instance: Any): String {
-        return jsonJackson.writeValueAsString(instance)
+    fun toRawJson(instance: Any): String {
+        return rawJson.writeValueAsString(instance)
+    }
+
+    /**
+     * Deserializes the given JSON string [json] to an object of type [T].
+     *
+     * @param json The JSON string to deserialize.
+     * @return The deserialized object of type [T].
+     */
+    inline fun <reified T> fromRawJson(json: String): T {
+        return rawJson.readValue(json)
+    }
+
+    /**
+     * Serializes the given object [instance] to a YAML string for OpenAPI.
+     *
+     * @param instance The object instance to serialize.
+     * @return The YAML string representation of the object [instance].
+     */
+    fun toYaml(instance: Any): String {
+        return yamlMapper.writeValueAsString(instance)
     }
 }
