@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.api.builders.attributes
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.api.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.api.elements.ApiHeader
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -27,7 +28,9 @@ public class HeaderBuilder(
     public var deprecated: Boolean = false
 ) {
     init {
-        require(name.isNotBlank()) { "Name must not be empty." }
+        if (name.isBlank()) {
+            throw KopapiException("Header name must not be empty.")
+        }
     }
 
     public var description: String by MultilineString()

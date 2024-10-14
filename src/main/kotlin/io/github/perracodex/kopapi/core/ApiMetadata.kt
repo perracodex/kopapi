@@ -42,6 +42,8 @@ internal data class ApiMetadata(
     val securitySchemes: Set<ApiSecurity>?
 ) {
     init {
-        require(path.isNotBlank()) { "Endpoint path must not be empty." }
+        if (path.isBlank()) {
+            throw KopapiException("Endpoint path must not be empty.")
+        }
     }
 }

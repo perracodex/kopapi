@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.api.builders.attributes
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.api.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.api.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.api.elements.ApiLinkParameter
@@ -22,11 +23,13 @@ import io.github.perracodex.kopapi.utils.trimOrNull
 public class LinkBuilder(
     public val operationId: String
 ) {
-    init {
-        require(operationId.isNotBlank()) { "Operation ID must not be empty." }
-    }
-
     public var description: String by MultilineString()
+
+    init {
+        if (operationId.isBlank()) {
+            throw KopapiException("Link operation ID must not be empty.")
+        }
+    }
 
     /**
      * A set representing parameters to pass to the linked operation.

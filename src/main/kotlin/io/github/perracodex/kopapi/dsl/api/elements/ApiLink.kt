@@ -18,8 +18,4 @@ internal data class ApiLink(
     val operationId: String,
     val description: String?,
     val parameters: Set<ApiLinkParameter>?
-) {
-    init {
-        require(operationId.isNotBlank()) { "Operation ID must not be empty." }
-    }
-}
+)

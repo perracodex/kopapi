@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
@@ -36,7 +37,7 @@ internal class TypeSchemaProvider {
      */
     fun inspect(kType: KType): TypeSchema {
         if (kType.classifier == Unit::class) {
-            throw IllegalArgumentException("Type 'Unit' cannot be inspected.")
+            throw KopapiException("Type 'Unit' cannot be inspected.")
         }
         val result: TypeSchema = typeInspector.traverseType(kType = kType, typeArgumentBindings = emptyMap())
         conflicts.analyze(newSchema = result)

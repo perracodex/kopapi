@@ -4,9 +4,11 @@
 
 package io.github.perracodex.kopapi.dsl.api.elements
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
 import io.github.perracodex.kopapi.dsl.api.elements.ApiParameter.Location
 import io.github.perracodex.kopapi.dsl.api.types.ParameterStyle
+import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 
 /**
@@ -39,10 +41,14 @@ internal data class ApiParameter(
     val deprecated: Boolean
 ) {
     init {
-        require(name.isNotBlank()) { "Name must not be empty." }
-        require(type.classifier != Any::class) { "Parameters cannot be of type 'Any'. Define an explicit type." }
-        require(type.classifier != Unit::class) { "Parameters cannot be of type 'Unit'. Define an explicit type." }
-        require(type.classifier != Nothing::class) { "Parameters cannot be of type 'Nothing'. Define an explicit type." }
+        if (name.isBlank()) {
+            throw KopapiException("Parameter name must not be empty.")
+        }
+
+        val classifier: KClassifier? = type.classifier
+        if (classifier == Any::class || classifier == Unit::class || classifier == Nothing::class) {
+            throw KopapiException("Route Parameter cannot be of type '${type.classifier}'. Define an explicit type.")
+        }
     }
 
     /**

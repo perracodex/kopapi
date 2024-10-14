@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.dsl.api.builders
 
 import io.github.perracodex.kopapi.core.ApiMetadata
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.api.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.api.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.api.builders.parameter.CookieParameterBuilder
@@ -292,10 +293,13 @@ public class ApiMetadataBuilder internal constructor(
     public inline fun <reified T : Any> ApiMetadataBuilder.requestBody(
         configure: RequestBodyBuilder.() -> Unit = {}
     ) {
-        require(value = (requestBody == null)) {
-            "Only one request body is allowed per API endpoint. " +
-                    "Found '$requestBody' already defined in '${this.endpoint}'"
+        if (requestBody != null) {
+            throw KopapiException(
+                "Only one RequestBody can be defined per API endpoint. " +
+                        "Attempted to define multiple RequestBodies in '${this.endpoint}'"
+            )
         }
+
         val builder: RequestBodyBuilder = RequestBodyBuilder().apply(configure)
         requestBody = builder.build(type = typeOf<T>())
     }

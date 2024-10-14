@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.ElementName
@@ -239,9 +240,11 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
         val typeArguments: List<KType> = kType.arguments.mapNotNull { it.type }
 
         // Validate that each type parameter has a corresponding type argument.
-        require(typeParameters.size == typeArguments.size) {
-            "Generics type argument count mismatch for $kClass. " +
-                    "Expected ${typeParameters.size}, but got ${typeArguments.size}."
+        if (typeParameters.size != typeArguments.size) {
+            throw KopapiException(
+                "Generics type argument count mismatch for $kClass. " +
+                        "Expected ${typeParameters.size}, but got ${typeArguments.size}."
+            )
         }
 
         // Map each type parameter to its actual type argument.

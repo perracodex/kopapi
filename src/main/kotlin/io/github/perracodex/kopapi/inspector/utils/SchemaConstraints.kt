@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.utils
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.keys.ApiType
 
 /**
@@ -34,7 +35,7 @@ internal object SchemaConstraints {
      * @param exclusiveMaximum Exclusive upper bound for numeric types. The value is strictly less.
      * @param multipleOf Factor that constrains the value to be a multiple of a number.
      *
-     * @throws IllegalArgumentException If constraints not applicable to the provided [apiType] are specified,
+     * @throws KopapiException If constraints not applicable to the provided [apiType] are specified,
      * or if any values are invalid (e.g., negative lengths, conflicting constraints).
      */
     fun validate(
@@ -49,56 +50,113 @@ internal object SchemaConstraints {
     ) {
         when (apiType) {
             ApiType.STRING -> {
-                // Validate string-specific constraints
-                minLength?.let { require(it >= 0) { "Minimum length must be greater than or equal to zero." } }
-                maxLength?.let { require(it >= 0) { "Maximum length must be greater than or equal to zero." } }
-                minLength?.let {
-                    require(maxLength == null || minLength <= maxLength) {
-                        "Minimum length must be less than or equal to maximum length."
-                    }
-                }
-
-                // Ensure no number-specific constraints are applied
-                require(listOf(minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf).all { it == null }) {
-                    "Number constraints (minimum, maximum, multipleOf, etc.) cannot be applied to strings."
-                }
+                verifyStringConstraints(
+                    minLength = minLength,
+                    maxLength = maxLength,
+                    minimum = minimum,
+                    maximum = maximum,
+                    exclusiveMinimum = exclusiveMinimum,
+                    exclusiveMaximum = exclusiveMaximum,
+                    multipleOf = multipleOf
+                )
             }
 
             ApiType.NUMBER, ApiType.INTEGER -> {
-                // Validate number-specific constraints
-                minimum?.let {
-                    require(maximum == null || minimum.toDouble() <= maximum.toDouble()) {
-                        "Minimum value must be less than or equal to maximum value."
-                    }
-                }
-                exclusiveMinimum?.let {
-                    require(minimum == null || exclusiveMinimum.toDouble() > minimum.toDouble()) {
-                        "Exclusive minimum must be strictly greater than the minimum value."
-                    }
-                }
-                exclusiveMaximum?.let {
-                    require(maximum == null || exclusiveMaximum.toDouble() < maximum.toDouble()) {
-                        "Exclusive maximum must be strictly less than the maximum value."
-                    }
-                }
-                multipleOf?.let {
-                    require(multipleOf.toDouble() > 0) { "multipleOf must be greater than zero." }
-                }
-
-                // Ensure no string-specific constraints are applied
-                require(minLength == null && maxLength == null) {
-                    "String constraints (minLength, maxLength) cannot be applied to numbers."
-                }
+                verifyNumericConstraints(
+                    minLength = minLength,
+                    maxLength = maxLength,
+                    minimum = minimum,
+                    maximum = maximum,
+                    exclusiveMinimum = exclusiveMinimum,
+                    exclusiveMaximum = exclusiveMaximum,
+                    multipleOf = multipleOf
+                )
             }
 
             else -> {
                 // Ensure no string- or number-specific constraints are applied to other types (like arrays, booleans, etc.)
-                require(
-                    listOf(minLength, maxLength, minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf).all { it == null }
+                if (
+                    listOf(
+                        minLength,
+                        maxLength,
+                        minimum,
+                        maximum,
+                        exclusiveMinimum,
+                        exclusiveMaximum,
+                        multipleOf
+                    ).any { it != null }
                 ) {
-                    "Constraints (minLength, maxLength, minimum, maximum, etc.) can only be used with strings or numbers."
+                    throw KopapiException("Constraints (minLength, maxLength, minimum, maximum, etc.) can only be used with strings or numbers.")
                 }
             }
+        }
+    }
+
+    private fun verifyStringConstraints(
+        minLength: Int? = null,
+        maxLength: Int? = null,
+        minimum: Number? = null,
+        maximum: Number? = null,
+        exclusiveMinimum: Number? = null,
+        exclusiveMaximum: Number? = null,
+        multipleOf: Number? = null
+    ) {
+        // Validate string-specific constraints.
+        minLength?.let {
+            if (it < 0) {
+                throw KopapiException("Minimum length must be greater than or equal to zero.")
+            }
+        }
+        maxLength?.let {
+            if (it < 0) {
+                throw KopapiException("Maximum length must be greater than or equal to zero.")
+            }
+        }
+        minLength?.let {
+            if (maxLength != null && minLength > maxLength) {
+                throw KopapiException("Minimum length must be less than or equal to maximum length.")
+            }
+        }
+
+        // Ensure no number-specific constraints are applied.
+        if (listOf(minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf).any { it != null }) {
+            throw KopapiException("Number constraints (minimum, maximum, multipleOf, etc.) cannot be applied to strings.")
+        }
+    }
+
+    private fun verifyNumericConstraints(
+        minLength: Int? = null,
+        maxLength: Int? = null,
+        minimum: Number? = null,
+        maximum: Number? = null,
+        exclusiveMinimum: Number? = null,
+        exclusiveMaximum: Number? = null,
+        multipleOf: Number? = null
+    ) {
+        minimum?.let {
+            if (maximum != null && minimum.toDouble() > maximum.toDouble()) {
+                throw KopapiException("'minimum' value must be less than or equal to 'maximum' value.")
+            }
+        }
+        exclusiveMinimum?.let {
+            if (minimum != null && exclusiveMinimum.toDouble() <= minimum.toDouble()) {
+                throw KopapiException("'exclusiveMinimum' must be strictly greater than the 'minimum' value.")
+            }
+        }
+        exclusiveMaximum?.let {
+            if (maximum != null && exclusiveMaximum.toDouble() >= maximum.toDouble()) {
+                throw KopapiException("'exclusiveMaximum' must be strictly less than the 'maximum' value.")
+            }
+        }
+        multipleOf?.let {
+            if (multipleOf.toDouble() <= 0.0) {
+                throw KopapiException("'multipleOf' must be greater than zero.")
+            }
+        }
+
+        // Ensure no string-specific constraints are applied.
+        if (listOf(minLength, maxLength).any { it != null }) {
+            throw KopapiException("String constraints (minLength, maxLength) cannot be applied to numbers.")
         }
     }
 }

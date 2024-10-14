@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.api.elements
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
 import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurity.Scheme
 import io.github.perracodex.kopapi.dsl.api.types.AuthenticationMethod
@@ -35,42 +36,51 @@ internal data class ApiSecurity(
     val openIdConnectUrl: Url? = null  // Only applicable for OPENID_CONNECT scheme.
 ) {
     init {
-        // Ensure that name is not empty
-        require(name.isNotBlank()) { "Name must not be empty." }
+        // Ensure that name is not empty.
+        if (name.isBlank()) {
+            throw KopapiException("Security scheme name must not be empty.")
+        }
 
         // Ensure that location is only provided for the API_KEY scheme.
-        require(!(scheme == Scheme.API_KEY && location == null)) {
-            "SecurityLocation must be specified when using the ${Scheme.API_KEY.name} scheme. " +
-                    "Found Scheme '$scheme' with Location '$location'."
+        if (scheme == Scheme.API_KEY && location == null) {
+            throw KopapiException(
+                "SecurityLocation must be specified when using the ${Scheme.API_KEY.name} scheme. " +
+                        "Found Scheme '$scheme' with no location."
+            )
         }
-        require(!(scheme != Scheme.API_KEY && location != null)) {
-            "Location should only be used with the ${Scheme.API_KEY.name} scheme. " +
-                    "Found Location '$location' with Scheme '$scheme'."
+        if (scheme != Scheme.API_KEY && location != null) {
+            throw KopapiException(
+                "SecurityLocation should only be used with the ${Scheme.API_KEY.name} scheme. " +
+                        "Found Scheme '$scheme' with Location '$location'."
+            )
         }
 
         // Ensure that HTTP authentication method is only provided when scheme is HTTP.
-        require(!(scheme == Scheme.HTTP && authenticationMethod == null)) {
-            "HTTP type (e.g., basic, bearer) must be specified when using the ${Scheme.HTTP.name} scheme." +
-                    " Found Scheme '$scheme' with HTTP authentication method '$authenticationMethod'."
+        if (scheme == Scheme.HTTP && authenticationMethod == null) {
+            throw KopapiException(
+                "HTTP type (e.g., basic, bearer) must be specified when using the ${Scheme.HTTP.name} scheme." +
+                        " Found Scheme '$scheme' with no HTTP authentication method."
+            )
         }
-        require(!(scheme != Scheme.HTTP && authenticationMethod != null)) {
-            "HTTP type should only be used with the ${Scheme.HTTP.name} scheme. " +
-                    "Found HTTP authentication method  '$authenticationMethod' with Scheme '$scheme'."
+        if (scheme != Scheme.HTTP && authenticationMethod != null) {
+            throw KopapiException(
+                "HTTP authentication method should only be used with the ${Scheme.HTTP.name} scheme. " +
+                        "Found Scheme '$scheme' with HTTP authentication method '$authenticationMethod'."
+            )
         }
 
         // Ensure that openIdConnectUrl is only provided for OPENID_CONNECT scheme.
-        require(!(scheme == Scheme.OPENID_CONNECT && openIdConnectUrl == null)) {
-            "openIdConnectUrl must be specified when using the ${Scheme.OPENID_CONNECT.name} scheme. " +
-                    "Found Scheme '$scheme' with openIdConnectUrl '$openIdConnectUrl'."
+        if (scheme == Scheme.OPENID_CONNECT && openIdConnectUrl == null) {
+            throw KopapiException(
+                "openIdConnectUrl must be specified when using the ${Scheme.OPENID_CONNECT.name} scheme. " +
+                        "Found Scheme '$scheme' with no OpenID Connect URL."
+            )
         }
-        require(!(scheme != Scheme.OPENID_CONNECT && openIdConnectUrl != null)) {
-            "openIdConnectUrl should only be used with the ${Scheme.OPENID_CONNECT.name} scheme. " +
-                    "Found Scheme '$scheme' with openIdConnectUrl '$openIdConnectUrl'."
-        }
-
-        // Mutual TLS requires no additional parameters beyond the scheme itself.
-        require(!(scheme == Scheme.MUTUAL_TLS && (authenticationMethod != null || location != null || openIdConnectUrl != null))) {
-            "Mutual TLS (mTLS) does not require authentication methods, locations, or OpenID URLs."
+        if (scheme != Scheme.OPENID_CONNECT && openIdConnectUrl != null) {
+            throw KopapiException(
+                "openIdConnectUrl should only be used with the ${Scheme.OPENID_CONNECT.name} scheme. " +
+                        "Found Scheme '$scheme' with OpenID Connect URL '$openIdConnectUrl'."
+            )
         }
     }
 

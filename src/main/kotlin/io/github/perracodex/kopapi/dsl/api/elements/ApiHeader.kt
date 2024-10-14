@@ -19,8 +19,4 @@ internal data class ApiHeader(
     val description: String?,
     val required: Boolean,
     val deprecated: Boolean
-) {
-    init {
-        require(name.isNotBlank()) { "Name must not be empty." }
-    }
-}
+)

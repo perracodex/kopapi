@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.common
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.api.builders.security.*
 import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurity
 import io.github.perracodex.kopapi.dsl.api.types.AuthenticationMethod
@@ -172,9 +173,12 @@ public abstract class SecuritySchemeConfigurable {
      * @throws IllegalArgumentException If a security scheme with the same name already exists.
      */
     private fun addSecurityScheme(name: String, security: ApiSecurity) {
-        require(securitySchemes.none { it.name.equals(other = name, ignoreCase = true) }) {
-            "Duplicate security scheme name '$name' detected. Security scheme names must be unique."
+        if (securitySchemes.any { it.name.equals(other = name, ignoreCase = true) }) {
+            throw KopapiException(
+                "Duplicate security scheme name '$name' detected. Security scheme names must be unique."
+            )
         }
+
         securitySchemes.add(security)
     }
 }

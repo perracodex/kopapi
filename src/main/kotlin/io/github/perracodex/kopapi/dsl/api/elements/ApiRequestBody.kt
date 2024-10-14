@@ -4,8 +4,10 @@
 
 package io.github.perracodex.kopapi.dsl.api.elements
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
 import io.ktor.http.*
+import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 
 /**
@@ -28,8 +30,9 @@ internal data class ApiRequestBody internal constructor(
     val deprecated: Boolean
 ) {
     init {
-        require(type.classifier != Any::class) { "Request body cannot be of type 'Any'. Define an explicit type." }
-        require(type.classifier != Unit::class) { "Request body cannot be of type 'Unit'. Define an explicit type." }
-        require(type.classifier != Nothing::class) { "Request body cannot be of type 'Nothing'. Define an explicit type." }
+        val classifier: KClassifier? = type.classifier
+        if (classifier == Any::class || classifier == Unit::class || classifier == Nothing::class) {
+            throw KopapiException("RequestBody cannot be of type '${type.classifier}'. Define an explicit type.")
+        }
     }
 }
