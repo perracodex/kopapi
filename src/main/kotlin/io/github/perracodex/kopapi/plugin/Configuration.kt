@@ -20,4 +20,12 @@ internal data class Configuration(
     val apiInfo: ApiInfo?,
     val apiServers: Set<ApiServerConfig>?,
     val apiSecuritySchemes: Set<ApiSecurity>?
-)
+) {
+    init {
+        val urls: List<String> = listOf(debugUrl, openapiJsonUrl, openapiYamlUrl, swaggerUrl)
+        val duplicates: Map<String, Int> = urls.groupingBy { it }.eachCount().filter { it.value > 1 }
+        if (duplicates.isNotEmpty()) {
+            throw IllegalArgumentException("Duplicate URLs found: ${duplicates.keys}")
+        }
+    }
+}
