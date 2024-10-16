@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.api.builders.parameter
 
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.api.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.api.types.ParameterStyle
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -17,11 +17,11 @@ import kotlin.reflect.KType
  * @property description A description of the parameter's purpose and usage.
  * @property required Indicates whether the parameter is mandatory for the API call.
  * @property defaultValue The default value for the parameter if one is not provided.
- * @property explode Whether to send arrays and objects as separate parameters.
  * @property style The style in which the parameter is serialized in the URL.
+ * @property explode Whether to send arrays and objects as separate parameters.
  * @property deprecated Indicates if the parameter is deprecated and should be avoided.
  *
- * @see [ApiMetadataBuilder.queryParameter]
+ * @see [ApiOperationBuilder.queryParameter]
  * @see [CookieParameterBuilder]
  * @see [HeaderParameterBuilder]
  * @see [PathParameterBuilder]
@@ -30,8 +30,8 @@ import kotlin.reflect.KType
 public class QueryParameterBuilder(
     public var required: Boolean = true,
     public var defaultValue: Any? = null,
-    public var explode: Boolean = false,
-    public var style: ParameterStyle = ParameterStyle.SIMPLE,
+    public var style: ParameterStyle = ParameterStyle.FORM,
+    public var explode: Boolean = true,
     public var deprecated: Boolean = false
 ) {
     public var description: String by MultilineString()
@@ -52,9 +52,9 @@ public class QueryParameterBuilder(
             description = description.trimOrNull(),
             required = required,
             defaultValue = defaultValue,
-            explode = explode,
-            style = style,
-            deprecated = deprecated
+            style = style.takeIf { it != ParameterStyle.FORM },
+            explode = explode.takeIf { !it },
+            deprecated = deprecated.takeIf { it }
         )
     }
 }

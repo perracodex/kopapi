@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.plugin
 
 import io.github.perracodex.kopapi.core.KopapiException
-import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurity
+import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 
@@ -20,7 +20,7 @@ internal data class Configuration(
     val swaggerUrl: String,
     val apiInfo: ApiInfo?,
     val apiServers: Set<ApiServerConfig>?,
-    val apiSecuritySchemes: Set<ApiSecurity>?
+    val apiSecuritySchemes: Set<ApiSecurityScheme>?
 ) {
     init {
         val urls: List<String> = listOf(debugUrl, openapiJsonUrl, openapiYamlUrl, swaggerUrl)

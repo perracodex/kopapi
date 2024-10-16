@@ -4,11 +4,11 @@
 
 package io.github.perracodex.kopapi.core
 
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.api.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.api.elements.ApiRequestBody
 import io.github.perracodex.kopapi.dsl.api.elements.ApiResponse
-import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurity
+import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
 import io.ktor.http.*
 
 /**
@@ -26,11 +26,12 @@ import io.ktor.http.*
  * @property parameters Optional set of [ApiParameter] objects for defining endpoint parameters.
  * @property requestBody Optional [ApiRequestBody] object for defining the request body schema.
  * @property responses Optional set of [ApiResponse] objects for defining endpoint responses.
- * @property securitySchemes Optional set of [ApiSecurity] objects for defining endpoint security schemes.
+ * @property securitySchemes Optional set of [ApiSecurityScheme] objects for defining endpoint security schemes.
+ * @property noSecurity Whether no security is required and should ignore top level security schemes.
  *
- * @see [ApiMetadataBuilder]
+ * @see [ApiOperationBuilder]
  */
-internal data class ApiMetadata(
+internal data class ApiOperation(
     val path: String,
     val method: HttpMethod,
     val summary: String?,
@@ -39,7 +40,8 @@ internal data class ApiMetadata(
     val parameters: Set<ApiParameter>?,
     val requestBody: ApiRequestBody?,
     val responses: Set<ApiResponse>?,
-    val securitySchemes: Set<ApiSecurity>?
+    val securitySchemes: Set<ApiSecurityScheme>?,
+    val noSecurity: Boolean
 ) {
     init {
         if (path.isBlank()) {

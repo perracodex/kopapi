@@ -4,12 +4,14 @@
 
 package io.github.perracodex.kopapi.dsl.api.types
 
+import com.fasterxml.jackson.annotation.JsonValue
+
 /**
  * Enum representing the possible HTTP authentication methods, applicable only to HTTP Security schemes.
  *
  * @property value The string value of the HTTP authentication method.
  */
-public enum class AuthenticationMethod(internal val value: String) {
+public enum class AuthenticationMethod(@JsonValue internal val value: String) {
     /** HTTP Basic authentication method. */
     BASIC(value = "basic"),
 

@@ -4,7 +4,7 @@
 
 package plugin.servers
 
-import io.github.perracodex.kopapi.core.composer.SchemaComposer
+import io.github.perracodex.kopapi.core.SchemaRegistry
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.plugin.Kopapi
@@ -54,7 +54,7 @@ class ServerConfigurationTest {
             )
 
             // Validate the servers exist.
-            val servers: Set<ApiServerConfig>? = SchemaComposer.configuration?.apiServers
+            val servers: Set<ApiServerConfig>? = SchemaRegistry.configuration?.apiServers
             assertNotNull(
                 actual = servers,
                 message = "Expected server configurations to be non-null."
@@ -136,12 +136,12 @@ class ServerConfigurationTest {
             )
             assertEquals(
                 expected = expectation.defaultValue,
-                actual = variable.default,
+                actual = variable.defaultValue,
                 message = "Expected default value for '$variableName'."
             )
             assertEquals(
                 expected = expectation.choices,
-                actual = variable.enum,
+                actual = variable.choices,
                 message = "Expected choices for '$variableName'."
             )
         }

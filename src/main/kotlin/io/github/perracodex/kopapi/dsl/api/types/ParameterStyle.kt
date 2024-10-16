@@ -4,12 +4,14 @@
 
 package io.github.perracodex.kopapi.dsl.api.types
 
+import com.fasterxml.jackson.annotation.JsonValue
+
 /**
  * Enum defining possible serialization styles for parameters.
  *
  * @property value The string value of the parameter style.
  */
-public enum class ParameterStyle(internal val value: String) {
+public enum class ParameterStyle(@JsonValue internal val value: String) {
     /** Commonly used for query parameters, formatted as key-value pairs. */
     FORM(value = "form"),
 

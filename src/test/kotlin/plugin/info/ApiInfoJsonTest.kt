@@ -4,7 +4,7 @@
 
 package plugin.info
 
-import io.github.perracodex.kopapi.core.composer.SchemaComposer
+import io.github.perracodex.kopapi.core.SchemaRegistry
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiContact
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense
@@ -49,7 +49,7 @@ class ApiInfoJsonTest {
             )
 
             // Validate the API info exists.
-            val jsonApiInfo: String? = SchemaComposer.getApiInfoJson()
+            val jsonApiInfo: String? = SchemaRegistry.getApiInfoJson()
             assertNotNull(
                 actual = jsonApiInfo,
                 message = "Expected API info to be non-null."

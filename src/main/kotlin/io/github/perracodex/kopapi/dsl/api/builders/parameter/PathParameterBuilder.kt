@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.api.builders.parameter
 
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.api.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.api.types.ParameterStyle
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -20,7 +20,7 @@ import kotlin.reflect.KType
  * @property style The style in which the parameter is serialized in the URL.
  * @property deprecated Indicates if the parameter is deprecated and should be avoided.
  *
- * @see [ApiMetadataBuilder.pathParameter]
+ * @see [ApiOperationBuilder.pathParameter]
  * @see [CookieParameterBuilder]
  * @see [HeaderParameterBuilder]
  * @see [QueryParameterBuilder]
@@ -50,9 +50,9 @@ public class PathParameterBuilder(
             description = description.trimOrNull(),
             required = required,
             defaultValue = defaultValue,
-            style = style,
-            deprecated = deprecated,
-            explode = null
+            style = style.takeIf { it != ParameterStyle.SIMPLE },
+            explode = null, // `explode` is always false fo `path` parameters.
+            deprecated = deprecated.takeIf { it },
         )
     }
 }

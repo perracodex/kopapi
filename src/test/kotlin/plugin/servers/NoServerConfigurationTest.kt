@@ -4,7 +4,7 @@
 
 package plugin.servers
 
-import io.github.perracodex.kopapi.core.composer.SchemaComposer
+import io.github.perracodex.kopapi.core.SchemaRegistry
 import io.github.perracodex.kopapi.dsl.plugin.builders.ServerBuilder
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.plugin.Kopapi
@@ -30,7 +30,7 @@ class NoServerConfigurationTest {
                 message = "Expected Kopapi plugin to be non-null."
             )
 
-            val servers: Set<ApiServerConfig>? = SchemaComposer.configuration?.apiServers
+            val servers: Set<ApiServerConfig>? = SchemaRegistry.configuration?.apiServers
             assertNotNull(
                 actual = servers,
                 message = "Expected server configurations to be non-null."

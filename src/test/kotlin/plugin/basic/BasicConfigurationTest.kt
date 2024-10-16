@@ -4,7 +4,7 @@
 
 package plugin.basic
 
-import io.github.perracodex.kopapi.core.composer.SchemaComposer
+import io.github.perracodex.kopapi.core.SchemaRegistry
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
@@ -34,17 +34,17 @@ class BasicConfigurationTest {
 
             assertEquals(
                 expected = "openapi/json1",
-                actual = SchemaComposer.configuration?.openapiJsonUrl,
+                actual = SchemaRegistry.configuration?.openapiJsonUrl,
                 message = "Expected JSON URL to match."
             )
             assertEquals(
                 expected = "openapi/yaml2",
-                actual = SchemaComposer.configuration?.openapiYamlUrl,
+                actual = SchemaRegistry.configuration?.openapiYamlUrl,
                 message = "Expected YAML URL to match."
             )
             assertEquals(
                 expected = "swagger3",
-                actual = SchemaComposer.configuration?.swaggerUrl,
+                actual = SchemaRegistry.configuration?.swaggerUrl,
                 message = "Expected Swagger URL to match."
             )
         }
@@ -69,7 +69,7 @@ class BasicConfigurationTest {
             )
 
             assertNull(
-                actual = SchemaComposer.configuration,
+                actual = SchemaRegistry.configuration,
                 message = "Expected configuration to be null."
             )
         }

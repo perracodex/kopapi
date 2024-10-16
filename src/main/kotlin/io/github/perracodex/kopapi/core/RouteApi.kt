@@ -4,15 +4,14 @@
 
 package io.github.perracodex.kopapi.core
 
-import io.github.perracodex.kopapi.core.composer.SchemaComposer
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.utils.extractRoutePath
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import io.ktor.server.routing.*
 
 /**
- * Attaches API metadata to a Ktor route, intended for use with terminal route handlers that define an HTTP method.
+ * Attaches API Operation metadata to a Ktor route, intended for use with terminal route handlers that define an HTTP method.
  *
  * The metadata includes the endpoint full path, the HTTP method associated with the route, and optionally other
  * concrete details such as a summary, description, tags, parameters, request body, and responses.
@@ -32,13 +31,13 @@ import io.ktor.server.routing.*
  * }
  * ```
  *
- * @param configure A lambda receiver for configuring the [ApiMetadataBuilder].
+ * @param configure A lambda receiver for configuring the [ApiOperationBuilder].
  * @return The current [Route] instance with attached metadata.
  * @throws IllegalArgumentException If the route does not have an HTTP method selector.
  *
- * @see [ApiMetadataBuilder]
+ * @see [ApiOperationBuilder]
  */
-public infix fun Route.api(configure: ApiMetadataBuilder.() -> Unit): Route {
+public infix fun Route.api(configure: ApiOperationBuilder.() -> Unit): Route {
     if (this !is RoutingNode) {
         throw KopapiException(message = buildApiErrorMessage(route = this))
     }
@@ -49,11 +48,11 @@ public infix fun Route.api(configure: ApiMetadataBuilder.() -> Unit): Route {
 
     val endpointPath: String = this.extractRoutePath()
 
-    // Build the metadata using the provided configuration.
-    val builder: ApiMetadataBuilder = ApiMetadataBuilder(
+    // Build the operation using the provided configuration.
+    val builder: ApiOperationBuilder = ApiOperationBuilder(
         endpoint = "[$method] $endpointPath"
     ).apply(configure)
-    val apiMetadata = ApiMetadata(
+    val apiOperation = ApiOperation(
         path = endpointPath,
         method = method,
         summary = builder.summary.trimOrNull(),
@@ -62,11 +61,11 @@ public infix fun Route.api(configure: ApiMetadataBuilder.() -> Unit): Route {
         parameters = builder.parameters.takeIf { it.isNotEmpty() },
         requestBody = builder.requestBody,
         responses = builder.responses.takeIf { it.isNotEmpty() },
-        securitySchemes = builder.securitySchemes.takeIf { it.isNotEmpty() }
+        securitySchemes = builder.securitySchemes.takeIf { it.isNotEmpty() },
+        noSecurity = builder.noSecurity
     )
 
-    // Register the metadata for later retrieval.
-    SchemaComposer.registerApiMetadata(metadata = apiMetadata)
+    SchemaRegistry.registerApiOperation(operation = apiOperation)
 
     return this
 }

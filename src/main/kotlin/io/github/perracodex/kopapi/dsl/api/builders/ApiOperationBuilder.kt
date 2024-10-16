@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.api.builders
 
-import io.github.perracodex.kopapi.core.ApiMetadata
+import io.github.perracodex.kopapi.core.ApiOperation
 import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.api.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.api.builders.attributes.LinkBuilder
@@ -26,7 +26,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 /**
- * Builder for constructing API metadata for a route endpoint.
+ * Builder for constructing API Operations metadata for a route endpoint.
  *
  * Usage involves defining a Ktor route and attaching API metadata using the `Route.api` infix
  * function to enrich the route with operational details and documentation specifications.
@@ -71,9 +71,9 @@ import kotlin.reflect.typeOf
  * }
  * ```
  *
- * @see [ApiMetadata]
+ * @see [ApiOperation]
  */
-public class ApiMetadataBuilder internal constructor(
+public class ApiOperationBuilder internal constructor(
     @PublishedApi internal val endpoint: String
 ) : SecuritySchemeConfigurable() {
     /**
@@ -146,16 +146,16 @@ public class ApiMetadataBuilder internal constructor(
      * @see [summary]
      * @see [description]
      */
-    public fun ApiMetadataBuilder.tags(vararg tags: String) {
+    public fun ApiOperationBuilder.tags(vararg tags: String) {
         this.tags.addAll(tags.map { it.trim() }.filter { it.isNotBlank() })
     }
 
     /**
-     * Adds a path parameter to the API endpoint's metadata.
+     * Registers a path parameter.
      *
      * #### Sample Usage
      * ```
-     * pathParameter<String>("id") {
+     * pathParameter<String>(name = "id") {
      *     description = "The unique identifier of the item."
      * }
      * ```
@@ -170,7 +170,7 @@ public class ApiMetadataBuilder internal constructor(
      * @see [queryParameter]
      * @see [requestBody]
      */
-    public inline fun <reified T : Any> ApiMetadataBuilder.pathParameter(
+    public inline fun <reified T : Any> ApiOperationBuilder.pathParameter(
         name: String,
         configure: PathParameterBuilder.() -> Unit = {}
     ) {
@@ -179,14 +179,14 @@ public class ApiMetadataBuilder internal constructor(
     }
 
     /**
-     * Adds a query parameter to the API endpoint's metadata.
+     * Registers a query parameter.
      *
      * #### Sample Usage
      * ```
-     * queryParameter<Int>("page") {
+     * queryParameter<Int>(name = "page") {
      *     description = "The page number to retrieve."
      * }
-     * queryParameter<Int>("size") {
+     * queryParameter<Int>(name = "size") {
      *     description = "The number of items per page."
      *     required = false
      *     defaultValue = 1
@@ -203,7 +203,7 @@ public class ApiMetadataBuilder internal constructor(
      * @see [pathParameter]
      * @see [requestBody]
      */
-    public inline fun <reified T : Any> ApiMetadataBuilder.queryParameter(
+    public inline fun <reified T : Any> ApiOperationBuilder.queryParameter(
         name: String,
         configure: QueryParameterBuilder.() -> Unit = {}
     ) {
@@ -212,11 +212,11 @@ public class ApiMetadataBuilder internal constructor(
     }
 
     /**
-     * Adds a header parameter to the API endpoint's metadata.
+     * Registers a header parameter.
      *
      * #### Sample Usage
      * ```
-     * headerParameter<String>("X-Custom-Header") {
+     * headerParameter<String>(name = "X-Custom-Header") {
      *     description = "A custom header for special purposes."
      *     required = true
      * }
@@ -232,7 +232,7 @@ public class ApiMetadataBuilder internal constructor(
      * @see [queryParameter]
      * @see [requestBody]
      */
-    public inline fun <reified T : Any> ApiMetadataBuilder.headerParameter(
+    public inline fun <reified T : Any> ApiOperationBuilder.headerParameter(
         name: String,
         configure: HeaderParameterBuilder.() -> Unit = {}
     ) {
@@ -241,11 +241,11 @@ public class ApiMetadataBuilder internal constructor(
     }
 
     /**
-     * Adds a cookie parameter to the API endpoint's metadata.
+     * Registers a cookie parameter.
      *
      * #### Sample Usage
      * ```
-     * cookieParameter<String>("session") {
+     * cookieParameter<String>(name = "session") {
      *     description = "The session ID for authentication."
      * }
      * ```
@@ -260,7 +260,7 @@ public class ApiMetadataBuilder internal constructor(
      * @see [queryParameter]
      * @see [requestBody]
      */
-    public inline fun <reified T : Any> ApiMetadataBuilder.cookieParameter(
+    public inline fun <reified T : Any> ApiOperationBuilder.cookieParameter(
         name: String,
         configure: CookieParameterBuilder.() -> Unit = {}
     ) {
@@ -269,7 +269,7 @@ public class ApiMetadataBuilder internal constructor(
     }
 
     /**
-     * Adds a request body to the API endpoint's metadata.
+     * Registers a request body.
      *
      * #### Sample Usage
      * ```
@@ -290,7 +290,7 @@ public class ApiMetadataBuilder internal constructor(
      * @see [queryParameter]
      * @see [response]
      */
-    public inline fun <reified T : Any> ApiMetadataBuilder.requestBody(
+    public inline fun <reified T : Any> ApiOperationBuilder.requestBody(
         configure: RequestBodyBuilder.() -> Unit = {}
     ) {
         if (requestBody != null) {
@@ -305,11 +305,11 @@ public class ApiMetadataBuilder internal constructor(
     }
 
     /**
-     * Adds a response, with a body, to the API endpoint's metadata.
+     * Registers a response with a body.
      *
      * #### Sample Usage
      *```
-     * response<ResponseType>(HttpStatusCode.OK) {
+     * response<ResponseType>(status = HttpStatusCode.OK) {
      *     description = "Successfully retrieved the item."
      *     contentType = ContentType.Application.Json
      * }
@@ -317,13 +317,13 @@ public class ApiMetadataBuilder internal constructor(
      *
      * #### Adding Headers and Links
      * ```
-     * response<ResponseType>(HttpStatusCode.OK) {
+     * response<ResponseType>(status = HttpStatusCode.OK) {
      *     description = "Successfully retrieved the item."
-     *     header("X-Rate-Limit") {
+     *     header(name = "X-Rate-Limit") {
      *         description = "Number of allowed requests per period."
      *         required = true
      *     }
-     *     link("getNextItem") {
+     *     link(operationId = "getNextItem") {
      *         description = "Link to the next item."
      *     }
      * }
@@ -338,13 +338,12 @@ public class ApiMetadataBuilder internal constructor(
      * @see [LinkBuilder]
      */
     @JvmName(name = "responseWithType")
-    public inline fun <reified T : Any> ApiMetadataBuilder.response(
+    public inline fun <reified T : Any> ApiOperationBuilder.response(
         status: HttpStatusCode,
         configure: ResponseBuilder.() -> Unit = {}
     ) {
-        val type: KType = when (T::class) {
-            Unit::class -> typeOf<Unit>()
-            Nothing::class -> typeOf<Unit>() // Treat Nothing as Unit for "no content".
+        val type: KType? = when (T::class) {
+            Unit::class, Nothing::class, Any::class -> null
             else -> typeOf<T>()
         }
         val builder: ResponseBuilder = ResponseBuilder().apply(configure)
@@ -352,25 +351,25 @@ public class ApiMetadataBuilder internal constructor(
     }
 
     /**
-     * Adds a response, with no response body, to the API endpoint's metadata.
+     * Registers a response with no response body.
      * Assuming there is only a [HttpStatusCode] with no associated type.
      *
      * #### Sample Usage
      *```
-     * response(HttpStatusCode.NotFound) {
+     * response(status = HttpStatusCode.NotFound) {
      *     description = "The item was not found."
      * }
      * ```
      *
      * #### Adding Headers and Links
      * ```
-     * response(HttpStatusCode.OK) {
+     * response(status = HttpStatusCode.OK) {
      *     description = "Successfully retrieved the item."
-     *     header("X-Rate-Limit") {
+     *     header(name = "X-Rate-Limit") {
      *         description = "Number of allowed requests per period."
      *         required = true
      *     }
-     *     link("getNextItem") {
+     *     link(operationId = "getNextItem") {
      *         description = "Link to the next item."
      *     }
      * }
@@ -384,10 +383,26 @@ public class ApiMetadataBuilder internal constructor(
      * @see [LinkBuilder]
      */
     @JvmName(name = "responseWithoutType")
-    public fun ApiMetadataBuilder.response(
+    public fun ApiOperationBuilder.response(
         status: HttpStatusCode,
         configure: ResponseBuilder.() -> Unit = {}
     ) {
         response<Unit>(status = status, configure = configure)
+    }
+
+    /**
+     * Disables the security schemes for the API operation.
+     * Top level security schemes will not be applied to this operation.
+     * If other security schemes are defined in the operation, they will br discarded.
+     *
+     * @see [apiKeySecurity]
+     * @see [httpSecurity]
+     * @see [mutualTLSSecurity]
+     * @see [oauth2Security]
+     * @see [openIdConnectSecurity]
+     */
+    public fun noSecurity() {
+        securitySchemes.clear()
+        noSecurity = true
     }
 }

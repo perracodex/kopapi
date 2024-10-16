@@ -45,7 +45,7 @@ public class HeaderBuilder(
             name = name,
             description = description.trimOrNull(),
             required = required,
-            deprecated = deprecated
+            deprecated = deprecated.takeIf { it }
         )
     }
 }

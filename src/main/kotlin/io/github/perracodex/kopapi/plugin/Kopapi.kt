@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.plugin
 
-import io.github.perracodex.kopapi.core.composer.SchemaComposer
+import io.github.perracodex.kopapi.core.SchemaRegistry
 import io.github.perracodex.kopapi.routing.debugRoute
 import io.github.perracodex.kopapi.routing.openApiRoutes
 import io.github.perracodex.kopapi.routing.swaggerRoute
@@ -20,17 +20,21 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
 ) {
     // Register the configuration with the schema provider.
     val configuration: Configuration = this.pluginConfig.build()
-    SchemaComposer.registerConfiguration(configuration = configuration)
+    SchemaRegistry.registerConfiguration(configuration = configuration)
+
+    // Subscribe to the application started event to clear
+    // the schema composer when the plugin is disabled.
+    if (!configuration.isEnabled) {
+        lateinit var applicationStartedHandler: (Application) -> Unit
+        applicationStartedHandler = {
+            SchemaRegistry.clear()
+            application.monitor.unsubscribe(definition = ApplicationStarting, handler = applicationStartedHandler)
+        }
+        application.monitor.subscribe(definition = ApplicationStarting, handler = applicationStartedHandler)
+    }
 
     // Exit early if the plugin is disabled.
     if (!configuration.isEnabled) {
-        // `Routes.api` definitions can happen before or after the plugin is installed,
-        // so we need to also clear the schema provider when the application starts
-        // to ensure all unused resources are freed.
-        this.application.monitor.subscribe(ApplicationStarted) {
-            SchemaComposer.clear()
-        }
-
         return@createApplicationPlugin
     }
 

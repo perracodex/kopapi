@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.api.elements
 
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
 import io.ktor.http.*
 import kotlin.reflect.KType
 
@@ -18,15 +18,15 @@ import kotlin.reflect.KType
  * @property headers A list of [ApiHeader] objects representing the headers that may be included in the response.
  * @property links A list of [ApiLink] objects representing possible links to other operations.
  *
- * @see [ApiMetadataBuilder.response]
+ * @see [ApiOperationBuilder.response]
  * @see [ApiHeader]
  * @see [ApiLink]
  */
 internal data class ApiResponse(
-    val type: KType,
+    val type: KType?,
     val status: HttpStatusCode,
     val description: String?,
-    val contentType: ContentType,
+    val contentType: ContentType?,
     val headers: Set<ApiHeader>?,
     val links: Set<ApiLink>?
 )

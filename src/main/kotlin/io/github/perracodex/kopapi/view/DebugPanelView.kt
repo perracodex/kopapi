@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.view
 
-import io.github.perracodex.kopapi.core.composer.SchemaComposer
+import io.github.perracodex.kopapi.core.SchemaRegistry
 import kotlinx.html.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -20,9 +20,9 @@ import kotlinx.serialization.json.jsonPrimitive
  * Each panel includes a dropdown for filtering the displayed JSON data and syntax highlighting.
  */
 internal class DebugPanelView {
-    private val apiMetadataJson: Set<String> = SchemaComposer.getApiMetadataJson()
-    private val schemasJson: Set<String> = SchemaComposer.getSchemasJson()
-    private val schemaConflictsJson: Set<String> = SchemaComposer.getSchemaConflictsJson()
+    private val apiOperationJson: Set<String> = SchemaRegistry.getApiOperationJson()
+    private val schemasJson: Set<String> = SchemaRegistry.getSchemasJson()
+    private val schemaConflictsJson: Set<String> = SchemaRegistry.getSchemaConflictsJson()
     private val json = Json { prettyPrint = true }
 
     /**
@@ -32,7 +32,7 @@ internal class DebugPanelView {
      */
     fun build(html: HTML) {
         // Parse JSON strings into JsonObject lists.
-        val apiMetadataList: List<JsonObject> = apiMetadataJson.map { Json.parseToJsonElement(it).jsonObject }
+        val apiOperationList: List<JsonObject> = apiOperationJson.map { Json.parseToJsonElement(it).jsonObject }
         val schemasList: List<JsonObject> = schemasJson.map { Json.parseToJsonElement(it).jsonObject }
         val schemaConflictsList: List<JsonObject> = schemaConflictsJson.map { Json.parseToJsonElement(it).jsonObject }
 
@@ -53,7 +53,7 @@ internal class DebugPanelView {
                         title = "Routes API Metadata",
                         panelId = "routes-api-metadata",
                         keys = listOf("method", "path"),
-                        jsonDataList = apiMetadataList
+                        jsonDataList = apiOperationList
                     )
                     if (schemasList.isNotEmpty()) {
                         buildPanel(

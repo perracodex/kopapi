@@ -15,9 +15,9 @@ import io.ktor.http.*
  * #### Sample Usage
  * ```
  * servers {
- *      add("https://{environment}.example.com") {
+ *      add(urlString = "https://{environment}.example.com") {
  *          description = "Server with environment variable."
- *          variable("environment", "production") {
+ *          variable(name = "environment", defaultValue = "production") {
  *              choices = setOf("production", "staging", "development")
  *              description = "API environment."
  *          }
@@ -40,25 +40,25 @@ public class ServerBuilder {
      * #### Sample Usage
      * ```
      * servers {
-     *     add("http://localhost:8080") {
+     *     add(urlString = "http://localhost:8080") {
      *         description = "Local server for development."
      *     }
      *
-     *     add("https://{environment}.example.com") {
+     *     add(urlString = "https://{environment}.example.com") {
      *         description = "The server for the API with environment variable."
-     *         variable("environment", "production") {
+     *         variable(name = "environment", defaultValue = "production") {
      *             choices = setOf("production", "staging", "development")
      *             description = "Specifies the environment (production, etc.)"
      *         }
-     *         variable("version", "v1") {
+     *         variable(name = "version", defaultValue = "v1") {
      *             choices = setOf("v1", "v2")
      *             description = "The version of the API."
      *         }
      *     }
      *
-     *     add("https://{region}.api.example.com") {
+     *     add(urlString = "https://{region}.api.example.com") {
      *         description = "Server for the API by region."
-     *         variable("region", "us") {
+     *         variable(name = "region", defaultValue = "us") {
      *             choices = setOf("us", "eu")
      *             description = "Specifies the region for the API (us, eu)."
      *         }

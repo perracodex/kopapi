@@ -4,8 +4,11 @@
 
 package io.github.perracodex.kopapi.dsl.api.elements
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonValue
 import io.github.perracodex.kopapi.core.KopapiException
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.api.elements.ApiParameter.Location
 import io.github.perracodex.kopapi.dsl.api.types.ParameterStyle
 import kotlin.reflect.KClassifier
@@ -16,29 +19,32 @@ import kotlin.reflect.KType
  *
  * @property type The [KType] of the parameter, specifying the Kotlin type.
  * @property name The name of the parameter as it appears in the API endpoint.
- * @property location The [Location] of the parameter, indicating where in the request it is included.
  * @property description A human-readable description of the parameter.
+ * @property location The [Location] of the parameter, indicating where in the request it is included.
  * @property required Indicates whether the parameter is mandatory.
  * @property defaultValue The default value for the parameter, used if no value is provided.
- * @property explode Specifies whether arrays and objects should be exploded (true) or not (false).
  * @property style Describes how the parameter value is formatted when sent in a request.
+ * @property explode Specifies whether arrays and objects should be exploded (true) or not (false).
  * @property deprecated Indicates whether the parameter is deprecated and should be avoided.
  *
- * @see [ApiMetadataBuilder.headerParameter]
- * @see [ApiMetadataBuilder.queryParameter]
- * @see [ApiMetadataBuilder.pathParameter]
- * @see [ApiMetadataBuilder.cookieParameter]
+ * @see [ApiOperationBuilder.headerParameter]
+ * @see [ApiOperationBuilder.queryParameter]
+ * @see [ApiOperationBuilder.pathParameter]
+ * @see [ApiOperationBuilder.cookieParameter]
  */
 internal data class ApiParameter(
+    @JsonIgnore
     val type: KType,
-    val location: Location,
     val name: String,
     val description: String?,
+    @JsonProperty("in")
+    val location: Location,
     val required: Boolean,
+    @JsonProperty("default")
     val defaultValue: Any?,
-    val explode: Boolean?,
     val style: ParameterStyle?,
-    val deprecated: Boolean
+    val explode: Boolean?,
+    val deprecated: Boolean?
 ) {
     init {
         if (name.isBlank()) {
@@ -56,7 +62,7 @@ internal data class ApiParameter(
      *
      * @property value The string value of the location.
      */
-    enum class Location(val value: String) {
+    enum class Location(@JsonValue val value: String) {
         /** Parameter is included in the URL path. */
         PATH(value = "path"),
 

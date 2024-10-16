@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.api.builders.security
 
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
-import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurity
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 
@@ -14,7 +14,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  *
  * @property description A description of the security scheme.
  *
- * @see [ApiMetadataBuilder.mutualTLSSecurity]
+ * @see [ApiOperationBuilder.mutualTLSSecurity]
  * @see [ApiKeySecurityBuilder]
  * @see [HttpSecurityBuilder]
  * @see [OAuth2SecurityBuilder]
@@ -24,17 +24,16 @@ public class MutualTLSSecurityBuilder {
     public var description: String by MultilineString()
 
     /**
-     * Builds an [ApiSecurity] instance from the current builder state.
+     * Builds an [ApiSecurityScheme] instance from the current builder state.
      *
      * @param name The name of the security scheme
-     * @return The constructed [ApiSecurity] instance.
+     * @return The constructed [ApiSecurityScheme] instance.
      */
     @PublishedApi
-    internal fun build(name: String): ApiSecurity {
-        return ApiSecurity(
-            name = name.trim(),
-            description = description.trimOrNull(),
-            scheme = ApiSecurity.Scheme.MUTUAL_TLS
+    internal fun build(name: String): ApiSecurityScheme {
+        return ApiSecurityScheme.MutualTLS(
+            schemeName = name.trim(),
+            description = description.trimOrNull()
         )
     }
 }

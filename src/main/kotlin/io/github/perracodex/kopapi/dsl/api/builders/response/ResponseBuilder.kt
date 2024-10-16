@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.api.builders.response
 
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.api.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.api.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.api.elements.ApiHeader
@@ -18,14 +18,13 @@ import kotlin.reflect.KType
 /**
  * A builder for constructing a response in an API endpoint's metadata.
  *
+ * @property contentType The [ContentType] of the response data, such as JSON, XML, etc.
  * @property description A description of the response content and what it represents.
- * @property contentType The [ContentType] of the response data, such as JSON or XML.
  *
- * @see [ApiMetadataBuilder.response]
+ * @see [ApiOperationBuilder.response]
  */
-public class ResponseBuilder(
-    public var contentType: ContentType = ContentType.Application.Json
-) {
+public class ResponseBuilder {
+    public var contentType: ContentType? = null
     public var description: String by MultilineString()
 
     private val headers: MutableSet<ApiHeader> = mutableSetOf()
@@ -39,7 +38,7 @@ public class ResponseBuilder(
      * @return The constructed [ApiResponse] instance.
      */
     @PublishedApi
-    internal fun build(status: HttpStatusCode, type: KType): ApiResponse {
+    internal fun build(status: HttpStatusCode, type: KType?): ApiResponse {
         return ApiResponse(
             type = type,
             status = status,

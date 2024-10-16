@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.api.builders.parameter
 
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.api.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.api.types.ParameterStyle
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -17,11 +17,10 @@ import kotlin.reflect.KType
  * @property description A description of the parameter's purpose and usage.
  * @property required Indicates whether the parameter is mandatory for the API call.
  * @property defaultValue The default value for the parameter if one is not provided.
- * @property explode Whether to send arrays and objects as separate parameters.
  * @property style The [ParameterStyle] in which the parameter is serialized in the URL.
  * @property deprecated Indicates if the parameter is deprecated and should be avoided.
  *
- * @see [ApiMetadataBuilder.headerParameter]
+ * @see [ApiOperationBuilder.headerParameter]
  * @see [CookieParameterBuilder]
  * @see [PathParameterBuilder]
  * @see [QueryParameterBuilder]
@@ -30,7 +29,6 @@ import kotlin.reflect.KType
 public class HeaderParameterBuilder(
     public var required: Boolean = true,
     public var defaultValue: Any? = null,
-    public var explode: Boolean = false,
     public var style: ParameterStyle = ParameterStyle.SIMPLE,
     public var deprecated: Boolean = false
 ) {
@@ -52,9 +50,9 @@ public class HeaderParameterBuilder(
             description = description.trimOrNull(),
             required = required,
             defaultValue = defaultValue,
-            explode = explode,
-            style = style,
-            deprecated = deprecated
+            style = style.takeIf { it != ParameterStyle.SIMPLE },
+            explode = null, // `explode` is always false for `header` parameters.
+            deprecated = deprecated.takeIf { it }
         )
     }
 }

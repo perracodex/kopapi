@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.api.builders.security
 
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
-import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurity
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 
@@ -14,7 +14,8 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  *
  * @property description A description of the security scheme.
  *
- * @see [ApiMetadataBuilder.oauth2Security]
+ * @see [OAuthFlowBuilder]
+ * @see [ApiOperationBuilder.oauth2Security]
  * @see [ApiKeySecurityBuilder]
  * @see [HttpSecurityBuilder]
  * @see [OpenIdConnectSecurityBuilder]
@@ -24,17 +25,84 @@ public class OAuth2SecurityBuilder {
     public var description: String by MultilineString()
 
     /**
-     * Builds an [ApiSecurity] instance from the current builder state.
+     * A map of OAuth2 flow types to their corresponding builders.
+     * storing the configuration for each OAuth2 flow type that is defined for the security scheme.
+     */
+    private val flows: MutableMap<OAuthFlowType, OAuthFlowBuilder> = mutableMapOf()
+
+    /**
+     * Configures the OAuth2 Implicit flow for the security scheme.
+     */
+    public fun implicit(configure: OAuthFlowBuilder.() -> Unit) {
+        flows[OAuthFlowType.IMPLICIT] = OAuthFlowBuilder().apply(configure)
+    }
+
+    /**
+     * Configures the OAuth2 Password flow for the security scheme.
+     */
+    public fun password(configure: OAuthFlowBuilder.() -> Unit) {
+        flows[OAuthFlowType.PASSWORD] = OAuthFlowBuilder().apply(configure)
+    }
+
+    /**
+     * Configures the OAuth2 Client Credentials flow for the security scheme.
+     */
+    public fun clientCredentials(configure: OAuthFlowBuilder.() -> Unit) {
+        flows[OAuthFlowType.CLIENT_CREDENTIALS] = OAuthFlowBuilder().apply(configure)
+    }
+
+    /**
+     * Configures the OAuth2 Authorization Code flow for the security scheme.
+     */
+    public fun authorizationCode(configure: OAuthFlowBuilder.() -> Unit) {
+        flows[OAuthFlowType.AUTHORIZATION_CODE] = OAuthFlowBuilder().apply(configure)
+    }
+
+    /**
+     * Builds an [ApiSecurityScheme] instance from the current builder state.
      *
-     * @param name The name of the security scheme
-     * @return The constructed [ApiSecurity] instance.
+     * @param name The name of the security scheme.
+     * @return The constructed [ApiSecurityScheme] instance.
      */
     @PublishedApi
-    internal fun build(name: String): ApiSecurity {
-        return ApiSecurity(
-            name = name.trim(),
-            description = description.trimOrNull(),
-            scheme = ApiSecurity.Scheme.OAUTH2
+    internal fun build(name: String): ApiSecurityScheme {
+        val oauthFlows = ApiSecurityScheme.OAuth2.OAuthFlows(
+            implicit = flows[OAuthFlowType.IMPLICIT]?.build(),
+            password = flows[OAuthFlowType.PASSWORD]?.build(),
+            clientCredentials = flows[OAuthFlowType.CLIENT_CREDENTIALS]?.build(),
+            authorizationCode = flows[OAuthFlowType.AUTHORIZATION_CODE]?.build()
         )
+
+        return ApiSecurityScheme.OAuth2(
+            schemeName = name.trim(),
+            description = description.trimOrNull(),
+            flows = oauthFlows
+        )
+    }
+
+    /**
+     * Retrieves all scopes defined across all OAuth2 flows.
+     *
+     * @return A list of all unique scopes defined in the flows.
+     */
+    internal fun getAllScopes(): List<String> {
+        return flows.values.flatMap { it.getScopes() }.distinct()
+    }
+
+    /**
+     * Enum representing the different types of OAuth2 flows.
+     */
+    private enum class OAuthFlowType {
+        /** The OAuth2 Implicit flow. */
+        IMPLICIT,
+
+        /** The OAuth2 Password flow. */
+        PASSWORD,
+
+        /** The OAuth2 Client Credentials flow. */
+        CLIENT_CREDENTIALS,
+
+        /** The OAuth2 Authorization Code flow. */
+        AUTHORIZATION_CODE
     }
 }

@@ -18,6 +18,7 @@ import io.github.perracodex.kopapi.serialization.serializers.*
 import io.ktor.http.*
 import kotlin.reflect.KType
 
+
 /**
  * Provides utility functions for serialization.
  */
@@ -32,15 +33,8 @@ internal object SerializationUtils {
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_BY_DECLARATION_ORDER)
         .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
-        .addModule(
-            SimpleModule().apply {
-                addSerializer(ContentType::class.java, ContentTypeSerializer)
-                addSerializer(HttpMethod::class.java, HttpMethodSerializer)
-                addSerializer(HttpStatusCode::class.java, HttpStatusCodeSerializer)
-                addSerializer(KType::class.java, KTypeSerializer)
-                addSerializer(Url::class.java, UrlSerializer)
-            }
-        ).build()
+        .addModule(serializerModule())
+        .build()
 
     /**
      * Configured Jackson YAML Mapper, strictly for OpenAPI schema serialization.
@@ -51,20 +45,25 @@ internal object SerializationUtils {
         .serializationInclusion(JsonInclude.Include.NON_NULL)
         .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
         .enable(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE)
+        .enable(YAMLGenerator.Feature.INDENT_ARRAYS_WITH_INDICATOR)
+        .disable(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID)
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_BY_DECLARATION_ORDER)
         .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
-        .addModule(
-            SimpleModule().apply {
-                addSerializer(ContentType::class.java, ContentTypeSerializer)
-                addSerializer(HttpMethod::class.java, HttpMethodSerializer)
-                addSerializer(HttpStatusCode::class.java, HttpStatusCodeSerializer)
-                addSerializer(KType::class.java, KTypeSerializer)
-                addSerializer(Url::class.java, UrlSerializer)
-            }
-        )
+        .addModule(serializerModule())
         .build()
+
+    /** Configures custom serializers for Jackson. */
+    private fun serializerModule(): SimpleModule {
+        return SimpleModule().apply {
+            addSerializer(ContentType::class.java, ContentTypeSerializer)
+            addSerializer(HttpMethod::class.java, HttpMethodSerializer)
+            addSerializer(HttpStatusCode::class.java, HttpStatusCodeSerializer)
+            addSerializer(KType::class.java, KTypeSerializer)
+            addSerializer(Url::class.java, UrlSerializer)
+        }
+    }
 
     /**
      * Serializes the given object [instance] to a JSON string.

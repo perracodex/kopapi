@@ -18,5 +18,5 @@ internal data class ApiHeader(
     val name: String,
     val description: String?,
     val required: Boolean,
-    val deprecated: Boolean
+    val deprecated: Boolean?
 )

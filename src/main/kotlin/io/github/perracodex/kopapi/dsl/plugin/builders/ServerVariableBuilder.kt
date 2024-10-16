@@ -14,7 +14,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  *
  * ### Sample Usage
  * ```
- * variable("environment", "production") {
+ * variable(name = "environment", defaultValue = "production") {
  *      choices = setOf("production", "staging", "development")
  *      description = "Specifies the environment (production, etc.)"
  * }
@@ -48,8 +48,8 @@ public class ServerVariableBuilder(
         }
 
         return ApiServerVariable(
-            default = defaultValue.trim(),
-            enum = choices.map { it.trim() }
+            defaultValue = defaultValue.trim(),
+            choices = choices.map { it.trim() }
                 .filter { it.isNotEmpty() }
                 .takeIf { it.isNotEmpty() }?.toSortedSet(),
             description = description.trimOrNull()

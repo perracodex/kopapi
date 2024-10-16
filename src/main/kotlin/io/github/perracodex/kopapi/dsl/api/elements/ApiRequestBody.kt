@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.dsl.api.elements
 
 import io.github.perracodex.kopapi.core.KopapiException
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
 import io.ktor.http.*
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
@@ -19,7 +19,7 @@ import kotlin.reflect.KType
  * @property contentType The [ContentType] specifying how the data is represented (e.g., application/json).
  * @property deprecated Indicates whether the request body is deprecated and should be avoided.
  *
- * @see [ApiMetadataBuilder.requestBody]
+ * @see [ApiOperationBuilder.requestBody]
  */
 @PublishedApi
 internal data class ApiRequestBody internal constructor(
@@ -27,7 +27,7 @@ internal data class ApiRequestBody internal constructor(
     val description: String?,
     val required: Boolean,
     val contentType: ContentType,
-    val deprecated: Boolean
+    val deprecated: Boolean?
 ) {
     init {
         val classifier: KClassifier? = type.classifier

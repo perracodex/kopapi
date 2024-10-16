@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.api.builders.security
 
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
-import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurity
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
@@ -15,7 +15,7 @@ import io.ktor.http.*
  *
  * @property description A description of the security scheme.
  *
- * @see [ApiMetadataBuilder.openIdConnectSecurity]
+ * @see [ApiOperationBuilder.openIdConnectSecurity]
  * @see [ApiKeySecurityBuilder]
  * @see [HttpSecurityBuilder]
  * @see [OAuth2SecurityBuilder]
@@ -25,19 +25,18 @@ public class OpenIdConnectSecurityBuilder {
     public var description: String by MultilineString()
 
     /**
-     * Builds an [ApiSecurity] instance from the current builder state.
+     * Builds an [ApiSecurityScheme] instance from the current builder state.
      *
      * @param name The name of the security scheme
      * @param url The [Url] for the OpenID Connect configuration.
-     * @return The constructed [ApiSecurity] instance.
+     * @return The constructed [ApiSecurityScheme] instance.
      */
     @PublishedApi
-    internal fun build(name: String, url: Url): ApiSecurity {
-        return ApiSecurity(
-            name = name.trim(),
+    internal fun build(name: String, url: Url): ApiSecurityScheme {
+        return ApiSecurityScheme.OpenIdConnect(
+            schemeName = name.trim(),
             description = description.trimOrNull(),
-            scheme = ApiSecurity.Scheme.OPENID_CONNECT,
-            openIdConnectUrl = url
+            openIdConnectUrl = url.toString()
         )
     }
 }

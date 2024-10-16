@@ -2,10 +2,10 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.core.composer
+package io.github.perracodex.kopapi.core
 
-import io.github.perracodex.kopapi.core.ApiMetadata
-import io.github.perracodex.kopapi.core.KopapiException
+import io.github.perracodex.kopapi.composer.SchemaComposer
+import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
@@ -18,14 +18,11 @@ import kotlin.collections.set
 import kotlin.reflect.KType
 
 /**
- * Singleton for registering and serving API information, server configurations, and endpoint metadata.
- * This class is responsible for generating the OpenAPI schema from the registered metadata.
+ * Singleton for registering and serving API information,
+ * server configurations, and endpoint metadata.
  */
-internal object SchemaComposer {
-    private val tracer = Tracer<SchemaComposer>()
-
-    /** The version of the OpenAPI specification used by the plugin. */
-    private const val OPEN_API_VERSION = "3.1.0"
+internal object SchemaRegistry {
+    private val tracer = Tracer<SchemaRegistry>()
 
     /**
      * Represents the format of the final OpenAPI schema output.
@@ -54,8 +51,8 @@ internal object SchemaComposer {
      */
     private var isEnabled: Boolean = true
 
-    /** Set of registered API metadata objects. */
-    private val apiMetadata: MutableSet<ApiMetadata> = mutableSetOf()
+    /** Set of registered API Operations metadata. */
+    private val apiOperation: MutableSet<ApiOperation> = mutableSetOf()
 
     /** Set of generated type schemas derived from registered API metadata. */
     private val schemas: MutableSet<TypeSchema> = mutableSetOf()
@@ -82,31 +79,84 @@ internal object SchemaComposer {
      */
     fun registerConfiguration(configuration: Configuration) {
         synchronized(this) {
-            if (SchemaComposer.configuration != null) {
+            if (SchemaRegistry.configuration != null) {
                 throw KopapiException("Configuration has already been registered.")
             }
             isEnabled = configuration.isEnabled
             if (isEnabled) {
-                SchemaComposer.configuration = configuration
+                SchemaRegistry.configuration = configuration
+                assertSecuritySchemeNamesUniqueness()
+            } else {
+                clear()
             }
         }
     }
 
     /**
-     * Registers the [ApiMetadata] for a concrete API endpoint.
+     * Registers the [ApiOperation] for a concrete API endpoint.
      *
-     * @param metadata The [ApiMetadata] object representing the metadata of the API endpoint.
+     * @param operation The [ApiOperation] object representing the metadata of the API endpoint.
      */
-    fun registerApiMetadata(metadata: ApiMetadata) {
-        synchronized(apiMetadata) {
+    fun registerApiOperation(operation: ApiOperation) {
+        synchronized(apiOperation) {
             if (isEnabled) {
-                apiMetadata.add(metadata)
+                apiOperation.add(operation)
+                assertSecuritySchemeNamesUniqueness()
             }
         }
     }
 
     /**
-     * Processes and collects the [TypeSchema] objects from the registered [ApiMetadata] objects.
+     * Clears all cached data.
+     * This method should be called if the plugin is disabled.
+     *
+     * `Routes.api` definitions can be registered before or after the plugin is installed,
+     * so if the plugin is disabled, we need to clear all cached data after the application
+     * starts to free up resources.
+     */
+    fun clear() {
+        apiOperation.clear()
+        schemas.clear()
+        schemaConflicts.clear()
+        debugJsonCache.clear()
+        openApiSchemaCache.clear()
+        configuration = null
+    }
+
+    /**
+     * Helper method for checking if a security scheme name is already registered.
+     *
+     * `Security schemes` can be defined globally in the plugin configuration or within each Route endpoint.
+     * As these are registered at different timings, we need to ensure that security scheme names are unique
+     * across the entire API.
+     *
+     * @throws KopapiException if detected that any security scheme names are not unique
+     * between global and Route definitions.
+     */
+    private fun assertSecuritySchemeNamesUniqueness() {
+        val global: Set<ApiSecurityScheme>? = configuration?.apiSecuritySchemes
+
+        // Check between global and API metadata.
+        if (!global.isNullOrEmpty() && apiOperation.isNotEmpty()) {
+            val globalSchemeNames: Set<String> = global.map { it.schemeName.lowercase() }.toSet()
+
+            apiOperation.forEach { metadata ->
+                metadata.securitySchemes?.forEach { scheme ->
+                    if (scheme.schemeName.lowercase() in globalSchemeNames) {
+                        throw KopapiException(
+                            "Attempting to register security scheme with name '${scheme.schemeName}' more than once.\n" +
+                                    "Security scheme `names` must be unique across the entire API, " +
+                                    "both globally and for all Routes.\n" +
+                                    "['${metadata.method.value}'] '${metadata.path}'"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Processes and collects the [TypeSchema] objects from the registered [ApiOperation] objects.
      */
     private fun processSchemas() {
         if (schemas.isNotEmpty()) {
@@ -115,7 +165,7 @@ internal object SchemaComposer {
 
         val inspector = TypeSchemaProvider()
 
-        apiMetadata.forEach { metadata ->
+        apiOperation.forEach { metadata ->
             // Inspect each parameter type.
             metadata.parameters?.forEach { parameter ->
                 inspectType(inspector = inspector, type = parameter.type)
@@ -128,7 +178,9 @@ internal object SchemaComposer {
 
             // Inspect each response type.
             metadata.responses?.forEach { response ->
-                inspectType(inspector = inspector, type = response.type)
+                response.type?.let {
+                    inspectType(inspector = inspector, type = response.type)
+                }
             }
         }
 
@@ -201,10 +253,10 @@ internal object SchemaComposer {
     /**
      * Retrieves the API metadata in JSON format.
      *
-     * @return A set of JSON strings representing the registered [ApiMetadata].
+     * @return A set of JSON strings representing the registered [ApiOperation].
      */
-    fun getApiMetadataJson(): Set<String> {
-        return getOrGenerateDebugJson(instance = apiMetadata, section = SectionType.API_METADATA)
+    fun getApiOperationJson(): Set<String> {
+        return getOrGenerateDebugJson(instance = apiOperation, section = SectionType.API_METADATA)
     }
 
     /**
@@ -268,64 +320,33 @@ internal object SchemaComposer {
     }
 
     /**
-     * Clears all registered metadata, schemas, conflicts, and cached JSON data.
-     */
-    fun clear() {
-        apiMetadata.clear()
-        schemas.clear()
-        schemaConflicts.clear()
-        debugJsonCache.clear()
-        configuration = null
-    }
-
-    /**
      * Serves the OpenAPI schema in the specified format.
      *
      * @param format The [Format] of the OpenAPI schema to serve.
      * @return The OpenAPI schema in the specified format.
      */
     fun getOpenApiSchema(format: Format): String {
-        if (!isEnabled) {
+        if (!isEnabled || configuration == null) {
             return ""
         }
         openApiSchemaCache.getOrDefault(key = format, defaultValue = null)?.let { schema ->
             return schema
         }
 
-        processSchemas()
+        configuration?.let { configuration ->
+            processSchemas()
 
-        return configuration?.let { configuration ->
-            // Compose the `Info` section.
-            val infoSection: ApiInfo = InfoSectionComposer.compose(
-                apiInfo = configuration.apiInfo,
+            val schema: String = SchemaComposer(
+                configuration = configuration,
+                apiOperations = apiOperation,
                 schemaConflicts = schemaConflicts
-            )
-
-            // Get the `Servers` section.
-            val serversSection: List<ApiServerConfig>? = configuration.apiServers?.toList()
-
-            val openApiSchema = OpenAPiSchema(
-                openapi = OPEN_API_VERSION,
-                info = infoSection,
-                servers = serversSection
-            )
-
-            val schema: String = when (format) {
-                Format.JSON -> SerializationUtils.toRawJson(instance = openApiSchema)
-                Format.YAML -> SerializationUtils.toYaml(instance = openApiSchema)
-            }
+            ).compose(format = format)
 
             openApiSchemaCache[format] = schema
-            return@let schema
+            return schema
         } ?: run {
             tracer.warning("No configuration found.")
             return ""
         }
     }
-
-    private data class OpenAPiSchema(
-        val openapi: String,
-        val info: ApiInfo,
-        val servers: List<ApiServerConfig>?
-    )
 }

@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.routing
 
-import io.github.perracodex.kopapi.core.composer.SchemaComposer
+import io.github.perracodex.kopapi.core.SchemaRegistry
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -25,7 +25,7 @@ internal fun Routing.openApiRoutes(
     }
 
     get(openapiYamlUrl) {
-        val openapiYaml: String = SchemaComposer.getOpenApiSchema(format = SchemaComposer.Format.YAML)
+        val openapiYaml: String = SchemaRegistry.getOpenApiSchema(format = SchemaRegistry.Format.YAML)
         call.respondText(text = openapiYaml, contentType = ContentType.Application.Json)
     }
 }

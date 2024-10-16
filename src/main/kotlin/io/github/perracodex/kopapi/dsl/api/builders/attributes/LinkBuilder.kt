@@ -41,9 +41,9 @@ public class LinkBuilder(
      *
      * #### Sample Usage
      * ```
-     * link("getEmployee") {
+     * link(operationId = "getEmployee") {
      *    description = "The employee to retrieve."
-     *    parameter("employeeId", "something")
+     *    parameter(name = "employeeId", value = "something")
      * }
      * ```
      *

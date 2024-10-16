@@ -51,7 +51,7 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
     public var swaggerUrl: String = DEFAULT_SWAGGER_URL
 
     /**
-     * The URL to provide the raw pre-processed API metadata, for debugging purposes.
+     * The URL to provide the raw pre-processed API Operations metadata, for debugging purposes.
      * Relative to the server root URL. Default is `openapi/debug`.
      */
     public var debugUrl: String = DEFAULT_DEBUG_URL

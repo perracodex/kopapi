@@ -19,16 +19,16 @@ import kotlin.reflect.KType
  *
  * #### Sample Usage
  * ```
- * addType<Quote>(ApiType.STRING) {
+ * addType<Quote>(apiType = ApiType.STRING) {
  *      maxLength = 256
  * }
  *
- * addType<DiscountRate>(ApiType.NUMBER, "percentage") {
+ * addType<DiscountRate>(apiType = ApiType.NUMBER, apiFormat = "percentage") {
  *      minimum = 0
  *      maximum = 100
  * }
  *
- * addType<Pin>(ApiType.NUMBER, ApiFormat.INT32) {
+ * addType<Pin>(apiType = ApiType.NUMBER, apiFormat = ApiFormat.INT32) {
  *      minimum = 4
  *      maximum = 6
  * }

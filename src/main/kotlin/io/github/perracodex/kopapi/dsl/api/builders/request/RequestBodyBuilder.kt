@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.api.builders.request
 
-import io.github.perracodex.kopapi.dsl.api.builders.ApiMetadataBuilder
+import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.api.elements.ApiRequestBody
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -20,7 +20,7 @@ import kotlin.reflect.KType
  * @property contentType The [ContentType] of the request body data, such as JSON or XML.
  * @property deprecated Indicates if the request body is deprecated and should be avoided.
  *
- * @see [ApiMetadataBuilder.requestBody]
+ * @see [ApiOperationBuilder.requestBody]
  */
 @Suppress("MemberVisibilityCanBePrivate")
 public class RequestBodyBuilder(
@@ -43,7 +43,7 @@ public class RequestBodyBuilder(
             description = description.trimOrNull(),
             required = required,
             contentType = contentType,
-            deprecated = deprecated
+            deprecated = deprecated.takeIf { it }
         )
     }
 }
