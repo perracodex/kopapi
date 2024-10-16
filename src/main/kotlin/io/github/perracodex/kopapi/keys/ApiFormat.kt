@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.keys
 
+import com.fasterxml.jackson.annotation.JsonValue
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 
 /**
@@ -14,7 +15,7 @@ import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
  * @see [SchemaFactory]
  * @see [ApiType]
  */
-public enum class ApiFormat(internal val value: String) {
+public enum class ApiFormat(@JsonValue internal val value: String) {
     /** Represents a schema for a `byte` type, allowing base64-encoded binary data. */
     BYTE(value = "byte"),
 
@@ -48,5 +49,6 @@ public enum class ApiFormat(internal val value: String) {
     /** Returns the string value representing the OpenAPI format. */
     public operator fun invoke(): String = value
 
+    /** Returns the string value representing the OpenAPI format. */
     override fun toString(): String = value
 }

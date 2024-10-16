@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.keys
 
+import com.fasterxml.jackson.annotation.JsonValue
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 
 /**
@@ -16,7 +17,7 @@ import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
  * @see [SchemaFactory] For schema creation using these types.
  * @see [ApiFormat] For additional format constraints.
  */
-public enum class ApiType(internal val value: String) {
+public enum class ApiType(@JsonValue internal val value: String) {
 
     /** Represents a schema for an `array` type, defining a collection of ordered items. */
     ARRAY(value = "array"),
@@ -42,5 +43,6 @@ public enum class ApiType(internal val value: String) {
     /** Returns the string value representing the OpenAPI type. */
     public operator fun invoke(): String = value
 
+    /** Returns the string value representing the OpenAPI type. */
     override fun toString(): String = value
 }
