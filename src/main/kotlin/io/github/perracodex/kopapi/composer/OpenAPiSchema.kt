@@ -117,7 +117,7 @@ internal data class OpenAPiSchema(
          *                 An empty list (`security: []`) indicates that the operation does not require security.
          */
         fun setSecurity(method: String, security: List<SecurityRequirement>?) {
-            val securityMaps: List<Map<String, List<String>>>? = security?.mapNotNull { it.toOpenAPISpec() }
+            val securityMaps: List<Map<String, List<String>>>? = security?.map { it.toOpenAPISpec() }
             when (method.lowercase()) {
                 "get" -> get?.security = securityMaps
                 "put" -> put?.security = securityMaps

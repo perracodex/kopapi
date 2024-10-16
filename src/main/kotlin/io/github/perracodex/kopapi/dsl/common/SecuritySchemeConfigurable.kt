@@ -53,7 +53,7 @@ public abstract class SecuritySchemeConfigurable {
     ) {
         val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
         val scheme: ApiSecurityScheme = builder.build(name = name, method = method)
-        addSecurityScheme(name = name, scheme = scheme)
+        addSecurityScheme(scheme = scheme)
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class SecuritySchemeConfigurable {
     ) {
         val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
         val scheme: ApiSecurityScheme = builder.build(name = name, apiKeyName = apiKeyName, location = location)
-        addSecurityScheme(name = name, scheme = scheme)
+        addSecurityScheme(scheme = scheme)
     }
 
     /**
@@ -147,7 +147,7 @@ public abstract class SecuritySchemeConfigurable {
             throw KopapiException("OAuth2 security scheme '$name' must have at least one scope defined in its flows.")
         }
 
-        addSecurityScheme(name = name, scheme = scheme)
+        addSecurityScheme(scheme = scheme)
     }
 
     /**
@@ -177,7 +177,7 @@ public abstract class SecuritySchemeConfigurable {
     ) {
         val builder: OpenIdConnectSecurityBuilder = OpenIdConnectSecurityBuilder().apply(configure)
         val scheme: ApiSecurityScheme = builder.build(name = name, url = url)
-        addSecurityScheme(name = name, scheme = scheme)
+        addSecurityScheme(scheme = scheme)
     }
 
     /**
@@ -205,26 +205,25 @@ public abstract class SecuritySchemeConfigurable {
         val builder: MutualTLSSecurityBuilder = MutualTLSSecurityBuilder()
             .apply(configure)
         val scheme: ApiSecurityScheme = builder.build(name = name)
-        addSecurityScheme(name = name, scheme = scheme)
+        addSecurityScheme(scheme = scheme)
     }
 
     /**
      * Adds a custom security scheme to the cache,
      * ensuring that the security scheme name is unique.
      *
-     * @param name The unique name of the security scheme.
      * @param scheme The [ApiSecurityScheme] instance to add to the cache.
-     * @throws IllegalArgumentException If a security scheme with the same name already exists.
+     * @throws KopapiException If a security scheme with the same name already exists.
      */
-    private fun addSecurityScheme(name: String, scheme: ApiSecurityScheme) {
+    private fun addSecurityScheme(scheme: ApiSecurityScheme) {
         if (noSecurity) {
             securitySchemes.clear()
             return
         }
 
-        if (securitySchemes.any { it.schemeName.equals(other = name, ignoreCase = true) }) {
+        if (securitySchemes.any { it.schemeName.equals(other = scheme.schemeName, ignoreCase = true) }) {
             throw KopapiException(
-                "Attempting to register security scheme with name '$name' more than once.\n" +
+                "Attempting to register security scheme with name '${scheme.schemeName}' more than once.\n" +
                         "Security scheme `names` must be unique across the entire API, " +
                         "both globally and for all Routes."
             )

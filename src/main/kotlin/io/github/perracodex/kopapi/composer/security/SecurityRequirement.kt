@@ -4,7 +4,6 @@
 
 package io.github.perracodex.kopapi.composer.security
 
-import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
 
 /**
@@ -30,16 +29,7 @@ internal data class SecurityRequirement(
      *         If no scopes are required, the value is omitted for non-OAuth2 schemes.
      *         For OAuth2 schemes, scopes must not be null or empty.
      */
-    fun toOpenAPISpec(): Map<String, List<String>>? {
-        return when (securityScheme) {
-            is ApiSecurityScheme.OAuth2 -> {
-                scopes?.takeIf { it.isNotEmpty() }?.let { mapOf(securityScheme.schemeName to it) }
-                    ?: throw KopapiException(
-                        "OAuth2 security scheme '$securityScheme.schemeName' requires at least one scope."
-                    )
-            }
-
-            else -> mapOf(securityScheme.schemeName to emptyList()) // Non-OAuth2 schemes, no scopes required.
-        }
+    fun toOpenAPISpec(): Map<String, List<String>> {
+        return mapOf(securityScheme.schemeName to (scopes ?: emptyList()))
     }
 }
