@@ -5,8 +5,8 @@
 package io.github.perracodex.kopapi.composer.security
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
-import io.github.perracodex.kopapi.core.ApiOperation
-import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.plugin.Configuration
 
 /**

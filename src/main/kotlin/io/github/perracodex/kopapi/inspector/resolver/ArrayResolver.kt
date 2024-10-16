@@ -13,7 +13,7 @@ import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.PrimitiveFactory
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
-import io.github.perracodex.kopapi.utils.Tracer
+import io.github.perracodex.kopapi.system.Tracer
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType

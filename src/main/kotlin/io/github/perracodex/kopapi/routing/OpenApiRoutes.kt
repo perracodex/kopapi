@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.routing
 
-import io.github.perracodex.kopapi.core.SchemaRegistry
+import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*

@@ -4,9 +4,9 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.builders
 
-import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
-import io.github.perracodex.kopapi.utils.Tracer
+import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.system.Tracer
 import io.ktor.http.*
 
 /**
@@ -82,7 +82,7 @@ public class ServerBuilder {
             val serverConfig: ApiServerConfig = ServerConfigBuilder(url = url).apply(configure).build()
             internalSet.add(serverConfig)
         } catch (e: Exception) {
-            tracer.error("Failed to parse server URL: $urlString", e)
+            tracer.error(message = "Failed to parse server URL: $urlString", cause = e)
             throw KopapiException("Failed to parse server configuration URL: $urlString", e)
         }
     }
@@ -96,6 +96,7 @@ public class ServerBuilder {
         return internalSet.toSet()
     }
 
+    /** Clears the internal set of server configurations. */
     override fun toString(): String = internalSet.toString()
 
     internal companion object {

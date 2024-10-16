@@ -4,8 +4,8 @@
 
 package plugin.state
 
-import io.github.perracodex.kopapi.core.SchemaRegistry
-import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
+import io.github.perracodex.kopapi.composer.SchemaRegistry
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.plugin.Kopapi

@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.inspector.utils
 
-import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.keys.ApiType
+import io.github.perracodex.kopapi.system.KopapiException
 
 /**
  * Provides validation logic for schema constraints based on the [ApiType].

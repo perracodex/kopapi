@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 import io.github.perracodex.kopapi.inspector.utils.resolveTypeBinding
-import io.github.perracodex.kopapi.utils.Tracer
+import io.github.perracodex.kopapi.system.Tracer
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection

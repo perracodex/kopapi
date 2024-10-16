@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.utils.resolveArgumentBinding
-import io.github.perracodex.kopapi.utils.Tracer
+import io.github.perracodex.kopapi.system.Tracer
 import java.lang.reflect.Field
 import kotlin.reflect.*
 import kotlin.reflect.full.declaredMemberProperties

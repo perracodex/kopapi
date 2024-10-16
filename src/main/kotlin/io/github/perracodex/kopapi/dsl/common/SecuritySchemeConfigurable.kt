@@ -4,11 +4,11 @@
 
 package io.github.perracodex.kopapi.dsl.common
 
-import io.github.perracodex.kopapi.core.KopapiException
-import io.github.perracodex.kopapi.dsl.api.builders.security.*
-import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.dsl.api.types.AuthenticationMethod
-import io.github.perracodex.kopapi.dsl.api.types.SecurityLocation
+import io.github.perracodex.kopapi.dsl.operation.builders.security.*
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.operation.types.AuthenticationMethod
+import io.github.perracodex.kopapi.dsl.operation.types.SecurityLocation
+import io.github.perracodex.kopapi.system.KopapiException
 import io.ktor.http.*
 
 /**

@@ -4,10 +4,10 @@
 
 package io.github.perracodex.kopapi.plugin
 
-import io.github.perracodex.kopapi.core.KopapiException
-import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
+import io.github.perracodex.kopapi.system.KopapiException
 
 /**
  * Represents the final immutable configuration for the Kopapi plugin.

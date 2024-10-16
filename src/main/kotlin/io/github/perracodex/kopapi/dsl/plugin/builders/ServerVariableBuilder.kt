@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.builders
 
-import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
+import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 

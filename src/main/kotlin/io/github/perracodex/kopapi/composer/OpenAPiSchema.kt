@@ -7,11 +7,11 @@ package io.github.perracodex.kopapi.composer
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.composer.path.PathOperation
 import io.github.perracodex.kopapi.composer.security.SecurityRequirement
-import io.github.perracodex.kopapi.core.ApiOperation
-import io.github.perracodex.kopapi.core.KopapiException
-import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
+import io.github.perracodex.kopapi.system.KopapiException
 import io.ktor.http.*
 
 /**

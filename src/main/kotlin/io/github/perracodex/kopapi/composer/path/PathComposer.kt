@@ -8,7 +8,7 @@ import io.github.perracodex.kopapi.composer.OpenAPiSchema
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.composer.security.OperationSecurity
 import io.github.perracodex.kopapi.composer.security.SecurityRequirement
-import io.github.perracodex.kopapi.core.ApiOperation
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 
 /**
  * Responsible for composing the `paths` section of the OpenAPI schema.

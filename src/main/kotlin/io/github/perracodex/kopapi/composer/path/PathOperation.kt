@@ -5,10 +5,10 @@
 package io.github.perracodex.kopapi.composer.path
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
-import io.github.perracodex.kopapi.core.ApiOperation
-import io.github.perracodex.kopapi.dsl.api.elements.ApiParameter
-import io.github.perracodex.kopapi.dsl.api.elements.ApiRequestBody
-import io.github.perracodex.kopapi.dsl.api.elements.ApiResponse
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 
 /**
  * Represents an individual API Operation (HTTP method) within a path item.

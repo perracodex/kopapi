@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.composer.security
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
-import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 
 /**
  * Represents a single security requirement as defined by the OpenAPI Specification.

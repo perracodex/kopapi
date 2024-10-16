@@ -14,8 +14,8 @@ package io.github.perracodex.kopapi.utils.string
  * @param initialValue Optional initial value of the string, which will be appended as the starting content.
  * @param spaceSeparator Optional value to use as the space separator. Defaults to a single space.
  */
-internal class SpacedString(initialValue: String = "", private val spaceSeparator: String = " ")
-    : AppendableString(initialValue = initialValue) {
+internal class SpacedString(initialValue: String = "", private val spaceSeparator: String = " ") :
+    AppendableString(initialValue = initialValue) {
     /**
      * Appends the specified string [value] to the current builder content with a space separator.
      * Ensures that a space is added only if the builder content is not empty and does not already end with a space.

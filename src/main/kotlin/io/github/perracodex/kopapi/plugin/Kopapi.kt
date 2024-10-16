@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.plugin
 
-import io.github.perracodex.kopapi.core.SchemaRegistry
+import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.routing.debugRoute
 import io.github.perracodex.kopapi.routing.openApiRoutes
 import io.github.perracodex.kopapi.routing.swaggerRoute

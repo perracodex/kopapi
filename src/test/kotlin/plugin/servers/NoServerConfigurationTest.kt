@@ -4,7 +4,7 @@
 
 package plugin.servers
 
-import io.github.perracodex.kopapi.core.SchemaRegistry
+import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.dsl.plugin.builders.ServerBuilder
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.plugin.Kopapi

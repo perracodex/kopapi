@@ -10,9 +10,8 @@ import io.github.perracodex.kopapi.composer.path.PathComposer
 import io.github.perracodex.kopapi.composer.security.GlobalSecurityRequirement
 import io.github.perracodex.kopapi.composer.security.OperationSecurity
 import io.github.perracodex.kopapi.composer.security.SecuritySectionComposer
-import io.github.perracodex.kopapi.core.ApiOperation
-import io.github.perracodex.kopapi.core.SchemaRegistry
-import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts

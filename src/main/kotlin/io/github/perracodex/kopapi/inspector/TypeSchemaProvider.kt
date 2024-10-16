@@ -4,10 +4,10 @@
 
 package io.github.perracodex.kopapi.inspector
 
-import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.system.KopapiException
 import kotlin.reflect.KType
 
 /**

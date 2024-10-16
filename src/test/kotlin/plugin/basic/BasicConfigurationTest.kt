@@ -4,7 +4,7 @@
 
 package plugin.basic
 
-import io.github.perracodex.kopapi.core.SchemaRegistry
+import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
