@@ -2,8 +2,10 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.composer
+package io.github.perracodex.kopapi.composer.path
 
+import io.github.perracodex.kopapi.composer.OpenAPiSchema
+import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.composer.security.OperationSecurity
 import io.github.perracodex.kopapi.composer.security.SecurityRequirement
 import io.github.perracodex.kopapi.core.ApiOperation
@@ -16,6 +18,7 @@ import io.github.perracodex.kopapi.core.ApiOperation
  *
  * @see [OpenAPiSchema.PathItem]
  */
+@ComposerAPI
 internal object PathComposer {
     /**
      * Generates the `paths` section of the OpenAPI schema by iterating over each API operation
@@ -47,7 +50,7 @@ internal object PathComposer {
 
             // Add the API Operation to the PathItem based on its HTTP method.
             pathItem.addOperation(
-                method = operation.method.value,
+                method = operation.method,
                 apiOperation = operation
             )
 
@@ -60,7 +63,7 @@ internal object PathComposer {
 
             // Assign the security configuration to the operation within the PathItem.
             pathItem.setSecurity(
-                method = operation.method.value,
+                method = operation.method,
                 security = securityConfig
             )
         }

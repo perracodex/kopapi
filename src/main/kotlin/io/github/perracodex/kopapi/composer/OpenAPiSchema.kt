@@ -4,15 +4,15 @@
 
 package io.github.perracodex.kopapi.composer
 
+import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.path.PathOperation
 import io.github.perracodex.kopapi.composer.security.SecurityRequirement
 import io.github.perracodex.kopapi.core.ApiOperation
 import io.github.perracodex.kopapi.core.KopapiException
-import io.github.perracodex.kopapi.dsl.api.elements.ApiParameter
-import io.github.perracodex.kopapi.dsl.api.elements.ApiRequestBody
-import io.github.perracodex.kopapi.dsl.api.elements.ApiResponse
 import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
+import io.ktor.http.*
 
 /**
  * Represents the entire OpenAPI schema, encapsulating all necessary sections
@@ -28,6 +28,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
  * @property paths An object that holds the relative paths to the individual endpoints and their operations.
  * @property components An object to hold various reusable components such as security schemes, responses, parameters, etc.
  */
+@ComposerAPI
 internal data class OpenAPiSchema(
     val openapi: String,
     val info: ApiInfo,
@@ -71,7 +72,6 @@ internal data class OpenAPiSchema(
      * @property options The OPTIONS operation for the path, if defined.
      * @property head The HEAD operation for the path, if defined.
      * @property patch The PATCH operation for the path, if defined.
-     * @property trace The TRACE operation for the path, if defined.
      */
     data class PathItem(
         var get: PathOperation? = null,
@@ -81,7 +81,6 @@ internal data class OpenAPiSchema(
         var options: PathOperation? = null,
         var head: PathOperation? = null,
         var patch: PathOperation? = null,
-        var trace: PathOperation? = null
     ) {
         /**
          * Adds an API Operation to the [PathItem] based on the specified HTTP method,
@@ -91,17 +90,16 @@ internal data class OpenAPiSchema(
          * @param method The HTTP method of the operation (e.g., "GET", "POST").
          * @param apiOperation The [ApiOperation] object containing the operation's metadata and configurations.
          */
-        fun addOperation(method: String, apiOperation: ApiOperation) {
+        fun addOperation(method: HttpMethod, apiOperation: ApiOperation) {
             val pathOperation: PathOperation = PathOperation.fromApiOperation(apiOperation = apiOperation)
-            when (method.lowercase()) {
-                "get" -> get = pathOperation
-                "put" -> put = pathOperation
-                "post" -> post = pathOperation
-                "delete" -> delete = pathOperation
-                "options" -> options = pathOperation
-                "head" -> head = pathOperation
-                "patch" -> patch = pathOperation
-                "trace" -> trace = pathOperation
+            when (method) {
+                HttpMethod.Get -> get = pathOperation
+                HttpMethod.Put -> put = pathOperation
+                HttpMethod.Post -> post = pathOperation
+                HttpMethod.Delete -> delete = pathOperation
+                HttpMethod.Options -> options = pathOperation
+                HttpMethod.Head -> head = pathOperation
+                HttpMethod.Patch -> patch = pathOperation
                 else -> throw KopapiException("Unsupported HTTP method: $method")
             }
         }
@@ -116,65 +114,17 @@ internal data class OpenAPiSchema(
          * @param security A list of [SecurityRequirement] objects representing the security configurations.
          *                 An empty list (`security: []`) indicates that the operation does not require security.
          */
-        fun setSecurity(method: String, security: List<SecurityRequirement>?) {
+        fun setSecurity(method: HttpMethod, security: List<SecurityRequirement>?) {
             val securityMaps: List<Map<String, List<String>>>? = security?.map { it.toOpenAPISpec() }
-            when (method.lowercase()) {
-                "get" -> get?.security = securityMaps
-                "put" -> put?.security = securityMaps
-                "post" -> post?.security = securityMaps
-                "delete" -> delete?.security = securityMaps
-                "options" -> options?.security = securityMaps
-                "head" -> head?.security = securityMaps
-                "patch" -> patch?.security = securityMaps
-                "trace" -> trace?.security = securityMaps
+            when (method) {
+                HttpMethod.Get -> get?.security = securityMaps
+                HttpMethod.Put -> put?.security = securityMaps
+                HttpMethod.Post -> post?.security = securityMaps
+                HttpMethod.Delete -> delete?.security = securityMaps
+                HttpMethod.Options -> options?.security = securityMaps
+                HttpMethod.Head -> head?.security = securityMaps
+                HttpMethod.Patch -> patch?.security = securityMaps
                 else -> throw KopapiException("Unsupported HTTP method: $method")
-            }
-        }
-    }
-
-    /**
-     * Represents an individual API Operation (HTTP method) within a path item.
-     *
-     * Each operation includes details such as summary, description, tags, parameters,
-     * request body, responses, and security requirements.
-     *
-     * @property summary A brief summary of what the operation does.
-     * @property description A detailed description of the operation, which can span multiple lines.
-     * @property tags A set of tags for API documentation control. Tags can be used to group operations.
-     * @property parameters A set of [ApiParameter] objects defining the parameters for the operation.
-     * @property requestBody The [ApiRequestBody] object defining the request body for the operation.
-     * @property responses A set of [ApiResponse] objects defining the possible responses for the operation.
-     * @property security A list of security requirement maps, each specifying a security scheme and its scopes.
-     *                    An empty list (`security: []`) disables security for this operation.
-     */
-    data class PathOperation(
-        val summary: String?,
-        val description: String?,
-        val tags: Set<String>?,
-        val parameters: Set<ApiParameter>?,
-        val requestBody: ApiRequestBody?,
-        val responses: Set<ApiResponse>?,
-        var security: List<Map<String, List<String>>>? = null
-    ) {
-        companion object {
-            /**
-             * Creates an [PathOperation] instance from an [ApiOperation] object.
-             *
-             * This factory method facilitates the transformation of an [ApiOperation] into
-             * an [PathOperation] suitable for inclusion in the OpenAPI schema.
-             *
-             * @param apiOperation The [ApiOperation] object containing the operation's metadata.
-             * @return An [PathOperation] instance populated with data from [apiOperation].
-             */
-            fun fromApiOperation(apiOperation: ApiOperation): PathOperation {
-                return PathOperation(
-                    summary = apiOperation.summary,
-                    description = apiOperation.description,
-                    tags = apiOperation.tags,
-                    parameters = apiOperation.parameters,
-                    requestBody = apiOperation.requestBody,
-                    responses = apiOperation.responses
-                )
             }
         }
     }

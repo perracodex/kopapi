@@ -4,12 +4,14 @@
 
 package io.github.perracodex.kopapi.composer
 
+import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 
 /**
  * Composes the `Info` section of the OpenAPI schema.
  */
+@ComposerAPI
 internal object InfoSectionComposer {
     private const val DEFAULT_TITLE: String = "API"
     private const val DEFAULT_DESCRIPTION: String = "API Description"

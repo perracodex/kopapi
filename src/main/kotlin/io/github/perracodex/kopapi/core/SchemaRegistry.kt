@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.core
 
 import io.github.perracodex.kopapi.composer.SchemaComposer
+import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
@@ -325,6 +326,7 @@ internal object SchemaRegistry {
      * @param format The [Format] of the OpenAPI schema to serve.
      * @return The OpenAPI schema in the specified format.
      */
+    @OptIn(ComposerAPI::class)
     fun getOpenApiSchema(format: Format): String {
         if (!isEnabled || configuration == null) {
             return ""

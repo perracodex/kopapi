@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.composer.security
 
+import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+
 /**
  * Represents the global security requirements in the OpenAPI schema.
  *
@@ -12,6 +14,7 @@ package io.github.perracodex.kopapi.composer.security
  *
  * @property requirements A list of [SecurityRequirement] objects representing each global security requirement.
  */
+@ComposerAPI
 internal data class GlobalSecurityRequirement(
     val requirements: List<SecurityRequirement>
 ) {

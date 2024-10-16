@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.security
 
+import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.core.ApiOperation
 import io.github.perracodex.kopapi.dsl.api.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.plugin.Configuration
@@ -17,6 +18,7 @@ import io.github.perracodex.kopapi.plugin.Configuration
  * @property configuration The plugin [Configuration] containing global security schemes.
  * @property apiOperations A set of [ApiOperation] objects representing each API endpoint's metadata.
  */
+@ComposerAPI
 internal class SecuritySectionComposer(
     private val configuration: Configuration,
     private val apiOperations: Set<ApiOperation>

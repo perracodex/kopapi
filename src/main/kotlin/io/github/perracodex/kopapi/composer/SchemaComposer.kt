@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.composer
 
+import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.path.PathComposer
 import io.github.perracodex.kopapi.composer.security.GlobalSecurityRequirement
 import io.github.perracodex.kopapi.composer.security.OperationSecurity
 import io.github.perracodex.kopapi.composer.security.SecuritySectionComposer
@@ -19,6 +21,7 @@ import io.github.perracodex.kopapi.serialization.SerializationUtils
 /**
  * Responsible for generating the OpenAPI schema.
  */
+@ComposerAPI
 internal class SchemaComposer(
     private val configuration: Configuration,
     private val apiOperations: Set<ApiOperation>,
@@ -57,6 +60,7 @@ internal class SchemaComposer(
             securitySchemes = securitySchemes
         ).takeIf { it.hasContent() }
 
+        // Create the OpenAPI schema.
         val openApiSchema = OpenAPiSchema(
             openapi = OPEN_API_VERSION,
             info = infoSection,
@@ -66,6 +70,7 @@ internal class SchemaComposer(
             components = components
         )
 
+        // Serialize the OpenAPI schema, producing the final schema.
         val schema: String = when (format) {
             SchemaRegistry.Format.JSON -> SerializationUtils.toRawJson(instance = openApiSchema)
             SchemaRegistry.Format.YAML -> SerializationUtils.toYaml(instance = openApiSchema)
