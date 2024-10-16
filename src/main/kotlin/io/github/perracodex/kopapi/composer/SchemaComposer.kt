@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.composer
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.info.InfoSectionComposer
 import io.github.perracodex.kopapi.composer.path.PathComposer
 import io.github.perracodex.kopapi.composer.security.GlobalSecurityRequirement
 import io.github.perracodex.kopapi.composer.security.OperationSecurity
