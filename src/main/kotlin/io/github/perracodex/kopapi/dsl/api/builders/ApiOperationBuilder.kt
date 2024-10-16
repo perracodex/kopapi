@@ -175,7 +175,8 @@ public class ApiOperationBuilder internal constructor(
         configure: PathParameterBuilder.() -> Unit = {}
     ) {
         val builder: PathParameterBuilder = PathParameterBuilder().apply(configure)
-        parameters.add(builder.build(name = name, type = typeOf<T>()))
+        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
+        addApiParameter(apiParameter = parameter)
     }
 
     /**
@@ -208,7 +209,8 @@ public class ApiOperationBuilder internal constructor(
         configure: QueryParameterBuilder.() -> Unit = {}
     ) {
         val builder: QueryParameterBuilder = QueryParameterBuilder().apply(configure)
-        parameters.add(builder.build(name = name, type = typeOf<T>()))
+        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
+        addApiParameter(apiParameter = parameter)
     }
 
     /**
@@ -237,7 +239,8 @@ public class ApiOperationBuilder internal constructor(
         configure: HeaderParameterBuilder.() -> Unit = {}
     ) {
         val builder: HeaderParameterBuilder = HeaderParameterBuilder().apply(configure)
-        parameters.add(builder.build(name = name, type = typeOf<T>()))
+        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
+        addApiParameter(apiParameter = parameter)
     }
 
     /**
@@ -265,7 +268,27 @@ public class ApiOperationBuilder internal constructor(
         configure: CookieParameterBuilder.() -> Unit = {}
     ) {
         val builder: CookieParameterBuilder = CookieParameterBuilder().apply(configure)
-        parameters.add(builder.build(name = name, type = typeOf<T>()))
+        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
+        addApiParameter(apiParameter = parameter)
+    }
+
+    /**
+     * Adds a new path parameter to the API operation,
+     * ensuring that the parameter name is unique.
+     *
+     * @param apiParameter The [ApiParameter] instance to add to the cache.
+     * @throws KopapiException If an [ApiParameter] with the same name already exists.
+     */
+    @PublishedApi
+    internal fun addApiParameter(apiParameter: ApiParameter) {
+        if (parameters.any { it.name.equals(other = apiParameter.name, ignoreCase = true) }) {
+            throw KopapiException(
+                "Attempting to register parameter with name '${apiParameter.name}' more than once " +
+                        "in the operation '$endpoint'."
+            )
+        }
+
+        parameters.add(apiParameter)
     }
 
     /**
@@ -347,7 +370,8 @@ public class ApiOperationBuilder internal constructor(
             else -> typeOf<T>()
         }
         val builder: ResponseBuilder = ResponseBuilder().apply(configure)
-        responses.add(builder.build(status = status, type = type))
+        val response: ApiResponse = builder.build(status = status, type = type)
+        responses.add(response)
     }
 
     /**

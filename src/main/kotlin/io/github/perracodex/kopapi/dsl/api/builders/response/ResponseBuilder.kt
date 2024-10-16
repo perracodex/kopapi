@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.api.builders.response
 
+import io.github.perracodex.kopapi.core.KopapiException
 import io.github.perracodex.kopapi.dsl.api.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.api.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.api.builders.attributes.LinkBuilder
@@ -65,7 +66,7 @@ public class ResponseBuilder {
      */
     public fun header(name: String, configure: HeaderBuilder.() -> Unit) {
         val header: ApiHeader = HeaderBuilder(name = name).apply(configure).build()
-        headers.add(header)
+        addHeader(header = header)
     }
 
     /**
@@ -84,5 +85,18 @@ public class ResponseBuilder {
     public fun link(operationId: String, configure: LinkBuilder.() -> Unit) {
         val link: ApiLink = LinkBuilder(operationId = operationId).apply(configure).build()
         links.add(link)
+    }
+
+    /**
+     * Adds a new [ApiHeader] instance to the cache, ensuring that the header name is unique
+     *
+     * @param header The [ApiHeader] instance to add to the cache.
+     * @throws KopapiException If an [ApiHeader] with the same name already exists.
+     */
+    private fun addHeader(header: ApiHeader) {
+        if (headers.any { it.name == header.name }) {
+            throw KopapiException("Header with name '${header.name}' already exists within the same response.")
+        }
+        headers.add(header)
     }
 }

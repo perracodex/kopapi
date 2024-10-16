@@ -64,7 +64,7 @@ public class LinkBuilder(
      */
     internal fun build(): ApiLink {
         return ApiLink(
-            operationId = operationId,
+            operationId = operationId.trim(),
             description = description.trimOrNull(),
             parameters = parameters.takeIf { it.isNotEmpty() }
         )

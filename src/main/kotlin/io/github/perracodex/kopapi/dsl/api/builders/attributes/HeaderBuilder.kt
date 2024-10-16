@@ -42,7 +42,7 @@ public class HeaderBuilder(
      */
     internal fun build(): ApiHeader {
         return ApiHeader(
-            name = name,
+            name = name.trim(),
             description = description.trimOrNull(),
             required = required,
             deprecated = deprecated.takeIf { it }
