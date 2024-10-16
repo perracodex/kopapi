@@ -4,16 +4,14 @@
 
 Kopapi is library to generate the OpenAPI documentation from [Ktor](https://ktor.io/) routes using `DSL`.
 
-| Ktor Version |
-|--------------|
-| \>= 3.0.0    |
+---
 
 **Quick sample usage before diving into the Wiki:**
 
 ```kotlin
 get("/items/{group_id}/{item_id?}") {
     // Handle GET request
-} api { 
+} api {
     summary = "Retrieve data items."
     description = "Fetches all items for a group."
     tags("Items", "Data")
@@ -45,6 +43,12 @@ dependencies {
   implementation("io.github.perracodex:kopapi:1.0.0")
 }
 ```
+
+### Version Compatibility
+
+| **Kopapi** | **Ktor** |
+|------------|----------|
+| 1.0.0      | 3.0.0    |
 
 ---
 
