@@ -4,7 +4,7 @@
 
 code[class*="language-"],
 pre[class*="language-"] {
-    color: #f8f8f2; /* Bright text color */
+    color: #f8f8f2;
     background: none;
     text-shadow: 0 1px rgba(0, 0, 0, 0.3);
     font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
@@ -25,12 +25,12 @@ pre[class*="language-"] {
     overflow: auto;
     border-radius: 0.3em;
     font-size: 0.9em;
-    background-color: #1d1f27; /* Darker background for better contrast */
+    background-color: #1d1f27;
 }
 
 :not(pre) > code[class*="language-"],
 pre[class*="language-"] {
-    background: #1a1a22; /* Slightly lighter background */
+    background: #1a1a22;
 }
 
 /* Inline code */
@@ -38,7 +38,7 @@ pre[class*="language-"] {
     padding: 0.1em;
     border-radius: 0.3em;
     white-space: normal;
-    background: #212329; /* Slightly lighter inline background */
+    background: #212329;
 }
 
 /* Comment, Prolog, Doctype, CData */
@@ -46,12 +46,12 @@ pre[class*="language-"] {
 .token.prolog,
 .token.doctype,
 .token.cdata {
-    color: #6a7381; /* Muted blue for comments */
+    color: #6a7381;
 }
 
 /* Punctuation */
 .token.punctuation {
-    color: #f8f8f2; /* Default bright color for punctuation */
+    color: #f8f8f2;
 }
 
 /* Property, Tag, Constant, Symbol, Deleted */
@@ -60,13 +60,13 @@ pre[class*="language-"] {
 .token.constant,
 .token.symbol,
 .token.deleted {
-    color: #fb527b; /* Strong magenta-pink for syntax elements */
+    color: #ffa947;
 }
 
 /* Boolean, Number */
 .token.boolean,
 .token.number {
-    color: #ffcb6b; /* Warm yellow for numbers and booleans */
+    color: #ff5ec6;
 }
 
 /* String, Char, Built-in, Inserted */
@@ -74,7 +74,7 @@ pre[class*="language-"] {
 .token.char,
 .token.builtin,
 .token.inserted {
-    color: #76c7b7; /* Soft cyan for strings */
+    color: #76c7b7;
 }
 
 /* Operator, Entity, URL, Variables */
@@ -84,24 +84,24 @@ pre[class*="language-"] {
 .language-css .token.string,
 .style .token.string,
 .token.variable {
-    color: #d4d4d4; /* Light grey for operators */
+    color: #d4d4d4;
 }
 
 /* Function and Class names */
 .token.function,
 .token.class-name {
-    color: #ffd700; /* Golden color for function names */
+    color: #ffd700;
 }
 
 /* Keyword */
 .token.keyword {
-    color: #c792ea; /* Violet for keywords */
+    color: #c792ea;
 }
 
 /* Regex, Important */
 .token.regex,
 .token.important {
-    color: #ffb86c; /* Orange for regex and important elements */
+    color: #ffb86c;
 }
 
 /* Bold and Italic */
