@@ -16,6 +16,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 
@@ -45,7 +46,10 @@ internal class SchemaComposer(
         val serversSection: List<ApiServerConfig>? = apiConfiguration.apiServers?.toList()
 
         // Compose the `Tags` section.
-        val tags: List<OpenAPiSchema.Tag>? = TagsComposer(apiOperations = apiOperations).compose()
+        val tags: List<ApiTag>? = TagsComposer(
+            apiConfiguration = apiConfiguration,
+            apiOperations = apiOperations
+        ).compose()
 
         // Compose the `Security` sections.
         val securityComposer = SecuritySectionComposer(apiConfiguration = apiConfiguration, apiOperations = apiOperations)

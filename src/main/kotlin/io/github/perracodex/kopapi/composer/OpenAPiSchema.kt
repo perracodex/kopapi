@@ -11,6 +11,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.system.KopapiException
 import io.ktor.http.*
 
@@ -34,18 +35,11 @@ internal data class OpenAPiSchema(
     val openapi: String,
     val info: ApiInfo,
     val servers: List<ApiServerConfig>?,
-    val tags: List<Tag>?,
+    val tags: List<ApiTag>?,
     val paths: Map<String, PathItem>?,
     val components: Components?,
     val security: List<Map<String, List<String>>?>?,
 ) {
-    /**
-     * Represents a single tag in the OpenAPI schema.
-     */
-    data class Tag(
-        val name: String
-    )
-
     /**
      * Represents the components section of the OpenAPI schema.
      *

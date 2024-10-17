@@ -8,9 +8,11 @@ import io.github.perracodex.kopapi.dsl.common.SecuritySchemeConfigurable
 import io.github.perracodex.kopapi.dsl.plugin.builders.CustomTypeBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.ServerBuilder
+import io.github.perracodex.kopapi.dsl.plugin.builders.TagBuilder
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
@@ -58,14 +60,19 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
     public var debugUrl: String = DEFAULT_DEBUG_URL
 
     /**
+     * The [ApiInfo] metadata for the OpenAPI schema.
+     */
+    private var apiInfo: ApiInfo? = null
+
+    /**
      * The list of servers to include in the OpenAPI schema.
      */
     private val servers: MutableSet<ApiServerConfig> = mutableSetOf()
 
     /**
-     * The [ApiInfo] metadata for the OpenAPI schema.
+     * The list of tags to include in the OpenAPI schema.
      */
-    private var apiInfo: ApiInfo? = null
+    private val tags: MutableSet<ApiTag> = mutableSetOf()
 
     /**
      * Sets up the OpenAPI metadata.
@@ -135,6 +142,24 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
     public fun servers(init: ServerBuilder.() -> Unit) {
         val builder: ServerBuilder = ServerBuilder().apply(init)
         servers.addAll(builder.build())
+    }
+
+    /**
+     * Sets up tags for the API.
+     *
+     * #### Sample Usage
+     * ```
+     * tags {
+     *     add(name = "Items", description = "Operations related to items.")
+     *     add(name = "Users", description = "Operations related to users.")
+     * }
+     * ```
+     *
+     * @see [TagBuilder]
+     */
+    public fun tags(init: TagBuilder.() -> Unit) {
+        val builder: TagBuilder = TagBuilder().apply(init)
+        tags.addAll(builder.build())
     }
 
     /**
@@ -225,6 +250,7 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
             swaggerUrl = swaggerUrl.trimOrDefault(defaultValue = DEFAULT_SWAGGER_URL),
             apiInfo = apiInfo,
             apiServers = servers.takeIf { it.isNotEmpty() } ?: setOf(ServerBuilder.defaultServer()),
+            apiTags = tags.takeIf { it.isNotEmpty() },
             apiSecuritySchemes = securitySchemes.takeIf { it.isNotEmpty() }
         )
     }

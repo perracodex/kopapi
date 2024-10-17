@@ -18,6 +18,7 @@ internal data class ApiConfiguration(
     val swaggerUrl: String,
     val apiInfo: ApiInfo?,
     val apiServers: Set<ApiServerConfig>?,
+    val apiTags: Set<ApiTag>?,
     val apiSecuritySchemes: Set<ApiSecurityScheme>?
 ) {
     init {
