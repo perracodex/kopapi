@@ -6,8 +6,8 @@ package io.github.perracodex.kopapi.inspector.schema.factory
 
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.schema.Schema
-import io.github.perracodex.kopapi.keys.ApiFormat
-import io.github.perracodex.kopapi.keys.ApiType
+import io.github.perracodex.kopapi.types.ApiFormat
+import io.github.perracodex.kopapi.types.ApiType
 
 /**
  * Provides factory methods for creating [Schema] instances.

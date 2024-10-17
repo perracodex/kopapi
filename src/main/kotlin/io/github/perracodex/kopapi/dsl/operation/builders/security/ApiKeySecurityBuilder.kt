@@ -6,7 +6,7 @@ package io.github.perracodex.kopapi.dsl.operation.builders.security
 
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.dsl.operation.types.SecurityLocation
+import io.github.perracodex.kopapi.types.SecurityLocation
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 

@@ -16,8 +16,8 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
-import io.github.perracodex.kopapi.keys.ApiFormat
-import io.github.perracodex.kopapi.keys.ApiType
+import io.github.perracodex.kopapi.types.ApiFormat
+import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.trimOrDefault
 import kotlin.reflect.typeOf
 

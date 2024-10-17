@@ -6,9 +6,9 @@ package io.github.perracodex.kopapi.dsl.common
 
 import io.github.perracodex.kopapi.dsl.operation.builders.security.*
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.dsl.operation.types.AuthenticationMethod
-import io.github.perracodex.kopapi.dsl.operation.types.SecurityLocation
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.types.AuthenticationMethod
+import io.github.perracodex.kopapi.types.SecurityLocation
 import io.ktor.http.*
 
 /**

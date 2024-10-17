@@ -8,8 +8,8 @@ import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
-import io.github.perracodex.kopapi.keys.ApiFormat
-import io.github.perracodex.kopapi.keys.ApiType
+import io.github.perracodex.kopapi.types.ApiFormat
+import io.github.perracodex.kopapi.types.ApiType
 import kotlin.reflect.full.createType
 import kotlin.test.Test
 import kotlin.test.assertEquals

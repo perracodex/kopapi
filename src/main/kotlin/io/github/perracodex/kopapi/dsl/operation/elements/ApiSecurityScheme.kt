@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import io.github.perracodex.kopapi.dsl.operation.types.AuthenticationMethod
-import io.github.perracodex.kopapi.dsl.operation.types.SecurityLocation
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.types.AuthenticationMethod
+import io.github.perracodex.kopapi.types.SecurityLocation
 
 /**
  * Represents the security configuration for an API endpoint.

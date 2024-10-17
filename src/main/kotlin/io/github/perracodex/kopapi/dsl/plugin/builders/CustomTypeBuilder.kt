@@ -5,9 +5,9 @@
 package io.github.perracodex.kopapi.dsl.plugin.builders
 
 import io.github.perracodex.kopapi.inspector.custom.CustomType
-import io.github.perracodex.kopapi.keys.ApiFormat
-import io.github.perracodex.kopapi.keys.ApiType
 import io.github.perracodex.kopapi.plugin.KopapiConfig
+import io.github.perracodex.kopapi.types.ApiFormat
+import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.trimOrNull
 import kotlin.reflect.KType
 

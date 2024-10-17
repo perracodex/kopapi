@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter.Location
-import io.github.perracodex.kopapi.dsl.operation.types.ParameterStyle
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.types.ParameterStyle
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 

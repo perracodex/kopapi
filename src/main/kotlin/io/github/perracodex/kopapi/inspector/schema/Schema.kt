@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.inspector.schema
 
 import io.github.perracodex.kopapi.inspector.utils.SchemaConstraints
-import io.github.perracodex.kopapi.keys.ApiType
+import io.github.perracodex.kopapi.types.ApiType
 
 /**
  * Defines the various types of schemas that can be represented.

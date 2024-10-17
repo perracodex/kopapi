@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.keys
+package io.github.perracodex.kopapi.types
 
 import com.fasterxml.jackson.annotation.JsonValue
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory

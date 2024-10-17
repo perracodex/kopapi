@@ -15,6 +15,7 @@ import io.ktor.server.testing.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @Suppress("SameParameterValue")
 class ApiInfoJsonTest {
@@ -49,13 +50,13 @@ class ApiInfoJsonTest {
             )
 
             // Validate the API info exists.
-            val jsonApiInfo: String? = SchemaRegistry.getApiInfoJson()
-            assertNotNull(
-                actual = jsonApiInfo,
-                message = "Expected API info to be non-null."
+            val jsonApiInfo: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.API_INFO)
+            assertTrue(
+                actual = jsonApiInfo.isNotEmpty(),
+                message = "Expected API info to be empty."
             )
 
-            val apiInfo: ApiInfo = SerializationUtils.fromRawJson(json = jsonApiInfo)
+            val apiInfo: ApiInfo = SerializationUtils.fromRawJson(json = jsonApiInfo.first())
             validateApiInfo(
                 info = apiInfo,
                 expectedTitle = "Test API",

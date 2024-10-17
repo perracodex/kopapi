@@ -6,7 +6,7 @@ package io.github.perracodex.kopapi.dsl.operation.builders.parameter
 
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
-import io.github.perracodex.kopapi.dsl.operation.types.ParameterStyle
+import io.github.perracodex.kopapi.types.ParameterStyle
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import kotlin.reflect.KType
