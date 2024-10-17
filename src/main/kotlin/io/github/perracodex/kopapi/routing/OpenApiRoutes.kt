@@ -20,7 +20,7 @@ internal fun Routing.openApiRoutes(
     openapiYamlUrl: String
 ) {
     get(openapiJsonUrl) {
-        val openapiJson = ""
+        val openapiJson: String = SchemaRegistry.getOpenApiSchema(format = SchemaRegistry.Format.JSON)
         call.respondText(text = openapiJson, contentType = ContentType.Application.Json)
     }
 

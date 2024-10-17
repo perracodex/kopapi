@@ -37,6 +37,20 @@ internal object SerializationUtils {
         .build()
 
     /**
+     * Configured Jackson JSON Mapper, strictly for OpenAPI schema serialization.
+     */
+    private val jsonMapper: JsonMapper = JsonMapper.builder()
+        .addModule(kotlinModule())
+        .enable(SerializationFeature.INDENT_OUTPUT)
+        .serializationInclusion(JsonInclude.Include.NON_NULL)
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .enable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
+        .enable(MapperFeature.SORT_CREATOR_PROPERTIES_BY_DECLARATION_ORDER)
+        .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+        .addModule(serializerModule())
+        .build()
+
+    /**
      * Configured Jackson YAML Mapper, strictly for OpenAPI schema serialization.
      */
     private val yamlMapper: YAMLMapper = YAMLMapper.builder()
@@ -83,6 +97,16 @@ internal object SerializationUtils {
      */
     inline fun <reified T> fromRawJson(json: String): T {
         return rawJson.readValue(json)
+    }
+
+    /**
+     * Serializes the given object [instance] to a JSON string for OpenAPI.
+     *
+     * @param instance The object instance to serialize.
+     * @return The JSON string representation of the object [instance].
+     */
+    fun toJson(instance: Any): String {
+        return jsonMapper.writeValueAsString(instance)
     }
 
     /**
