@@ -24,19 +24,28 @@ import io.ktor.http.*
  * @property openapi The version of the OpenAPI Specification being used (e.g., "3.1.0").
  * @property info Provides metadata about the API, including title, description, version, etc.
  * @property servers A list of server objects that provide connectivity information to the API.
- * @property security The global security requirements that apply to all operations unless overridden.
+ * @property tags A list of tags used to group API operations together for documentation purposes.
  * @property paths An object that holds the relative paths to the individual endpoints and their operations.
  * @property components An object to hold various reusable components such as security schemes, responses, parameters, etc.
+ * @property security The global security requirements that apply to all operations unless overridden.
  */
 @ComposerAPI
 internal data class OpenAPiSchema(
     val openapi: String,
     val info: ApiInfo,
     val servers: List<ApiServerConfig>?,
-    val security: List<Map<String, List<String>>?>?,
+    val tags: List<Tag>?,
     val paths: Map<String, PathItem>?,
     val components: Components?,
+    val security: List<Map<String, List<String>>?>?,
 ) {
+    /**
+     * Represents a single tag in the OpenAPI schema.
+     */
+    data class Tag(
+        val name: String
+    )
+
     /**
      * Represents the components section of the OpenAPI schema.
      *

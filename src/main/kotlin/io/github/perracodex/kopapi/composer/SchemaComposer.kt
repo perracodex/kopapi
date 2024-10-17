@@ -10,6 +10,7 @@ import io.github.perracodex.kopapi.composer.path.PathComposer
 import io.github.perracodex.kopapi.composer.security.GlobalSecurityRequirement
 import io.github.perracodex.kopapi.composer.security.OperationSecurity
 import io.github.perracodex.kopapi.composer.security.SecuritySectionComposer
+import io.github.perracodex.kopapi.composer.tags.TagsComposer
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
@@ -43,6 +44,9 @@ internal class SchemaComposer(
         // Get the `Servers` section.
         val serversSection: List<ApiServerConfig>? = apiConfiguration.apiServers?.toList()
 
+        // Compose the `Tags` section.
+        val tags: List<OpenAPiSchema.Tag>? = TagsComposer(apiOperations = apiOperations).compose()
+
         // Compose the `Security` sections.
         val securityComposer = SecuritySectionComposer(apiConfiguration = apiConfiguration, apiOperations = apiOperations)
         val globalSecurity: GlobalSecurityRequirement? = securityComposer.composeGlobalSecurityRequirements()
@@ -65,9 +69,10 @@ internal class SchemaComposer(
             openapi = OPEN_API_VERSION,
             info = infoSection,
             servers = serversSection,
-            security = globalSecurity?.toOpenAPISpec(),
+            tags = tags,
             paths = pathsSection,
-            components = components
+            components = components,
+            security = globalSecurity?.toOpenAPISpec(),
         )
 
         // Serialize the OpenAPI schema, producing the final schema.
