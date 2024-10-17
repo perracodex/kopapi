@@ -20,9 +20,11 @@ import kotlinx.serialization.json.jsonPrimitive
  * Each panel includes a dropdown for filtering the displayed JSON data and syntax highlighting.
  */
 internal class DebugPanelView {
-    private val apiOperationJson: Set<String> = SchemaRegistry.getApiOperationJson()
-    private val schemasJson: Set<String> = SchemaRegistry.getSchemasJson()
-    private val schemaConflictsJson: Set<String> = SchemaRegistry.getSchemaConflictsJson()
+    private val apiOperationJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.API_OPERATION)
+    private val typeSchemasJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.TYPE_SCHEMAS)
+    private val schemaConflictsJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.SCHEMA_CONFLICTS)
+    private val configurationJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.API_CONFIGURATION)
+
     private val json = Json { prettyPrint = true }
 
     /**
@@ -33,7 +35,7 @@ internal class DebugPanelView {
     fun build(html: HTML) {
         // Parse JSON strings into JsonObject lists.
         val apiOperationList: List<JsonObject> = apiOperationJson.map { Json.parseToJsonElement(it).jsonObject }
-        val schemasList: List<JsonObject> = schemasJson.map { Json.parseToJsonElement(it).jsonObject }
+        val typeSchemasList: List<JsonObject> = typeSchemasJson.map { Json.parseToJsonElement(it).jsonObject }
         val schemaConflictsList: List<JsonObject> = schemaConflictsJson.map { Json.parseToJsonElement(it).jsonObject }
 
         with(html) {
@@ -45,43 +47,58 @@ internal class DebugPanelView {
             }
             // Build the body of the HTML page.
             body {
+                // Information button to display a popup with additional details.
+                button(classes = "configuration-button") {
+                    id = "configuration-popup-button"
+                    onClick = "showPopup()"
+                    +"Configuration Details"
+                }
+
                 h1(classes = "header") { +"Kopapi Debug Information" }
+
                 div(classes = "panel-container") {
                     // Build individual panels for each JSON section.
                     buildPanel(
                         htmlTag = this,
-                        title = "Routes API Metadata",
-                        panelId = "routes-api-metadata",
+                        title = "API Operations",
+                        panelId = "api-operation",
                         keys = listOf("method", "path"),
                         jsonDataList = apiOperationList
                     )
-                    if (schemasList.isNotEmpty()) {
+                    if (typeSchemasList.isNotEmpty()) {
                         buildPanel(
                             htmlTag = this,
-                            title = "Object Schemas",
-                            panelId = "objects-schemas",
+                            title = "Type Schemas",
+                            panelId = "type-schemas",
                             keys = listOf("name", "type"),
-                            jsonDataList = schemasList
+                            jsonDataList = typeSchemasList
                         )
                     }
                     if (schemaConflictsList.isNotEmpty()) {
                         buildPanel(
                             htmlTag = this,
-                            title = "Schema Conflicts",
-                            panelId = "schema-conflicts",
+                            title = "Type Schema Conflicts",
+                            panelId = "type-schema-conflicts",
                             keys = listOf("name"),
                             jsonDataList = schemaConflictsList
                         )
                     }
                 }
 
+                // Include the configuration popup in the debug view.
+                buildConfigurationPopup(
+                    htmlTag = this,
+                    jsonString = configurationJson.first()
+                )
+
                 // Include Prism.js for syntax highlighting.
                 script(src = "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js") {}
                 script(src = "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js") {}
 
-                // Include custom JavaScript files for copy-to-clipboard and dropdown filtering.
+                // Include custom JavaScript files for the debug view.
                 script(src = "/static-kopapi/js/copy.js", type = "text/javascript") {}
                 script(src = "/static-kopapi/js/selection.js", type = "text/javascript") {}
+                script(src = "/static-kopapi/js/popup.js", type = "text/javascript") {}
             }
         }
     }
@@ -103,6 +120,7 @@ internal class DebugPanelView {
         jsonDataList: List<JsonObject>
     ) {
         val jsonData: String = json.encodeToString(jsonDataList)
+        val filterId = "$panelId-data-filter"
 
         with(htmlTag) {
             div(classes = "panel") {
@@ -126,7 +144,7 @@ internal class DebugPanelView {
 
                 // Dropdown for filtering the JSON based on specific keys.
                 select(classes = "filter-dropdown") {
-                    id = "$panelId-filter"
+                    id = filterId
 
                     // Add an "All" option to display all JSON data.
                     option {
@@ -155,6 +173,43 @@ internal class DebugPanelView {
                     code(classes = "language-json") {
                         // Initial value is the full pretty-printed JSON data.
                         +jsonData
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Constructs the configuration popup in the debug view.
+     *
+     * @param htmlTag The parent HTML element to append the popup to.
+     * @param jsonString The JSON object to be displayed in the popup.
+     */
+    private fun buildConfigurationPopup(
+        htmlTag: FlowContent,
+        jsonString: String
+    ) {
+        val panelId = "configuration-panel"
+
+        with(htmlTag) {
+            div(classes = "popup-overlay") {
+                id = "popup-overlay"
+
+                div(classes = "popup-content") {
+                    id = "popup-content"
+
+                    div(classes = "panel") {
+                        id = panelId
+                        pre(classes = "panel-content") {
+                            code(classes = "language-json") {
+                                +jsonString
+                            }
+                        }
+                    }
+
+                    button(classes = "close-popup") {
+                        onClick = "hidePopup()"
+                        +"Close"
                     }
                 }
             }

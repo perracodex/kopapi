@@ -4,6 +4,8 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
+const FILTER_SUFFIX = '-data-filter';
+
 /**
  * Updates the displayed JSON content within a specific panel based on the selected dropdown value.
  *
@@ -11,9 +13,10 @@
  */
 function filterJsonContent(panelId) {
     // Retrieve the dropdown (select) element associated with the panel.
-    const selectElement = document.getElementById(`${panelId}-filter`);
+    const filterElementId = `${panelId}${FILTER_SUFFIX}`;
+    const selectElement = document.getElementById(filterElementId);
     if (!selectElement) {
-        console.error(`Select element with ID '${panelId}-filter' not found.`);
+        console.error(`Select element with ID '${filterElementId}' not found.`);
         return;
     }
 
@@ -98,20 +101,15 @@ function togglePanel(panelId) {
  * Initializes event listeners for all filter dropdowns once the DOM content is fully loaded.
  */
 document.addEventListener('DOMContentLoaded', function () {
-    // Array of dropdown element IDs that correspond to different JSON panels.
-    // Each ID follows the pattern '<panelId>-filter'.
-    const filterIds = [
-        'routes-api-metadata-filter',
-        'objects-schemas-filter',
-        'schema-conflicts-filter'
-    ];
+    // Select all elements used for filtering JSON data.
+    const filterElements = document.querySelectorAll(`[id$="${FILTER_SUFFIX}"]`);
 
     // Iterate over each filter ID to set up its corresponding event listener.
-    filterIds.forEach(filterId => {
+    filterElements.forEach(selectElement => {
         // Get the dropdown (select) element by its ID,
         // and derive the panel ID by removing the '-filter' suffix from the dropdown ID.
-        const selectElement = document.getElementById(filterId);
-        const panelId = filterId.replace('-filter', '');
+        // Derive the panel ID by removing the '-filter' suffix from the dropdown ID.
+        const panelId = selectElement.id.replace(FILTER_SUFFIX, '');
 
         // Add a 'change' event listener to handle user selection changes.
         selectElement.addEventListener('change', function () {

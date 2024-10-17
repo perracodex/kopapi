@@ -44,6 +44,11 @@ function copyToClipboard(elementId) {
     selection.removeAllRanges();
 }
 
+/**
+ * Show a notification message.
+ * @param message The message to display.
+ * @param type The type of notification. Can be 'success' or 'error'.
+ */
 function showNotification(message, type) {
     // Create notification element
     const notification = document.createElement('div');

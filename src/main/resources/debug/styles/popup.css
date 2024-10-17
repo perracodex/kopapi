@@ -1,0 +1,96 @@
+/*
+ * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
+ */
+
+/* Popup Overlay */
+.popup-overlay {
+    position: fixed;
+    top: 20px; /* Place it near the top */
+    left: 20px; /* Align it to the left */
+    right: 0;
+    bottom: 0;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    line-height: 1.6;
+    background-color: rgba(28, 30, 38, 0.8); /* Semi-transparent dark background */
+    display: none; /* Hidden by default */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 1000; /* Ensure it's on top of other elements */
+}
+
+/* Popup Content */
+.popup-content {
+    background-color: #282c34; /* Match panel background */
+    color: #d5d6db; /* Light text color */
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    height: 80%;
+    max-width: 700px;
+    max-height: 700px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    text-align: center;
+    overflow: hidden; /* Prevent content overflow */
+    display: flex;
+    flex-direction: column; /* Ensure the close button stays at the bottom */
+}
+
+/* Close Button */
+.close-popup {
+    margin-top: 20px;
+    padding: 8px 16px;
+    background-color: #3c3f4a;
+    color: #d5d6db;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    align-self: center; /* Ensure the button is centered horizontally */
+}
+
+.close-popup:hover {
+    background-color: #4b4e58;
+}
+
+/* Configuration Button Styling */
+.configuration-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 8px 12px; /* Adjusted for smaller size */
+    background-color: #3c3f4a;
+    color: #d5d6db;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em; /* Slightly smaller font */
+    z-index: 1001; /* Above the overlay */
+    transition: background-color 0.3s ease; /* Smooth hover transition */
+}
+
+.configuration-button:hover {
+    background-color: #4b4e58;
+}
+
+.popup-content pre {
+    white-space: pre-wrap; /* Ensures line breaks are preserved */
+    word-wrap: break-word; /* Breaks long lines if necessary */
+    flex-grow: 1; /* Take up remaining space in the popup */
+    overflow-y: auto; /* Vertical scroll for long content */
+    padding: 10px;
+    background-color: #1c1e26; /* Same background as other panels */
+    border-radius: 8px;
+    max-width: 100%; /* Prevent horizontal overflow */
+    overflow-x: auto; /* Ensure long lines are handled */
+}
+
+.popup-content code {
+    display: block;
+    color: #d5d6db; /* Light text color */
+    background-color: transparent;
+}
+

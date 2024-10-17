@@ -8,8 +8,6 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
@@ -20,8 +18,7 @@ import kotlin.collections.set
 import kotlin.reflect.KType
 
 /**
- * Singleton for registering and serving API information,
- * server configurations, and endpoint metadata.
+ * Singleton for registering and serving API information.
  */
 internal object SchemaRegistry {
     private val tracer = Tracer<SchemaRegistry>()
@@ -38,13 +35,14 @@ internal object SchemaRegistry {
     }
 
     /** Represents the different sections in the debug JSON output. */
-    private enum class SectionType {
+    enum class Section {
         API_INFO,
         API_SERVERS,
         API_SECURITY_SCHEMES,
-        API_METADATA,
-        SCHEMAS,
-        SCHEMA_CONFLICTS
+        API_OPERATION,
+        TYPE_SCHEMAS,
+        SCHEMA_CONFLICTS,
+        API_CONFIGURATION
     }
 
     /**
@@ -57,13 +55,13 @@ internal object SchemaRegistry {
     private val apiOperation: MutableSet<ApiOperation> = mutableSetOf()
 
     /** Set of generated type schemas derived from registered API metadata. */
-    private val schemas: MutableSet<TypeSchema> = mutableSetOf()
+    private val typeSchemas: MutableSet<TypeSchema> = mutableSetOf()
 
     /** Set of detected schema conflicts during schema generation. */
     private val schemaConflicts: MutableSet<SchemaConflicts.Conflict> = mutableSetOf()
 
     /** Cached JSON representations for debugging, categorized by section type. */
-    private val debugJsonCache: MutableMap<SectionType, Set<String>> = mutableMapOf()
+    private val debugJsonCache: MutableMap<Section, Set<String>> = mutableMapOf()
 
     /** Cached OpenAPI schema representations, categorized by format. */
     private val openApiSchemaCache: MutableMap<Format, String> = mutableMapOf()
@@ -118,7 +116,7 @@ internal object SchemaRegistry {
      */
     fun clear() {
         apiOperation.clear()
-        schemas.clear()
+        typeSchemas.clear()
         schemaConflicts.clear()
         debugJsonCache.clear()
         openApiSchemaCache.clear()
@@ -160,8 +158,8 @@ internal object SchemaRegistry {
     /**
      * Processes and collects the [TypeSchema] objects from the registered [ApiOperation] objects.
      */
-    private fun processSchemas() {
-        if (schemas.isNotEmpty()) {
+    private fun processTypeSchemas() {
+        if (typeSchemas.isNotEmpty()) {
             return
         }
 
@@ -190,7 +188,7 @@ internal object SchemaRegistry {
         inspector.getTypeSchemas().sortedWith(
             compareBy { it.name }
         ).forEach { schema ->
-            schemas.add(schema)
+            typeSchemas.add(schema)
         }
 
         // Collect and store sorted schema conflicts.
@@ -214,69 +212,71 @@ internal object SchemaRegistry {
     }
 
     /**
-     * Retrieves the API information in JSON format.
+     * Retrieves the serialized JSON data for a specific section in raw unformatted format.
      *
-     * @return The JSON string representing the [ApiInfo].
+     * @param section The [Section] indicating the category of the object.
+     * @return A set of JSON strings representing the data for the specified section.
      */
-    fun getApiInfoJson(): String? {
-        apiConfiguration?.apiInfo?.let { apiInfo ->
-            return getOrGenerateDebugJson(instance = apiInfo, section = SectionType.API_INFO).first()
+    fun getDebugSection(section: Section): Set<String> {
+        return when (section) {
+            Section.API_CONFIGURATION -> getConfigurationSectionJson(
+                instance = apiConfiguration,
+                section = Section.API_CONFIGURATION
+            )
+
+            Section.API_INFO -> getConfigurationSectionJson(
+                instance = apiConfiguration?.apiInfo,
+                section = Section.API_INFO
+            )
+
+            Section.API_SERVERS -> getConfigurationSectionJson(
+                instance = apiConfiguration?.apiServers,
+                section = Section.API_SERVERS
+            )
+
+            Section.API_SECURITY_SCHEMES -> getConfigurationSectionJson(
+                instance = apiConfiguration?.apiSecuritySchemes,
+                section = Section.API_SECURITY_SCHEMES
+            )
+
+            Section.API_OPERATION -> {
+                getOrGenerateDebugJson(
+                    instance = apiOperation,
+                    section = Section.API_OPERATION
+                )
+            }
+
+            Section.TYPE_SCHEMAS -> {
+                getOrGenerateDebugJson(
+                    instance = typeSchemas,
+                    section = Section.TYPE_SCHEMAS
+                )
+            }
+
+            Section.SCHEMA_CONFLICTS -> {
+                getOrGenerateDebugJson(
+                    instance = schemaConflicts,
+                    section = Section.SCHEMA_CONFLICTS
+                )
+            }
         }
-        tracer.warning("No API configuration found.")
-        return null
     }
 
     /**
-     * Retrieves the API information in JSON format.
+     * Helper method to handle [ApiConfiguration] sections serialization.
      *
-     * @return A set of JSON strings representing the [ApiInfo].
+     * @param T The type of the instance to serialize.
+     * @param instance The instance to serialize.
+     * @param section The [Section] to process.
+     * @return A set of JSON strings representing the serialized data for the section.
      */
-    fun getSecuritySchemesJson(): Set<String> {
-        apiConfiguration?.apiSecuritySchemes?.let { schemes ->
-            return getOrGenerateDebugJson(instance = schemes, section = SectionType.API_SECURITY_SCHEMES)
+    private fun <T : Any> getConfigurationSectionJson(instance: T?, section: Section): Set<String> {
+        return instance?.let {
+            getOrGenerateDebugJson(instance = it, section = section)
+        } ?: run {
+            tracer.warning("No API configuration found.")
+            emptySet()
         }
-        tracer.warning("No API configuration found.")
-        return emptySet()
-    }
-
-    /**
-     * Retrieves the API server configurations in JSON format.
-     *
-     * @return A set of JSON strings representing the [ApiServerConfig] objects.
-     */
-    fun getApiServersJson(): Set<String> {
-        apiConfiguration?.apiServers?.let { apiServers ->
-            return getOrGenerateDebugJson(instance = apiServers, section = SectionType.API_SERVERS)
-        }
-        tracer.warning("No API configuration found.")
-        return emptySet()
-    }
-
-    /**
-     * Retrieves the API metadata in JSON format.
-     *
-     * @return A set of JSON strings representing the registered [ApiOperation].
-     */
-    fun getApiOperationJson(): Set<String> {
-        return getOrGenerateDebugJson(instance = apiOperation, section = SectionType.API_METADATA)
-    }
-
-    /**
-     * Retrieves the generated schemas in JSON format.
-     *
-     * @return A set of JSON strings representing the [TypeSchema] objects.
-     */
-    fun getSchemasJson(): Set<String> {
-        return getOrGenerateDebugJson(instance = schemas, section = SectionType.SCHEMAS)
-    }
-
-    /**
-     * Retrieves the schema conflicts in JSON format.
-     *
-     * @return A list of JSON strings representing the [SchemaConflicts.Conflict] objects.
-     */
-    fun getSchemaConflictsJson(): Set<String> {
-        return getOrGenerateDebugJson(instance = schemaConflicts, section = SectionType.SCHEMA_CONFLICTS)
     }
 
     /**
@@ -284,11 +284,10 @@ internal object SchemaRegistry {
      *
      * @param T The type of the object to serialize.
      * @param instance The object to serialize.
-     * @param section The [SectionType] indicating the category of the object.
+     * @param section The [Section] indicating the category of the object.
      * @return A list containing a single JSON string representing the serialized object.
      */
-    @Suppress("SameParameterValue")
-    private fun <T : Any> getOrGenerateDebugJson(instance: T?, section: SectionType): Set<String> {
+    private fun <T : Any> getOrGenerateDebugJson(instance: T?, section: Section): Set<String> {
         if (instance == null) {
             return emptySet()
         }
@@ -305,11 +304,11 @@ internal object SchemaRegistry {
      *
      * @param T The type of objects to serialize.
      * @param instance The set of objects to serialize.
-     * @param section The [SectionType] indicating the category of objects.
+     * @param section The [Section] indicating the category of objects.
      * @return A list of JSON strings representing the serialized objects.
      */
-    private fun <T : Any> getOrGenerateDebugJson(instance: Set<T>, section: SectionType): Set<String> {
-        processSchemas()
+    private fun <T : Any> getOrGenerateDebugJson(instance: Set<T>, section: Section): Set<String> {
+        processTypeSchemas()
 
         return debugJsonCache[section] ?: run {
             instance
@@ -329,15 +328,16 @@ internal object SchemaRegistry {
      */
     @OptIn(ComposerAPI::class)
     fun getOpenApiSchema(format: Format): String {
-        if (!isEnabled || apiConfiguration == null) {
-            return ""
+        if (!isEnabled) {
+            throw KopapiException("Attempted to generate OpenAPI schema while plugin is disabled.")
         }
+
         openApiSchemaCache.getOrDefault(key = format, defaultValue = null)?.let { schema ->
             return schema
         }
 
         apiConfiguration?.let { configuration ->
-            processSchemas()
+            processTypeSchemas()
 
             val schema: String = SchemaComposer(
                 apiConfiguration = configuration,
@@ -347,9 +347,6 @@ internal object SchemaRegistry {
 
             openApiSchemaCache[format] = schema
             return schema
-        } ?: run {
-            tracer.warning("No API configuration found.")
-            return ""
-        }
+        } ?: throw KopapiException("API Configuration not found.")
     }
 }
