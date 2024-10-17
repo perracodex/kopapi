@@ -133,7 +133,8 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
      * @see [ServerBuilder]
      */
     public fun servers(init: ServerBuilder.() -> Unit) {
-        servers.addAll(ServerBuilder().apply(init).build())
+        val builder: ServerBuilder = ServerBuilder().apply(init)
+        servers.addAll(builder.build())
     }
 
     /**
