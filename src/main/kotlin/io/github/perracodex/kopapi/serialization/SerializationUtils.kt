@@ -23,8 +23,8 @@ import kotlin.reflect.KType
  * Provides utility functions for serialization.
  */
 internal object SerializationUtils {
-    /** Configured Jackson Mapper. */
-    private val rawJson: JsonMapper = JsonMapper.builder()
+    /** Configured Jackson Mapper. for debugging purposes. */
+    val debugJson: JsonMapper = JsonMapper.builder()
         .addModule(kotlinModule())
         .enable(SerializationFeature.INDENT_OUTPUT)
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -39,7 +39,7 @@ internal object SerializationUtils {
     /**
      * Configured Jackson JSON Mapper, strictly for OpenAPI schema serialization.
      */
-    private val jsonMapper: JsonMapper = JsonMapper.builder()
+    private val openApiJsonMapper: JsonMapper = JsonMapper.builder()
         .addModule(kotlinModule())
         .enable(SerializationFeature.INDENT_OUTPUT)
         .serializationInclusion(JsonInclude.Include.NON_NULL)
@@ -53,7 +53,7 @@ internal object SerializationUtils {
     /**
      * Configured Jackson YAML Mapper, strictly for OpenAPI schema serialization.
      */
-    private val yamlMapper: YAMLMapper = YAMLMapper.builder()
+    private val openApiYamlMapper: YAMLMapper = YAMLMapper.builder()
         .addModule(kotlinModule())
         .enable(SerializationFeature.INDENT_OUTPUT)
         .serializationInclusion(JsonInclude.Include.NON_NULL)
@@ -86,7 +86,7 @@ internal object SerializationUtils {
      * @return The JSON string representation of the object [instance].
      */
     fun toRawJson(instance: Any): String {
-        return rawJson.writeValueAsString(instance)
+        return debugJson.writeValueAsString(instance)
     }
 
     /**
@@ -96,7 +96,7 @@ internal object SerializationUtils {
      * @return The deserialized object of type [T].
      */
     inline fun <reified T> fromRawJson(json: String): T {
-        return rawJson.readValue(json)
+        return debugJson.readValue(json)
     }
 
     /**
@@ -106,7 +106,7 @@ internal object SerializationUtils {
      * @return The JSON string representation of the object [instance].
      */
     fun toJson(instance: Any): String {
-        return jsonMapper.writeValueAsString(instance)
+        return openApiJsonMapper.writeValueAsString(instance)
     }
 
     /**
@@ -116,6 +116,6 @@ internal object SerializationUtils {
      * @return The YAML string representation of the object [instance].
      */
     fun toYaml(instance: Any): String {
-        return yamlMapper.writeValueAsString(instance)
+        return openApiYamlMapper.writeValueAsString(instance)
     }
 }
