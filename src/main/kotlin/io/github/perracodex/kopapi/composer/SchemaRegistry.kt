@@ -7,12 +7,12 @@ package io.github.perracodex.kopapi.composer
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
-import io.github.perracodex.kopapi.plugin.Configuration
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
@@ -69,24 +69,24 @@ internal object SchemaRegistry {
     private val openApiSchemaCache: MutableMap<Format, String> = mutableMapOf()
 
     /** Information about the API, such as title, version, and description. */
-    var configuration: Configuration? = null
+    var apiConfiguration: ApiConfiguration? = null
         private set
 
     /**
-     * Registers the [Configuration] object for the Kopapi plugin.
+     * Registers the [ApiConfiguration] object for the Kopapi plugin.
      *
      * This method should be called only once during the application lifecycle.
      *
-     * @param configuration The [Configuration] object representing the plugin configuration.
+     * @param apiConfiguration The [ApiConfiguration] object representing the plugin configuration.
      */
-    fun registerConfiguration(configuration: Configuration) {
+    fun registerApiConfiguration(apiConfiguration: ApiConfiguration) {
         synchronized(this) {
-            if (SchemaRegistry.configuration != null) {
-                throw KopapiException("Configuration has already been registered.")
+            if (SchemaRegistry.apiConfiguration != null) {
+                throw KopapiException("API Configuration has already been registered.")
             }
-            isEnabled = configuration.isEnabled
+            isEnabled = apiConfiguration.isEnabled
             if (isEnabled) {
-                SchemaRegistry.configuration = configuration
+                SchemaRegistry.apiConfiguration = apiConfiguration
                 assertSecuritySchemeNamesUniqueness()
             } else {
                 clear()
@@ -122,7 +122,7 @@ internal object SchemaRegistry {
         schemaConflicts.clear()
         debugJsonCache.clear()
         openApiSchemaCache.clear()
-        configuration = null
+        apiConfiguration = null
     }
 
     /**
@@ -136,7 +136,7 @@ internal object SchemaRegistry {
      * between global and Route definitions.
      */
     private fun assertSecuritySchemeNamesUniqueness() {
-        val global: Set<ApiSecurityScheme>? = configuration?.apiSecuritySchemes
+        val global: Set<ApiSecurityScheme>? = apiConfiguration?.apiSecuritySchemes
 
         // Check between global and API metadata.
         if (!global.isNullOrEmpty() && apiOperation.isNotEmpty()) {
@@ -219,10 +219,10 @@ internal object SchemaRegistry {
      * @return The JSON string representing the [ApiInfo].
      */
     fun getApiInfoJson(): String? {
-        configuration?.apiInfo?.let { apiInfo ->
+        apiConfiguration?.apiInfo?.let { apiInfo ->
             return getOrGenerateDebugJson(instance = apiInfo, section = SectionType.API_INFO).first()
         }
-        tracer.warning("No configuration found.")
+        tracer.warning("No API configuration found.")
         return null
     }
 
@@ -232,10 +232,10 @@ internal object SchemaRegistry {
      * @return A set of JSON strings representing the [ApiInfo].
      */
     fun getSecuritySchemesJson(): Set<String> {
-        configuration?.apiSecuritySchemes?.let { schemes ->
+        apiConfiguration?.apiSecuritySchemes?.let { schemes ->
             return getOrGenerateDebugJson(instance = schemes, section = SectionType.API_SECURITY_SCHEMES)
         }
-        tracer.warning("No configuration found.")
+        tracer.warning("No API configuration found.")
         return emptySet()
     }
 
@@ -245,10 +245,10 @@ internal object SchemaRegistry {
      * @return A set of JSON strings representing the [ApiServerConfig] objects.
      */
     fun getApiServersJson(): Set<String> {
-        configuration?.apiServers?.let { apiServers ->
+        apiConfiguration?.apiServers?.let { apiServers ->
             return getOrGenerateDebugJson(instance = apiServers, section = SectionType.API_SERVERS)
         }
-        tracer.warning("No configuration found.")
+        tracer.warning("No API configuration found.")
         return emptySet()
     }
 
@@ -329,18 +329,18 @@ internal object SchemaRegistry {
      */
     @OptIn(ComposerAPI::class)
     fun getOpenApiSchema(format: Format): String {
-        if (!isEnabled || configuration == null) {
+        if (!isEnabled || apiConfiguration == null) {
             return ""
         }
         openApiSchemaCache.getOrDefault(key = format, defaultValue = null)?.let { schema ->
             return schema
         }
 
-        configuration?.let { configuration ->
+        apiConfiguration?.let { configuration ->
             processSchemas()
 
             val schema: String = SchemaComposer(
-                configuration = configuration,
+                apiConfiguration = configuration,
                 apiOperations = apiOperation,
                 schemaConflicts = schemaConflicts
             ).compose(format = format)
@@ -348,7 +348,7 @@ internal object SchemaRegistry {
             openApiSchemaCache[format] = schema
             return schema
         } ?: run {
-            tracer.warning("No configuration found.")
+            tracer.warning("No API configuration found.")
             return ""
         }
     }

@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.dsl.common.SecuritySchemeConfigurable
 import io.github.perracodex.kopapi.dsl.plugin.builders.CustomTypeBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.ServerBuilder
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
@@ -212,10 +213,10 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
     }
 
     /**
-     * Builds the final immutable [Configuration] instance.
+     * Builds the final immutable [ApiConfiguration] instance.
      */
-    internal fun build(): Configuration {
-        return Configuration(
+    internal fun build(): ApiConfiguration {
+        return ApiConfiguration(
             isEnabled = enabled,
             debugUrl = debugUrl.trimOrDefault(defaultValue = DEFAULT_DEBUG_URL),
             openapiJsonUrl = openapiJsonUrl.trimOrDefault(defaultValue = DEFAULT_OPENAPI_JSON_URL),

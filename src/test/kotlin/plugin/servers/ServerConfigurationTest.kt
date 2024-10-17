@@ -54,7 +54,7 @@ class ServerConfigurationTest {
             )
 
             // Validate the servers exist.
-            val servers: Set<ApiServerConfig>? = SchemaRegistry.configuration?.apiServers
+            val servers: Set<ApiServerConfig>? = SchemaRegistry.apiConfiguration?.apiServers
             assertNotNull(
                 actual = servers,
                 message = "Expected server configurations to be non-null."

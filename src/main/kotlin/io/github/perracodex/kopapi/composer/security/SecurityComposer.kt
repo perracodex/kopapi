@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.composer.security
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.plugin.Configuration
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 
 /**
  * Responsible for composing the security-related sections of the OpenAPI schema.
@@ -15,12 +15,12 @@ import io.github.perracodex.kopapi.plugin.Configuration
  * Aggregates global security requirements, security schemes, and associates
  * security configurations with individual API Operations based on their metadata.
  *
- * @property configuration The plugin [Configuration] containing global security schemes.
+ * @property apiConfiguration The plugin [ApiConfiguration] containing global security schemes.
  * @property apiOperations A set of [ApiOperation] objects representing each API endpoint's metadata.
  */
 @ComposerAPI
 internal class SecuritySectionComposer(
-    private val configuration: Configuration,
+    private val apiConfiguration: ApiConfiguration,
     private val apiOperations: Set<ApiOperation>
 ) {
     /**
@@ -42,7 +42,7 @@ internal class SecuritySectionComposer(
         }
 
         // Aggregate global security schemes.
-        val requirements: List<SecurityRequirement> = configuration
+        val requirements: List<SecurityRequirement> = apiConfiguration
             .apiSecuritySchemes?.map(this::mapSchemeToRequirement) ?: emptyList()
 
         // Only return if there are security schemes defined
@@ -72,7 +72,7 @@ internal class SecuritySectionComposer(
         // Include global security schemes only if global security is applied.
         val globalSecurity: GlobalSecurityRequirement? = composeGlobalSecurityRequirements()
         if (globalSecurity != null) {
-            configuration.apiSecuritySchemes?.forEach { scheme ->
+            apiConfiguration.apiSecuritySchemes?.forEach { scheme ->
                 schemes[scheme.schemeName] = scheme
             }
         }

@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.plugin
 
 import io.github.perracodex.kopapi.composer.SchemaRegistry
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.routing.debugRoute
 import io.github.perracodex.kopapi.routing.openApiRoutes
 import io.github.perracodex.kopapi.routing.swaggerRoute
@@ -19,12 +20,12 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     createConfiguration = ::KopapiConfig
 ) {
     // Register the configuration with the schema provider.
-    val configuration: Configuration = this.pluginConfig.build()
-    SchemaRegistry.registerConfiguration(configuration = configuration)
+    val apiConfiguration: ApiConfiguration = this.pluginConfig.build()
+    SchemaRegistry.registerApiConfiguration(apiConfiguration = apiConfiguration)
 
     // Subscribe to the application started event to clear
     // the schema composer when the plugin is disabled.
-    if (!configuration.isEnabled) {
+    if (!apiConfiguration.isEnabled) {
         lateinit var applicationStartedHandler: (Application) -> Unit
         applicationStartedHandler = {
             SchemaRegistry.clear()
@@ -34,17 +35,17 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     }
 
     // Exit early if the plugin is disabled.
-    if (!configuration.isEnabled) {
+    if (!apiConfiguration.isEnabled) {
         return@createApplicationPlugin
     }
 
     // Configure the plugin endpoints using the extracted function.
     application.routing {
-        debugRoute(debugUrl = configuration.debugUrl)
+        debugRoute(debugUrl = apiConfiguration.debugUrl)
         openApiRoutes(
-            openapiJsonUrl = configuration.openapiJsonUrl,
-            openapiYamlUrl = configuration.openapiYamlUrl
+            openapiJsonUrl = apiConfiguration.openapiJsonUrl,
+            openapiYamlUrl = apiConfiguration.openapiYamlUrl
         )
-        swaggerRoute(swaggerUrl = configuration.swaggerUrl)
+        swaggerRoute(swaggerUrl = apiConfiguration.swaggerUrl)
     }
 }

@@ -30,7 +30,7 @@ class NoServerConfigurationTest {
                 message = "Expected Kopapi plugin to be non-null."
             )
 
-            val servers: Set<ApiServerConfig>? = SchemaRegistry.configuration?.apiServers
+            val servers: Set<ApiServerConfig>? = SchemaRegistry.apiConfiguration?.apiServers
             assertNotNull(
                 actual = servers,
                 message = "Expected server configurations to be non-null."

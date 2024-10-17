@@ -34,17 +34,17 @@ class BasicConfigurationTest {
 
             assertEquals(
                 expected = "openapi/json1",
-                actual = SchemaRegistry.configuration?.openapiJsonUrl,
+                actual = SchemaRegistry.apiConfiguration?.openapiJsonUrl,
                 message = "Expected JSON URL to match."
             )
             assertEquals(
                 expected = "openapi/yaml2",
-                actual = SchemaRegistry.configuration?.openapiYamlUrl,
+                actual = SchemaRegistry.apiConfiguration?.openapiYamlUrl,
                 message = "Expected YAML URL to match."
             )
             assertEquals(
                 expected = "swagger3",
-                actual = SchemaRegistry.configuration?.swaggerUrl,
+                actual = SchemaRegistry.apiConfiguration?.swaggerUrl,
                 message = "Expected Swagger URL to match."
             )
         }
@@ -69,8 +69,8 @@ class BasicConfigurationTest {
             )
 
             assertNull(
-                actual = SchemaRegistry.configuration,
-                message = "Expected configuration to be null."
+                actual = SchemaRegistry.apiConfiguration,
+                message = "Expected API configuration to be null."
             )
         }
     }

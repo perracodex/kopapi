@@ -12,10 +12,10 @@ import io.github.perracodex.kopapi.composer.security.OperationSecurity
 import io.github.perracodex.kopapi.composer.security.SecuritySectionComposer
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
-import io.github.perracodex.kopapi.plugin.Configuration
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 
 /**
@@ -23,7 +23,7 @@ import io.github.perracodex.kopapi.serialization.SerializationUtils
  */
 @ComposerAPI
 internal class SchemaComposer(
-    private val configuration: Configuration,
+    private val apiConfiguration: ApiConfiguration,
     private val apiOperations: Set<ApiOperation>,
     private val schemaConflicts: Set<SchemaConflicts.Conflict>,
 ) {
@@ -36,15 +36,15 @@ internal class SchemaComposer(
     fun compose(format: SchemaRegistry.Format): String {
         // Compose the `Info` section.
         val infoSection: ApiInfo = InfoSectionComposer.compose(
-            apiInfo = configuration.apiInfo,
+            apiInfo = apiConfiguration.apiInfo,
             schemaConflicts = schemaConflicts
         )
 
         // Get the `Servers` section.
-        val serversSection: List<ApiServerConfig>? = configuration.apiServers?.toList()
+        val serversSection: List<ApiServerConfig>? = apiConfiguration.apiServers?.toList()
 
         // Compose the `Security` sections.
-        val securityComposer = SecuritySectionComposer(configuration = configuration, apiOperations = apiOperations)
+        val securityComposer = SecuritySectionComposer(apiConfiguration = apiConfiguration, apiOperations = apiOperations)
         val globalSecurity: GlobalSecurityRequirement? = securityComposer.composeGlobalSecurityRequirements()
         val securitySchemes: Map<String, ApiSecurityScheme>? = securityComposer.composeSecuritySchemes()
         val operationSecurity: List<OperationSecurity>? = securityComposer.composeOperationSecurity()

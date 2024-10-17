@@ -49,7 +49,7 @@ class ApiInfoConfigurationTest {
             )
 
             // Validate the API info exists.
-            val apiInfo: ApiInfo? = SchemaRegistry.configuration?.apiInfo
+            val apiInfo: ApiInfo? = SchemaRegistry.apiConfiguration?.apiInfo
             assertNotNull(
                 actual = apiInfo,
                 message = "Expected API info to be non-null."
