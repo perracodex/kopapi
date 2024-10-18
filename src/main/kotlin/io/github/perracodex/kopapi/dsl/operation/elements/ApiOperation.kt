@@ -22,7 +22,7 @@ import io.ktor.http.*
  * @property tags Optional set of descriptive labels for categorizing the endpoint in API documentation.
  * @property parameters Optional set of [ApiParameter] objects for defining endpoint parameters.
  * @property requestBody Optional [ApiRequestBody] object for defining the request body schema.
- * @property responses Optional set of [ApiResponse] objects for defining endpoint responses.
+ * @property responses Optional map of `status codes` to [ApiResponse] objects.
  * @property securitySchemes Optional set of [ApiSecurityScheme] objects for defining endpoint security schemes.
  * @property skipSecurity Whether no security is required and should ignore top level security schemes.
  *
@@ -36,7 +36,7 @@ internal data class ApiOperation(
     val tags: Set<String>?,
     val parameters: Set<ApiParameter>?,
     val requestBody: ApiRequestBody?,
-    val responses: Set<ApiResponse>?,
+    val responses: Map<String, ApiResponse>?,
     val securitySchemes: Set<ApiSecurityScheme>?,
     val skipSecurity: Boolean
 ) {

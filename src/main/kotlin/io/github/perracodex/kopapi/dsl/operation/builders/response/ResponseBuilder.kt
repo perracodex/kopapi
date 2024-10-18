@@ -10,6 +10,7 @@ import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
+import io.github.perracodex.kopapi.dsl.operation.elements.ContentSchemaReference
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -19,32 +20,45 @@ import kotlin.reflect.KType
 /**
  * A builder for constructing a response in an API endpoint's metadata.
  *
- * @property contentType The [ContentType] of the response data, such as JSON, XML, etc.
  * @property description A description of the response content and what it represents.
+ * @property contentType A set of [ContentType] items. If not provided, the response will default to application/json.
  *
  * @see [ApiOperationBuilder.response]
  */
 public class ResponseBuilder {
-    public var contentType: ContentType? = null
     public var description: String by MultilineString()
-
+    public var contentType: Set<ContentType>? = null
     private val headers: MutableSet<ApiHeader> = mutableSetOf()
     private val links: MutableSet<ApiLink> = mutableSetOf()
 
     /**
      * Builds an [ApiResponse] instance from the current builder state.
      *
+     * If the [type] is provided, the response will contain content,
+     * in which case the [contentType] set will be used to define the content types,
+     * or will default to application/json if not ContentTypes are provided.
+     *
      * @param status The [HttpStatusCode] code associated with this response.
-     * @param type The [KType] of the parameter.
+     * @param type The [KType] of the response. If not provided, the response will not contain any content.
      * @return The constructed [ApiResponse] instance.
      */
     @PublishedApi
     internal fun build(status: HttpStatusCode, type: KType?): ApiResponse {
+        val content: Map<ContentType, ContentSchemaReference>? = type?.let {
+            val contentTypes: Set<ContentType> = contentType.takeIf { contentTypes ->
+                !contentTypes.isNullOrEmpty()
+            } ?: setOf(ContentType.Application.Json)
+
+            contentTypes.associateWith {
+                ContentSchemaReference(schema = ContentSchemaReference.SchemaReference())
+            }
+        }
+
         return ApiResponse(
             type = type,
             status = status,
             description = description.trimOrNull(),
-            contentType = contentType,
+            content = content,
             headers = headers.takeIf { it.isNotEmpty() },
             links = links.takeIf { it.isNotEmpty() }
         )

@@ -130,7 +130,7 @@ public class ApiOperationBuilder internal constructor(
      * Optional set of possible responses, outlining expected status codes and content types.
      */
     @PublishedApi
-    internal var responses: LinkedHashSet<ApiResponse> = linkedSetOf()
+    internal var responses: LinkedHashMap<String, ApiResponse> = linkedMapOf()
 
     /**
      * Optional set of descriptive tags for categorizing the endpoint in API documentation.
@@ -334,7 +334,10 @@ public class ApiOperationBuilder internal constructor(
      *```
      * response<ResponseType>(status = HttpStatusCode.OK) {
      *     description = "Successfully retrieved the item."
-     *     contentType = ContentType.Application.Json
+     *     contentType = setOf(
+     *          ContentType.Application.Json,
+     *          ContentType.Application.Xml
+     *      )
      * }
      * ```
      *
@@ -371,7 +374,8 @@ public class ApiOperationBuilder internal constructor(
         }
         val builder: ResponseBuilder = ResponseBuilder().apply(configure)
         val response: ApiResponse = builder.build(status = status, type = type)
-        responses.add(response)
+
+        responses[status.value.toString()] = response
     }
 
     /**

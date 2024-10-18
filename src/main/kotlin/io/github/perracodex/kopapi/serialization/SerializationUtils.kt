@@ -32,7 +32,7 @@ internal object SerializationUtils {
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_BY_DECLARATION_ORDER)
-        .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+        .disable(MapperFeature.USE_ANNOTATIONS)
         .addModule(serializerModule())
         .build()
 

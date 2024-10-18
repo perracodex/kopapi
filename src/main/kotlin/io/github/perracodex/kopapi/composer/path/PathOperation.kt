@@ -21,7 +21,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
  * @property tags A set of tags for API documentation control. Tags can be used to group operations.
  * @property parameters A set of [ApiParameter] objects defining the parameters for the operation.
  * @property requestBody The [ApiRequestBody] object defining the request body for the operation.
- * @property responses A set of [ApiResponse] objects defining the possible responses for the operation.
+ * @property responses A map of `status codes` to [ApiResponse] objects.
  * @property security A list of security requirement maps, each specifying a security scheme and its scopes.
  *                    An empty list (`security: []`) disables security for this operation.
  */
@@ -32,7 +32,7 @@ internal data class PathOperation(
     val tags: Set<String>?,
     val parameters: Set<ApiParameter>?,
     val requestBody: ApiRequestBody?,
-    val responses: Set<ApiResponse>?,
+    val responses: Map<String, ApiResponse>?,
     var security: List<Map<String, List<String>>>? = null
 ) {
     companion object {

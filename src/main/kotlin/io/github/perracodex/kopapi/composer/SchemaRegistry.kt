@@ -7,8 +7,10 @@ package io.github.perracodex.kopapi.composer
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.composer.security.SecuritySchemeVerifier
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
+import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
@@ -153,8 +155,16 @@ internal object SchemaRegistry {
 
             // Inspect each response type.
             metadata.responses?.forEach { response ->
-                response.type?.let {
-                    inspectType(inspector = inspector, type = response.type)
+                val apiResponse: ApiResponse = response.value
+                apiResponse.type?.let { type ->
+                    apiResponse.content?.let { content ->
+                        content.values.forEach { schemaReference ->
+                            val typeSchema: TypeSchema? = inspectType(inspector = inspector, type = type)
+                            if (typeSchema?.schema is Schema.Reference) {
+                                schemaReference.schema.ref = (typeSchema.schema as Schema.Reference).ref
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -179,11 +189,13 @@ internal object SchemaRegistry {
      *
      * @param inspector The [TypeSchemaProvider] instance used for inspection.
      * @param type The [KType] to inspect.
+     * @return The [TypeSchema] object representing the inspected type, or `null` if the type is [Unit].
      */
-    private fun inspectType(inspector: TypeSchemaProvider, type: KType) {
+    private fun inspectType(inspector: TypeSchemaProvider, type: KType): TypeSchema? {
         if (type.classifier != Unit::class) {
-            inspector.inspect(kType = type)
+            return inspector.inspect(kType = type)
         }
+        return null
     }
 
     /**
