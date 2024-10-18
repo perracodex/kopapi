@@ -2,41 +2,38 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl.operation.builders.security
+package io.github.perracodex.kopapi.dsl.common.security
 
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.types.AuthenticationMethod
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
- * Builds an HTTP security scheme in an API endpoint's metadata.
+ * Builds a Mutual TLS security scheme in an API endpoint's metadata.
  *
  * @property description A description of the security scheme.
  *
- * @see [ApiOperationBuilder.httpSecurity]
+ * @see [ApiOperationBuilder.mutualTLSSecurity]
  * @see [ApiKeySecurityBuilder]
+ * @see [HttpSecurityBuilder]
  * @see [OAuth2SecurityBuilder]
  * @see [OpenIdConnectSecurityBuilder]
- * @see [MutualTLSSecurityBuilder]
  */
-public class HttpSecurityBuilder {
+public class MutualTLSSecurityBuilder {
     public var description: String by MultilineString()
 
     /**
      * Builds an [ApiSecurityScheme] instance from the current builder state.
      *
      * @param name The name of the security scheme
-     * @param method The [AuthenticationMethod] of the security scheme.
      * @return The constructed [ApiSecurityScheme] instance.
      */
     @PublishedApi
-    internal fun build(name: String, method: AuthenticationMethod): ApiSecurityScheme {
-        return ApiSecurityScheme.Http(
+    internal fun build(name: String): ApiSecurityScheme {
+        return ApiSecurityScheme.MutualTLS(
             schemeName = name.trim(),
-            description = description.trimOrNull(),
-            method = method
+            description = description.trimOrNull()
         )
     }
 }

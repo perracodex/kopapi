@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl.operation.builders.security
+package io.github.perracodex.kopapi.dsl.common.security
 
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
@@ -31,31 +31,43 @@ public class OAuth2SecurityBuilder {
     private val flows: MutableMap<OAuthFlowType, OAuthFlowBuilder> = mutableMapOf()
 
     /**
-     * Configures the OAuth2 Implicit flow for the security scheme.
+     * Configures the OAuth2 `Authorization Code` flow for the security scheme.
+     *
+     * Used by confidential clients (e.g., server-side apps) to obtain tokens through a two-step process.
+     * First, an authorization code is acquired, then exchanged for a token.
      */
-    public fun implicit(configure: OAuthFlowBuilder.() -> Unit) {
-        flows[OAuthFlowType.IMPLICIT] = OAuthFlowBuilder().apply(configure)
+    public fun authorizationCode(configure: OAuthFlowBuilder.() -> Unit) {
+        flows[OAuthFlowType.AUTHORIZATION_CODE] = OAuthFlowBuilder().apply(configure)
     }
 
     /**
-     * Configures the OAuth2 Password flow for the security scheme.
-     */
-    public fun password(configure: OAuthFlowBuilder.() -> Unit) {
-        flows[OAuthFlowType.PASSWORD] = OAuthFlowBuilder().apply(configure)
-    }
-
-    /**
-     * Configures the OAuth2 Client Credentials flow for the security scheme.
+     * Configures the OAuth2 `Client Credentials` flow for the security scheme.
+     *
+     * For server-to-server communication, where a client can directly
+     * obtain an access token using its credentials.
      */
     public fun clientCredentials(configure: OAuthFlowBuilder.() -> Unit) {
         flows[OAuthFlowType.CLIENT_CREDENTIALS] = OAuthFlowBuilder().apply(configure)
     }
 
     /**
-     * Configures the OAuth2 Authorization Code flow for the security scheme.
+     * Configures the OAuth2 `Implicit` flow for the security scheme.
+     *
+     * Primarily for single-page applications (browser-based clients) where tokens are obtained directly
+     * from the authorization URL without requiring the client secret.
      */
-    public fun authorizationCode(configure: OAuthFlowBuilder.() -> Unit) {
-        flows[OAuthFlowType.AUTHORIZATION_CODE] = OAuthFlowBuilder().apply(configure)
+    public fun implicit(configure: OAuthFlowBuilder.() -> Unit) {
+        flows[OAuthFlowType.IMPLICIT] = OAuthFlowBuilder().apply(configure)
+    }
+
+    /**
+     * Configures the OAuth2 `Password` flow for the security scheme.
+     *
+     * Allows exchanging user credentials (username/password) for tokens,
+     * typically used for first-party applications.
+     */
+    public fun password(configure: OAuthFlowBuilder.() -> Unit) {
+        flows[OAuthFlowType.PASSWORD] = OAuthFlowBuilder().apply(configure)
     }
 
     /**
@@ -67,10 +79,10 @@ public class OAuth2SecurityBuilder {
     @PublishedApi
     internal fun build(name: String): ApiSecurityScheme {
         val oauthFlows = ApiSecurityScheme.OAuth2.OAuthFlows(
-            implicit = flows[OAuthFlowType.IMPLICIT]?.build(),
-            password = flows[OAuthFlowType.PASSWORD]?.build(),
+            authorizationCode = flows[OAuthFlowType.AUTHORIZATION_CODE]?.build(),
             clientCredentials = flows[OAuthFlowType.CLIENT_CREDENTIALS]?.build(),
-            authorizationCode = flows[OAuthFlowType.AUTHORIZATION_CODE]?.build()
+            implicit = flows[OAuthFlowType.IMPLICIT]?.build(),
+            password = flows[OAuthFlowType.PASSWORD]?.build()
         )
 
         return ApiSecurityScheme.OAuth2(
@@ -78,15 +90,6 @@ public class OAuth2SecurityBuilder {
             description = description.trimOrNull(),
             flows = oauthFlows
         )
-    }
-
-    /**
-     * Retrieves all scopes defined across all OAuth2 flows.
-     *
-     * @return A list of all unique scopes defined in the flows.
-     */
-    internal fun getAllScopes(): List<String> {
-        return flows.values.flatMap { it.getScopes() }.distinct()
     }
 
     /**

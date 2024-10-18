@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.common
 
-import io.github.perracodex.kopapi.dsl.operation.builders.security.*
+import io.github.perracodex.kopapi.dsl.common.security.*
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.AuthenticationMethod
@@ -25,7 +25,7 @@ public abstract class SecuritySchemeConfigurable {
      * Flag to indicate that no security is required for the API operation.
      * Once set to `true`, all security schemes are ignored.
      */
-    internal var noSecurity: Boolean = false
+    internal var skipSecurity: Boolean = false
 
     /**
      * Adds an HTTP security scheme to the API metadata (e.g., Basic, Bearer).
@@ -107,6 +107,11 @@ public abstract class SecuritySchemeConfigurable {
      *         scope(name = "write:employees", description = "Modify Data")
      *     }
      *
+     *     clientCredentials {
+     *         tokenUrl = "https://example.com/token"
+     *         scope(name = "admin:tools", description = "Administrate Tools")
+     *     }
+     *
      *     implicit {
      *         authorizationUrl = "https://example.com/auth"
      *         scope(name = "view:projects", description = "View Projects")
@@ -115,11 +120,6 @@ public abstract class SecuritySchemeConfigurable {
      *     password {
      *         tokenUrl = "https://example.com/token"
      *         scope(name = "access:reports", description = "Access Reports")
-     *     }
-     *
-     *     clientCredentials {
-     *         tokenUrl = "https://example.com/token"
-     *         scope(name = "admin:tools", description = "Administrate Tools")
      *     }
      * }
      * ```
@@ -140,13 +140,6 @@ public abstract class SecuritySchemeConfigurable {
     ) {
         val builder: OAuth2SecurityBuilder = OAuth2SecurityBuilder().apply(configure)
         val scheme: ApiSecurityScheme = builder.build(name = name)
-
-        // Collect all scopes from all flows.
-        val allScopes: List<String> = builder.getAllScopes()
-        if (allScopes.isEmpty()) {
-            throw KopapiException("OAuth2 security scheme '$name' must have at least one scope defined in its flows.")
-        }
-
         addSecurityScheme(scheme = scheme)
     }
 
@@ -216,7 +209,7 @@ public abstract class SecuritySchemeConfigurable {
      * @throws KopapiException If a security scheme with the same name already exists.
      */
     private fun addSecurityScheme(scheme: ApiSecurityScheme) {
-        if (noSecurity) {
+        if (skipSecurity) {
             securitySchemes.clear()
             return
         }
@@ -224,7 +217,7 @@ public abstract class SecuritySchemeConfigurable {
         if (securitySchemes.any { it.schemeName.equals(other = scheme.schemeName, ignoreCase = true) }) {
             throw KopapiException(
                 "Attempting to register security scheme with name '${scheme.schemeName}' more than once.\n" +
-                        "Security scheme `names` must be unique across the entire API, " +
+                        "Names must be unique across all the Security Schemes, " +
                         "both globally and for all Routes."
             )
         }

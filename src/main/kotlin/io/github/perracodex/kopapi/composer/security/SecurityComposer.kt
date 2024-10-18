@@ -35,9 +35,9 @@ internal class SecuritySectionComposer(
      */
     fun composeGlobalSecurityRequirements(): GlobalSecurityRequirement? {
         // Determine if any API Operation requires security.
-        val requiresGlobalSecurity: Boolean = apiOperations.any { !it.noSecurity }
+        val requiresGlobalSecurity: Boolean = apiOperations.any { !it.skipSecurity }
         if (!requiresGlobalSecurity) {
-            // All API Operated are marked as noSecurity; no global security required.
+            // All API Operated are marked as skipSecurity; no global security required.
             return null
         }
 
@@ -54,12 +54,13 @@ internal class SecuritySectionComposer(
     }
 
     /**
-     * Aggregates all security schemes for inclusion in the OpenAPI components section.
+     * Aggregates both top-level global and operation-level security schemes for inclusion
+     * in the OpenAPI components section.
      *
-     * This method collects both global security schemes (if any), and per-API-Operation
-     * security schemes required by individual API operations.
-     * The aggregated schemes are required for defining available security mechanisms
-     * that can be referenced in both global and operation-level security configurations.
+     * Collects top-level global security schemes and adds them to the components section.
+     * Additionally, operation-level security schemes are included if they are not already part
+     * of the global schemes, ensuring that all available security mechanisms are represented
+     * in the components section.
      *
      * @return A map where each key is the security scheme name and the value is the corresponding
      *         [ApiSecurityScheme] definition. Returns `null` if no security schemes are defined.
@@ -68,26 +69,36 @@ internal class SecuritySectionComposer(
      */
     fun composeSecuritySchemes(): Map<String, ApiSecurityScheme>? {
         val schemes: MutableMap<String, ApiSecurityScheme> = mutableMapOf()
+        val schemeNames: MutableSet<String> = mutableSetOf()
 
         // Include global security schemes only if global security is applied.
-        val globalSecurity: GlobalSecurityRequirement? = composeGlobalSecurityRequirements()
-        if (globalSecurity != null) {
+        composeGlobalSecurityRequirements()?.let {
             apiConfiguration.apiSecuritySchemes?.forEach { scheme ->
-                schemes[scheme.schemeName] = scheme
-            }
-        }
-
-        // Include per-operation security schemes for operations that require security.
-        apiOperations.forEach { operation ->
-            if (!operation.noSecurity) { // Only add security schemes for operations that require them.
-                operation.securitySchemes?.forEach { scheme ->
+                val schemeName: String = scheme.schemeName.lowercase()
+                if (schemeName !in schemeNames) {
                     schemes[scheme.schemeName] = scheme
+                    schemeNames.add(schemeName)
                 }
             }
         }
 
-        return schemes.toSortedMap()
-            .takeIf { it.isNotEmpty() }
+        // Include per-operation security schemes for operations that require security.
+        // If `skipSecurity` is set, the operation does not require security, so it is
+        // assumed that either no security is needed at all, or any defined one
+        // in the operation should be ignored.
+        apiOperations.forEach { operation ->
+            if (!operation.skipSecurity) {
+                operation.securitySchemes?.forEach { scheme ->
+                    val schemeName: String = scheme.schemeName.lowercase()
+                    if (schemeName !in schemeNames) {
+                        schemes[scheme.schemeName] = scheme
+                        schemeNames.add(schemeName)
+                    }
+                }
+            }
+        }
+
+        return schemes.toSortedMap().takeIf { it.isNotEmpty() }
     }
 
     /**
@@ -95,8 +106,8 @@ internal class SecuritySectionComposer(
      *
      * Creates a list of [OperationSecurity] objects, each linking an API operation
      * (identified by its HTTP method and path) with the relevant security schemes.
-     * API Operations that do not require security are associated with an empty security list,
-     * effectively disabling security for those endpoints.
+     * API Operations that do not require security are associated with an empty security
+     * list (`security: []`), effectively disabling security for those endpoints.
      *
      * @return A list of [OperationSecurity] objects representing the security configuration
      *         for each API operation. Returns `null` if no operations are present.
@@ -105,23 +116,28 @@ internal class SecuritySectionComposer(
         val operationSecurityList: MutableList<OperationSecurity> = mutableListOf()
 
         apiOperations.forEach { operation ->
-            // Determine security requirements for the operation.
-            val securityRequirements: List<SecurityRequirement> = if (operation.noSecurity) {
-                // Operation does not require security; assign an empty security list.
-                emptyList()
+            // If skipSecurity is set, explicitly disable security by assigning an empty list.
+            if (operation.skipSecurity) {
+                operationSecurityList.add(
+                    OperationSecurity(
+                        method = operation.method.value,
+                        path = operation.path,
+                        security = emptyList() // This will produce `security: []` in OpenAPI.
+                    )
+                )
             } else {
                 // Operation requires security; map each security scheme to a SecurityRequirement.
-                operation.securitySchemes?.map(this::mapSchemeToRequirement) ?: emptyList()
-            }
+                val securityRequirements: List<SecurityRequirement> =
+                    operation.securitySchemes?.map(this::mapSchemeToRequirement) ?: emptyList()
 
-            // Create and add the OperationSecurity object to the list.
-            operationSecurityList.add(
-                OperationSecurity(
-                    method = operation.method.value,
-                    path = operation.path,
-                    security = securityRequirements.takeIf { it.isNotEmpty() }
+                operationSecurityList.add(
+                    OperationSecurity(
+                        method = operation.method.value,
+                        path = operation.path,
+                        security = securityRequirements.takeIf { it.isNotEmpty() }
+                    )
                 )
-            )
+            }
         }
 
         return operationSecurityList.takeIf { it.isNotEmpty() }

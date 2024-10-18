@@ -24,7 +24,7 @@ import io.ktor.http.*
  * @property requestBody Optional [ApiRequestBody] object for defining the request body schema.
  * @property responses Optional set of [ApiResponse] objects for defining endpoint responses.
  * @property securitySchemes Optional set of [ApiSecurityScheme] objects for defining endpoint security schemes.
- * @property noSecurity Whether no security is required and should ignore top level security schemes.
+ * @property skipSecurity Whether no security is required and should ignore top level security schemes.
  *
  * @see [ApiOperationBuilder]
  */
@@ -38,7 +38,7 @@ internal data class ApiOperation(
     val requestBody: ApiRequestBody?,
     val responses: Set<ApiResponse>?,
     val securitySchemes: Set<ApiSecurityScheme>?,
-    val noSecurity: Boolean
+    val skipSecurity: Boolean
 ) {
     init {
         if (path.isBlank()) {

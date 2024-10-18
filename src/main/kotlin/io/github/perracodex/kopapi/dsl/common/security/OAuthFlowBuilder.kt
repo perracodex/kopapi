@@ -2,10 +2,10 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl.operation.builders.security
+package io.github.perracodex.kopapi.dsl.common.security
 
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
  * Builder for configuring an OAuth2 flow.
@@ -14,6 +14,11 @@ import io.github.perracodex.kopapi.system.KopapiException
  * @property tokenUrl The token URL to be used for this flow (required for certain flows).
  * @property refreshUrl The refresh URL to be used for obtaining refresh tokens (optional).
  * @property scopes The scopes defined for this flow.
+ *
+ * @see [OAuth2SecurityBuilder.authorizationCode]
+ * @see [OAuth2SecurityBuilder.clientCredentials]
+ * @see [OAuth2SecurityBuilder.implicit]
+ * @see [OAuth2SecurityBuilder.password]
  */
 public class OAuthFlowBuilder {
     public var authorizationUrl: String? = null
@@ -38,23 +43,11 @@ public class OAuthFlowBuilder {
      */
     @PublishedApi
     internal fun build(): ApiSecurityScheme.OAuth2.OAuthFlow {
-        if (scopes.isEmpty()) {
-            throw KopapiException("At least one scope must be defined for OAuth2 flow.")
-        }
         return ApiSecurityScheme.OAuth2.OAuthFlow(
-            authorizationUrl = authorizationUrl,
-            tokenUrl = tokenUrl,
-            refreshUrl = refreshUrl,
+            authorizationUrl = authorizationUrl.trimOrNull(),
+            tokenUrl = tokenUrl.trimOrNull(),
+            refreshUrl = refreshUrl.trimOrNull(),
             scopes = scopes
         )
-    }
-
-    /**
-     * Retrieves all scope names defined in this flow.
-     *
-     * @return A list of scope names.
-     */
-    internal fun getScopes(): List<String> {
-        return scopes.keys.toList()
     }
 }

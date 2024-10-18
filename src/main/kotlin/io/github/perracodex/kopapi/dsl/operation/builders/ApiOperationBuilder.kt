@@ -416,8 +416,7 @@ public class ApiOperationBuilder internal constructor(
 
     /**
      * Disables the security schemes for the API operation.
-     * Top level security schemes will not be applied to this operation.
-     * If other security schemes are defined in the operation, they will br discarded.
+     * Both top-level global and local security schemes will not be applied to this API Operation.
      *
      * @see [apiKeySecurity]
      * @see [httpSecurity]
@@ -425,8 +424,8 @@ public class ApiOperationBuilder internal constructor(
      * @see [oauth2Security]
      * @see [openIdConnectSecurity]
      */
-    public fun noSecurity() {
+    public fun skipSecurity() {
         securitySchemes.clear()
-        noSecurity = true
+        skipSecurity = true
     }
 }

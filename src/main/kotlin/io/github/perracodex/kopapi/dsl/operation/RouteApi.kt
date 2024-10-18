@@ -65,7 +65,7 @@ public infix fun Route.api(configure: ApiOperationBuilder.() -> Unit): Route {
         requestBody = builder.requestBody,
         responses = builder.responses.takeIf { it.isNotEmpty() },
         securitySchemes = builder.securitySchemes.takeIf { it.isNotEmpty() },
-        noSecurity = builder.noSecurity
+        skipSecurity = builder.skipSecurity
     )
 
     SchemaRegistry.registerApiOperation(operation = apiOperation)

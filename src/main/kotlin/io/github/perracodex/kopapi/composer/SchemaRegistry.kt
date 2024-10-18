@@ -5,8 +5,8 @@
 package io.github.perracodex.kopapi.composer
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.security.SecuritySchemeVerifier
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
@@ -20,6 +20,7 @@ import kotlin.reflect.KType
 /**
  * Singleton for registering and serving API information.
  */
+@OptIn(ComposerAPI::class)
 internal object SchemaRegistry {
     private val tracer = Tracer<SchemaRegistry>()
 
@@ -85,7 +86,10 @@ internal object SchemaRegistry {
             isEnabled = apiConfiguration.isEnabled
             if (isEnabled) {
                 SchemaRegistry.apiConfiguration = apiConfiguration
-                assertSecuritySchemeNamesUniqueness()
+                SecuritySchemeVerifier.assert(
+                    global = apiConfiguration.apiSecuritySchemes,
+                    apiOperations = apiOperation
+                )
             } else {
                 clear()
             }
@@ -101,7 +105,10 @@ internal object SchemaRegistry {
         synchronized(apiOperation) {
             if (isEnabled) {
                 apiOperation.add(operation)
-                assertSecuritySchemeNamesUniqueness()
+                SecuritySchemeVerifier.assert(
+                    global = apiConfiguration?.apiSecuritySchemes,
+                    apiOperations = apiOperation
+                )
             }
         }
     }
@@ -121,38 +128,6 @@ internal object SchemaRegistry {
         debugJsonCache.clear()
         openApiSchemaCache.clear()
         apiConfiguration = null
-    }
-
-    /**
-     * Helper method for checking if a security scheme name is already registered.
-     *
-     * `Security schemes` can be defined globally in the plugin configuration or within each Route endpoint.
-     * As these are registered at different timings, we need to ensure that security scheme names are unique
-     * across the entire API.
-     *
-     * @throws KopapiException if detected that any security scheme names are not unique
-     * between global and Route definitions.
-     */
-    private fun assertSecuritySchemeNamesUniqueness() {
-        val global: Set<ApiSecurityScheme>? = apiConfiguration?.apiSecuritySchemes
-
-        // Check between global and API metadata.
-        if (!global.isNullOrEmpty() && apiOperation.isNotEmpty()) {
-            val globalSchemeNames: Set<String> = global.map { it.schemeName.lowercase() }.toSet()
-
-            apiOperation.forEach { metadata ->
-                metadata.securitySchemes?.forEach { scheme ->
-                    if (scheme.schemeName.lowercase() in globalSchemeNames) {
-                        throw KopapiException(
-                            "Attempting to register security scheme with name '${scheme.schemeName}' more than once.\n" +
-                                    "Security scheme `names` must be unique across the entire API, " +
-                                    "both globally and for all Routes.\n" +
-                                    "['${metadata.method.value}'] '${metadata.path}'"
-                        )
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -326,7 +301,6 @@ internal object SchemaRegistry {
      * @param format The [Format] of the OpenAPI schema to serve.
      * @return The OpenAPI schema in the specified format.
      */
-    @OptIn(ComposerAPI::class)
     fun getOpenApiSchema(format: Format): String {
         if (!isEnabled) {
             throw KopapiException("Attempted to generate OpenAPI schema while plugin is disabled.")

@@ -27,15 +27,20 @@ internal class TagsComposer(
     fun compose(): List<ApiTag>? {
         // Collect tags from API operations, ignoring descriptions.
         val operationTags: Map<String, ApiTag> = collectOperationTags()
-            .associateBy({ it.name.lowercase() }, { it })
+            .associateBy { it.name.lowercase() }
 
         // Collect tags from top-level configuration, which may include descriptions.
         val configTags: Map<String, ApiTag> = collectConfigurationTags()
-            .associateBy({ it.name.lowercase() }, { it })
+            .associateBy { it.name.lowercase() }
 
-        // Merge operation tags into config tags to prioritize top-level definitions.
+        // Merge tags, prioritizing the ones with descriptions from top-level configuration.
         val mergedTags: SortedSet<ApiTag> = configTags.toMutableMap().apply {
-            putAll(operationTags)  // Adds operation tags that aren't already defined at the top level.
+            operationTags.forEach { (name, operationTag) ->
+                val configTag: ApiTag? = this[name]
+                if (configTag == null || configTag.description.isNullOrEmpty()) {
+                    this[name] = operationTag
+                }
+            }
         }.values.toSortedSet(compareBy { it.name })
 
         return mergedTags.takeIf { it.isNotEmpty() }?.toList()

@@ -100,16 +100,16 @@ internal sealed class ApiSecurityScheme(
          * Represents the OAuth2 flows configuration.
          * Each flow type has optional properties dependent on the flow.
          *
+         * @property authorizationCode Configuration for the OAuth2 Authorization Code flow.
+         * @property clientCredentials Configuration for the OAuth2 Client Credentials flow.
          * @property implicit Configuration for the OAuth2 Implicit flow.
          * @property password Configuration for the OAuth2 Password flow.
-         * @property clientCredentials Configuration for the OAuth2 Client Credentials flow.
-         * @property authorizationCode Configuration for the OAuth2 Authorization Code flow.
          */
         data class OAuthFlows(
-            val implicit: OAuthFlow? = null,
-            val password: OAuthFlow? = null,
+            val authorizationCode: OAuthFlow? = null,
             val clientCredentials: OAuthFlow? = null,
-            val authorizationCode: OAuthFlow? = null
+            val implicit: OAuthFlow? = null,
+            val password: OAuthFlow? = null
         ) {
             init {
                 if (!hasAtLeastOneFlow()) {
@@ -118,7 +118,7 @@ internal sealed class ApiSecurityScheme(
             }
 
             fun hasAtLeastOneFlow(): Boolean =
-                implicit != null || password != null || clientCredentials != null || authorizationCode != null
+                authorizationCode != null || clientCredentials != null || implicit != null || password != null
         }
 
         /**
@@ -135,13 +135,7 @@ internal sealed class ApiSecurityScheme(
             val tokenUrl: String? = null,
             val refreshUrl: String? = null,
             val scopes: Map<String, String>
-        ) {
-            init {
-                if (scopes.isEmpty()) {
-                    throw KopapiException("Scopes must not be empty.")
-                }
-            }
-        }
+        )
     }
 
     /**
