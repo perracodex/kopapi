@@ -5,12 +5,11 @@
 package io.github.perracodex.kopapi.composer
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.response.ResponseComposer
 import io.github.perracodex.kopapi.composer.security.SecuritySchemeVerifier
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
-import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
@@ -154,18 +153,11 @@ internal object SchemaRegistry {
             }
 
             // Inspect each response type.
-            metadata.responses?.forEach { response ->
-                val apiResponse: ApiResponse = response.value
-                apiResponse.type?.let { type ->
-                    apiResponse.content?.let { content ->
-                        content.values.forEach { schemaReference ->
-                            val typeSchema: TypeSchema? = inspectType(inspector = inspector, type = type)
-                            if (typeSchema?.schema is Schema.Reference) {
-                                schemaReference.schema.ref = (typeSchema.schema as Schema.Reference).ref
-                            }
-                        }
-                    }
-                }
+            metadata.responses?.let { responses ->
+                ResponseComposer.compose(
+                    responses = responses,
+                    inspector = inspector
+                )
             }
         }
 

@@ -130,7 +130,7 @@ public class ApiOperationBuilder internal constructor(
      * Optional set of possible responses, outlining expected status codes and content types.
      */
     @PublishedApi
-    internal var responses: LinkedHashMap<String, ApiResponse> = linkedMapOf()
+    internal var responses: SortedMap<String, ApiResponse> = TreeMap(Comparator.comparingInt(String::toInt))
 
     /**
      * Optional set of descriptive tags for categorizing the endpoint in API documentation.
@@ -148,6 +148,21 @@ public class ApiOperationBuilder internal constructor(
      */
     public fun ApiOperationBuilder.tags(vararg tags: String) {
         this.tags.addAll(tags.map { it.trim() }.filter { it.isNotBlank() })
+    }
+
+    /**
+     * Disables the security schemes for the API operation.
+     * Both top-level global and local security schemes will not be applied to this API Operation.
+     *
+     * @see [apiKeySecurity]
+     * @see [httpSecurity]
+     * @see [mutualTLSSecurity]
+     * @see [oauth2Security]
+     * @see [openIdConnectSecurity]
+     */
+    public fun skipSecurity() {
+        securitySchemes.clear()
+        skipSecurity = true
     }
 
     /**
@@ -328,71 +343,27 @@ public class ApiOperationBuilder internal constructor(
     }
 
     /**
-     * Registers a response with a body.
+     * Registers a response.
+     *
+     * This function can be used with or without a response body:
+     * ```
+     * response<ResponseType>(HttpStatusCode) { ... }
+     * response(HttpStatusCode) { ... }
+     * ```
      *
      * #### Sample Usage
      *```
-     * response<ResponseType>(status = HttpStatusCode.OK) {
-     *     description = "Successfully retrieved the item."
-     *     contentType = setOf(
-     *          ContentType.Application.Json,
-     *          ContentType.Application.Xml
-     *      )
-     * }
-     * ```
-     *
-     * #### Adding Headers and Links
-     * ```
-     * response<ResponseType>(status = HttpStatusCode.OK) {
-     *     description = "Successfully retrieved the item."
-     *     header(name = "X-Rate-Limit") {
-     *         description = "Number of allowed requests per period."
-     *         required = true
-     *     }
-     *     link(operationId = "getNextItem") {
-     *         description = "Link to the next item."
-     *     }
-     * }
-     * ```
-     *
-     * @param T The body type of the response.
-     * @param status The [HttpStatusCode] code associated with this response.
-     * @param configure A lambda receiver for configuring the [ResponseBuilder].
-     *
-     * @see [ResponseBuilder]
-     * @see [HeaderBuilder]
-     * @see [LinkBuilder]
-     */
-    @JvmName(name = "responseWithType")
-    public inline fun <reified T : Any> ApiOperationBuilder.response(
-        status: HttpStatusCode,
-        configure: ResponseBuilder.() -> Unit = {}
-    ) {
-        val type: KType? = when (T::class) {
-            Unit::class, Nothing::class, Any::class -> null
-            else -> typeOf<T>()
-        }
-        val builder: ResponseBuilder = ResponseBuilder().apply(configure)
-        val response: ApiResponse = builder.build(status = status, type = type)
-
-        responses[status.value.toString()] = response
-    }
-
-    /**
-     * Registers a response with no response body.
-     * Assuming there is only a [HttpStatusCode] with no associated type.
-     *
-     * #### Sample Usage
-     *```
-     * response(status = HttpStatusCode.NotFound) {
-     *     description = "The item was not found."
-     * }
-     * ```
-     *
-     * #### Adding Headers and Links
-     * ```
      * response(status = HttpStatusCode.OK) {
+     *     // Optional description.
      *     description = "Successfully retrieved the item."
+     *
+     *     // Optional content types. If not specified, defaults to JSON.
+     *     contentType = setOf(
+     *          ContentType.Application.Json
+     *          ContentType.Application.Xml
+     *     )
+     *
+     *     // Optional Headers and Links.
      *     header(name = "X-Rate-Limit") {
      *         description = "Number of allowed requests per period."
      *         required = true
@@ -400,6 +371,11 @@ public class ApiOperationBuilder internal constructor(
      *     link(operationId = "getNextItem") {
      *         description = "Link to the next item."
      *     }
+     *
+     *     // Optional additional types and composition.
+     *     composition = Composition.AnyOf // If omitted, defaults to `AnyOf`.
+     *     type<ResponseType>()
+     *     type<AnotherType>()
      * }
      * ```
      *
@@ -419,17 +395,70 @@ public class ApiOperationBuilder internal constructor(
     }
 
     /**
-     * Disables the security schemes for the API operation.
-     * Both top-level global and local security schemes will not be applied to this API Operation.
+     * Registers a response.
      *
-     * @see [apiKeySecurity]
-     * @see [httpSecurity]
-     * @see [mutualTLSSecurity]
-     * @see [oauth2Security]
-     * @see [openIdConnectSecurity]
+     * This function can be used with or without a response body:
+     * ```
+     * response<ResponseType>(HttpStatusCode) { ... }
+     * response(HttpStatusCode) { ... }
+     * ```
+     *
+     * #### Sample Usage
+     *```
+     * response<ResponseType>(status = HttpStatusCode.OK) {
+     *     // Optional description.
+     *     description = "Successfully retrieved the item."
+     *
+     *     // Optional content types. If not specified, defaults to JSON.
+     *     contentType = setOf(
+     *          ContentType.Application.Json
+     *          ContentType.Application.Xml
+     *     )
+     *
+     *     // Optional Headers and Links.
+     *     header(name = "X-Rate-Limit") {
+     *         description = "Number of allowed requests per period."
+     *         required = true
+     *     }
+     *     link(operationId = "getNextItem") {
+     *         description = "Link to the next item."
+     *     }
+     *
+     *     // Optional additional types and composition.
+     *     composition = Composition.AnyOf // If omitted, defaults to `AnyOf`.
+     *     type<AnotherType>()
+     *     type<YetAnotherType>()
+     * }
+     * ```
+     *
+     * @param T The body type of the response.
+     * @param status The [HttpStatusCode] code associated with this response.
+     * @param configure A lambda receiver for configuring the [ResponseBuilder].
+     *
+     * @see [ResponseBuilder]
+     * @see [HeaderBuilder]
+     * @see [LinkBuilder]
      */
-    public fun skipSecurity() {
-        securitySchemes.clear()
-        skipSecurity = true
+    @JvmName(name = "responseWithType")
+    public inline fun <reified T : Any> ApiOperationBuilder.response(
+        status: HttpStatusCode,
+        configure: ResponseBuilder.() -> Unit = {}
+    ) {
+        val bodyType: KType? = when (T::class) {
+            Unit::class, Nothing::class, Any::class -> null
+            else -> typeOf<T>()
+        }
+        val builder: ResponseBuilder = ResponseBuilder().apply {
+            bodyType?.let { type<T>() }
+            apply(configure)
+        }
+        val apiResponse: ApiResponse = builder.build(status = status, type = bodyType)
+
+        responses.merge(
+            status.value.toString(),
+            apiResponse
+        ) { existing, new ->
+            existing.mergeWith(other = new)
+        }
     }
 }

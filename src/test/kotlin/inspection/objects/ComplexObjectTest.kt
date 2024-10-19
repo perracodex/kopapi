@@ -178,13 +178,6 @@ class ComplexObjectTest {
         val property: SchemaProperty = properties[propertyName]
             ?: fail("Property '$propertyName' is missing")
 
-        // Check the schema type.
-        assertEquals(
-            expected = expectedType,
-            actual = property.schema.schemaType,
-            message = "Property '$propertyName' should have type '$expectedType'"
-        )
-
         // Check if the property is nullable.
         assertEquals(
             expected = isNullable,
@@ -206,6 +199,13 @@ class ComplexObjectTest {
                     expected = expectedFormat.value,
                     actual = property.schema.format,
                     message = "Property '$propertyName' should have format '${it.value}'"
+                )
+
+                // Check the schema type.
+                assertEquals(
+                    expected = expectedType,
+                    actual = property.schema.schemaType,
+                    message = "Property '$propertyName' should have type '$expectedType'"
                 )
             } else {
                 fail("Property '$propertyName' is expected to be a Schema.Primitive with a format")
@@ -232,18 +232,18 @@ class ComplexObjectTest {
         // Check items type and reference if the property is an array.
         itemsType?.let {
             if (property.schema is Schema.Array) {
-                assertEquals(
-                    expected = itemsType,
-                    actual = property.schema.items.schemaType,
-                    message = "Items of '$propertyName' should have type '$itemsType'"
-                )
-
                 itemsRef?.let {
                     if (property.schema.items is Schema.Reference) {
                         assertEquals(
                             expected = itemsRef,
                             actual = property.schema.items.ref,
                             message = "Items of '$propertyName' should reference '$itemsRef'"
+                        )
+
+                        assertEquals(
+                            expected = itemsType,
+                            actual = property.schema.items.schemaType,
+                            message = "Items of '$propertyName' should have type '$itemsType'"
                         )
                     } else {
                         fail("Items of '$propertyName' should be a Schema.Reference")

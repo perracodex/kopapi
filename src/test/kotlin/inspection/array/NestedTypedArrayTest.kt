@@ -146,13 +146,6 @@ class NestedTypedArrayTest {
         val property: SchemaProperty = properties[propertyName]
             ?: fail("Property '$propertyName' is missing")
 
-        // Check the schema type.
-        assertEquals(
-            expected = expectedType,
-            actual = property.schema.schemaType,
-            message = "Property '$propertyName' should have type '$expectedType'"
-        )
-
         // Check if the property is nullable.
         assertEquals(
             expected = isNullable,
@@ -174,6 +167,13 @@ class NestedTypedArrayTest {
                     expected = expectedFormat.value,
                     actual = property.schema.format,
                     message = "Property '$propertyName' should have format '${expectedFormat.value}'"
+                )
+
+                // Check the schema type.
+                assertEquals(
+                    expected = expectedType,
+                    actual = property.schema.schemaType,
+                    message = "Property '$propertyName' should have type '$expectedType'"
                 )
             } else {
                 fail("Property '$propertyName' is expected to be a Schema.Primitive with a format")

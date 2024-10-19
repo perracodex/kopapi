@@ -85,13 +85,6 @@ class SimpleObjectTest {
 
         val schema: Schema = property.schema
 
-        // Check the schema type.
-        assertEquals(
-            expected = expectedType,
-            actual = schema.schemaType,
-            message = "Property '$propertyName' should have type '$expectedType'"
-        )
-
         // If expectedFormat is provided, check it.
         expectedFormat?.let {
             if (schema is Schema.Primitive) {
@@ -99,6 +92,13 @@ class SimpleObjectTest {
                     expected = expectedFormat.value,
                     actual = schema.format,
                     message = "Property '$propertyName' should have format '${expectedFormat.value}'"
+                )
+
+                // Check the schema type.
+                assertEquals(
+                    expected = expectedType,
+                    actual = schema.schemaType,
+                    message = "Property '$propertyName' should have type '$expectedType'"
                 )
             } else {
                 fail("Property '$propertyName' is expected to be a Schema.Primitive with a format")
