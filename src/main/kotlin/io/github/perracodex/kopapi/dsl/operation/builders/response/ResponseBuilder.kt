@@ -89,13 +89,12 @@ public class ResponseBuilder {
         }
 
         // Return the constructed ApiResponse instance.
-        // The `content` field must be `null`, as such is created later by the ResponseComposer.
         return ApiResponse(
-            types = typeToContentMap,
             status = status,
             description = description.trimOrNull(),
-            composition = composition,
             headers = headers.takeIf { it.isNotEmpty() },
+            composition = composition,
+            types = typeToContentMap,
             links = links.takeIf { it.isNotEmpty() }
         )
     }

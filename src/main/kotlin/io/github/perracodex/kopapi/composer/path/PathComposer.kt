@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.composer.security.OperationSecurity
 import io.github.perracodex.kopapi.composer.security.SecurityRequirement
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
+import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 
 /**
  * Responsible for composing the `paths` section of the OpenAPI schema.
@@ -31,12 +32,14 @@ internal object PathComposer {
      * @param operationSecurity A list of [OperationSecurity] objects detailing the security
      *                          configurations for each API operation. This parameter can be `null`
      *                          if no operations require security.
+     * @param inspector The [TypeSchemaProvider] instance used for inspecting types and generating schemas.
      * @return A map where each key is an API Operation path and the value is an [OpenAPiSchema.PathItem]
      * object containing the HTTP methods and their configurations for that path.
      */
     fun compose(
         apiOperations: Set<ApiOperation>,
-        operationSecurity: List<OperationSecurity>?
+        operationSecurity: List<OperationSecurity>?,
+        inspector: TypeSchemaProvider
     ): Map<String, OpenAPiSchema.PathItem> {
         // Initialize a mutable map to hold the paths and their corresponding PathItem objects.
         val paths: MutableMap<String, OpenAPiSchema.PathItem> = mutableMapOf()
@@ -51,7 +54,8 @@ internal object PathComposer {
             // Add the API Operation to the PathItem based on its HTTP method.
             pathItem.addOperation(
                 method = operation.method,
-                apiOperation = operation
+                apiOperation = operation,
+                inspector = inspector
             )
 
             // Locate the corresponding security configuration for the operation, if any.

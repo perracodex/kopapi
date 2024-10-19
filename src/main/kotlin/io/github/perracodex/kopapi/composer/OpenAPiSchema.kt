@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.composer
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.composer.path.PathOperation
 import io.github.perracodex.kopapi.composer.security.SecurityRequirement
@@ -12,6 +13,8 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
+import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
+import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.ktor.http.*
 
@@ -92,9 +95,17 @@ internal data class OpenAPiSchema(
          *
          * @param method The HTTP method of the operation (e.g., "GET", "POST").
          * @param apiOperation The [ApiOperation] object containing the operation's metadata and configurations.
+         * @param inspector The [TypeSchemaProvider] instance used for inspecting types and generating schemas.
          */
-        fun addOperation(method: HttpMethod, apiOperation: ApiOperation) {
-            val pathOperation: PathOperation = PathOperation.fromApiOperation(apiOperation = apiOperation)
+        fun addOperation(
+            method: HttpMethod,
+            apiOperation: ApiOperation,
+            inspector: TypeSchemaProvider
+        ) {
+            val pathOperation: PathOperation = PathOperation.fromApiOperation(
+                apiOperation = apiOperation,
+                inspector = inspector
+            )
             when (method) {
                 HttpMethod.Get -> get = pathOperation
                 HttpMethod.Put -> put = pathOperation
@@ -131,4 +142,18 @@ internal data class OpenAPiSchema(
             }
         }
     }
+
+    /**
+     * Represents the [Schema] definition for content in an API operation.
+     *
+     * This class is used to wrap the schema under the `schema` key for any content type
+     * (e.g., `application/json`, `application/xml`), ensuring compatibility with the OpenAPI
+     * specification.
+     *
+     * @property schema The [Schema] representing the structure of the content.
+     */
+    data class ContentSchema(
+        @JsonProperty("schema")
+        var schema: Schema?
+    )
 }

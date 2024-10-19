@@ -4,9 +4,6 @@
 
 package io.github.perracodex.kopapi.dsl.operation.elements
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.perracodex.kopapi.composer.response.ResponseComposer
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -16,13 +13,12 @@ import kotlin.reflect.KType
 /**
  * Represents the metadata of an API response.
  *
- * @property types  A map of [KType] to a set of [ContentType] that this response may return.
  * @property status The [HttpStatusCode] code associated with this response.
+ * @property headers A list of [ApiHeader] objects representing the headers that may be included in the response.
  * @property description A human-readable description of the response, providing context about what this response signifies.
  * @property descriptionSet A set of descriptions to ensure uniqueness when merging responses.
- * @property content A map of [ContentType] to [ContentSchema]. Created by [ResponseComposer] at the final stage of processing.
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
- * @property headers A list of [ApiHeader] objects representing the headers that may be included in the response.
+ * @property types  A map of [KType] to a set of [ContentType] that this response may return.
  * @property links A list of [ApiLink] objects representing possible links to other operations.
  *
  * @see [ApiOperationBuilder.response]
@@ -31,24 +27,14 @@ import kotlin.reflect.KType
  */
 @PublishedApi
 internal data class ApiResponse(
-    @JsonIgnore
-    val types: Map<KType, Set<ContentType>>?,
-    @JsonIgnore
     val status: HttpStatusCode,
-    @JsonProperty("description")
     val description: String?,
-    @JsonIgnore
     val descriptionSet: MutableSet<String> = LinkedHashSet(),
-    @JsonProperty("content")
-    var content: MutableMap<ContentType, ContentSchema>? = null,
-    @JsonIgnore
-    val composition: Composition?,
-    @JsonProperty("headers")
     val headers: Set<ApiHeader>?,
-    @JsonProperty("links")
-    val links: Set<ApiLink>?
+    val composition: Composition?,
+    val types: Map<KType, Set<ContentType>>?,
+    val links: Set<ApiLink>?,
 ) {
-
     /**
      * Merges this `ApiResponse` with another `ApiResponse` to combine their properties.
      * If the composition of the other response is specified, it takes precedence;
@@ -66,10 +52,10 @@ internal data class ApiResponse(
      * @return A new `ApiResponse` instance that represents the merged result.
      */
     fun mergeWith(other: ApiResponse): ApiResponse {
-        val combinedTypes: Map<KType, Set<ContentType>> = mergeTypes(first = types, second = other.types)
         val combinedHeaders: Set<ApiHeader>? = headers?.plus(elements = other.headers ?: emptySet()) ?: other.headers
-        val combinedLinks: Set<ApiLink>? = links?.plus(elements = other.links ?: emptySet()) ?: other.links
         val precedenceComposition: Composition? = other.composition ?: composition
+        val combinedTypes: Map<KType, Set<ContentType>> = mergeTypes(first = types, second = other.types)
+        val combinedLinks: Set<ApiLink>? = links?.plus(elements = other.links ?: emptySet()) ?: other.links
 
         // Combine descriptions and eliminate duplicates.
         val combinedDescription: String? = other.description.trimOrNull()?.let {
@@ -78,13 +64,12 @@ internal data class ApiResponse(
         } ?: description
 
         // Create a newly combined ApiResponse instance.
-        // The `content` field must be `null`, as such is created later by the ResponseComposer.
         return copy(
-            types = combinedTypes,
             description = combinedDescription,
             descriptionSet = descriptionSet,
-            composition = precedenceComposition,
             headers = combinedHeaders,
+            composition = precedenceComposition,
+            types = combinedTypes,
             links = combinedLinks
         )
     }

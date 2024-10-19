@@ -72,6 +72,9 @@ internal object SchemaRegistry {
     var apiConfiguration: ApiConfiguration? = null
         private set
 
+    /** The [TypeSchemaProvider] instance used for inspecting types and generating schemas. */
+    private val inspector = TypeSchemaProvider()
+
     /**
      * Registers the [ApiConfiguration] object for the Kopapi plugin.
      *
@@ -139,17 +142,15 @@ internal object SchemaRegistry {
             return
         }
 
-        val inspector = TypeSchemaProvider()
-
         apiOperation.forEach { metadata ->
             // Inspect each parameter type.
             metadata.parameters?.forEach { parameter ->
-                inspectType(inspector = inspector, type = parameter.type)
+                inspectType(type = parameter.type)
             }
 
             // Inspect the request body type.
             metadata.requestBody?.let { requestBody ->
-                inspectType(inspector = inspector, type = requestBody.type)
+                inspectType(type = requestBody.type)
             }
 
             // Inspect each response type.
@@ -179,11 +180,10 @@ internal object SchemaRegistry {
     /**
      * Inspects a type using the provided [TypeSchemaProvider] if it's not of type [Unit].
      *
-     * @param inspector The [TypeSchemaProvider] instance used for inspection.
      * @param type The [KType] to inspect.
      * @return The [TypeSchema] object representing the inspected type, or `null` if the type is [Unit].
      */
-    private fun inspectType(inspector: TypeSchemaProvider, type: KType): TypeSchema? {
+    private fun inspectType(type: KType): TypeSchema? {
         if (type.classifier != Unit::class) {
             return inspector.inspect(kType = type)
         }
@@ -321,7 +321,7 @@ internal object SchemaRegistry {
                 apiConfiguration = configuration,
                 apiOperations = apiOperation,
                 schemaConflicts = schemaConflicts
-            ).compose(format = format)
+            ).compose(format = format, inspector = inspector)
 
             openApiSchemaCache[format] = schema
             return schema

@@ -5,10 +5,12 @@
 package io.github.perracodex.kopapi.composer.path
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.response.PathResponse
+import io.github.perracodex.kopapi.composer.response.ResponseComposer
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
+import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 
 /**
  * Represents an individual API Operation (HTTP method) within a path item.
@@ -21,7 +23,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
  * @property tags A set of tags for API documentation control. Tags can be used to group operations.
  * @property parameters A set of [ApiParameter] objects defining the parameters for the operation.
  * @property requestBody The [ApiRequestBody] object defining the request body for the operation.
- * @property responses A map of `status codes` to [ApiResponse] objects.
+ * @property responses A map of `status codes` to [PathResponse] objects.
  * @property security A list of security requirement maps, each specifying a security scheme and its scopes.
  *                    An empty list (`security: []`) disables security for this operation.
  */
@@ -32,7 +34,7 @@ internal data class PathOperation(
     val tags: Set<String>?,
     val parameters: Set<ApiParameter>?,
     val requestBody: ApiRequestBody?,
-    val responses: Map<String, ApiResponse>?,
+    val responses: Map<String, PathResponse>?,
     var security: List<Map<String, List<String>>>? = null
 ) {
     companion object {
@@ -43,16 +45,24 @@ internal data class PathOperation(
          * an [PathOperation] suitable for inclusion in the OpenAPI schema.
          *
          * @param apiOperation The [ApiOperation] object containing the operation's metadata.
+         * @param inspector The [TypeSchemaProvider] instance used for inspecting types and generating schemas.
          * @return An [PathOperation] instance populated with data from [apiOperation].
          */
-        fun fromApiOperation(apiOperation: ApiOperation): PathOperation {
+        fun fromApiOperation(apiOperation: ApiOperation, inspector: TypeSchemaProvider): PathOperation {
+            val responses: Map<String, PathResponse>? = apiOperation.responses?.let {
+                ResponseComposer.compose(
+                    responses = apiOperation.responses,
+                    inspector = inspector
+                )
+            }
+
             return PathOperation(
                 summary = apiOperation.summary,
                 description = apiOperation.description,
                 tags = apiOperation.tags,
                 parameters = apiOperation.parameters,
                 requestBody = apiOperation.requestBody,
-                responses = apiOperation.responses
+                responses = responses
             )
         }
     }
