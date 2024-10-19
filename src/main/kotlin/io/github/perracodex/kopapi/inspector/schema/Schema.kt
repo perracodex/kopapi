@@ -17,12 +17,59 @@ import io.github.perracodex.kopapi.utils.safeName
  * based on the OpenAPI specification.
  *
  * @property definition A string identifier used for debugging and clarity when converting to JSON.
+ * @property ordinal The order in which the schema should appear when sorted.
  */
 @PublishedApi
 internal sealed class Schema(
     @JsonIgnore
     open val definition: String,
+    @JsonIgnore
+    open val ordinal: Int
 ) {
+    /**
+     * Represents an object schema with a set of named properties.
+     *
+     * @property schemaType The API type of the schema as defined in the OpenAPI specification.
+     * @property properties A map of property names to their corresponding schemas and metadata.
+     */
+    data class Object(
+        @JsonIgnore
+        override val definition: String = Object::class.safeName(),
+        @JsonProperty("type")
+        val schemaType: ApiType = ApiType.OBJECT,
+        @JsonProperty("properties")
+        val properties: MutableMap<String, SchemaProperty> = mutableMapOf()
+    ) : Schema(definition = definition, ordinal = 0)
+
+    /**
+     * Represents a reference to another schema.
+     * This is used to reference existing schemas elsewhere in the OpenAPI document.
+     *
+     * @property schemaType The API type of the schema as defined in the OpenAPI specification.
+     * @property schemaName The name of the schema being referenced.
+     * @property ref The reference path to the schema definition.
+     */
+    data class Reference(
+        @JsonIgnore
+        override val definition: String = Reference::class.safeName(),
+        @JsonIgnore
+        val schemaType: ApiType = ApiType.OBJECT,
+        @JsonIgnore
+        val schemaName: String
+    ) : Schema(definition = definition, ordinal = 1) {
+        @JsonProperty("\$ref")
+        val ref: String = "$PATH$schemaName"
+
+        companion object {
+            /** The path to the schema definitions in the OpenAPI specification. */
+            const val PATH: String = "#/components/schemas/"
+
+            /** The key used to reference another schema. */
+            @Suppress("unused")
+            const val REFERENCE: String = "\$ref"
+        }
+    }
+
     /**
      * Represents a schema for primitive types (e.g., `string`, `integer`, etc.).
      *
@@ -58,7 +105,7 @@ internal sealed class Schema(
         val exclusiveMaximum: Number? = null,
         @JsonProperty("multipleOf")
         val multipleOf: Number? = null,
-    ) : Schema(definition = definition) {
+    ) : Schema(definition = definition, ordinal = 2) {
         init {
             SchemaConstraints.validate(
                 apiType = schemaType,
@@ -86,7 +133,7 @@ internal sealed class Schema(
         val schemaType: ApiType = ApiType.STRING,
         @JsonProperty("enum")
         val values: List<String>
-    ) : Schema(definition = definition)
+    ) : Schema(definition = definition, ordinal = 3)
 
     /**
      * Represents an array schema, defining a collection of items of a specified schema.
@@ -101,51 +148,7 @@ internal sealed class Schema(
         val schemaType: ApiType = ApiType.ARRAY,
         @JsonProperty("items")
         val items: Schema
-    ) : Schema(definition = definition)
-
-    /**
-     * Represents an object schema with a set of named properties.
-     *
-     * @property schemaType The API type of the schema as defined in the OpenAPI specification.
-     * @property properties A map of property names to their corresponding schemas and metadata.
-     */
-    data class Object(
-        @JsonIgnore
-        override val definition: String = Object::class.safeName(),
-        @JsonProperty("type")
-        val schemaType: ApiType = ApiType.OBJECT,
-        @JsonProperty("properties")
-        val properties: MutableMap<String, SchemaProperty> = mutableMapOf()
-    ) : Schema(definition = definition)
-
-    /**
-     * Represents a reference to another schema.
-     * This is used to reference existing schemas elsewhere in the OpenAPI document.
-     *
-     * @property schemaType The API type of the schema as defined in the OpenAPI specification.
-     * @property schemaName The name of the schema being referenced.
-     * @property ref The reference path to the schema definition.
-     */
-    data class Reference(
-        @JsonIgnore
-        override val definition: String = Reference::class.safeName(),
-        @JsonIgnore
-        val schemaType: ApiType = ApiType.OBJECT,
-        @JsonIgnore
-        val schemaName: String
-    ) : Schema(definition = definition) {
-        @JsonProperty("\$ref")
-        val ref: String = "$PATH$schemaName"
-
-        companion object {
-            /** The path to the schema definitions in the OpenAPI specification. */
-            const val PATH: String = "#/components/schemas/"
-
-            /** The key used to reference another schema. */
-            @Suppress("unused")
-            const val REFERENCE: String = "\$ref"
-        }
-    }
+    ) : Schema(definition = definition, ordinal = 4)
 
     /**
      * Represents a schema that allows for additional properties of a specified type.
@@ -161,7 +164,7 @@ internal sealed class Schema(
         val schemaType: ApiType = ApiType.OBJECT,
         @JsonProperty("additionalProperties")
         val additionalProperties: Schema
-    ) : Schema(definition = definition)
+    ) : Schema(definition = definition, ordinal = 5)
 
     /**
      * Represents a schema that allows for one or more schemas to be used interchangeably.
@@ -173,7 +176,7 @@ internal sealed class Schema(
         override val definition: String = AnyOf::class.safeName(),
         @JsonProperty("anyOf")
         val anyOf: List<Schema>
-    ) : Schema(definition = definition)
+    ) : Schema(definition = definition, ordinal = 6)
 
     /**
      * Represents a schema that requires all listed schemas to be validated against the data.
@@ -185,7 +188,7 @@ internal sealed class Schema(
         override val definition: String = AllOf::class.safeName(),
         @JsonProperty("allOf")
         val allOf: List<Schema>
-    ) : Schema(definition = definition)
+    ) : Schema(definition = definition, ordinal = 7)
 
     /**
      * Represents a schema where data must match exactly one of the listed schemas.
@@ -197,5 +200,5 @@ internal sealed class Schema(
         override val definition: String = OneOf::class.safeName(),
         @JsonProperty("oneOf")
         val oneOf: List<Schema>
-    ) : Schema(definition = definition)
+    ) : Schema(definition = definition, ordinal = 8)
 }

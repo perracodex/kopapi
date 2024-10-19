@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ContentSchema
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
-import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
 import io.ktor.http.*
 import kotlin.collections.set
@@ -25,7 +25,6 @@ import kotlin.reflect.KType
  */
 @ComposerAPI
 internal object ResponseComposer {
-    private val tracer = Tracer<ResponseComposer>()
 
     /**
      * Generates the `responses` section of the OpenAPI schema by mapping each API response to its
@@ -39,32 +38,51 @@ internal object ResponseComposer {
         inspector: TypeSchemaProvider
     ) {
         responses.forEach { (statusCode, apiResponse) ->
-            val contentMap: MutableMap<ContentType, List<ContentSchema>> = apiResponse.content
-                ?: return@forEach
-
-            contentMap.forEach { (contentType, schemas) ->
-                // Inspect each schema inside ContentSchema and process its type.
-                val processedSchemas: List<Schema> = schemas.mapNotNull { contentSchema ->
-                    inspectType(inspector = inspector, type = contentSchema.type)?.schema
-                }
-
-                // Handle the composition of multiple schemas
-                if (processedSchemas.isNotEmpty()) {
-                    val resolvedSchema: Schema = determineSchema(
-                        composition = apiResponse.composition,
-                        schemas = processedSchemas
-                    )
-
-                    contentMap[contentType] = listOf(ContentSchema(type = schemas.first().type, schema = resolvedSchema))
-                } else {
-                    tracer.error("No schemas found for response content type: $contentType, status code: $statusCode")
-                }
+            // If there are no types, skip processing and continue to the next iteration.
+            if (apiResponse.types.isNullOrEmpty()) {
+                return@forEach
             }
+
+            // Initialize a map to store schemas per content type.
+            val contentMap: MutableMap<ContentType, MutableList<Schema>> = mutableMapOf()
+
+            // Collect schemas for each type and content type.
+            apiResponse.types.forEach { (type, contentTypes) ->
+                val inspectedSchema: Schema? = inspectType(
+                    inspector = inspector,
+                    type = type
+                )?.schema
+
+                // Add the schema for each associated content type.
+                inspectedSchema?.let { schema ->
+                    contentTypes.forEach { contentType ->
+                        contentMap.computeIfAbsent(contentType) { mutableListOf() }.add(schema)
+                    }
+                } ?: throw KopapiException("No schema found for type: $type, status code: $statusCode")
+            }
+
+            // Create the final content map for ApiResponse
+            val finalContent: MutableMap<ContentType, ContentSchema> = mutableMapOf()
+
+            // Process each content type's collected schemas.
+            contentMap.toSortedMap(compareBy({ it.contentType }, { it.contentSubtype }))
+                .forEach { (contentType, schemas) ->
+                    finalContent[contentType] = determineSchema(
+                        composition = apiResponse.composition,
+                        schemas = schemas.sortedBy { it.ordinal }
+                    )
+                }
+
+            // Set the final processed content map to the ApiResponse.
+            if (apiResponse.content != null) {
+                throw KopapiException("Content map already exists for status code: $statusCode")
+            }
+            apiResponse.content = finalContent
         }
     }
 
     /**
-     * Determines the appropriate [Schema] based on the given composition and a list of `Schema` objects.
+     * Determines the appropriate [ContentSchema] based on the given composition and a list of `Schema` objects.
      * If only one `schema` is present, it returns that schema directly. If multiple schemas are present,
      * it combines them according to the specified `composition` type, defaulting to `Composition.ANY_OF` if null.
      *
@@ -72,8 +90,8 @@ internal object ResponseComposer {
      * @param schemas The list of [Schema] objects to be combined. Assumes the list is non-empty and preprocessed.
      * @return A [Schema] object that may be a single schema or a composite schema based on the provided composition.
      */
-    private fun determineSchema(composition: Composition?, schemas: List<Schema>): Schema {
-        return if (schemas.size == 1) {
+    private fun determineSchema(composition: Composition?, schemas: List<Schema>): ContentSchema {
+        val schema: Schema = if (schemas.size == 1) {
             schemas.first()
         } else {
             when (composition ?: Composition.ANY_OF) {
@@ -82,6 +100,8 @@ internal object ResponseComposer {
                 Composition.ONE_OF -> Schema.OneOf(oneOf = schemas)
             }
         }
+
+        return ContentSchema(schema = schema)
     }
 
     /**

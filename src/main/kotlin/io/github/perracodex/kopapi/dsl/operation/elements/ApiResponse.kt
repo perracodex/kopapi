@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.dsl.operation.elements
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.perracodex.kopapi.composer.response.ResponseComposer
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -15,11 +16,11 @@ import kotlin.reflect.KType
 /**
  * Represents the metadata of an API response.
  *
- * @property types The [KType] objects representing the types of the response content.
+ * @property types  A map of [KType] to a set of [ContentType] that this response may return.
  * @property status The [HttpStatusCode] code associated with this response.
  * @property description A human-readable description of the response, providing context about what this response signifies.
  * @property descriptionSet A set of descriptions to ensure uniqueness when merging responses.
- * @property content A map of [ContentType] to [ContentSchema] for the content in the response.
+ * @property content A map of [ContentType] to [ContentSchema]. Created by [ResponseComposer] at the final stage of processing.
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
  * @property headers A list of [ApiHeader] objects representing the headers that may be included in the response.
  * @property links A list of [ApiLink] objects representing possible links to other operations.
@@ -31,7 +32,7 @@ import kotlin.reflect.KType
 @PublishedApi
 internal data class ApiResponse(
     @JsonIgnore
-    val types: List<KType>?,
+    val types: Map<KType, Set<ContentType>>?,
     @JsonIgnore
     val status: HttpStatusCode,
     @JsonProperty("description")
@@ -39,7 +40,7 @@ internal data class ApiResponse(
     @JsonIgnore
     val descriptionSet: MutableSet<String> = LinkedHashSet(),
     @JsonProperty("content")
-    val content: MutableMap<ContentType, List<ContentSchema>>?,
+    var content: MutableMap<ContentType, ContentSchema>? = null,
     @JsonIgnore
     val composition: Composition?,
     @JsonProperty("headers")
@@ -65,17 +66,10 @@ internal data class ApiResponse(
      * @return A new `ApiResponse` instance that represents the merged result.
      */
     fun mergeWith(other: ApiResponse): ApiResponse {
+        val combinedTypes: Map<KType, Set<ContentType>> = mergeTypes(first = types, second = other.types)
         val combinedHeaders: Set<ApiHeader>? = headers?.plus(elements = other.headers ?: emptySet()) ?: other.headers
         val combinedLinks: Set<ApiLink>? = links?.plus(elements = other.links ?: emptySet()) ?: other.links
-        val combinedTypes: List<KType> = ((types ?: emptyList()) + (other.types ?: emptyList())).distinct()
         val precedenceComposition: Composition? = other.composition ?: composition
-
-        // Combine content type maps.
-        val combinedContent: MutableMap<ContentType, List<ContentSchema>>? = if (content != null || other.content != null) {
-            mergeContentTypes(first = content, second = other.content)
-        } else {
-            null
-        }
 
         // Combine descriptions and eliminate duplicates.
         val combinedDescription: String? = other.description.trimOrNull()?.let {
@@ -83,11 +77,12 @@ internal data class ApiResponse(
             descriptionSet.joinToString(separator = "\n")
         } ?: description
 
+        // Create a newly combined ApiResponse instance.
+        // The `content` field must be `null`, as such is created later by the ResponseComposer.
         return copy(
             types = combinedTypes,
             description = combinedDescription,
             descriptionSet = descriptionSet,
-            content = combinedContent,
             composition = precedenceComposition,
             headers = combinedHeaders,
             links = combinedLinks
@@ -95,36 +90,26 @@ internal data class ApiResponse(
     }
 
     /**
-     * Merges two maps of content types to their respective lists of content schemas.
+     * Merges two maps of KType to sets of content types, ensuring no duplicates.
      *
-     * @param first The first content map.
-     * @param second The second content map.
-     * @return A merged content map with combined lists of content schemas for each content type.
+     * @param first The first map of KType to content types.
+     * @param second The second map of KType to content types.
+     * @return A merged map of KType to sets of content types.
      */
-    private fun mergeContentTypes(
-        first: Map<ContentType, List<ContentSchema>>?,
-        second: Map<ContentType, List<ContentSchema>>?
-    ): MutableMap<ContentType, List<ContentSchema>> {
-        val combinedContent: MutableMap<ContentType, MutableList<ContentSchema>> = mutableMapOf()
+    private fun mergeTypes(
+        first: Map<KType, Set<ContentType>>?,
+        second: Map<KType, Set<ContentType>>?
+    ): Map<KType, Set<ContentType>> {
+        val result: MutableMap<KType, MutableSet<ContentType>> = mutableMapOf()
 
-        // Add all schemas from the first content map.
-        first?.forEach { (type, schemas) ->
-            val existingSchemas: MutableList<ContentSchema> = combinedContent.getOrPut(type) { mutableListOf() }
-            existingSchemas.addAll(schemas)
+        first?.forEach { (kType, contentTypes) ->
+            result.getOrPut(kType) { mutableSetOf() }.addAll(contentTypes)
         }
 
-        // Add all schemas from the second content map and merge with existing if present.
-        second?.forEach { (type, schemas) ->
-            val existingSchemas: MutableList<ContentSchema> = combinedContent.getOrPut(type) { mutableListOf() }
-            existingSchemas.addAll(schemas)
+        second?.forEach { (kType, contentTypes) ->
+            result.getOrPut(kType) { mutableSetOf() }.addAll(contentTypes)
         }
 
-        // Remove duplicate schemas per content type.
-        combinedContent.forEach { (type, schemas) ->
-            combinedContent[type] = schemas.distinctBy { it.type }.toMutableList()
-        }
-
-        // Convert MutableList to List before returning.
-        return combinedContent.mapValues { it.value.toList() }.toMutableMap()
+        return result.mapValues { it.value.toSet() }
     }
 }

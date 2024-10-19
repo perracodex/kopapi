@@ -10,7 +10,6 @@ import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
-import io.github.perracodex.kopapi.dsl.operation.elements.ContentSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -57,35 +56,44 @@ public class ResponseBuilder {
 
     @PublishedApi
     internal fun build(status: HttpStatusCode, type: KType?): ApiResponse {
-        // Combine the primary type with any additional types added via addType()
+        // Combine the primary type with any additional types added via type<T>().
         val allTypes: List<KType> = type?.let {
-            (listOf(type) + types).distinct()
-        } ?: types
+            listOf(it) + types
+        }?.distinct() ?: types
 
-        // Determine if needed to set the composition default.
+        // If there are multiple types and no composition is set, default to ANY_OF.
         if (allTypes.size > 1 && composition == null) {
             composition = Composition.ANY_OF
         }
 
-        // Initialize content map with specified ContentTypes.
-        if (allTypes.isEmpty()) {
-            contentType = null
-            composition = null
-        } else if (contentType == null) {
-            contentType = setOf(ContentType.Application.Json)
+        // Handle content types and composition logic based on types.
+        val finalContentType: Set<ContentType>? = when {
+            allTypes.isEmpty() -> {
+                composition = null
+                null
+            }
+
+            contentType == null -> {
+                // Default to application/json if no contentType provided.
+                setOf(ContentType.Application.Json)
+            }
+
+            else -> contentType
         }
 
-        // Create a placeholder schema for each content type.
-        val contentMap: MutableMap<ContentType, List<ContentSchema>>? = contentType?.associateWith {
-            allTypes.map { ContentSchema(type = it, schema = null) }
-        }?.toMutableMap()
+        // Create the map of types to content types, if any.
+        val typeToContentMap: Map<KType, Set<ContentType>>? = if (allTypes.isNotEmpty()) {
+            allTypes.associateWith { finalContentType ?: emptySet() }
+        } else {
+            null
+        }
 
         // Return the constructed ApiResponse instance.
+        // The `content` field must be `null`, as such is created later by the ResponseComposer.
         return ApiResponse(
-            types = allTypes.takeIf { it.isNotEmpty() },
+            types = typeToContentMap,
             status = status,
             description = description.trimOrNull(),
-            content = contentMap,
             composition = composition,
             headers = headers.takeIf { it.isNotEmpty() },
             links = links.takeIf { it.isNotEmpty() }
