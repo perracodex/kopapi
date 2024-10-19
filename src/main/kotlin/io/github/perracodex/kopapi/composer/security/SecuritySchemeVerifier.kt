@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.safeName
 
 @ComposerAPI
 internal object SecuritySchemeVerifier {
@@ -210,7 +211,7 @@ internal object SecuritySchemeVerifier {
             throw KopapiException(
                 "Scheme '$schemeName' is defined in both top-level global configuration and API Operation:\n" +
                         "   - [${apiOperation.method.value}] → '${apiOperation.path}'\n" +
-                        "Non-OAuth2 schemes (like '${apiOperationScheme::class.simpleName}') cannot be overridden.\n" +
+                        "Non-OAuth2 schemes (like '${apiOperationScheme::class.safeName()}') cannot be overridden.\n" +
                         "To resolve:\n" +
                         "   1. Ensure the scheme '$schemeName' is fully redefined only at the API Operation level.\n" +
                         "   2. Or, change the name to avoid conflicts with the top-level global scheme.\n"

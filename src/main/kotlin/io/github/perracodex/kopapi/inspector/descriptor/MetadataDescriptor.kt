@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
-import io.github.perracodex.kopapi.inspector.utils.cleanName
-import io.github.perracodex.kopapi.inspector.utils.safeName
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.utils.cleanName
+import io.github.perracodex.kopapi.utils.safeName
 import kotlinx.serialization.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1

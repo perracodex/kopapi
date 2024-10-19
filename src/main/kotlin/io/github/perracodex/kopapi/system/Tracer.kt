@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.system
 
+import io.github.perracodex.kopapi.utils.safeName
 import io.ktor.util.logging.*
 import org.slf4j.Logger
 import kotlin.reflect.KFunction
@@ -64,9 +65,9 @@ internal class Tracer(private val logger: Logger) {
          */
         inline operator fun <reified T : Any> invoke(): Tracer {
             val loggerName: String = if (LOG_FULL_PACKAGE) {
-                T::class.qualifiedName ?: T::class.simpleName ?: "UnknownClass"
+                T::class.qualifiedName ?: T::class.safeName()
             } else {
-                T::class.simpleName ?: "UnknownClass"
+                T::class.safeName()
             }
             return Tracer(logger = KtorSimpleLogger(name = loggerName))
         }

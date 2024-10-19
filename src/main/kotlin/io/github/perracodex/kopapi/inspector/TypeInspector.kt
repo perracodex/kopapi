@@ -11,8 +11,8 @@ import io.github.perracodex.kopapi.inspector.resolver.*
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.PrimitiveFactory
-import io.github.perracodex.kopapi.inspector.utils.nativeName
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.utils.nativeName
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KProperty1
