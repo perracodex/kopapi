@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.dsl.common.security
 
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
+import io.github.perracodex.kopapi.types.OAuthFlowType
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 
@@ -90,22 +91,5 @@ public class OAuth2SecurityBuilder {
             description = description.trimOrNull(),
             flows = oauthFlows
         )
-    }
-
-    /**
-     * Enum representing the different types of OAuth2 flows.
-     */
-    private enum class OAuthFlowType {
-        /** The OAuth2 Implicit flow. */
-        IMPLICIT,
-
-        /** The OAuth2 Password flow. */
-        PASSWORD,
-
-        /** The OAuth2 Client Credentials flow. */
-        CLIENT_CREDENTIALS,
-
-        /** The OAuth2 Authorization Code flow. */
-        AUTHORIZATION_CODE
     }
 }

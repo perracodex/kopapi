@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.types.OAuthFlowType
 import io.github.perracodex.kopapi.utils.safeName
 
 @ComposerAPI
@@ -64,30 +65,16 @@ internal object SecuritySchemeVerifier {
         apiOperationFlows: ApiSecurityScheme.OAuth2.OAuthFlows,
         apiOperation: ApiOperation
     ) {
-        validateFlow(
-            globalFlow = globalFlows.authorizationCode,
-            apiOperationFlow = apiOperationFlows.authorizationCode,
-            flowType = "authorizationCode",
-            apiOperation = apiOperation
-        )
-        validateFlow(
-            globalFlow = globalFlows.clientCredentials,
-            apiOperationFlow = apiOperationFlows.clientCredentials,
-            flowType = "clientCredentials",
-            apiOperation = apiOperation
-        )
-        validateFlow(
-            globalFlow = globalFlows.implicit,
-            apiOperationFlow = apiOperationFlows.implicit,
-            flowType = "implicit",
-            apiOperation = apiOperation
-        )
-        validateFlow(
-            globalFlow = globalFlows.password,
-            apiOperationFlow = apiOperationFlows.password,
-            flowType = "password",
-            apiOperation = apiOperation
-        )
+        OAuthFlowType.entries.forEach { flowType ->
+            val globalFlow: ApiSecurityScheme.OAuth2.OAuthFlow? = flowType.getFlow(flows = globalFlows)
+            val apiOperationFlow: ApiSecurityScheme.OAuth2.OAuthFlow? = flowType.getFlow(flows = apiOperationFlows)
+            validateFlow(
+                globalFlow = globalFlow,
+                apiOperationFlow = apiOperationFlow,
+                flowType = flowType,
+                apiOperation = apiOperation
+            )
+        }
     }
 
     /**
@@ -105,7 +92,7 @@ internal object SecuritySchemeVerifier {
     private fun validateFlow(
         globalFlow: ApiSecurityScheme.OAuth2.OAuthFlow?,
         apiOperationFlow: ApiSecurityScheme.OAuth2.OAuthFlow?,
-        flowType: String,
+        flowType: OAuthFlowType,
         apiOperation: ApiOperation
     ) {
         if (apiOperationFlow != null && globalFlow == null) {
@@ -160,7 +147,7 @@ internal object SecuritySchemeVerifier {
         globalUrl: String?,
         operationUrl: String?,
         urlType: String,
-        flowType: String,
+        flowType: OAuthFlowType,
         apiOperation: ApiOperation
     ) {
         // If operation-level URL is defined but global URL is not, throw an exception.
@@ -219,8 +206,7 @@ internal object SecuritySchemeVerifier {
         }
 
         // Track and compare the scheme within different operations to detect redefinitions.
-        val trackedScheme = trackedOperationSchemes[schemeName.lowercase()]
-        if (trackedScheme != null && trackedScheme.first != apiOperationScheme) {
+        trackedOperationSchemes[schemeName.lowercase()]?.let { trackedScheme ->
             throw KopapiException(
                 "Scheme '$schemeName' is defined in multiple API Operations but with different properties:\n" +
                         "   - [${apiOperation.method.value}] → '${apiOperation.path}'\n" +
@@ -229,8 +215,8 @@ internal object SecuritySchemeVerifier {
                         "   1. Ensure that the security scheme '$schemeName' has the same properties across all API Operations.\n" +
                         "   2. Or, give the API Operation-level scheme a unique name to differentiate it from other definitions.\n"
             )
-        } else {
-            // Track the scheme along with the current API operation if it's the first occurrence.
+        } ?: run {
+            // First occurrence, track the scheme.
             trackedOperationSchemes[schemeName.lowercase()] = apiOperationScheme to apiOperation
         }
     }
