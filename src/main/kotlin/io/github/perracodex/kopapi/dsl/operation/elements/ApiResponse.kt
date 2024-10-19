@@ -39,7 +39,7 @@ internal data class ApiResponse(
     @JsonIgnore
     val descriptionSet: MutableSet<String> = LinkedHashSet(),
     @JsonProperty("content")
-    var content: MutableMap<ContentType, ContentSchema?>?,
+    val content: MutableMap<ContentType, List<ContentSchema>>?,
     @JsonIgnore
     val composition: Composition?,
     @JsonProperty("headers")
@@ -70,6 +70,13 @@ internal data class ApiResponse(
         val combinedTypes: List<KType> = ((types ?: emptyList()) + (other.types ?: emptyList())).distinct()
         val precedenceComposition: Composition? = other.composition ?: composition
 
+        // Combine content type maps.
+        val combinedContent: MutableMap<ContentType, List<ContentSchema>>? = if (content != null || other.content != null) {
+            mergeContentTypes(first = content, second = other.content)
+        } else {
+            null
+        }
+
         // Combine descriptions and eliminate duplicates.
         val combinedDescription: String? = other.description.trimOrNull()?.let {
             descriptionSet.add(it)
@@ -77,12 +84,47 @@ internal data class ApiResponse(
         } ?: description
 
         return copy(
+            types = combinedTypes,
             description = combinedDescription,
             descriptionSet = descriptionSet,
+            content = combinedContent,
+            composition = precedenceComposition,
             headers = combinedHeaders,
-            links = combinedLinks,
-            types = combinedTypes,
-            composition = precedenceComposition
+            links = combinedLinks
         )
+    }
+
+    /**
+     * Merges two maps of content types to their respective lists of content schemas.
+     *
+     * @param first The first content map.
+     * @param second The second content map.
+     * @return A merged content map with combined lists of content schemas for each content type.
+     */
+    private fun mergeContentTypes(
+        first: Map<ContentType, List<ContentSchema>>?,
+        second: Map<ContentType, List<ContentSchema>>?
+    ): MutableMap<ContentType, List<ContentSchema>> {
+        val combinedContent: MutableMap<ContentType, MutableList<ContentSchema>> = mutableMapOf()
+
+        // Add all schemas from the first content map.
+        first?.forEach { (type, schemas) ->
+            val existingSchemas: MutableList<ContentSchema> = combinedContent.getOrPut(type) { mutableListOf() }
+            existingSchemas.addAll(schemas)
+        }
+
+        // Add all schemas from the second content map and merge with existing if present.
+        second?.forEach { (type, schemas) ->
+            val existingSchemas: MutableList<ContentSchema> = combinedContent.getOrPut(type) { mutableListOf() }
+            existingSchemas.addAll(schemas)
+        }
+
+        // Remove duplicate schemas per content type.
+        combinedContent.forEach { (type, schemas) ->
+            combinedContent[type] = schemas.distinctBy { it.type }.toMutableList()
+        }
+
+        // Convert MutableList to List before returning.
+        return combinedContent.mapValues { it.value.toList() }.toMutableMap()
     }
 }

@@ -62,22 +62,23 @@ public class ResponseBuilder {
             (listOf(type) + types).distinct()
         } ?: types
 
+        // Determine if needed to set the composition default.
+        if (allTypes.size > 1 && composition == null) {
+            composition = Composition.ANY_OF
+        }
+
         // Initialize content map with specified ContentTypes.
         if (allTypes.isEmpty()) {
             contentType = null
+            composition = null
         } else if (contentType == null) {
             contentType = setOf(ContentType.Application.Json)
         }
 
         // Create a placeholder schema for each content type.
-        val contentMap: MutableMap<ContentType, ContentSchema?>? = contentType?.associateWith {
-            null
+        val contentMap: MutableMap<ContentType, List<ContentSchema>>? = contentType?.associateWith {
+            allTypes.map { ContentSchema(type = it, schema = null) }
         }?.toMutableMap()
-
-        // Build the composition of the response if multiple types are provided.
-        if (allTypes.size > 1 && composition == null) {
-            composition = Composition.ANY_OF
-        }
 
         // Return the constructed ApiResponse instance.
         return ApiResponse(

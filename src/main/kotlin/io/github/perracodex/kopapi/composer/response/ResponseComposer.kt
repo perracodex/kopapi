@@ -39,34 +39,26 @@ internal object ResponseComposer {
         inspector: TypeSchemaProvider
     ) {
         responses.forEach { (statusCode, apiResponse) ->
-            val types: List<KType> = apiResponse.types ?: return@forEach
+            val contentMap: MutableMap<ContentType, List<ContentSchema>> = apiResponse.content
+                ?: return@forEach
 
-            // Ensure there is a content map, provide a default if none exists.
-            val contentMap: MutableMap<ContentType, ContentSchema?> = apiResponse.content
-                ?: mutableMapOf<ContentType, ContentSchema?>().apply {
-                    this[ContentType.Application.Json] = null
-                    tracer.error(
-                        "Response has defined `Types` but no ContentType are defined. " +
-                                "Status Code: $statusCode. Defaulting to application/json."
-                    )
+            contentMap.forEach { (contentType, schemas) ->
+                // Inspect each schema inside ContentSchema and process its type.
+                val processedSchemas: List<Schema> = schemas.mapNotNull { contentSchema ->
+                    inspectType(inspector = inspector, type = contentSchema.type)?.schema
                 }
 
-            // Extract and process type schemas.
-            val schemas: List<Schema> = types.mapNotNull { type ->
-                inspectType(inspector = inspector, type = type)?.schema
-            }.distinct().sortedBy(Schema::definition)
-
-            // Check if schemas are not empty then process them.
-            if (schemas.isNotEmpty()) {
-                contentMap.keys.forEach { contentType ->
+                // Handle the composition of multiple schemas
+                if (processedSchemas.isNotEmpty()) {
                     val resolvedSchema: Schema = determineSchema(
                         composition = apiResponse.composition,
-                        schemas = schemas
+                        schemas = processedSchemas
                     )
-                    contentMap[contentType] = ContentSchema(schema = resolvedSchema)
+
+                    contentMap[contentType] = listOf(ContentSchema(type = schemas.first().type, schema = resolvedSchema))
+                } else {
+                    tracer.error("No schemas found for response content type: $contentType, status code: $statusCode")
                 }
-            } else {
-                tracer.error("No schemas found for response status code: $statusCode")
             }
         }
     }
