@@ -86,12 +86,13 @@ private fun buildApiErrorMessage(route: Route): String {
         The current route "${route.extractRoutePath()}" does not have an HTTP method associated with it.
 
         Possible causes:
-        - You might have applied 'api' to a route that is not directly tied to a specific HTTP method,
-        - Make sure 'api' is applied to a route either by infix or chained:
-            ```
-            post { ... } api { ... } // Infix example
-            post { ... }.api { ... } // Chained '.' example
-            ```
+            - You might have applied 'api' to a route that is not directly tied to a specific HTTP method,
+        To resolve:
+            - Make sure 'api' is applied to a route either by infix or chained:
+                ```
+                post { ... } api { ... } // Infix example
+                post { ... }.api { ... } // Chained '.' example
+                ```
 
         Example of proper usage (infix notation):
             ```
