@@ -32,7 +32,7 @@ internal data class ApiResponse(
     val description: String?,
     val descriptionSet: MutableSet<String> = LinkedHashSet(),
     val headers: Set<ApiHeader>?,
-    val composition: Composition?,
+    val composition: Map<ContentType, Composition?>,
     val content: Map<ContentType, Set<KType>>?,
     val links: Set<ApiLink>?,
 ) {
@@ -46,24 +46,23 @@ internal data class ApiResponse(
 
     /**
      * Merges this `ApiResponse` with another `ApiResponse` to combine their properties.
-     * If the composition of the other response is specified, it takes precedence;
-     * otherwise, the original composition is retained.
      *
-     * #### Merging Rules
+     * #### Merging Rules:
      * - Headers from both responses are combined, eliminating duplicates.
      * - Links from both responses are combined, eliminating duplicates.
-     * - Types from both responses are combined per ContentType, with duplicates removed to ensure uniqueness.
+     * - Types from both responses are combined per `ContentType`, ensuring uniqueness.
      * - Descriptions from both responses are concatenated, separated by a newline. Duplicate descriptions are eliminated.
-     * - Composition from the other response takes precedence if it is non-null;
-     *   otherwise, the composition of this response remains unchanged.
+     * - For each `ContentType`, if a composition is defined in both responses, the composition from `other` takes precedence.
+     * - If only one response defines a composition for a `ContentType`, that composition is the one retained.
+     * - If neither response defines a composition for a `ContentType` with more than one type,
+     *   the default composition (`Composition.ANY_OF`) is used.
      *
-     * @param other The other ApiResponse to merge with this one.
+     * @param other The other `ApiResponse` to merge with this one.
      * @return A new `ApiResponse` instance that represents the merged result.
      */
     fun mergeWith(other: ApiResponse): ApiResponse {
         val combinedHeaders: Set<ApiHeader>? = headers?.plus(elements = other.headers ?: emptySet()) ?: other.headers
-        val precedenceComposition: Composition? = other.composition ?: composition
-        val combinedContent: Map<ContentType, Set<KType>> = mergeContent(first = content, second = other.content)
+        val combinedContent: Map<ContentType, Set<KType>> = mergeContent(current = content, merging = other.content)
         val combinedLinks: Set<ApiLink>? = links?.plus(elements = other.links ?: emptySet()) ?: other.links
 
         // Combine descriptions and eliminate duplicates.
@@ -72,35 +71,70 @@ internal data class ApiResponse(
             descriptionSet.joinToString(separator = "\n")
         } ?: description
 
+
+        // Merge compositions per content type, with the other response taking precedence.
+        val combinedCompositions: Map<ContentType, Composition?> = mergeCompositions(
+            current = this.composition, merging = other.composition
+        )
+
         // Create a newly combined ApiResponse instance.
         return copy(
             description = combinedDescription,
             descriptionSet = descriptionSet,
             headers = combinedHeaders,
-            composition = precedenceComposition,
+            composition = combinedCompositions,
             content = combinedContent,
             links = combinedLinks
         )
     }
 
     /**
+     * Merges two maps of `ContentType` to `Composition?`, giving precedence to the `merging` map,
+     * ensuring that for each `ContentType`, only one composition is retained.
+     *
+     * Rules:
+     * - If both maps contain a different composition for the same `ContentType`,
+     *   the composition from the `merging` map will take precedence, unless it is `null`.
+     * - If neither response defines a composition for a `ContentType`, it remains `null`
+     *   to track that it was not explicitly set.
+     *
+     * @param current The current instance's map of `ContentType` to `Composition?`.
+     * @param merging The merging instance's map of `ContentType` to `Composition?`.
+     * @return A merged map of `ContentType` to `Composition?`, where the `merging` map's values
+     * take precedence, unless the `merging` value is `null`.
+     */
+    private fun mergeCompositions(
+        current: Map<ContentType, Composition?>,
+        merging: Map<ContentType, Composition?>
+    ): Map<ContentType, Composition?> {
+        val result: MutableMap<ContentType, Composition?> = current.toMutableMap()
+
+        merging.forEach { (contentType, newComposition) ->
+            // Only replace the current composition if the merging one is non-null.
+            result[contentType] = newComposition ?: result[contentType]
+        }
+
+        return result
+    }
+
+    /**
      * Merges two maps of KType to sets of content types, ensuring no duplicates.
      *
-     * @param first The first map of `ContentType` to `KType` objects.
-     * @param second The second map of `ContentType` to `KType` objects.
+     * @param current The current map of `ContentType` to `KType` objects.
+     * @param merging The merging map of `ContentType` to `KType` objects.
      * @return A merged map of KType to sets of content types.
      */
     private fun mergeContent(
-        first: Map<ContentType, Set<KType>>?,
-        second: Map<ContentType, Set<KType>>?
+        current: Map<ContentType, Set<KType>>?,
+        merging: Map<ContentType, Set<KType>>?
     ): Map<ContentType, Set<KType>> {
         val result: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
 
-        first?.forEach { (contentType, types) ->
+        current?.forEach { (contentType, types) ->
             result.getOrPut(contentType) { mutableSetOf() }.addAll(types)
         }
 
-        second?.forEach { (contentType, types) ->
+        merging?.forEach { (contentType, types) ->
             result.getOrPut(contentType) { mutableSetOf() }.addAll(types)
         }
 

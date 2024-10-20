@@ -29,14 +29,36 @@ import kotlin.reflect.typeOf
  */
 public class ResponseBuilder {
     public var description: String by MultilineString()
-    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
+    public var contentType: Set<ContentType> = setOf()
     public var composition: Composition? = null
+
     private val headers: MutableSet<ApiHeader> = mutableSetOf()
     private val links: MutableSet<ApiLink> = mutableSetOf()
 
     /** Holds the types associated with the response. */
     @PublishedApi
     internal val allTypes: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
+
+    /** Holds the composition per content type. */
+    private val compositionsPerContentType: MutableMap<ContentType, Composition?> = mutableMapOf()
+
+    /**
+     * Associates a specific `ContentType` with a given `Composition`.
+     *
+     * This allows defining how multiple types should be combined for a particular content type,
+     * using the provided `composition` strategy.
+     *
+     * Note: The provided `composition` will only take effect if the `response` includes
+     * the specified `contentType` either globally (for the entire response) or for
+     * any individual type associated with that content type. If the `contentType` is not present
+     * in the response, the composition setting will be ignored.
+     *
+     * @param contentType The content type to be associated with the provided [composition].
+     * @param composition The [Composition] to associate with the provided [contentType].
+     */
+    public fun compositionFor(contentType: ContentType, composition: Composition) {
+        compositionsPerContentType[contentType] = composition
+    }
 
     /**
      * Registers a new type for the response.
@@ -73,16 +95,6 @@ public class ResponseBuilder {
 
     @PublishedApi
     internal fun build(status: HttpStatusCode): ApiResponse {
-        // Determine the number of distinct KTypes across all content types.
-        val distinctTypesCount: Int = allTypes.values.flatten().distinct().size
-
-        // Determine the final composition without mutating the builder's property.
-        val finalComposition: Composition? = when {
-            distinctTypesCount > 1 && composition == null -> Composition.ANY_OF
-            distinctTypesCount > 1 -> composition
-            else -> null
-        }
-
         // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to its specific types.
         val contentMap: Map<ContentType, Set<KType>>? = allTypes.takeIf { it.isNotEmpty() }
             ?.mapValues { it.value.toSet() }
@@ -94,12 +106,17 @@ public class ResponseBuilder {
                 )
             )
 
+        // Determine the appropriate composition for each content type.
+        val finalCompositions: Map<ContentType, Composition?> = contentMap?.mapValues { (contentType, _) ->
+            compositionsPerContentType[contentType] ?: composition
+        } ?: emptyMap()
+
         // Return the constructed ApiResponse instance.
         return ApiResponse(
             status = status,
             description = description.trimOrNull(),
             headers = headers.takeIf { it.isNotEmpty() },
-            composition = finalComposition,
+            composition = finalCompositions,
             content = contentMap,
             links = links.takeIf { it.isNotEmpty() }
         )

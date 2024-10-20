@@ -63,9 +63,12 @@ internal object ResponseComposer {
             // Build the final content map with combined schemas per content type.
             val finalContent: Map<ContentType, OpenAPiSchema.ContentSchema> = schemasByContentType
                 .toSortedMap(compareBy({ it.contentType }, { it.contentSubtype }))
-                .mapValues { (_, schemas) ->
+                .mapValues { (contentType, schemas) ->
+                    val contentComposition: Composition = apiResponse.composition[contentType]
+                        ?: Composition.ANY_OF
+
                     determineSchema(
-                        composition = apiResponse.composition,
+                        composition = contentComposition,
                         schemas = schemas.sortedBy { it.ordinal }
                     )
                 }
