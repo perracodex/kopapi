@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.elements
 
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
+import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
@@ -35,6 +36,14 @@ internal data class ApiResponse(
     val content: Map<KType, Set<ContentType>>?,
     val links: Set<ApiLink>?,
 ) {
+    init {
+        content?.forEach { (_, contentTypes) ->
+            if (contentTypes.isEmpty()) {
+                throw KopapiException("At least one ContentType must be associated with each KType.")
+            }
+        }
+    }
+
     /**
      * Merges this `ApiResponse` with another `ApiResponse` to combine their properties.
      * If the composition of the other response is specified, it takes precedence;
