@@ -19,7 +19,7 @@ import kotlin.reflect.KType
  * @property description A human-readable description of the response, providing context about what this response signifies.
  * @property descriptionSet A set of descriptions to ensure uniqueness when merging responses.
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
- * @property content  A map of [KType] to a set of [ContentType] that this response may return.
+ * @property content  A map of [ContentType] to a set of [KType] that this response may return.
  * @property links A list of [ApiLink] objects representing possible links to other operations.
  *
  * @see [ApiOperationBuilder.response]
@@ -33,13 +33,13 @@ internal data class ApiResponse(
     val descriptionSet: MutableSet<String> = LinkedHashSet(),
     val headers: Set<ApiHeader>?,
     val composition: Composition?,
-    val content: Map<KType, Set<ContentType>>?,
+    val content: Map<ContentType, Set<KType>>?,
     val links: Set<ApiLink>?,
 ) {
     init {
-        content?.forEach { (_, contentTypes) ->
-            if (contentTypes.isEmpty()) {
-                throw KopapiException("At least one ContentType must be associated with each KType.")
+        content?.forEach { (_, types) ->
+            if (types.isEmpty()) {
+                throw KopapiException("At least one Type must be associated with each ContentType.")
             }
         }
     }
@@ -63,7 +63,7 @@ internal data class ApiResponse(
     fun mergeWith(other: ApiResponse): ApiResponse {
         val combinedHeaders: Set<ApiHeader>? = headers?.plus(elements = other.headers ?: emptySet()) ?: other.headers
         val precedenceComposition: Composition? = other.composition ?: composition
-        val combinedContent: Map<KType, Set<ContentType>> = mergeContent(first = content, second = other.content)
+        val combinedContent: Map<ContentType, Set<KType>> = mergeContent(first = content, second = other.content)
         val combinedLinks: Set<ApiLink>? = links?.plus(elements = other.links ?: emptySet()) ?: other.links
 
         // Combine descriptions and eliminate duplicates.
@@ -86,24 +86,31 @@ internal data class ApiResponse(
     /**
      * Merges two maps of KType to sets of content types, ensuring no duplicates.
      *
-     * @param first The first map of KType to content types.
-     * @param second The second map of KType to content types.
+     * @param first The first map of `ContentType` to `KType` objects.
+     * @param second The second map of `ContentType` to `KType` objects.
      * @return A merged map of KType to sets of content types.
      */
     private fun mergeContent(
-        first: Map<KType, Set<ContentType>>?,
-        second: Map<KType, Set<ContentType>>?
-    ): Map<KType, Set<ContentType>> {
-        val result: MutableMap<KType, MutableSet<ContentType>> = mutableMapOf()
+        first: Map<ContentType, Set<KType>>?,
+        second: Map<ContentType, Set<KType>>?
+    ): Map<ContentType, Set<KType>> {
+        val result: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
 
-        first?.forEach { (kType, contentTypes) ->
-            result.getOrPut(kType) { mutableSetOf() }.addAll(contentTypes)
+        first?.forEach { (contentType, types) ->
+            result.getOrPut(contentType) { mutableSetOf() }.addAll(types)
         }
 
-        second?.forEach { (kType, contentTypes) ->
-            result.getOrPut(kType) { mutableSetOf() }.addAll(contentTypes)
+        second?.forEach { (contentType, types) ->
+            result.getOrPut(contentType) { mutableSetOf() }.addAll(types)
         }
 
-        return result.mapValues { it.value.toSet() }
+        return result.mapValues {
+            it.value.toSet()
+        }.toSortedMap(
+            compareBy(
+                { it.contentType },
+                { it.contentSubtype }
+            )
+        )
     }
 }

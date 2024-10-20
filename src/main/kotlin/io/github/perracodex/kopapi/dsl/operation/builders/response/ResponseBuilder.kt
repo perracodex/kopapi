@@ -75,10 +75,9 @@ public class ResponseBuilder {
             else -> contentType
         }
 
-        // Create the map of types to content types, if any.
-        val contentMap: Map<KType, Set<ContentType>>? = allTypes.takeIf { it.isNotEmpty() }?.associateWith {
-            finalContentType ?: throw KopapiException("ContentType should not be null when types are present.")
-        }
+        // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to allTypes.
+        val contentMap: Map<ContentType, Set<KType>>? = finalContentType?.takeIf { allTypes.isNotEmpty() }
+            ?.associateWith { allTypes.toSet() }
 
         // Return the constructed ApiResponse instance.
         return ApiResponse(

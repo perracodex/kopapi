@@ -23,7 +23,6 @@ import kotlin.collections.set
  */
 @ComposerAPI
 internal object ResponseComposer {
-
     /**
      * Generates the `responses` section of the OpenAPI schema by mapping each API response
      * to its corresponding schema, if applicable.
@@ -50,11 +49,11 @@ internal object ResponseComposer {
             val schemasByContentType: MutableMap<ContentType, MutableList<Schema>> = mutableMapOf()
 
             // Inspect each type and associate its schema with the relevant content types.
-            apiResponse.content.forEach { (type, contentTypes) ->
-                val schema: Schema = SchemaRegistry.inspectType(type = type)?.schema
-                    ?: throw KopapiException("No schema found for type: $type, status code: $statusCode")
+            apiResponse.content.forEach { (contentType, types) ->
+                types.forEach { type ->
+                    val schema: Schema = SchemaRegistry.inspectType(type = type)?.schema
+                        ?: throw KopapiException("No schema found for type: $type, status code: $statusCode")
 
-                contentTypes.forEach { contentType ->
                     schemasByContentType
                         .getOrPut(contentType) { mutableListOf() }
                         .add(schema)
