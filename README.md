@@ -68,9 +68,10 @@ dependencies {
   - #### [Responses](./.wiki/02.5.api-usage-responses.md)
   - #### [Security](./.wiki/02.6.api-usage-security.md)
 
-* ### [Type Conflicts](./.wiki/03.type-conflicts.md)
-
-* ### [Type Introspection](./.wiki/04.type-introspection.md)
+* ### Internals
+  - #### [Type Conflicts](./.wiki/03.type-conflicts.md)
+  - #### [Type Introspection](./.wiki/04.type-introspection.md)
+  - #### [Debug Panel](./.wiki/05.debug-panel.md)
 
 ---
 
