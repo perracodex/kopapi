@@ -68,34 +68,44 @@ function togglePanel(panelId) {
     const isExpanded = targetPanel.classList.contains('expanded');
 
     if (isExpanded) {
-        // Restore all panels.
-        panels.forEach(panel => {
-            panel.classList.remove('hidden', 'expanded');
-            const icon = panel.querySelector('.toggle-icon');
-            if (icon) {
-                icon.textContent = "+";
-            }
-        });
+        // Restore all panels except the popup panel.
+        togglePanels(panels, false, panelId);
         // Restore the gap.
         document.querySelector('.panel-container').style.gap = '20px';
     } else {
-        // Hide all other panels and expand the target.
-        panels.forEach(panel => {
-            if (panel.id === panelId) {
-                panel.classList.add('expanded');
-                const icon = panel.querySelector('.toggle-icon');
-                if (icon) {
-                    icon.textContent = "-";
-                }
-            } else {
-                panel.classList.add('hidden');
-            }
-        });
+        // Hide all other panels except the popup panel, and expand the target panel.
+        togglePanels(panels, true, panelId);
         // Remove the gap when only one panel is visible.
         document.querySelector('.panel-container').style.gap = '0';
     }
 }
 
+/**
+ * Toggles the visibility of panels based on the provided condition.
+ *
+ * @param {NodeListOf<Element>} panels - List of all panels to be toggled.
+ * @param {boolean} hide - Whether to hide all panels except the target one.
+ * @param {string} targetId - The ID of the panel that should be expanded.
+ */
+function togglePanels(panels, hide, targetId) {
+    panels.forEach(panel => {
+        const icon = panel.querySelector('.toggle-icon');
+
+        if (!panel.closest('.popup-content')) {
+            if (hide) {
+                if (panel.id === targetId) {
+                    panel.classList.add('expanded');
+                    if (icon) icon.textContent = "-";
+                } else {
+                    panel.classList.add('hidden');
+                }
+            } else {
+                panel.classList.remove('hidden', 'expanded');
+                if (icon) icon.textContent = "+";
+            }
+        }
+    });
+}
 
 /**
  * Initializes event listeners for all filter dropdowns once the DOM content is fully loaded.
