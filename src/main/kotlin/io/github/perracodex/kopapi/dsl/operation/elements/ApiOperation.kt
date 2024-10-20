@@ -42,7 +42,29 @@ internal data class ApiOperation(
 ) {
     init {
         if (path.isBlank()) {
-            throw KopapiException("Endpoint path must not be empty.")
+            throw KopapiException("Api Operation path must not be empty.")
+        }
+
+        if (responses.isNullOrEmpty()) {
+            throw KopapiException(
+                """Api Operation must have at least one response defined.
+                        - [${method.value}] → '$path'
+                    To resolve:
+                        - Add a response using the 'response' function.
+                    Example:
+                        ```
+                        ${method.value.lowercase()}("$path") {
+                            // Handle [${method.value}] request.
+                        } api { 
+                            // Example response with no content.
+                            response(HttpStatusCode.OK) { description = "Successful" }
+                            
+                            // Example response with content.
+                            response<List<String>>(HttpStatusCode.OK) { description = "Successful" }
+                        }
+                        ```
+                """.trimIndent()
+            )
         }
     }
 }
