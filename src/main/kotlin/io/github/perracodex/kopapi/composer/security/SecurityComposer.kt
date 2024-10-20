@@ -150,11 +150,11 @@ internal class SecuritySectionComposer(
      * @return A resolved [SecurityRequirement] object, or `null` if not a `OAuth2` scheme.
      */
     private fun mapSchemeToRequirement(scheme: ApiSecurityScheme): SecurityRequirement {
-        val scopes: List<String>? = if (scheme is ApiSecurityScheme.OAuth2) {
-            collectAllScopes(flows = scheme.flows).distinct()
-        } else {
-            null
+        val scopes: List<String>? = when {
+            scheme is ApiSecurityScheme.OAuth2 -> collectAllScopes(flows = scheme.flows).distinct()
+            else -> null
         }
+
         return SecurityRequirement(securityScheme = scheme, scopes = scopes)
     }
 

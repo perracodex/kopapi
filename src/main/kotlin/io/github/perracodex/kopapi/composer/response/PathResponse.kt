@@ -26,7 +26,7 @@ internal data class PathResponse(
     @JsonProperty("headers")
     val headers: Set<ApiHeader>?,
     @JsonProperty("content")
-    var content: MutableMap<ContentType, OpenAPiSchema.ContentSchema>?,
+    var content: Map<ContentType, OpenAPiSchema.ContentSchema>?,
     @JsonProperty("links")
     val links: Set<ApiLink>?
 )

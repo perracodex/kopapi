@@ -17,7 +17,6 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
-import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 
@@ -34,13 +33,9 @@ internal class SchemaComposer(
      * Serves the OpenAPI schema in the specified format.
      *
      * @param format The [SchemaRegistry.Format] of the OpenAPI schema to serve.
-     * @param inspector The [TypeSchemaProvider] instance used for inspecting types and generating schemas.
      * @return The OpenAPI schema in the specified format.
      */
-    fun compose(
-        format: SchemaRegistry.Format,
-        inspector: TypeSchemaProvider
-    ): String {
+    fun compose(format: SchemaRegistry.Format): String {
         // Compose the `Info` section.
         val infoSection: ApiInfo = InfoSectionComposer.compose(
             apiInfo = apiConfiguration.apiInfo,
@@ -65,8 +60,7 @@ internal class SchemaComposer(
         // Compose the `Paths` section.
         val pathsSection: Map<String, OpenAPiSchema.PathItem> = PathComposer.compose(
             apiOperations = apiOperations,
-            operationSecurity = operationSecurity,
-            inspector = inspector
+            operationSecurity = operationSecurity
         )
 
         // Create the `components` object.

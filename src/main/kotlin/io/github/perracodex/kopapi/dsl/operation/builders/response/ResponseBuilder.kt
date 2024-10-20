@@ -61,31 +61,23 @@ public class ResponseBuilder {
             listOf(it) + types
         }?.distinct() ?: types
 
-        // If there are multiple types and no composition is set, default to ANY_OF.
-        if (allTypes.size > 1 && composition == null) {
-            composition = Composition.ANY_OF
+        // Determine the final composition without mutating the builder's property.
+        val finalComposition: Composition? = when {
+            allTypes.size > 1 && composition == null -> Composition.ANY_OF
+            allTypes.size > 1 -> composition
+            else -> null
         }
 
-        // Handle content types and composition logic based on types.
+        // Determine the final content type based on the presence of types and contentType.
         val finalContentType: Set<ContentType>? = when {
-            allTypes.isEmpty() -> {
-                composition = null
-                null
-            }
-
-            contentType == null -> {
-                // Default to application/json if no contentType provided.
-                setOf(ContentType.Application.Json)
-            }
-
+            allTypes.isEmpty() -> null
+            contentType == null -> setOf(ContentType.Application.Json)
             else -> contentType
         }
 
         // Create the map of types to content types, if any.
-        val typeToContentMap: Map<KType, Set<ContentType>>? = if (allTypes.isNotEmpty()) {
-            allTypes.associateWith { finalContentType ?: emptySet() }
-        } else {
-            null
+        val typeToContentMap: Map<KType, Set<ContentType>>? = allTypes.takeIf { it.isNotEmpty() }?.associateWith {
+            finalContentType ?: throw KopapiException("ContentType should not be null when types are present.")
         }
 
         // Return the constructed ApiResponse instance.
@@ -93,7 +85,7 @@ public class ResponseBuilder {
             status = status,
             description = description.trimOrNull(),
             headers = headers.takeIf { it.isNotEmpty() },
-            composition = composition,
+            composition = finalComposition,
             types = typeToContentMap,
             links = links.takeIf { it.isNotEmpty() }
         )

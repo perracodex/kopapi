@@ -10,7 +10,6 @@ import io.github.perracodex.kopapi.composer.response.ResponseComposer
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
-import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 
 /**
  * Represents an individual API Operation (HTTP method) within a path item.
@@ -45,15 +44,11 @@ internal data class PathOperation(
          * an [PathOperation] suitable for inclusion in the OpenAPI schema.
          *
          * @param apiOperation The [ApiOperation] object containing the operation's metadata.
-         * @param inspector The [TypeSchemaProvider] instance used for inspecting types and generating schemas.
          * @return An [PathOperation] instance populated with data from [apiOperation].
          */
-        fun fromApiOperation(apiOperation: ApiOperation, inspector: TypeSchemaProvider): PathOperation {
+        fun fromApiOperation(apiOperation: ApiOperation): PathOperation {
             val responses: Map<String, PathResponse>? = apiOperation.responses?.let {
-                ResponseComposer.compose(
-                    responses = apiOperation.responses,
-                    inspector = inspector
-                )
+                ResponseComposer.compose(responses = apiOperation.responses)
             }
 
             return PathOperation(

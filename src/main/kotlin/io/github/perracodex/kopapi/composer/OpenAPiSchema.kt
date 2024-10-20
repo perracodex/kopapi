@@ -13,7 +13,6 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
-import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.ktor.http.*
@@ -95,17 +94,9 @@ internal data class OpenAPiSchema(
          *
          * @param method The HTTP method of the operation (e.g., "GET", "POST").
          * @param apiOperation The [ApiOperation] object containing the operation's metadata and configurations.
-         * @param inspector The [TypeSchemaProvider] instance used for inspecting types and generating schemas.
          */
-        fun addOperation(
-            method: HttpMethod,
-            apiOperation: ApiOperation,
-            inspector: TypeSchemaProvider
-        ) {
-            val pathOperation: PathOperation = PathOperation.fromApiOperation(
-                apiOperation = apiOperation,
-                inspector = inspector
-            )
+        fun addOperation(method: HttpMethod, apiOperation: ApiOperation) {
+            val pathOperation: PathOperation = PathOperation.fromApiOperation(apiOperation = apiOperation)
             when (method) {
                 HttpMethod.Get -> get = pathOperation
                 HttpMethod.Put -> put = pathOperation

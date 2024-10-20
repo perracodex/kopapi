@@ -155,10 +155,7 @@ internal object SchemaRegistry {
 
             // Inspect each response type.
             metadata.responses?.let { responses ->
-                ResponseComposer.compose(
-                    responses = responses,
-                    inspector = inspector
-                )
+                ResponseComposer.compose(responses = responses)
             }
         }
 
@@ -178,16 +175,16 @@ internal object SchemaRegistry {
     }
 
     /**
-     * Inspects a type using the provided [TypeSchemaProvider] if it's not of type [Unit].
+     * Inspects a type using the provided [TypeSchemaProvider], excluding the [Unit] type.
      *
      * @param type The [KType] to inspect.
      * @return The [TypeSchema] object representing the inspected type, or `null` if the type is [Unit].
      */
-    private fun inspectType(type: KType): TypeSchema? {
-        if (type.classifier != Unit::class) {
-            return inspector.inspect(kType = type)
+    fun inspectType(type: KType): TypeSchema? {
+        return when (type.classifier) {
+            Unit::class -> return null
+            else -> inspector.inspect(kType = type)
         }
-        return null
     }
 
     /**
@@ -321,7 +318,7 @@ internal object SchemaRegistry {
                 apiConfiguration = configuration,
                 apiOperations = apiOperation,
                 schemaConflicts = schemaConflicts
-            ).compose(format = format, inspector = inspector)
+            ).compose(format = format)
 
             openApiSchemaCache[format] = schema
             return schema
