@@ -44,7 +44,6 @@ import kotlin.reflect.KType
  *
  * @see [KopapiConfig.addType]
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class CustomTypeBuilder {
     public var minLength: Int? = null
     public var maxLength: Int? = null

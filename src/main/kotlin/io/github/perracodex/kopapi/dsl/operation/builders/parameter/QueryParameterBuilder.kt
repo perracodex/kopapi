@@ -26,7 +26,6 @@ import kotlin.reflect.KType
  * @see [HeaderParameterBuilder]
  * @see [PathParameterBuilder]
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class QueryParameterBuilder(
     public var required: Boolean = true,
     public var defaultValue: Any? = null,

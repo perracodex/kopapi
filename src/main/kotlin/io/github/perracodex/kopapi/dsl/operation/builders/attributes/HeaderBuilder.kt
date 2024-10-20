@@ -21,7 +21,6 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [ResponseBuilder]
  * @see [HeaderBuilder]
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class HeaderBuilder(
     public val name: String,
     public var required: Boolean = false,

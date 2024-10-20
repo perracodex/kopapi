@@ -26,7 +26,6 @@ import kotlin.reflect.KType
  * @see [PathParameterBuilder]
  * @see [QueryParameterBuilder]
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class CookieParameterBuilder(
     public var required: Boolean = true,
     public var defaultValue: Any? = null,
