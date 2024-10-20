@@ -24,8 +24,8 @@ get("/items/{group_id}/{item_id?}") {
 
 ### Characteristics:
 
-* Minimally invasive and flexible `DSL`.
-* Possibility to define custom types.
+* Minimally invasive.
+* Comprehensive and flexible `DSL`.
 * Conflict detection for duplicate Model definitions.
 * Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) serialization annotations.
 * Partial support for [Jackson](https://github.com/FasterXML/jackson-module-kotlin) serialization annotations.
