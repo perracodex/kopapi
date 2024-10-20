@@ -60,4 +60,14 @@ internal class TypeSchemaProvider {
      * @return A set of [TypeSchema] objects.
      */
     fun getTypeSchemas(): Set<TypeSchema> = typeInspector.getTypeSchemas()
+
+    /**
+     * Reset the [TypeSchemaProvider] to its initial state.
+     *
+     * All collected [TypeSchema] objects and [SchemaConflicts] will be cleared.
+     */
+    fun reset() {
+        conflicts.clear()
+        typeInspector.clear()
+    }
 }

@@ -328,4 +328,11 @@ internal class TypeInspector {
     fun addToCache(schema: TypeSchema) {
         typeSchemaCache.add(schema)
     }
+
+    /**
+     * Clears the [TypeSchema] cache.
+     */
+    fun clear() {
+        typeSchemaCache.clear()
+    }
 }

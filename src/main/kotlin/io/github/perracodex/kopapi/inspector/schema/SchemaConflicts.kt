@@ -64,6 +64,13 @@ internal class SchemaConflicts(private val schemaProvider: TypeSchemaProvider) {
     }
 
     /**
+     * Clears the cache of conflicts.
+     */
+    fun clear() {
+        conflicts.clear()
+    }
+
+    /**
      * Represents a conflict among [TypeSchema] objects that share the same name
      * but have different types.
      *

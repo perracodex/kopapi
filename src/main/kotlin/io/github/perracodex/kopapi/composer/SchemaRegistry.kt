@@ -131,6 +131,7 @@ internal object SchemaRegistry {
         schemaConflicts.clear()
         debugJsonCache.clear()
         openApiSchemaCache.clear()
+        inspector.reset()
         apiConfiguration = null
     }
 
