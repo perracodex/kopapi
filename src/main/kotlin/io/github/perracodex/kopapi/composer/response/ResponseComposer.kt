@@ -35,7 +35,7 @@ internal object ResponseComposer {
         val composedResponses: MutableMap<String, PathResponse> = mutableMapOf()
 
         responses.forEach { (statusCode, apiResponse) ->
-            if (apiResponse.types.isNullOrEmpty()) {
+            if (apiResponse.content.isNullOrEmpty()) {
                 // No types associated with the response; create a PathResponse without content.
                 composedResponses[statusCode] = PathResponse(
                     description = apiResponse.description,
@@ -50,7 +50,7 @@ internal object ResponseComposer {
             val schemasByContentType: MutableMap<ContentType, MutableList<Schema>> = mutableMapOf()
 
             // Inspect each type and associate its schema with the relevant content types.
-            apiResponse.types.forEach { (type, contentTypes) ->
+            apiResponse.content.forEach { (type, contentTypes) ->
                 val schema: Schema = SchemaRegistry.inspectType(type = type)?.schema
                     ?: throw KopapiException("No schema found for type: $type, status code: $statusCode")
 

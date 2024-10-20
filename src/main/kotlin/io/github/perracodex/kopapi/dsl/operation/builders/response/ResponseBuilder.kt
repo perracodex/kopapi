@@ -76,7 +76,7 @@ public class ResponseBuilder {
         }
 
         // Create the map of types to content types, if any.
-        val typeToContentMap: Map<KType, Set<ContentType>>? = allTypes.takeIf { it.isNotEmpty() }?.associateWith {
+        val contentMap: Map<KType, Set<ContentType>>? = allTypes.takeIf { it.isNotEmpty() }?.associateWith {
             finalContentType ?: throw KopapiException("ContentType should not be null when types are present.")
         }
 
@@ -86,7 +86,7 @@ public class ResponseBuilder {
             description = description.trimOrNull(),
             headers = headers.takeIf { it.isNotEmpty() },
             composition = finalComposition,
-            types = typeToContentMap,
+            content = contentMap,
             links = links.takeIf { it.isNotEmpty() }
         )
     }

@@ -18,7 +18,7 @@ import kotlin.reflect.KType
  * @property description A human-readable description of the response, providing context about what this response signifies.
  * @property descriptionSet A set of descriptions to ensure uniqueness when merging responses.
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
- * @property types  A map of [KType] to a set of [ContentType] that this response may return.
+ * @property content  A map of [KType] to a set of [ContentType] that this response may return.
  * @property links A list of [ApiLink] objects representing possible links to other operations.
  *
  * @see [ApiOperationBuilder.response]
@@ -32,7 +32,7 @@ internal data class ApiResponse(
     val descriptionSet: MutableSet<String> = LinkedHashSet(),
     val headers: Set<ApiHeader>?,
     val composition: Composition?,
-    val types: Map<KType, Set<ContentType>>?,
+    val content: Map<KType, Set<ContentType>>?,
     val links: Set<ApiLink>?,
 ) {
     /**
@@ -54,7 +54,7 @@ internal data class ApiResponse(
     fun mergeWith(other: ApiResponse): ApiResponse {
         val combinedHeaders: Set<ApiHeader>? = headers?.plus(elements = other.headers ?: emptySet()) ?: other.headers
         val precedenceComposition: Composition? = other.composition ?: composition
-        val combinedTypes: Map<KType, Set<ContentType>> = mergeTypes(first = types, second = other.types)
+        val combinedContent: Map<KType, Set<ContentType>> = mergeContent(first = content, second = other.content)
         val combinedLinks: Set<ApiLink>? = links?.plus(elements = other.links ?: emptySet()) ?: other.links
 
         // Combine descriptions and eliminate duplicates.
@@ -69,7 +69,7 @@ internal data class ApiResponse(
             descriptionSet = descriptionSet,
             headers = combinedHeaders,
             composition = precedenceComposition,
-            types = combinedTypes,
+            content = combinedContent,
             links = combinedLinks
         )
     }
@@ -81,7 +81,7 @@ internal data class ApiResponse(
      * @param second The second map of KType to content types.
      * @return A merged map of KType to sets of content types.
      */
-    private fun mergeTypes(
+    private fun mergeContent(
         first: Map<KType, Set<ContentType>>?,
         second: Map<KType, Set<ContentType>>?
     ): Map<KType, Set<ContentType>> {
