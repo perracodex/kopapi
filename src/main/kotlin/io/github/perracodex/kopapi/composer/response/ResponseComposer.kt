@@ -91,7 +91,7 @@ internal object ResponseComposer {
      *
      * - If only one schema is present, it returns that schema directly.
      * - If multiple schemas are present, it combines them according to
-     * the specified `composition` type, defaulting to `Composition.ANY_OF`.
+     *   the specified `composition` type, defaulting to `Composition.ANY_OF`.
      *
      * @param composition The [Composition] type to apply when combining multiple schemas.
      *                    Defaults to `Composition.ANY_OF` if null.

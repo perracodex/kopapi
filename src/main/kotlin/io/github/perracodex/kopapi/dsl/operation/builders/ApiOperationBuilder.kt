@@ -22,7 +22,6 @@ import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.string.SpacedString
 import io.ktor.http.*
 import java.util.*
-import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 /**
@@ -312,13 +311,27 @@ public class ApiOperationBuilder internal constructor(
      * #### Sample Usage
      * ```
      * requestBody<MyRequestBodyType> {
-     *     description = "The data required to create a new item."
-     *     required = true
-     *     contentType = ContentType.Application.Json
+     *      description = "The data required to create a new item."
+     *      required = true
+     *
+     *      // Optional composition.
+     *      // Only meaningful if multiple types are provided.
+     *      // If omitted, defaults to `AnyOf`.
+     *      composition = Composition.AnyOf
+     *
+     *      // Register an additional type.
+     *      addType<AnotherType>()
+     *
+     *      // Register another type to the PDF ContentType
+     *      // instead of the default.
+     *      addType<YetAnotherType>(
+     *          setOf(ContentType.Application.Pdf)
+     *      )
      * }
      * ```
      *
-     * @param T The type of the request body.
+     * @param T The body primary type of the request.
+     * @param contentType Optional set of [ContentType]s to associate with the type. Defaults to `JSON`.
      * @param configure A lambda receiver for configuring the [RequestBodyBuilder].
      *
      * @see [RequestBodyBuilder]
@@ -329,17 +342,26 @@ public class ApiOperationBuilder internal constructor(
      * @see [response]
      */
     public inline fun <reified T : Any> ApiOperationBuilder.requestBody(
+        contentType: Set<ContentType>? = null,
         configure: RequestBodyBuilder.() -> Unit = {}
     ) {
-        if (requestBody != null) {
+        if (requestBody == null) {
+            val builder: RequestBodyBuilder = RequestBodyBuilder().apply {
+                // Associate the primary type T with the builder's contentTypes.
+                addType<T>(contentType = contentType)
+
+                // Apply additional configurations, which can include more types.
+                apply(configure)
+            }
+
+            requestBody = builder.build()
+
+        } else {
             throw KopapiException(
                 "Only one RequestBody can be defined per API endpoint. " +
                         "Attempted to define multiple RequestBodies in '${this.endpoint}'"
             )
         }
-
-        val builder: RequestBodyBuilder = RequestBodyBuilder().apply(configure)
-        requestBody = builder.build(type = typeOf<T>())
     }
 
     /**
@@ -357,14 +379,6 @@ public class ApiOperationBuilder internal constructor(
      *      // Optional description.
      *      description = "Successfully retrieved the item."
      *
-     *      // Optional content types. If not specified, defaults to JSON.
-     *      // Will apply to all registered types unless
-     *      // a type is registered with a specific content type.
-     *      contentType = setOf(
-     *          ContentType.Application.Json
-     *          ContentType.Application.Xml
-     *      )
-     *
      *      // Optional Headers and Links.
      *      header(name = "X-Rate-Limit") {
      *          description = "Number of allowed requests per period."
@@ -379,11 +393,11 @@ public class ApiOperationBuilder internal constructor(
      *      // If omitted, defaults to `AnyOf`.
      *      composition = Composition.AnyOf
      *
-     *      // Optional additional type.
-     *      // All content types will be associated with this type.
+     *      // Register an additional type.
      *      addType<AnotherType>()
      *
-     *      // Register another type with a specific content type.
+     *      // Register another type to the PDF ContentType
+     *      // instead of the default.
      *      addType<YetAnotherType>(
      *          setOf(ContentType.Application.Pdf)
      *      )
@@ -391,6 +405,7 @@ public class ApiOperationBuilder internal constructor(
      * ```
      *
      * @param status The [HttpStatusCode] code associated with this response.
+     * @param contentType Optional set of [ContentType]s to associate with the type. Defaults to `JSON`.
      * @param configure A lambda receiver for configuring the [ResponseBuilder].
      *
      * @see [ResponseBuilder]
@@ -400,9 +415,10 @@ public class ApiOperationBuilder internal constructor(
     @JvmName(name = "responseWithoutType")
     public fun ApiOperationBuilder.response(
         status: HttpStatusCode,
+        contentType: Set<ContentType>? = null,
         configure: ResponseBuilder.() -> Unit = {}
     ) {
-        response<Unit>(status = status, configure = configure)
+        response<Unit>(status = status, contentType = contentType, configure = configure)
     }
 
     /**
@@ -420,14 +436,6 @@ public class ApiOperationBuilder internal constructor(
      *      // Optional description.
      *      description = "Successfully retrieved the item."
      *
-     *      // Optional content types. If not specified, defaults to JSON.
-     *      // Will apply to all registered types unless
-     *      // a type is registered with a specific content type.
-     *      contentType = setOf(
-     *          ContentType.Application.Json
-     *          ContentType.Application.Xml
-     *      )
-     *
      *      // Optional Headers and Links.
      *      header(name = "X-Rate-Limit") {
      *          description = "Number of allowed requests per period."
@@ -442,19 +450,20 @@ public class ApiOperationBuilder internal constructor(
      *      // If omitted, defaults to `AnyOf`.
      *      composition = Composition.AnyOf
      *
-     *      // Optional additional type.
-     *      // All content types will be associated with this type.
+     *      // Register an additional type.
      *      addType<AnotherType>()
      *
-     *      // Register another type with a specific content type.
+     *      // Register another type to the PDF ContentType
+     *      // instead of the default.
      *      addType<YetAnotherType>(
      *          setOf(ContentType.Application.Pdf)
      *      )
      * }
      * ```
      *
-     * @param T The body type of the response.
+     * @param T The body primary type of the response.
      * @param status The [HttpStatusCode] code associated with this response.
+     * @param contentType Optional set of [ContentType]s to associate with the type. Defaults to `JSON`.
      * @param configure A lambda receiver for configuring the [ResponseBuilder].
      *
      * @see [ResponseBuilder]
@@ -464,18 +473,22 @@ public class ApiOperationBuilder internal constructor(
     @JvmName(name = "responseWithType")
     public inline fun <reified T : Any> ApiOperationBuilder.response(
         status: HttpStatusCode,
+        contentType: Set<ContentType>? = null,
         configure: ResponseBuilder.() -> Unit = {}
     ) {
         val builder: ResponseBuilder = ResponseBuilder().apply {
-            // Apply additional configurations, which can include more types.
-            // Must be applied before adding the primary type T,
-            // since it may contain a new content type to associate with T.
-            apply(configure)
-
             // Associate the primary type T with the builder's contentTypes if T is not Unit, Nothing, or Any.
             if (T::class != Unit::class && T::class != Nothing::class && T::class != Any::class) {
-                addType<T>()
+                addType<T>(contentType = contentType)
+            } else {
+                // If no type is provided, default to JSON,
+                // so that subsequent types which do not specify their
+                // own ContentType will default to JSON.
+                this.primaryContentType = setOf(ContentType.Application.Json)
             }
+
+            // Apply additional configurations, which can include more types.
+            apply(configure)
         }
 
         val apiResponse: ApiResponse = builder.build(status = status)

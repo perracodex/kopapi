@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.composer
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.request.RequestBodyComposer
 import io.github.perracodex.kopapi.composer.response.ResponseComposer
 import io.github.perracodex.kopapi.composer.security.SecuritySchemeVerifier
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
@@ -151,7 +152,7 @@ internal object SchemaRegistry {
 
             // Inspect the request body type.
             metadata.requestBody?.let { requestBody ->
-                inspectType(type = requestBody.type)
+                RequestBodyComposer.compose(requestBody = requestBody)
             }
 
             // Inspect each response type.

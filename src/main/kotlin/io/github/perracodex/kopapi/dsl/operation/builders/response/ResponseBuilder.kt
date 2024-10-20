@@ -22,14 +22,13 @@ import kotlin.reflect.typeOf
  * A builder for constructing a response in an API endpoint's metadata.
  *
  * @property description A description of the response content and what it represents.
- * @property contentType A set of [ContentType] items. If not provided, the response will default to application/json.
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
  *
  * @see [ApiOperationBuilder.response]
  */
+@Suppress("DuplicatedCode")
 public class ResponseBuilder {
     public var description: String by MultilineString()
-    public var contentType: Set<ContentType> = setOf()
     public var composition: Composition? = null
 
     private val headers: MutableSet<ApiHeader> = mutableSetOf()
@@ -41,6 +40,13 @@ public class ResponseBuilder {
 
     /** Holds the composition per content type. */
     private val compositionsPerContentType: MutableMap<ContentType, Composition?> = mutableMapOf()
+
+    /**
+     * The primary `ContentType` for the response.
+     * Applied to subsequent types if these do not specify their own `ContentType`.
+     */
+    @PublishedApi
+    internal var primaryContentType: Set<ContentType>? = null
 
     /**
      * Associates a specific `ContentType` with a given `Composition`.
@@ -78,13 +84,22 @@ public class ResponseBuilder {
      * ```
      *
      * @param T The type of the response.
-     * @param contentType The set of [ContentType]s to associate with the type. Defaults to the builder's [contentType].
+     * @param contentType Optional set of [ContentType]s to associate with the type.
+     *                    Defaults to the primary `ContentType`, or to `JSON` if no primary type is set.
      */
-    public inline fun <reified T : Any> addType(contentType: Set<ContentType> = this.contentType) {
-        // Ensure there's at least one content type.
+    public inline fun <reified T : Any> addType(contentType: Set<ContentType>? = null) {
+        // Ensure there's at least one ContentType.
         val effectiveContentTypes: Set<ContentType> = when {
-            contentType.isEmpty() -> setOf(ContentType.Application.Json)
+            contentType.isNullOrEmpty() -> primaryContentType ?: setOf(ContentType.Application.Json)
             else -> contentType
+        }
+
+        // When a response is build, the first registered type is always the primary one.
+        // Subsequent types are registered after the primary one.
+        // Therefore, any subtype which does not specify its own ContentType will
+        // default to the primary ContentType.
+        if (primaryContentType == null) {
+            primaryContentType = effectiveContentTypes
         }
 
         val type: KType = typeOf<T>()
