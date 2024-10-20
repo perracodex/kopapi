@@ -38,33 +38,12 @@ public class ResponseBuilder {
     @PublishedApi
     internal val allTypes: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
 
-    /** Holds the composition per content type. */
-    private val compositionsPerContentType: MutableMap<ContentType, Composition?> = mutableMapOf()
-
     /**
      * The primary `ContentType` for the response.
      * Applied to subsequent types if these do not specify their own `ContentType`.
      */
     @PublishedApi
     internal var primaryContentType: Set<ContentType>? = null
-
-    /**
-     * Associates a specific `ContentType` with a given `Composition`.
-     *
-     * This allows defining how multiple types should be combined for a particular content type,
-     * using the provided `composition` strategy.
-     *
-     * Note: The provided `composition` will only take effect if the `response` includes
-     * the specified `contentType` either globally (for the entire response) or for
-     * any individual type associated with that content type. If the `contentType` is not present
-     * in the response, the composition setting will be ignored.
-     *
-     * @param contentType The content type to be associated with the provided [composition].
-     * @param composition The [Composition] to associate with the provided [contentType].
-     */
-    public fun compositionFor(contentType: ContentType, composition: Composition) {
-        compositionsPerContentType[contentType] = composition
-    }
 
     /**
      * Registers a new type for the response.
@@ -121,17 +100,12 @@ public class ResponseBuilder {
                 )
             )
 
-        // Determine the appropriate composition for each content type.
-        val finalCompositions: Map<ContentType, Composition?> = contentMap?.mapValues { (contentType, _) ->
-            compositionsPerContentType[contentType] ?: composition
-        } ?: emptyMap()
-
         // Return the constructed ApiResponse instance.
         return ApiResponse(
             status = status,
             description = description.trimOrNull(),
             headers = headers.takeIf { it.isNotEmpty() },
-            composition = finalCompositions,
+            composition = composition,
             content = contentMap,
             links = links.takeIf { it.isNotEmpty() }
         )

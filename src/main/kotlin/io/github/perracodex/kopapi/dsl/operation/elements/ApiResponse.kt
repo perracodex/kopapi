@@ -32,7 +32,7 @@ internal data class ApiResponse(
     val description: String?,
     val descriptionSet: MutableSet<String> = LinkedHashSet(),
     val headers: Set<ApiHeader>?,
-    val composition: Map<ContentType, Composition?>,
+    val composition: Composition?,
     val content: Map<ContentType, Set<KType>>?,
     val links: Set<ApiLink>?,
 ) {
@@ -72,49 +72,18 @@ internal data class ApiResponse(
         } ?: description
 
 
-        // Merge compositions per content type, with the other response taking precedence.
-        val combinedCompositions: Map<ContentType, Composition?> = mergeCompositions(
-            current = this.composition, merging = other.composition
-        )
+        // The merging composition takes precedence, if it is defined.
+        val newComposition: Composition? = other.composition ?: composition
 
         // Create a newly combined ApiResponse instance.
         return copy(
             description = combinedDescription,
             descriptionSet = descriptionSet,
             headers = combinedHeaders,
-            composition = combinedCompositions,
+            composition = newComposition,
             content = combinedContent,
             links = combinedLinks
         )
-    }
-
-    /**
-     * Merges two maps of `ContentType` to `Composition?`, giving precedence to the `merging` map,
-     * ensuring that for each `ContentType`, only one composition is retained.
-     *
-     * Rules:
-     * - If both maps contain a different composition for the same `ContentType`,
-     *   the composition from the `merging` map will take precedence, unless it is `null`.
-     * - If neither response defines a composition for a `ContentType`, it remains `null`
-     *   to track that it was not explicitly set.
-     *
-     * @param current The current instance's map of `ContentType` to `Composition?`.
-     * @param merging The merging instance's map of `ContentType` to `Composition?`.
-     * @return A merged map of `ContentType` to `Composition?`, where the `merging` map's values
-     * take precedence, unless the `merging` value is `null`.
-     */
-    private fun mergeCompositions(
-        current: Map<ContentType, Composition?>,
-        merging: Map<ContentType, Composition?>
-    ): Map<ContentType, Composition?> {
-        val result: MutableMap<ContentType, Composition?> = current.toMutableMap()
-
-        merging.forEach { (contentType, newComposition) ->
-            // Only replace the current composition if the merging one is non-null.
-            result[contentType] = newComposition ?: result[contentType]
-        }
-
-        return result
     }
 
     /**

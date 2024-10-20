@@ -48,7 +48,7 @@ internal object RequestBodyComposer {
             .toSortedMap(compareBy({ it.contentType }, { it.contentSubtype }))
             .mapValues { (_, schemas) ->
                 determineSchema(
-                    composition = requestBody.composition ?: Composition.ANY_OF,
+                    composition = requestBody.composition,
                     schemas = schemas.sortedBy { it.ordinal }
                 )
             }
