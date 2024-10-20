@@ -354,28 +354,39 @@ public class ApiOperationBuilder internal constructor(
      * #### Sample Usage
      *```
      * response(status = HttpStatusCode.OK) {
-     *     // Optional description.
-     *     description = "Successfully retrieved the item."
+     *      // Optional description.
+     *      description = "Successfully retrieved the item."
      *
-     *     // Optional content types. If not specified, defaults to JSON.
-     *     contentType = setOf(
+     *      // Optional content types. If not specified, defaults to JSON.
+     *      // Will apply to all registered types unless
+     *      // a type is registered with a specific content type.
+     *      contentType = setOf(
      *          ContentType.Application.Json
      *          ContentType.Application.Xml
-     *     )
+     *      )
      *
-     *     // Optional Headers and Links.
-     *     header(name = "X-Rate-Limit") {
-     *         description = "Number of allowed requests per period."
-     *         required = true
-     *     }
-     *     link(operationId = "getNextItem") {
-     *         description = "Link to the next item."
-     *     }
+     *      // Optional Headers and Links.
+     *      header(name = "X-Rate-Limit") {
+     *          description = "Number of allowed requests per period."
+     *          required = true
+     *      }
+     *      link(operationId = "getNextItem") {
+     *          description = "Link to the next item."
+     *      }
      *
-     *     // Optional additional types and composition.
-     *     composition = Composition.AnyOf // If omitted, defaults to `AnyOf`.
-     *     type<ResponseType>()
-     *     type<AnotherType>()
+     *      // Optional composition.
+     *      // Only meaningful if multiple types are provided.
+     *      // If omitted, defaults to `AnyOf`.
+     *      composition = Composition.AnyOf
+     *
+     *      // Optional additional type.
+     *      // All content types will be associated with this type.
+     *      addType<AnotherType>()
+     *
+     *      // Register another type with a specific content type.
+     *      addType<YetAnotherType>(
+     *          setOf(ContentType.Application.Pdf)
+     *      )
      * }
      * ```
      *
@@ -406,28 +417,39 @@ public class ApiOperationBuilder internal constructor(
      * #### Sample Usage
      *```
      * response<ResponseType>(status = HttpStatusCode.OK) {
-     *     // Optional description.
-     *     description = "Successfully retrieved the item."
+     *      // Optional description.
+     *      description = "Successfully retrieved the item."
      *
-     *     // Optional content types. If not specified, defaults to JSON.
-     *     contentType = setOf(
+     *      // Optional content types. If not specified, defaults to JSON.
+     *      // Will apply to all registered types unless
+     *      // a type is registered with a specific content type.
+     *      contentType = setOf(
      *          ContentType.Application.Json
      *          ContentType.Application.Xml
-     *     )
+     *      )
      *
-     *     // Optional Headers and Links.
-     *     header(name = "X-Rate-Limit") {
-     *         description = "Number of allowed requests per period."
-     *         required = true
-     *     }
-     *     link(operationId = "getNextItem") {
-     *         description = "Link to the next item."
-     *     }
+     *      // Optional Headers and Links.
+     *      header(name = "X-Rate-Limit") {
+     *          description = "Number of allowed requests per period."
+     *          required = true
+     *      }
+     *      link(operationId = "getNextItem") {
+     *          description = "Link to the next item."
+     *      }
      *
-     *     // Optional additional types and composition.
-     *     composition = Composition.AnyOf // If omitted, defaults to `AnyOf`.
-     *     type<AnotherType>()
-     *     type<YetAnotherType>()
+     *      // Optional composition.
+     *      // Only meaningful if multiple types are provided.
+     *      // If omitted, defaults to `AnyOf`.
+     *      composition = Composition.AnyOf
+     *
+     *      // Optional additional type.
+     *      // All content types will be associated with this type.
+     *      addType<AnotherType>()
+     *
+     *      // Register another type with a specific content type.
+     *      addType<YetAnotherType>(
+     *          setOf(ContentType.Application.Pdf)
+     *      )
      * }
      * ```
      *
@@ -444,15 +466,19 @@ public class ApiOperationBuilder internal constructor(
         status: HttpStatusCode,
         configure: ResponseBuilder.() -> Unit = {}
     ) {
-        val bodyType: KType? = when (T::class) {
-            Unit::class, Nothing::class, Any::class -> null
-            else -> typeOf<T>()
-        }
         val builder: ResponseBuilder = ResponseBuilder().apply {
-            bodyType?.let { type<T>() }
+            // Apply additional configurations, which can include more types.
+            // Must be applied before adding the primary type T,
+            // since it may contain a new content type to associate with T.
             apply(configure)
+
+            // Associate the primary type T with the builder's contentTypes if T is not Unit, Nothing, or Any.
+            if (T::class != Unit::class && T::class != Nothing::class && T::class != Any::class) {
+                addType<T>()
+            }
         }
-        val apiResponse: ApiResponse = builder.build(status = status, type = bodyType)
+
+        val apiResponse: ApiResponse = builder.build(status = status)
 
         responses.merge(
             status.value.toString(),

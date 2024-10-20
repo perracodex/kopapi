@@ -52,7 +52,7 @@ internal data class ApiResponse(
      * #### Merging Rules
      * - Headers from both responses are combined, eliminating duplicates.
      * - Links from both responses are combined, eliminating duplicates.
-     * - Types from both responses are combined, with duplicates removed to ensure uniqueness.
+     * - Types from both responses are combined per ContentType, with duplicates removed to ensure uniqueness.
      * - Descriptions from both responses are concatenated, separated by a newline. Duplicate descriptions are eliminated.
      * - Composition from the other response takes precedence if it is non-null;
      *   otherwise, the composition of this response remains unchanged.

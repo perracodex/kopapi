@@ -29,55 +29,70 @@ import kotlin.reflect.typeOf
  */
 public class ResponseBuilder {
     public var description: String by MultilineString()
-    public var contentType: Set<ContentType>? = null
+    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
     public var composition: Composition? = null
     private val headers: MutableSet<ApiHeader> = mutableSetOf()
     private val links: MutableSet<ApiLink> = mutableSetOf()
 
+    /** Holds the types associated with the response. */
     @PublishedApi
-    internal val types: MutableList<KType> = mutableListOf()
+    internal val allTypes: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
 
     /**
      * Registers a new type for the response.
      *
      * #### Sample Usage
      * ```
-     * response<Employee>(status = HttpStatusCode.OK) {
-     *    type<Int>()
-     *    type<Array<Data>>()
+     * response<MyResponseType>(status = HttpStatusCode.OK) {
+     *      // Optional additional type.
+     *      // All content types will be associated with this type.
+     *      addType<AnotherType>()
+     *
+     *      // Register another type to a specific content type.
+     *      addType<YetAnotherType>(
+     *          setOf(ContentType.Application.Pdf)
+     *      )
      * }
      * ```
      *
      * @param T The type of the response.
+     * @param contentType The set of [ContentType]s to associate with the type. Defaults to the builder's [contentType].
      */
-    public inline fun <reified T : Any> type() {
-        types.add(typeOf<T>())
-    }
-
-    @PublishedApi
-    internal fun build(status: HttpStatusCode, type: KType?): ApiResponse {
-        // Combine the primary type with any additional types added via type<T>().
-        val allTypes: List<KType> = type?.let {
-            listOf(it) + types
-        }?.distinct() ?: types
-
-        // Determine the final composition without mutating the builder's property.
-        val finalComposition: Composition? = when {
-            allTypes.size > 1 && composition == null -> Composition.ANY_OF
-            allTypes.size > 1 -> composition
-            else -> null
-        }
-
-        // Determine the final content type based on the presence of types and contentType.
-        val finalContentType: Set<ContentType>? = when {
-            allTypes.isEmpty() -> null
-            contentType == null -> setOf(ContentType.Application.Json)
+    public inline fun <reified T : Any> addType(contentType: Set<ContentType> = this.contentType) {
+        // Ensure there's at least one content type.
+        val effectiveContentTypes: Set<ContentType> = when {
+            contentType.isEmpty() -> setOf(ContentType.Application.Json)
             else -> contentType
         }
 
-        // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to allTypes.
-        val contentMap: Map<ContentType, Set<KType>>? = finalContentType?.takeIf { allTypes.isNotEmpty() }
-            ?.associateWith { allTypes.toSet() }
+        val type: KType = typeOf<T>()
+        effectiveContentTypes.forEach { contentTypeKey ->
+            allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(type)
+        }
+    }
+
+    @PublishedApi
+    internal fun build(status: HttpStatusCode): ApiResponse {
+        // Determine the number of distinct KTypes across all content types.
+        val distinctTypesCount: Int = allTypes.values.flatten().distinct().size
+
+        // Determine the final composition without mutating the builder's property.
+        val finalComposition: Composition? = when {
+            distinctTypesCount > 1 && composition == null -> Composition.ANY_OF
+            distinctTypesCount > 1 -> composition
+            else -> null
+        }
+
+        // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to its specific types.
+        val contentMap: Map<ContentType, Set<KType>>? = allTypes.takeIf { it.isNotEmpty() }
+            ?.mapValues { it.value.toSet() }
+            ?.filterValues { it.isNotEmpty() }
+            ?.toSortedMap(
+                compareBy(
+                    { it.contentType },
+                    { it.contentSubtype }
+                )
+            )
 
         // Return the constructed ApiResponse instance.
         return ApiResponse(
