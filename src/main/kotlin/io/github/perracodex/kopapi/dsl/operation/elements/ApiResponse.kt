@@ -19,7 +19,7 @@ import kotlin.reflect.KType
  * @property description A human-readable description of the response, providing context about what this response signifies.
  * @property descriptionSet A set of descriptions to ensure uniqueness when merging responses.
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
- * @property content  A map of [ContentType] to a set of [KType] that this response may return.
+ * @property content A map of [ContentType] to a set of [KType] that this response may return.
  * @property links A list of [ApiLink] objects representing possible links to other operations.
  *
  * @see [ApiOperationBuilder.response]
