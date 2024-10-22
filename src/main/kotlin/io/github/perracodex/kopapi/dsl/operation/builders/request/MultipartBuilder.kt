@@ -14,6 +14,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import io.ktor.http.content.*
 import kotlin.collections.set
+import kotlin.reflect.KClass
 
 
 /**
@@ -61,78 +62,113 @@ public class MultipartBuilder {
         configure: PartBuilder.() -> Unit = {}
     ) {
         val partBuilder: PartBuilder = PartBuilder(name = name).apply(configure)
+        val resolvedContentType: ContentType = contentType ?: determineContentType(kClass = T::class)
+        val (schemaType: ApiType, schemaFormat: ApiFormat?) = determineSchemaAttributes(
+            kClass = T::class,
+            partBuilder = partBuilder
+        )
 
-        // Resolve contentType based on provided value or PartData type.
-        val resolvedContentType: ContentType = contentType ?: when (T::class) {
-            PartData.FormItem::class -> ContentType.Text.Plain
-            PartData.FileItem::class,
-            PartData.BinaryItem::class,
-            PartData.BinaryChannelItem::class -> ContentType.Application.OctetStream
+        val schema: MultipartSchema = createMultipartSchema(
+            partDataClass = T::class,
+            name = name,
+            isRequired = partBuilder.required,
+            description = partBuilder.description.trimOrNull(),
+            contentType = resolvedContentType,
+            schemaType = schemaType,
+            schemaFormat = schemaFormat
+        )
 
-            else -> throw KopapiException("Unsupported PartData type: ${T::class}")
-        }
+        parts[name] = schema
+    }
 
-        // Determine schemaType and schemaFormat.
-        val schemaType: ApiType = partBuilder.schemaType ?: when (T::class) {
-            PartData.FormItem::class -> ApiType.STRING
-            PartData.FileItem::class,
-            PartData.BinaryItem::class,
-            PartData.BinaryChannelItem::class -> ApiType.STRING
+    /**
+     * Determines the default content type based on the PartData subclass.
+     */
+    @PublishedApi
+    internal fun <T : PartData> determineContentType(kClass: KClass<T>): ContentType = when (kClass) {
+        PartData.FormItem::class -> ContentType.Text.Plain
+        PartData.FileItem::class,
+        PartData.BinaryItem::class,
+        PartData.BinaryChannelItem::class -> ContentType.Application.OctetStream
 
-            else -> ApiType.STRING
-        }
+        else -> throw KopapiException("Unsupported PartData type: $kClass")
+    }
 
-        val schemaFormat: ApiFormat? = partBuilder.schemaFormat ?: when (T::class) {
-            PartData.FormItem::class -> null // No format for plain text.
-            PartData.FileItem::class,
-            PartData.BinaryItem::class,
-            PartData.BinaryChannelItem::class -> ApiFormat.BINARY
+    /**
+     * Determines the default schema type and format based on the PartData subclass.
+     */
+    @PublishedApi
+    internal fun <T : PartData> determineSchemaAttributes(
+        kClass: KClass<T>,
+        partBuilder: PartBuilder
+    ): Pair<ApiType, ApiFormat?> = when (kClass) {
+        PartData.FormItem::class -> Pair(
+            partBuilder.schemaType ?: ApiType.STRING,
+            partBuilder.schemaFormat
+        )
 
-            else -> null
-        }
+        PartData.FileItem::class,
+        PartData.BinaryItem::class,
+        PartData.BinaryChannelItem::class -> Pair(
+            partBuilder.schemaType ?: ApiType.STRING,
+            partBuilder.schemaFormat ?: ApiFormat.BINARY
+        )
 
-        // Create the appropriate MultipartSchema
-        val schema: MultipartSchema = when (T::class) {
+        else -> throw KopapiException("Unsupported PartData type: $kClass")
+    }
+
+    /**
+     * Creates the appropriate MultipartSchema based on the PartData type.
+     */
+    @PublishedApi
+    internal fun createMultipartSchema(
+        partDataClass: KClass<out PartData>,
+        name: String,
+        isRequired: Boolean,
+        description: String?,
+        contentType: ContentType,
+        schemaType: ApiType,
+        schemaFormat: ApiFormat?
+    ): MultipartSchema {
+        return when (partDataClass) {
             PartData.FormItem::class -> MultipartSchema.FormItem(
                 name = name,
-                isRequired = partBuilder.required,
-                description = partBuilder.description.trimOrNull(),
-                contentType = resolvedContentType,
+                isRequired = isRequired,
+                description = description,
+                contentType = contentType,
                 schemaType = schemaType,
                 schemaFormat = schemaFormat
             )
 
             PartData.FileItem::class -> MultipartSchema.FileItem(
                 name = name,
-                isRequired = partBuilder.required,
-                description = partBuilder.description.trimOrNull(),
-                contentType = resolvedContentType,
+                isRequired = isRequired,
+                description = description,
+                contentType = contentType,
                 schemaType = schemaType,
-                schemaFormat = schemaFormat ?: ApiFormat.BINARY
+                schemaFormat = schemaFormat
             )
 
             PartData.BinaryItem::class -> MultipartSchema.BinaryItem(
                 name = name,
-                isRequired = partBuilder.required,
-                description = partBuilder.description.trimOrNull(),
-                contentType = resolvedContentType,
+                isRequired = isRequired,
+                description = description,
+                contentType = contentType,
                 schemaType = schemaType,
-                schemaFormat = schemaFormat ?: ApiFormat.BINARY
+                schemaFormat = schemaFormat
             )
 
             PartData.BinaryChannelItem::class -> MultipartSchema.BinaryChannelItem(
                 name = name,
-                isRequired = partBuilder.required,
-                description = partBuilder.description.trimOrNull(),
-                contentType = resolvedContentType,
+                isRequired = isRequired,
+                description = description,
+                contentType = contentType,
                 schemaType = schemaType,
-                schemaFormat = schemaFormat ?: ApiFormat.BINARY
+                schemaFormat = schemaFormat
             )
 
-            else -> throw KopapiException("Unsupported PartData type: ${T::class}")
+            else -> throw KopapiException("Unsupported PartData type: $partDataClass")
         }
-
-        parts[name] = schema
     }
 
     /**

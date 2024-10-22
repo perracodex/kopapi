@@ -60,7 +60,7 @@ internal sealed class MultipartSchema(
         @JsonIgnore override val isRequired: Boolean,
         @JsonIgnore val contentType: ContentType = ContentType.Application.OctetStream,
         @JsonIgnore val schemaType: ApiType = ApiType.STRING,
-        @JsonIgnore val schemaFormat: ApiFormat = ApiFormat.BINARY,
+        @JsonIgnore val schemaFormat: ApiFormat? = ApiFormat.BINARY,
         @JsonProperty("description") val description: String?
     ) : MultipartSchema(
         definition = definition,
@@ -68,13 +68,10 @@ internal sealed class MultipartSchema(
         isRequired = isRequired
     ) {
         @JsonProperty("content")
-        val content: Map<String, Map<String, Any?>> = mapOf(
-            contentType.toString() to mapOf(
-                "schema" to mapOf(
-                    "type" to schemaType,
-                    "format" to schemaFormat
-                )
-            )
+        val content: Map<String, Map<String, Any?>> = buildSchema(
+            contentType = contentType,
+            schemaType = schemaType,
+            schemaFormat = schemaFormat
         )
     }
 
@@ -98,13 +95,10 @@ internal sealed class MultipartSchema(
         isRequired = isRequired
     ) {
         @JsonProperty("content")
-        val content: Map<String, Map<String, Any?>> = mapOf(
-            contentType.toString() to mapOf(
-                "schema" to mapOf(
-                    "type" to schemaType,
-                    "format" to schemaFormat
-                )
-            )
+        val content: Map<String, Map<String, Any?>> = buildSchema(
+            contentType = contentType,
+            schemaType = schemaType,
+            schemaFormat = schemaFormat
         )
     }
 
@@ -120,7 +114,7 @@ internal sealed class MultipartSchema(
         @JsonIgnore override val isRequired: Boolean,
         @JsonIgnore val contentType: ContentType = ContentType.Application.OctetStream,
         @JsonIgnore val schemaType: ApiType = ApiType.STRING,
-        @JsonIgnore val schemaFormat: ApiFormat = ApiFormat.BINARY,
+        @JsonIgnore val schemaFormat: ApiFormat? = ApiFormat.BINARY,
         @JsonProperty("description") val description: String?
     ) : MultipartSchema(
         definition = definition,
@@ -128,13 +122,10 @@ internal sealed class MultipartSchema(
         isRequired = isRequired
     ) {
         @JsonProperty("content")
-        val content: Map<String, Map<String, Any?>> = mapOf(
-            contentType.toString() to mapOf(
-                "schema" to mapOf(
-                    "type" to schemaType,
-                    "format" to schemaFormat
-                )
-            )
+        val content: Map<String, Map<String, Any?>> = buildSchema(
+            contentType = contentType,
+            schemaType = schemaType,
+            schemaFormat = schemaFormat
         )
     }
 
@@ -150,7 +141,7 @@ internal sealed class MultipartSchema(
         @JsonIgnore override val isRequired: Boolean,
         @JsonIgnore val contentType: ContentType = ContentType.Application.OctetStream,
         @JsonIgnore val schemaType: ApiType = ApiType.STRING,
-        @JsonIgnore val schemaFormat: ApiFormat = ApiFormat.BINARY,
+        @JsonIgnore val schemaFormat: ApiFormat? = ApiFormat.BINARY,
         @JsonProperty("description") val description: String?
     ) : MultipartSchema(
         definition = definition,
@@ -158,7 +149,27 @@ internal sealed class MultipartSchema(
         isRequired = isRequired
     ) {
         @JsonProperty("content")
-        val content: Map<String, Map<String, Any?>> = mapOf(
+        val content: Map<String, Map<String, Any?>> = buildSchema(
+            contentType = contentType,
+            schemaType = schemaType,
+            schemaFormat = schemaFormat
+        )
+    }
+
+    /**
+     * Constructs the schema for the given content type, schema type, and schema format.
+     *
+     * @param contentType The content type of the schema.
+     * @param schemaType The API type of the schema.
+     * @param schemaFormat The API format of the schema.
+     * @return A map representing the schema content.
+     */
+    internal fun buildSchema(
+        contentType: ContentType,
+        schemaType: ApiType,
+        schemaFormat: ApiFormat?
+    ): Map<String, Map<String, Any?>> {
+        return mapOf(
             contentType.toString() to mapOf(
                 "schema" to mapOf(
                     "type" to schemaType,
