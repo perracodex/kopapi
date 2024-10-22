@@ -5,7 +5,6 @@
 package io.github.perracodex.kopapi.dsl.operation.elements
 
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
-import io.github.perracodex.kopapi.schema.MultipartSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.safeName
@@ -20,7 +19,7 @@ import kotlin.reflect.KType
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
  * @property required Indicates whether the request body is mandatory.
  * @property content A map of [ContentType] to a set of [KType] that this request requires.
- * @property multipartContent A list of [MultipartSchema] for multipart requests.
+ * @property multipartContent A list of [ApiMultipart] for multipart requests.
  *
  * @see [ApiOperationBuilder.requestBody]
  */
@@ -30,7 +29,7 @@ internal data class ApiRequestBody internal constructor(
     val required: Boolean,
     val composition: Composition?,
     val content: Map<ContentType, Set<KType>>?,
-    val multipartContent: Map<ContentType, MultipartSchema>?,
+    val multipartContent: Map<ContentType, ApiMultipart>?,
 ) {
     init {
         content?.forEach { (_, types) ->

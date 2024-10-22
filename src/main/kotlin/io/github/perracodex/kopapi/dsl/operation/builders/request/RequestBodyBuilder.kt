@@ -6,8 +6,8 @@ package io.github.perracodex.kopapi.dsl.operation.builders.request
 
 import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
-import io.github.perracodex.kopapi.schema.MultipartSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -40,7 +40,7 @@ public class RequestBodyBuilder(
 
     /** Holds the multipart parts schema. */
     @PublishedApi
-    internal val multipartParts: MutableMap<ContentType, MultipartSchema.Object> = mutableMapOf()
+    internal val multipartParts: MutableMap<ContentType, ApiMultipart> = mutableMapOf()
 
     /**
      * The primary `ContentType` for the request.
@@ -103,10 +103,11 @@ public class RequestBodyBuilder(
      *      }
      * }
      *
-     * // Specify the part type explicitly.
-     * multipart(contentType = ContentType.MultiPart.Signed) {
-     *      part<PartData.FormItem>("myFormPart") {
-     *      description = "The form data."
+     * // Specify the part with explicit details.
+     * part<PartData.FileItem>("avatar", contentType = ContentType.Image.PNG) {
+     *      description = "The profile picture."
+     *      schemaType = ApiType.STRING
+     *      schemaFormat = ApiFormat.BINARY
      * }
      * ```
      */
@@ -114,17 +115,14 @@ public class RequestBodyBuilder(
         contentType: ContentType = ContentType.MultiPart.FormData,
         configure: MultipartBuilder.() -> Unit
     ) {
-        // Check at runtime if the contentType belongs to the "multipart" category
-        // Using the contentType.contentType property for comparison, as all
-        // multipart content types share the same content type, avoiding this hardcoding it here.
-        if (contentType.contentType != ContentType.MultiPart.FormData.contentType) {
-            throw KopapiException(
-                "Invalid content type for multipart. Must be of type: `ContentType.MultiPart`"
-            )
-        }
-
         val multipartBuilder: MultipartBuilder = MultipartBuilder().apply(configure)
-        multipartParts[contentType] = multipartBuilder.build()
+        val apiMultipart = ApiMultipart(
+            contentType = contentType,
+            description = multipartBuilder.description.trimOrNull(),
+            parts = multipartBuilder.parts
+        )
+
+        multipartParts[contentType] = apiMultipart
     }
 
     /**

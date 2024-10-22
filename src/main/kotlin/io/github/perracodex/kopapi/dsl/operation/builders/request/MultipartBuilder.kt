@@ -5,16 +5,12 @@
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
 import io.github.perracodex.kopapi.dsl.markers.OperationDsl
-import io.github.perracodex.kopapi.schema.MultipartSchema
-import io.github.perracodex.kopapi.system.KopapiException
-import io.github.perracodex.kopapi.types.ApiFormat
-import io.github.perracodex.kopapi.types.ApiType
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import io.ktor.http.content.*
-import kotlin.collections.set
-import kotlin.reflect.KClass
+import kotlin.reflect.typeOf
 
 
 /**
@@ -28,7 +24,7 @@ import kotlin.reflect.KClass
 public class MultipartBuilder {
     /** Holds the parts of the multipart request. */
     @PublishedApi
-    internal val parts: MutableMap<String, MultipartSchema> = mutableMapOf()
+    internal val parts: MutableList<ApiMultipart.Part> = mutableListOf()
 
     public var description: String by MultilineString()
 
@@ -44,10 +40,20 @@ public class MultipartBuilder {
      *      }
      * }
      *
-     * // Specify the part type explicitly.
-     * multipart(contentType = ContentType.MultiPart.Signed) {
-     *     part<PartData.FormItem>("myFormPart") {
-     *     description = "The form data."
+     * // Specify the part with explicit details.
+     * multipart(contentType = ContentType.MultiPart.Mixed) {
+     *      // Upload the profile picture as an image (PNG)
+     *      part<PartData.FileItem>("img", contentType=ContentType.Image.PNG) {
+     *          description = "The profile picture."
+     *          schemaType = ApiType.STRING
+     *          schemaFormat = ApiFormat.BINARY
+     *      }
+     *
+     *      // Add a form field for employee's name (plain text)
+     *      part<PartData.FormItem>("employeeName") {
+     *          description = "The employee's full name."
+     *          schemaType = ApiType.STRING
+     *      }
      * }
      * ```
      *
@@ -62,125 +68,19 @@ public class MultipartBuilder {
         configure: PartBuilder.() -> Unit = {}
     ) {
         val partBuilder: PartBuilder = PartBuilder(name = name).apply(configure)
-        val resolvedContentType: ContentType = contentType ?: determineContentType(kClass = T::class)
-        val (schemaType: ApiType, schemaFormat: ApiFormat?) = determineSchemaAttributes(
-            kClass = T::class,
-            partBuilder = partBuilder
-        )
 
-        val schema: MultipartSchema = createMultipartSchema(
-            partDataClass = T::class,
-            name = name,
-            isRequired = partBuilder.required,
+        val part = ApiMultipart.Part(
+            type = typeOf<T>(),
+            name = name.trim(),
+            contentType = contentType,
+            schemaType = partBuilder.schemaType,
+            schemaFormat = partBuilder.schemaFormat,
             description = partBuilder.description.trimOrNull(),
-            contentType = resolvedContentType,
-            schemaType = schemaType,
-            schemaFormat = schemaFormat
+            isRequired = partBuilder.required
         )
 
-        parts[name] = schema
-    }
-
-    /**
-     * Determines the default content type based on the PartData subclass.
-     */
-    @PublishedApi
-    internal fun <T : PartData> determineContentType(kClass: KClass<T>): ContentType = when (kClass) {
-        PartData.FormItem::class -> ContentType.Text.Plain
-        PartData.FileItem::class,
-        PartData.BinaryItem::class,
-        PartData.BinaryChannelItem::class -> ContentType.Application.OctetStream
-
-        else -> throw KopapiException("Unsupported PartData type: $kClass")
-    }
-
-    /**
-     * Determines the default schema type and format based on the PartData subclass.
-     */
-    @PublishedApi
-    internal fun <T : PartData> determineSchemaAttributes(
-        kClass: KClass<T>,
-        partBuilder: PartBuilder
-    ): Pair<ApiType, ApiFormat?> = when (kClass) {
-        PartData.FormItem::class -> Pair(
-            partBuilder.schemaType ?: ApiType.STRING,
-            partBuilder.schemaFormat
-        )
-
-        PartData.FileItem::class,
-        PartData.BinaryItem::class,
-        PartData.BinaryChannelItem::class -> Pair(
-            partBuilder.schemaType ?: ApiType.STRING,
-            partBuilder.schemaFormat ?: ApiFormat.BINARY
-        )
-
-        else -> throw KopapiException("Unsupported PartData type: $kClass")
-    }
-
-    /**
-     * Creates the appropriate MultipartSchema based on the PartData type.
-     */
-    @PublishedApi
-    internal fun createMultipartSchema(
-        partDataClass: KClass<out PartData>,
-        name: String,
-        isRequired: Boolean,
-        description: String?,
-        contentType: ContentType,
-        schemaType: ApiType,
-        schemaFormat: ApiFormat?
-    ): MultipartSchema {
-        return when (partDataClass) {
-            PartData.FormItem::class -> MultipartSchema.FormItem(
-                name = name,
-                isRequired = isRequired,
-                description = description,
-                contentType = contentType,
-                schemaType = schemaType,
-                schemaFormat = schemaFormat
-            )
-
-            PartData.FileItem::class -> MultipartSchema.FileItem(
-                name = name,
-                isRequired = isRequired,
-                description = description,
-                contentType = contentType,
-                schemaType = schemaType,
-                schemaFormat = schemaFormat
-            )
-
-            PartData.BinaryItem::class -> MultipartSchema.BinaryItem(
-                name = name,
-                isRequired = isRequired,
-                description = description,
-                contentType = contentType,
-                schemaType = schemaType,
-                schemaFormat = schemaFormat
-            )
-
-            PartData.BinaryChannelItem::class -> MultipartSchema.BinaryChannelItem(
-                name = name,
-                isRequired = isRequired,
-                description = description,
-                contentType = contentType,
-                schemaType = schemaType,
-                schemaFormat = schemaFormat
-            )
-
-            else -> throw KopapiException("Unsupported PartData type: $partDataClass")
+        parts.removeIf { it.name.equals(part.name, ignoreCase = true) }.also {
+            parts.add(part)
         }
-    }
-
-    /**
-     * Builds the multipart schema object.
-     */
-    internal fun build(): MultipartSchema.Object {
-        val requiredFields: List<String> = parts.filterValues { it.isRequired }.keys.toList()
-
-        return MultipartSchema.Object(
-            description = description.trimOrNull(),
-            properties = parts.toMutableMap(),
-            requiredFields = requiredFields.takeIf { it.isNotEmpty() },
-        )
     }
 }
