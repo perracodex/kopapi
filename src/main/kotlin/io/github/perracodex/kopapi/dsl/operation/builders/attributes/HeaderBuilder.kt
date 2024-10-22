@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.attributes
 
+import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.system.KopapiException
@@ -21,6 +22,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [ResponseBuilder]
  * @see [HeaderBuilder]
  */
+@OperationDsl
 public class HeaderBuilder(
     public val name: String,
     public var required: Boolean = false,

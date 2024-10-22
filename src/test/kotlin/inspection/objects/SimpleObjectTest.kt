@@ -5,9 +5,9 @@
 package inspection.objects
 
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
-import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import kotlin.reflect.full.createType
@@ -36,10 +36,10 @@ class SimpleObjectTest {
         assertEquals(expected = Box::class.simpleName, actual = schemeRef.name, message = "Schema name should match the class name")
         assertEquals(expected = Box::class.java.name, actual = schemeRef.type, message = "Schema type should match the type string")
 
-        // Validate that schemeRef.schema is a Schema.Reference
-        assertTrue(actual = schemeRef.schema is Schema.Reference, message = "Expected schema to be a Schema.Reference")
+        // Validate that schemeRef.schema is a ElementSchema.Reference
+        assertTrue(actual = schemeRef.schema is ElementSchema.Reference, message = "Expected schema to be a Schema.Reference")
         assertEquals(
-            expected = "${Schema.Reference.PATH}${schemeRef.name}",
+            expected = "${ElementSchema.Reference.PATH}${schemeRef.name}",
             actual = schemeRef.schema.ref,
             message = "Reference value is incorrect"
         )
@@ -53,8 +53,8 @@ class SimpleObjectTest {
         assertEquals(expected = Box::class.simpleName, actual = schema.name, message = "Retrieved schema name should match")
         assertEquals(expected = Box::class.java.name, actual = schema.type, message = "Retrieved schema type should match")
 
-        // Assert that schema.schema is a Schema.Object
-        assertTrue(actual = schema.schema is Schema.Object, message = "Expected schema to be a Schema.Object")
+        // Assert that schema.schema is a ElementSchema.Object
+        assertTrue(actual = schema.schema is ElementSchema.Object, message = "Expected schema to be a Schema.Object")
 
         // Validate schema properties.
         val properties: MutableMap<String, SchemaProperty> = schema.schema.properties
@@ -83,11 +83,11 @@ class SimpleObjectTest {
         val property: SchemaProperty = properties[propertyName]
             ?: fail("Property '$propertyName' is missing")
 
-        val schema: Schema = property.schema
+        val schema: ElementSchema = property.schema
 
         // If expectedFormat is provided, check it.
         expectedFormat?.let {
-            if (schema is Schema.Primitive) {
+            if (schema is ElementSchema.Primitive) {
                 assertEquals(
                     expected = expectedFormat.value,
                     actual = schema.format,
@@ -101,7 +101,7 @@ class SimpleObjectTest {
                     message = "Property '$propertyName' should have type '$expectedType'"
                 )
             } else {
-                fail("Property '$propertyName' is expected to be a Schema.Primitive with a format")
+                fail("Property '$propertyName' is expected to be a ElementSchema.Primitive with a format")
             }
         }
     }

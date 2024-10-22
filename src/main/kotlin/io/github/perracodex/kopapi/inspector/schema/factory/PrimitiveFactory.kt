@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.inspector.schema.factory
 
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
-import io.github.perracodex.kopapi.inspector.schema.Schema
+import io.github.perracodex.kopapi.schema.ElementSchema
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
@@ -18,12 +18,12 @@ import kotlin.uuid.Uuid
 @TypeInspectorAPI
 internal object PrimitiveFactory {
     /**
-     * Constructs a new [Schema] representing the given primitive type.
+     * Constructs a new [ElementSchema] representing the given primitive type.
      *
      * @param kClass The [KClass] representing the primitive type.
-     * @return A [Schema] for the primitive type, or null if the type is not a primitive.
+     * @return A [ElementSchema] for the primitive type, or null if the type is not a primitive.
      */
-    fun newSchema(kClass: KClass<*>): Schema? {
+    fun newSchema(kClass: KClass<*>): ElementSchema? {
         return when (kClass) {
             // Basic Kotlin Types.
             Byte::class -> SchemaFactory.ofInt32()

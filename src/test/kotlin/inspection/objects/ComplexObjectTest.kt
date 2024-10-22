@@ -5,9 +5,9 @@
 package inspection.objects
 
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
-import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import kotlin.reflect.KType
@@ -51,9 +51,9 @@ class ComplexObjectTest {
         val typeSchema: TypeSchema = schemaProvider.inspect(kType = userType)
 
         // Verify that the TypeSchema is a reference to the User schema.
-        assertTrue(actual = typeSchema.schema is Schema.Reference, message = "Expected schema to be a Schema.Reference")
+        assertTrue(actual = typeSchema.schema is ElementSchema.Reference, message = "Expected schema to be a Schema.Reference")
         assertEquals(
-            expected = "${Schema.Reference.PATH}${typeSchema.name}",
+            expected = "${ElementSchema.Reference.PATH}${typeSchema.name}",
             actual = typeSchema.schema.ref,
             message = "Reference value is incorrect"
         )
@@ -65,7 +65,7 @@ class ComplexObjectTest {
         // Find the User schema.
         val userSchema: TypeSchema = schemasSet.find { it.name == "User" }
             ?: fail("User schema not found")
-        assertTrue(actual = userSchema.schema is Schema.Object, message = "User schema should be a Schema.Object")
+        assertTrue(actual = userSchema.schema is ElementSchema.Object, message = "User schema should be a Schema.Object")
 
         // Validate User properties.
         assertEquals(expected = 6, actual = userSchema.schema.properties.size, message = "User should have six properties")
@@ -98,7 +98,7 @@ class ComplexObjectTest {
             propertyName = "status",
             expectedType = ApiType.OBJECT,
             isEnum = true,
-            itemsRef = "${Schema.Reference.PATH}Status"
+            itemsRef = "${ElementSchema.Reference.PATH}Status"
         )
 
         validateProperty(
@@ -106,7 +106,7 @@ class ComplexObjectTest {
             propertyName = "addresses",
             expectedType = ApiType.ARRAY,
             itemsType = ApiType.OBJECT,
-            itemsRef = "${Schema.Reference.PATH}Address"
+            itemsRef = "${ElementSchema.Reference.PATH}Address"
         )
 
         validateProperty(
@@ -119,7 +119,7 @@ class ComplexObjectTest {
         // Validate the Address schema.
         val addressSchema: TypeSchema = schemasSet.find { it.name == "Address" }
             ?: fail("Address schema not found")
-        assertTrue(actual = addressSchema.schema is Schema.Object, message = "Address schema should be a Schema.Object")
+        assertTrue(actual = addressSchema.schema is ElementSchema.Object, message = "Address schema should be a Schema.Object")
 
         val addressProperties: MutableMap<String, SchemaProperty> = addressSchema.schema.properties
         assertEquals(expected = 3, actual = addressProperties.size, message = "Address should have three properties")
@@ -150,7 +150,7 @@ class ComplexObjectTest {
         // Validate the Status enum schema.
         val statusSchema: TypeSchema = schemasSet.find { it.name == "Status" }
             ?: fail("Status schema not found")
-        assertTrue(actual = statusSchema.schema is Schema.Enum, message = "Status schema should be a Schema.Enum")
+        assertTrue(actual = statusSchema.schema is ElementSchema.Enum, message = "Status schema should be a Schema.Enum")
 
         assertEquals(
             expected = listOf(Status.ACTIVE.name, Status.INACTIVE.name, Status.PENDING.name),
@@ -194,7 +194,7 @@ class ComplexObjectTest {
 
         // Check the format if provided.
         expectedFormat?.let {
-            if (property.schema is Schema.Primitive) {
+            if (property.schema is ElementSchema.Primitive) {
                 assertEquals(
                     expected = expectedFormat.value,
                     actual = property.schema.format,
@@ -208,32 +208,32 @@ class ComplexObjectTest {
                     message = "Property '$propertyName' should have type '$expectedType'"
                 )
             } else {
-                fail("Property '$propertyName' is expected to be a Schema.Primitive with a format")
+                fail("Property '$propertyName' is expected to be a ElementSchema.Primitive with a format")
             }
         }
 
         // Check if the property is an enum.
         if (isEnum) {
             assertTrue(
-                actual = property.schema is Schema.Reference,
-                message = "Property '$propertyName' should be a Schema.Reference to an enum"
+                actual = property.schema is ElementSchema.Reference,
+                message = "Property '$propertyName' should be a ElementSchema.Reference to an enum"
             )
         }
 
         // Check enum values if provided.
         enumValues?.let {
-            if (property.schema is Schema.Reference) {
+            if (property.schema is ElementSchema.Reference) {
                 // Assuming the enum schema is already validated elsewhere.
             } else {
-                fail("Property '$propertyName' should be a Schema.Reference to an enum")
+                fail("Property '$propertyName' should be a ElementSchema.Reference to an enum")
             }
         }
 
         // Check items type and reference if the property is an array.
         itemsType?.let {
-            if (property.schema is Schema.Array) {
+            if (property.schema is ElementSchema.Array) {
                 itemsRef?.let {
-                    if (property.schema.items is Schema.Reference) {
+                    if (property.schema.items is ElementSchema.Reference) {
                         assertEquals(
                             expected = itemsRef,
                             actual = property.schema.items.ref,
@@ -246,20 +246,20 @@ class ComplexObjectTest {
                             message = "Items of '$propertyName' should have type '$itemsType'"
                         )
                     } else {
-                        fail("Items of '$propertyName' should be a Schema.Reference")
+                        fail("Items of '$propertyName' should be a ElementSchema.Reference")
                     }
                 }
             } else {
-                fail("Property '$propertyName' should be a Schema.Array")
+                fail("Property '$propertyName' should be a ElementSchema.Array")
             }
         }
 
         // Check for additionalProperties if it's a map.
         if (hasAdditionalProperties) {
-            if (property.schema is Schema.AdditionalProperties) {
+            if (property.schema is ElementSchema.AdditionalProperties) {
                 // Additional properties are allowed.
             } else {
-                fail("Property '$propertyName' should be a Schema.AdditionalProperties")
+                fail("Property '$propertyName' should be a ElementSchema.AdditionalProperties")
             }
         }
     }

@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.inspector.schema
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
+import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.utils.nativeName
 import kotlin.reflect.KType
 
@@ -16,13 +17,13 @@ import kotlin.reflect.KType
  * @property name The current name of the type. If renamed, this reflects the updated name.
  * @property renamedFrom The original name of the type before renaming. It is `null` if the name was not changed.
  * @property type The fully qualified type name, typically obtained from [KType.nativeName].
- * @property schema The processed [Schema] specification for the type.
+ * @property schema The processed [ElementSchema] specification for the type.
  */
 internal data class TypeSchema private constructor(
     val name: String,
     val renamedFrom: String?,
     val type: String,
-    val schema: Schema
+    val schema: ElementSchema
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -40,11 +41,11 @@ internal data class TypeSchema private constructor(
          *
          * @param name The name representing the type, usually the class or property name without qualifiers.
          * @param kType The [KType] representing the type.
-         * @param schema The processed [Schema] specification for the type.
+         * @param schema The processed [ElementSchema] specification for the type.
          * @return A new instance of [TypeSchema].
          */
         @TypeInspectorAPI
-        fun of(name: ElementName, kType: KType, schema: Schema): TypeSchema {
+        fun of(name: ElementName, kType: KType, schema: ElementSchema): TypeSchema {
             val qualifiedName: String = kType.nativeName()
             return TypeSchema(
                 name = name.name,

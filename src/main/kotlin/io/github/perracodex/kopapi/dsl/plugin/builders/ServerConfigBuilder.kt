@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.builders
 
+import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.system.KopapiException
@@ -50,6 +51,7 @@ import io.ktor.http.*
  * @see [ServerVariableBuilder]
  * @see [ServerBuilder]
  */
+@ConfigurationDsl
 public class ServerConfigBuilder(
     private val url: Url
 ) {

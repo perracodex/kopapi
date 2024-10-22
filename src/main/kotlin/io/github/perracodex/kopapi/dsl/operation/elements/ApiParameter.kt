@@ -33,15 +33,12 @@ import kotlin.reflect.KType
  * @see [ApiOperationBuilder.cookieParameter]
  */
 internal data class ApiParameter(
-    @JsonIgnore
-    val type: KType,
+    @JsonIgnore val type: KType,
     val name: String,
     val description: String?,
-    @JsonProperty("in")
-    val location: Location,
+    @JsonProperty("in") val location: Location,
     val required: Boolean,
-    @JsonProperty("default")
-    val defaultValue: Any?,
+    @JsonProperty("default") val defaultValue: Any?,
     val style: ParameterStyle?,
     val explode: Boolean?,
     val deprecated: Boolean?

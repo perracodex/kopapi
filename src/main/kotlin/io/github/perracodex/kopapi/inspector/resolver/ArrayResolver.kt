@@ -9,10 +9,10 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
-import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.PrimitiveFactory
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
+import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.system.Tracer
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
@@ -53,7 +53,7 @@ internal class ArrayResolver(private val typeInspector: TypeInspector) {
         // Check if dealing with a primitive array first, such as IntArray, ByteArray, etc.,
         // and return the corresponding schema if it is.
         if (TypeDescriptor.isPrimitiveArray(classifier = classifier)) {
-            val schema: Schema? = PrimitiveFactory.newSchema(kClass = classifier)
+            val schema: ElementSchema? = PrimitiveFactory.newSchema(kClass = classifier)
             return TypeSchema.of(
                 name = className,
                 kType = kType,

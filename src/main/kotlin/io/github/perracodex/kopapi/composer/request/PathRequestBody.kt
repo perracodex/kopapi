@@ -14,17 +14,11 @@ import io.ktor.http.*
  *
  * @property description A human-readable description of the parameter.
  * @property required Indicates whether the request body is mandatory.
- * @property deprecated Indicates whether the request body is deprecated and should be avoided.
  * @property content A map of [ContentType] to [OpenAPiSchema.ContentSchema] representing the content of the request body.
  */
 @ComposerAPI
 internal data class PathRequestBody internal constructor(
-    @JsonProperty("description")
-    val description: String?,
-    @JsonProperty("required")
-    val required: Boolean,
-    @JsonProperty("deprecated")
-    val deprecated: Boolean?,
-    @JsonProperty("content")
-    var content: Map<ContentType, OpenAPiSchema.ContentSchema>?,
+    @JsonProperty("description") val description: String?,
+    @JsonProperty("required") val required: Boolean,
+    @JsonProperty("content") var content: Map<ContentType, OpenAPiSchema.ContentSchema>?
 )

@@ -13,7 +13,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
-import io.github.perracodex.kopapi.inspector.schema.Schema
+import io.github.perracodex.kopapi.schema.ISchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.ktor.http.*
 
@@ -42,28 +42,6 @@ internal data class OpenAPiSchema(
     val components: Components?,
     val security: List<Map<String, List<String>>?>?,
 ) {
-    /**
-     * Represents the components section of the OpenAPI schema.
-     *
-     * The components section holds various reusable objects for different aspects of the API.
-     * In this context, it primarily includes security schemes that can be referenced throughout
-     * the schema to avoid duplication.
-     *
-     * @property securitySchemes A map of security scheme names to their respective [ApiSecurityScheme] definitions.
-     */
-    data class Components(
-        val securitySchemes: Map<String, ApiSecurityScheme>?
-    ) {
-        /**
-         * Checks if the components object contains any security schemes.
-         *
-         * @return `true` if there are one or more security schemes defined; `false` otherwise.
-         */
-        fun hasContent(): Boolean {
-            return !securitySchemes.isNullOrEmpty()
-        }
-    }
-
     /**
      * Represents an individual path item in the OpenAPI schema.
      *
@@ -135,16 +113,37 @@ internal data class OpenAPiSchema(
     }
 
     /**
-     * Represents the [Schema] definition for content in an API operation.
+     * Represents the components section of the OpenAPI schema.
+     *
+     * The components section holds various reusable objects for different aspects of the API.
+     * In this context, it primarily includes security schemes that can be referenced throughout
+     * the schema to avoid duplication.
+     *
+     * @property securitySchemes A map of security scheme names to their respective [ApiSecurityScheme] definitions.
+     */
+    data class Components(
+        val securitySchemes: Map<String, ApiSecurityScheme>?
+    ) {
+        /**
+         * Checks if the components object contains any security schemes.
+         *
+         * @return `true` if there are one or more security schemes defined; `false` otherwise.
+         */
+        fun hasContent(): Boolean {
+            return !securitySchemes.isNullOrEmpty()
+        }
+    }
+
+    /**
+     * Represents the [ISchema] definition for content in an API operation.
      *
      * This class is used to wrap the schema under the `schema` key for any content type
      * (e.g., `application/json`, `application/xml`), ensuring compatibility with the OpenAPI
      * specification.
      *
-     * @property schema The [Schema] representing the structure of the content.
+     * @property schema The [ISchema] representing the structure of the content.
      */
     data class ContentSchema(
-        @JsonProperty("schema")
-        var schema: Schema?
+        @JsonProperty("schema") var schema: ISchema?
     )
 }

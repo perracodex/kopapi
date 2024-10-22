@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.builders
 
+import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.plugin.KopapiConfig
 import io.github.perracodex.kopapi.types.ApiFormat
@@ -44,6 +45,7 @@ import kotlin.reflect.KType
  *
  * @see [KopapiConfig.addType]
  */
+@ConfigurationDsl
 public class CustomTypeBuilder {
     public var minLength: Int? = null
     public var maxLength: Int? = null

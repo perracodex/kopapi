@@ -5,8 +5,8 @@
 package inspection.array
 
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
-import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import kotlin.reflect.KClass
@@ -51,8 +51,8 @@ class PrimitiveArrayTest {
 
             // Verify that the TypeSchema is of type array.
             assertTrue(
-                actual = typeSchema.schema is Schema.Array,
-                message = "Expected schema to be a Schema.Array for ${arrayInfo.kClass.simpleName}"
+                actual = typeSchema.schema is ElementSchema.Array,
+                message = "Expected schema to be a ElementSchema.Array for ${arrayInfo.kClass.simpleName}"
             )
 
             // Retrieve the registered schemas.
@@ -62,10 +62,10 @@ class PrimitiveArrayTest {
                 message = "Expected no registered schemas for ${arrayInfo.kClass.simpleName}"
             )
 
-            // Verify that the items schema is a Schema.Primitive.
+            // Verify that the items schema is a ElementSchema.Primitive.
             assertTrue(
-                actual = typeSchema.schema.items is Schema.Primitive,
-                message = "Items schema should be a Schema.Primitive for ${arrayInfo.kClass.simpleName}"
+                actual = typeSchema.schema.items is ElementSchema.Primitive,
+                message = "Items schema should be a ElementSchema.Primitive for ${arrayInfo.kClass.simpleName}"
             )
 
             // Check the expected ApiType.

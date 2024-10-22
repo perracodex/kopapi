@@ -8,10 +8,10 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
-import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
+import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import kotlin.reflect.*
 
@@ -257,7 +257,7 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
         val mergedTypeArgumentBindings: Map<KClassifier, KType> = inheritedTypeArgumentBindings + localTypeArgumentBindings
 
         // Get the placeholder schema to place each property.
-        val propertiesSchemas: Schema.Object = schemaPlaceholder.schema as Schema.Object
+        val propertiesSchemas: ElementSchema.Object = schemaPlaceholder.schema as ElementSchema.Object
 
         // Retrieve all relevant properties of the generic class.
         val classProperties: List<KProperty1<out Any, *>> = typeInspector.getClassProperties(kClass = kClass)

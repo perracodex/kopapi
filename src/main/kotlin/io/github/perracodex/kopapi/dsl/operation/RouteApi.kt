@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation
 
 import io.github.perracodex.kopapi.composer.SchemaRegistry
+import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.system.KopapiException
@@ -40,6 +41,7 @@ import io.ktor.server.routing.*
  *
  * @see [ApiOperationBuilder]
  */
+@OperationDsl
 public infix fun Route.api(configure: ApiOperationBuilder.() -> Unit): Route {
     if (this !is RoutingNode) {
         throw KopapiException(message = buildApiErrorMessage(route = this))

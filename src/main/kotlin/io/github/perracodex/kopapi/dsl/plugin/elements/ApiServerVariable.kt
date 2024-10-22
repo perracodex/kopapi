@@ -14,9 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @property description A human-readable description of the variable.
  */
 internal data class ApiServerVariable(
-    @JsonProperty("default")
-    val defaultValue: String,
-    @JsonProperty("enum")
-    val choices: Set<String>?,
+    @JsonProperty("default") val defaultValue: String,
+    @JsonProperty("enum") val choices: Set<String>?,
     val description: String?,
 )

@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.common.security
 
+import io.github.perracodex.kopapi.dsl.markers.SecurityDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -20,6 +21,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [OAuth2SecurityBuilder]
  * @see [OpenIdConnectSecurityBuilder]
  */
+@SecurityDsl
 public class MutualTLSSecurityBuilder {
     public var description: String by MultilineString()
 

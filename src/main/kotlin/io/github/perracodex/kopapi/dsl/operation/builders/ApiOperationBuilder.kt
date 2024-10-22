@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.builders
 
 import io.github.perracodex.kopapi.dsl.common.SecuritySchemeConfigurable
+import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.parameter.CookieParameterBuilder
@@ -72,6 +73,7 @@ import kotlin.reflect.typeOf
  *
  * @see [ApiOperation]
  */
+@OperationDsl
 public class ApiOperationBuilder internal constructor(
     @PublishedApi internal val endpoint: String
 ) : SecuritySchemeConfigurable() {
@@ -308,8 +310,9 @@ public class ApiOperationBuilder internal constructor(
     /**
      * Registers a request body.
      *
-     * #### Sample Usage
+     * #### Sample Typed Request Body
      * ```
+     * // Standard request body.
      * requestBody<MyRequestBodyType> {
      *      description = "The data required to create a new item."
      *      required = true
@@ -327,6 +330,22 @@ public class ApiOperationBuilder internal constructor(
      *      addType<YetAnotherType>(
      *          setOf(ContentType.Application.Pdf)
      *      )
+     * }
+     * ```
+     *
+     * #### Sample Multipart
+     * ```
+     * // Default ContentType.MultiPart.FormData
+     * multipart {
+     *      part<PartData.FileItem>("myFilePart") {
+     *          description = "The file to upload."
+     *      }
+     * }
+     *
+     * // Specify the part type explicitly.
+     * multipart(contentType = ContentType.MultiPart.Signed) {
+     *      part<PartData.FormItem>("myFormPart") {
+     *      description = "The form data."
      * }
      * ```
      *

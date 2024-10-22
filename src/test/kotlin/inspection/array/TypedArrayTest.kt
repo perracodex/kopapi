@@ -5,9 +5,9 @@
 package inspection.array
 
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
-import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import kotlin.reflect.KType
@@ -40,11 +40,11 @@ class TypedArrayTest {
 
         // Verify that the typeSchema is a reference to the BoxArray schema.
         assertTrue(
-            actual = typeSchema.schema is Schema.Reference,
+            actual = typeSchema.schema is ElementSchema.Reference,
             message = "Expected schema to be a Schema.Reference"
         )
         assertEquals(
-            expected = "${Schema.Reference.PATH}${typeSchema.name}",
+            expected = "${ElementSchema.Reference.PATH}${typeSchema.name}",
             actual = typeSchema.schema.ref,
             message = "Reference value is incorrect"
         )
@@ -61,7 +61,7 @@ class TypedArrayTest {
         val boxArraySchema: TypeSchema = schemasSet.find { it.name == typeSchema.name }
             ?: fail("BoxArray schema not found")
         assertTrue(
-            actual = boxArraySchema.schema is Schema.Object,
+            actual = boxArraySchema.schema is ElementSchema.Object,
             message = "BoxArray schema should be a Schema.Object"
         )
 
@@ -78,18 +78,18 @@ class TypedArrayTest {
 
         // Get the schema of the 'data' property.
         assertTrue(
-            actual = dataProperty.schema is Schema.Array,
+            actual = dataProperty.schema is ElementSchema.Array,
             message = "Data property schema should be a Schema.Array"
         )
 
         // Validate the array items.
         // The items should be a reference to Box schema.
         assertTrue(
-            actual = dataProperty.schema.items is Schema.Reference,
+            actual = dataProperty.schema.items is ElementSchema.Reference,
             message = "Items schema should be a Schema.Reference"
         )
         assertEquals(
-            expected = "${Schema.Reference.PATH}Box",
+            expected = "${ElementSchema.Reference.PATH}Box",
             actual = dataProperty.schema.items.ref,
             message = "Items schema reference should be to Box"
         )
@@ -98,7 +98,7 @@ class TypedArrayTest {
         val boxSchema: TypeSchema = schemasSet.find { it.name == "Box" }
             ?: fail("Box schema not found")
         assertTrue(
-            actual = boxSchema.schema is Schema.Object,
+            actual = boxSchema.schema is ElementSchema.Object,
             message = "Box schema should be a Schema.Object"
         )
 
@@ -155,7 +155,7 @@ class TypedArrayTest {
 
         // Check the format if provided.
         expectedFormat?.let {
-            if (property.schema is Schema.Primitive) {
+            if (property.schema is ElementSchema.Primitive) {
                 assertEquals(
                     expected = expectedFormat.value,
                     actual = property.schema.format,
@@ -169,15 +169,15 @@ class TypedArrayTest {
                     message = "Property '$propertyName' should have type '$expectedType'"
                 )
             } else {
-                fail("Property '$propertyName' is expected to be a Schema.Primitive with a format")
+                fail("Property '$propertyName' is expected to be a ElementSchema.Primitive with a format")
             }
         }
 
         // Check if the property is a reference.
         if (isReference) {
             assertTrue(
-                actual = property.schema is Schema.Reference,
-                message = "Property '$propertyName' should be a Schema.Reference"
+                actual = property.schema is ElementSchema.Reference,
+                message = "Property '$propertyName' should be a ElementSchema.Reference"
             )
 
             referenceRef?.let {

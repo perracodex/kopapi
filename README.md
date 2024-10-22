@@ -24,13 +24,14 @@ get("/items/{group_id}/{item_id?}") {
 
 ### Characteristics:
 
-* Minimally invasive.
-* Comprehensive and flexible `DSL`.
-* Conflict detection for duplicate Model definitions.
-* Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) serialization annotations.
-* Partial support for [Jackson](https://github.com/FasterXML/jackson-module-kotlin) serialization annotations.
-* Output in `YAML` or `JSON` format.
-* Debug panel to identify issues with the Schema generation.
+* Lightweight and minimally invasive integration.
+* Flexible and expressive `DSL` builder syntax.
+* Support for arbitrary types, including `generics`, `collections` and complex nested structures.
+* Detects conflict for duplicate Model definitions.
+* Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) annotations.
+* Support for [Jackson](https://github.com/FasterXML/jackson-module-kotlin) annotations (under development).
+* Generate schema outputs in `YAML` or `JSON` format,
+* Includes a debug panel for inspecting schema generation issues.
 
 ---
 

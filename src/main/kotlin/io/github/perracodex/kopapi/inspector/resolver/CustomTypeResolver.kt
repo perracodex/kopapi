@@ -9,9 +9,9 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
 import io.github.perracodex.kopapi.inspector.descriptor.ElementName
-import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
+import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.safeName
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -58,7 +58,7 @@ internal class CustomTypeResolver(private val typeInspector: TypeInspector) {
 
         // If the custom type has not been processed yet, create a schema for it and cache it.
         if (!typeInspector.isCached(kType = kType)) {
-            val primitiveSchema: Schema.Primitive = Schema.Primitive(
+            val primitiveSchema: ElementSchema.Primitive = ElementSchema.Primitive(
                 schemaType = customType.apiType,
                 format = customType.apiFormat.trimOrNull(),
                 minLength = customType.minLength,

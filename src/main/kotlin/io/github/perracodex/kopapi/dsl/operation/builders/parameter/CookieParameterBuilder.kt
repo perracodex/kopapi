@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.parameter
 
+import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.types.ParameterStyle
@@ -26,6 +27,7 @@ import kotlin.reflect.KType
  * @see [PathParameterBuilder]
  * @see [QueryParameterBuilder]
  */
+@OperationDsl
 public class CookieParameterBuilder(
     public var required: Boolean = true,
     public var defaultValue: Any? = null,

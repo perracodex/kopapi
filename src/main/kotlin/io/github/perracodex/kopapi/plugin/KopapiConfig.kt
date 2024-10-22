@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.plugin
 
 import io.github.perracodex.kopapi.dsl.common.SecuritySchemeConfigurable
+import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
 import io.github.perracodex.kopapi.dsl.plugin.builders.CustomTypeBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.ServerBuilder
@@ -24,6 +25,7 @@ import kotlin.reflect.typeOf
 /**
  * Configuration for the [Kopapi] plugin.
  */
+@ConfigurationDsl
 public class KopapiConfig : SecuritySchemeConfigurable() {
     /**
      * Whether the plugin should be enabled (Default is `true`).

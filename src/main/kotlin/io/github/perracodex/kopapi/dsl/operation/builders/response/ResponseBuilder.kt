@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.response
 
+import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
@@ -27,6 +28,7 @@ import kotlin.reflect.typeOf
  * @see [ApiOperationBuilder.response]
  */
 @Suppress("DuplicatedCode")
+@OperationDsl
 public class ResponseBuilder {
     public var description: String by MultilineString()
     public var composition: Composition? = null

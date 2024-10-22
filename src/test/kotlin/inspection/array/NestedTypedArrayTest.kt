@@ -5,9 +5,9 @@
 package inspection.array
 
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
-import io.github.perracodex.kopapi.inspector.schema.Schema
 import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import kotlin.reflect.KType
@@ -40,11 +40,11 @@ class NestedTypedArrayTest {
 
         // Verify that the typeSchema is a reference to the NestedBoxArray schema.
         assertTrue(
-            actual = typeSchema.schema is Schema.Reference,
+            actual = typeSchema.schema is ElementSchema.Reference,
             message = "Expected schema to be a Schema.Reference"
         )
         assertEquals(
-            expected = "${Schema.Reference.PATH}${typeSchema.name}",
+            expected = "${ElementSchema.Reference.PATH}${typeSchema.name}",
             actual = typeSchema.schema.ref,
             message = "Reference value is incorrect"
         )
@@ -61,7 +61,7 @@ class NestedTypedArrayTest {
         val nestedBoxArraySchema: TypeSchema = schemasSet.find { it.name == typeSchema.name }
             ?: fail("NestedBoxArray schema not found")
         assertTrue(
-            actual = nestedBoxArraySchema.schema is Schema.Object,
+            actual = nestedBoxArraySchema.schema is ElementSchema.Object,
             message = "NestedBoxArray schema should be a Schema.Object"
         )
 
@@ -78,25 +78,25 @@ class NestedTypedArrayTest {
 
         // Get the schema of the 'data' property.
         assertTrue(
-            actual = dataProperty.schema is Schema.Array,
+            actual = dataProperty.schema is ElementSchema.Array,
             message = "Data property schema should be a Schema.Array"
         )
 
         // Validate the outer array items.
-        val outerArrayItemsSchema: Schema = dataProperty.schema.items
+        val outerArrayItemsSchema: ElementSchema = dataProperty.schema.items
         assertTrue(
-            actual = outerArrayItemsSchema is Schema.Array,
+            actual = outerArrayItemsSchema is ElementSchema.Array,
             message = "Outer array items schema should be a Schema.Array"
         )
 
         // Validate the inner array items.
-        val innerArrayItemsSchema: Schema = outerArrayItemsSchema.items
+        val innerArrayItemsSchema: ElementSchema = outerArrayItemsSchema.items
         assertTrue(
-            actual = innerArrayItemsSchema is Schema.Reference,
+            actual = innerArrayItemsSchema is ElementSchema.Reference,
             message = "Inner array items schema should be a Schema.Reference"
         )
         assertEquals(
-            expected = "${Schema.Reference.PATH}Box",
+            expected = "${ElementSchema.Reference.PATH}Box",
             actual = innerArrayItemsSchema.ref,
             message = "Inner array items schema reference should be to Box"
         )
@@ -105,7 +105,7 @@ class NestedTypedArrayTest {
         val boxSchema: TypeSchema = schemasSet.find { it.name == "Box" }
             ?: fail("Box schema not found")
         assertTrue(
-            actual = boxSchema.schema is Schema.Object,
+            actual = boxSchema.schema is ElementSchema.Object,
             message = "Box schema should be a Schema.Object"
         )
 
@@ -162,7 +162,7 @@ class NestedTypedArrayTest {
 
         // Check the format if provided.
         expectedFormat?.let {
-            if (property.schema is Schema.Primitive) {
+            if (property.schema is ElementSchema.Primitive) {
                 assertEquals(
                     expected = expectedFormat.value,
                     actual = property.schema.format,
@@ -176,13 +176,13 @@ class NestedTypedArrayTest {
                     message = "Property '$propertyName' should have type '$expectedType'"
                 )
             } else {
-                fail("Property '$propertyName' is expected to be a Schema.Primitive with a format")
+                fail("Property '$propertyName' is expected to be a ElementSchema.Primitive with a format")
             }
         }
 
         // Check if the property is a reference.
         if (isReference) {
-            if (property.schema is Schema.Reference) {
+            if (property.schema is ElementSchema.Reference) {
                 referenceRef?.let {
                     assertEquals(
                         expected = property.schema.ref,
@@ -191,7 +191,7 @@ class NestedTypedArrayTest {
                     )
                 }
             } else {
-                fail("Property '$propertyName' should be a Schema.Reference")
+                fail("Property '$propertyName' should be a ElementSchema.Reference")
             }
         }
     }

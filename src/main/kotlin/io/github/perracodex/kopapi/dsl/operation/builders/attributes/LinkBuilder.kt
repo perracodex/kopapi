@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.attributes
 
+import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiLinkParameter
@@ -20,6 +21,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [ResponseBuilder]
  * @see [HeaderBuilder]
  */
+@OperationDsl
 public class LinkBuilder(
     public val operationId: String
 ) {

@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.elements
 
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
+import io.github.perracodex.kopapi.schema.MultipartSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.safeName
@@ -16,23 +17,23 @@ import kotlin.reflect.KType
  * Represents the metadata for the request body of an API endpoint.
  *
  * @property description A human-readable description of the parameter.
- * @property content A map of [ContentType] to a set of [KType] that this request requires.
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
  * @property required Indicates whether the request body is mandatory.
- * @property deprecated Indicates whether the request body is deprecated and should be avoided.
+ * @property content A map of [ContentType] to a set of [KType] that this request requires.
+ * @property multipartContent A list of [MultipartSchema] for multipart requests.
  *
  * @see [ApiOperationBuilder.requestBody]
  */
 @PublishedApi
 internal data class ApiRequestBody internal constructor(
     val description: String?,
-    val content: Map<ContentType, Set<KType>>,
-    val composition: Composition?,
     val required: Boolean,
-    val deprecated: Boolean?
+    val composition: Composition?,
+    val content: Map<ContentType, Set<KType>>?,
+    val multipartContent: Map<ContentType, MultipartSchema>?,
 ) {
     init {
-        content.forEach { (_, types) ->
+        content?.forEach { (_, types) ->
             if (types.isEmpty()) {
                 throw KopapiException("At least one Type must be associated with each ContentType.")
             }

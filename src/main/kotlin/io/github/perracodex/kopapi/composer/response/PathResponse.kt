@@ -21,12 +21,8 @@ import io.ktor.http.*
  */
 @ComposerAPI
 internal data class PathResponse(
-    @JsonProperty("description")
-    val description: String?,
-    @JsonProperty("headers")
-    val headers: Set<ApiHeader>?,
-    @JsonProperty("content")
-    var content: Map<ContentType, OpenAPiSchema.ContentSchema>?,
-    @JsonProperty("links")
-    val links: Set<ApiLink>?
+    @JsonProperty("description") val description: String?,
+    @JsonProperty("headers") val headers: Set<ApiHeader>?,
+    @JsonProperty("content") var content: Map<ContentType, OpenAPiSchema.ContentSchema>?,
+    @JsonProperty("links") val links: Set<ApiLink>?
 )
