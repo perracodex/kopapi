@@ -118,7 +118,7 @@ public class RequestBodyBuilder(
         // Using the contentType.contentType property for comparison, as all
         // multipart content types share the same content type, avoiding this hardcoding it here.
         if (contentType.contentType != ContentType.MultiPart.FormData.contentType) {
-            throw IllegalArgumentException(
+            throw KopapiException(
                 "Invalid content type for multipart. Must be of type: `ContentType.MultiPart`"
             )
         }
