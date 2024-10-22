@@ -15,7 +15,10 @@ import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
  * @see [SchemaFactory]
  * @see [ApiType]
  */
-public enum class ApiFormat(@JsonValue internal val value: String) {
+public enum class ApiFormat(@JsonValue @PublishedApi internal val value: String) {
+    /** Represents a schema for a `binary` type, allowing base64-encoded binary data. */
+    BINARY("binary"),
+
     /** Represents a schema for a `byte` type, allowing base64-encoded binary data. */
     BYTE(value = "byte"),
 
