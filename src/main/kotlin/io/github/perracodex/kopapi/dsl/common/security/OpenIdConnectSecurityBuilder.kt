@@ -23,7 +23,7 @@ import io.ktor.http.*
  * @see [MutualTLSSecurityBuilder]
  */
 @SecurityDsl
-public class OpenIdConnectSecurityBuilder {
+public class OpenIdConnectSecurityBuilder internal constructor() {
     public var description: String by MultilineString()
 
     /**

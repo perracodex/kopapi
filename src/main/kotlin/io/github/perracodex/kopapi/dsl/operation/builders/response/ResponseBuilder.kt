@@ -27,9 +27,8 @@ import kotlin.reflect.typeOf
  *
  * @see [ApiOperationBuilder.response]
  */
-@Suppress("DuplicatedCode")
 @OperationDsl
-public class ResponseBuilder {
+public class ResponseBuilder @PublishedApi internal constructor() {
     public var description: String by MultilineString()
     public var composition: Composition? = null
 
@@ -68,7 +67,19 @@ public class ResponseBuilder {
      * @param contentType Optional set of [ContentType]s to associate with the type.
      *                    Defaults to the primary `ContentType`, or to `JSON` if no primary type is set.
      */
+    @Suppress("DuplicatedCode")
     public inline fun <reified T : Any> addType(contentType: Set<ContentType>? = null) {
+        // When a response is built, the first registered type is always the primary one.
+        // Subsequent types are registered after the primary one.
+        // Therefore, any subtype which does not specify its own ContentType will
+        // share the primary ContentType.
+        if (T::class == Unit::class || T::class == Nothing::class || T::class == Any::class) {
+            if (this.primaryContentType == null) {
+                this.primaryContentType = contentType ?: setOf(ContentType.Application.Json)
+            }
+            return
+        }
+
         // Ensure there's at least one ContentType.
         val effectiveContentTypes: Set<ContentType> = when {
             contentType.isNullOrEmpty() -> primaryContentType ?: setOf(ContentType.Application.Json)

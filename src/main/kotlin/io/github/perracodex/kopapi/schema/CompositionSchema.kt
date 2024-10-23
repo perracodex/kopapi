@@ -17,11 +17,10 @@ import io.github.perracodex.kopapi.utils.safeName
  * @property definition A unique identifier for debugging and clarity during schema generation.
  * @property ordinal Specifies the order of schema appearance when sorting.
  */
-@PublishedApi
 internal sealed class CompositionSchema(
     @JsonIgnore open val definition: String,
     @JsonIgnore open val ordinal: Int
-) : ISchema {
+) : IOpenApiSchema {
     /**
      * Represents a schema that allows for one or more schemas to be used interchangeably.
      *

@@ -9,7 +9,7 @@ import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.schema.ElementSchema
-import io.github.perracodex.kopapi.schema.ISchema
+import io.github.perracodex.kopapi.schema.IOpenApiSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.ktor.http.ContentType
 import kotlin.collections.component1
@@ -64,7 +64,7 @@ internal object ResponseComposer {
             val finalContent: Map<ContentType, OpenAPiSchema.ContentSchema> = schemasByContentType
                 .toSortedMap(compareBy({ it.contentType }, { it.contentSubtype }))
                 .mapValues { (_, schemas) ->
-                    ISchema.determineSchema(
+                    IOpenApiSchema.determineSchema(
                         composition = apiResponse.composition,
                         schemas = schemas.sortedBy { it.ordinal }
                     )

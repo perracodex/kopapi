@@ -20,11 +20,10 @@ import io.github.perracodex.kopapi.utils.safeName
  * @property definition A unique identifier for debugging and clarity during schema generation.
  * @property ordinal Specifies the order of schema appearance when sorting.
  */
-@PublishedApi
 internal sealed class ElementSchema(
     @JsonIgnore open val definition: String,
     @JsonIgnore open val ordinal: Int
-) : ISchema {
+) : IOpenApiSchema {
     /**
      * Represents an object schema with a set of named properties.
      *
@@ -50,7 +49,7 @@ internal sealed class ElementSchema(
         @JsonIgnore val schemaType: ApiType = ApiType.OBJECT,
         @JsonIgnore val schemaName: String
     ) : ElementSchema(definition = definition, ordinal = 1) {
-        @JsonProperty("\$ref")
+        @JsonProperty(REFERENCE)
         val ref: String = "$PATH$schemaName"
 
         companion object {
@@ -58,7 +57,6 @@ internal sealed class ElementSchema(
             const val PATH: String = "#/components/schemas/"
 
             /** The key used to reference another schema. */
-            @Suppress("unused")
             const val REFERENCE: String = "\$ref"
         }
     }

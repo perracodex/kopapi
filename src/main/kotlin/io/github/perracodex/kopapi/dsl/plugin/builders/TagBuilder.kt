@@ -10,17 +10,9 @@ import io.github.perracodex.kopapi.system.Tracer
 
 /**
  * Builder constructing top level tags for the API.
- *
- * #### Sample Usage
- * ```
- * tags {
- *      add(name = "Items", description = "Operations related to items.")
- *      add(name = "Users", description = "Operations related to users.")
- * }
- * ```
  */
 @ConfigurationDsl
-public class TagBuilder {
+public class TagBuilder internal constructor() {
     private val tracer = Tracer<TagBuilder>()
 
     /** The internal set to enforce uniqueness of tags. */
@@ -35,6 +27,7 @@ public class TagBuilder {
      *      add(name = "Items", description = "Operations related to items.")
      *      add(name = "Users", description = "Operations related to users.")
      * }
+     *```
      *
      * @param name The name of the tag.
      * @param description Optional description of the tag.

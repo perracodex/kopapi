@@ -6,12 +6,12 @@ package io.github.perracodex.kopapi.dsl.operation.builders.request
 
 import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
+import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import io.ktor.http.content.*
 import kotlin.reflect.typeOf
-
 
 /**
  * Builder for constructing multipart request bodies.
@@ -21,7 +21,7 @@ import kotlin.reflect.typeOf
  * @property description An optional description of the multipart request.
  */
 @OperationDsl
-public class MultipartBuilder {
+public class MultipartBuilder internal constructor() {
     /** Holds the parts of the multipart request. */
     @PublishedApi
     internal val parts: MutableList<ApiMultipart.Part> = mutableListOf()
@@ -33,26 +33,23 @@ public class MultipartBuilder {
      *
      * #### Sample Usage
      * ```
-     * // Default ContentType.MultiPart.FormData
+     * // Implicit ContentType.MultiPart.FormData (default).
      * multipart {
-     *      part<PartData.FileItem>("myFilePart") {
+     *      part<PartData.FileItem>("file") {
      *          description = "The file to upload."
+     *      }
+     *      part<PartData.FormItem>("metadata") {
+     *          description = "Metadata about the file, provided as JSON."
      *      }
      * }
      *
-     * // Specify the part with explicit details.
-     * multipart(contentType = ContentType.MultiPart.Mixed) {
-     *      // Upload the profile picture as an image (PNG)
-     *      part<PartData.FileItem>("img", contentType=ContentType.Image.PNG) {
-     *          description = "The profile picture."
-     *          schemaType = ApiType.STRING
-     *          schemaFormat = ApiFormat.BINARY
+     * // Explicit ContentType.MultiPart.Encrypted.
+     * multipart(contentType = ContentType.MultiPart.Encrypted) {
+     *      part<PartData.FileItem>("secureFile") {
+     *          description = "A securely uploaded file."
      *      }
-     *
-     *      // Add a form field for employee's name (plain text)
-     *      part<PartData.FormItem>("employeeName") {
-     *          description = "The employee's full name."
-     *          schemaType = ApiType.STRING
+     *      part<PartData.FormItem>("metadata") {
+     *          description = "Additional metadata about the file."
      *      }
      * }
      * ```
@@ -67,11 +64,16 @@ public class MultipartBuilder {
         contentType: ContentType? = null,
         configure: PartBuilder.() -> Unit = {}
     ) {
+        val partName: String = name.trim()
+        if (parts.find { it.name.equals(partName, ignoreCase = true) } != null) {
+            throw KopapiException("Part with name '$name' has already being defined in the multipart request.")
+        }
+
         val partBuilder: PartBuilder = PartBuilder(name = name).apply(configure)
 
         val part = ApiMultipart.Part(
             type = typeOf<T>(),
-            name = name.trim(),
+            name = partName,
             contentType = contentType,
             schemaType = partBuilder.schemaType,
             schemaFormat = partBuilder.schemaFormat,
@@ -79,8 +81,6 @@ public class MultipartBuilder {
             isRequired = partBuilder.required
         )
 
-        parts.removeIf { it.name.equals(part.name, ignoreCase = true) }.also {
-            parts.add(part)
-        }
+        parts.add(part)
     }
 }

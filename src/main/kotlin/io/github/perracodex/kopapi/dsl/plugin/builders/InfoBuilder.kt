@@ -63,7 +63,7 @@ import io.github.perracodex.kopapi.utils.string.MultilineString
  * @property license The license information for the API.
  */
 @ConfigurationDsl
-public class InfoBuilder {
+public class InfoBuilder internal constructor() {
     public var title: String = "API Title"
     public var description: String by MultilineString()
     public var version: String = "1.0.0"

@@ -10,28 +10,25 @@ import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.safeName
 import io.ktor.http.*
+import io.ktor.http.content.*
 
 /**
- * Defines the schema types for multipart data used in `PartData` within Ktor's form-data requests.
- *
- * Multipart schemas represent various parts of form-data requests,
- * such as files, binary data, or form fields.
+ * Defines the schema types for multipart data used in [PartData] within Ktor's form-data requests.
  *
  * @property definition A unique identifier for debugging and clarity during schema generation.
- * @property name The name of the multipart field or part in the request.
  * @property isRequired Indicates if the part is required for the request.
  */
-@PublishedApi
 internal sealed class MultipartSchema(
     @JsonIgnore open val definition: String,
-    @JsonIgnore open val name: String,
-    @JsonIgnore open val isRequired: Boolean,
-) : ISchema {
-
+    @JsonIgnore open val isRequired: Boolean
+) : IOpenApiSchema {
     /**
-     * Represents an object schema for multipart data with a set of named properties.
+     * Represents an object schema for multipart data with a set of named `part` properties.
      *
+     * @property description An optional description for this schema.
+     * @property schemaType The schema type of the object.
      * @property properties A map of property names to their corresponding multipart schemas.
+     * @property requiredFields A list of required field names, if any.
      */
     data class Object(
         @JsonIgnore override val definition: String = Object::class.safeName(),
@@ -41,135 +38,35 @@ internal sealed class MultipartSchema(
         @JsonProperty("required") val requiredFields: List<String>?,
     ) : MultipartSchema(
         definition = definition,
-        name = "",
         isRequired = true
     )
 
     /**
-     * Represents a schema for files in multipart data (e.g., `PartData.FileItem`).
+     * Represents a single `part` of a multipart request.
      *
-     * @property name The name of the part in the form-data request, used as the property name.
-     * @property schemaType The API type of the schema as defined in the OpenAPI specification.
-     * @property format The format, which will be `binary` for file uploads.
-     * @property description An optional description for this schema.
-     * @property contentType The content type for the part.
+     * @property name The name of the multipart field or part in the request.
+     * @property contentType The content type of the part.
+     * @property schemaType The schema type of the part.
+     * @property schemaFormat Optional schema format for the part.
+     * @property description An optional description for this part.
      */
-    data class FileItem(
-        @JsonIgnore override val definition: String = FileItem::class.safeName(),
-        @JsonIgnore override val name: String,
+    data class PartItem(
+        @JsonIgnore override val definition: String = PartItem::class.safeName(),
         @JsonIgnore override val isRequired: Boolean,
-        @JsonIgnore val contentType: ContentType = ContentType.Application.OctetStream,
-        @JsonIgnore val schemaType: ApiType = ApiType.STRING,
-        @JsonIgnore val schemaFormat: ApiFormat? = ApiFormat.BINARY,
+        @JsonIgnore val name: String,
+        @JsonIgnore val contentType: ContentType,
+        @JsonIgnore val schemaType: ApiType,
+        @JsonIgnore val schemaFormat: ApiFormat?,
         @JsonProperty("description") val description: String?
     ) : MultipartSchema(
         definition = definition,
-        name = name,
         isRequired = isRequired
     ) {
+        /**
+         * Constructs the OpenApi schema for the part item.
+         */
         @JsonProperty("content")
-        val content: Map<String, Map<String, Any?>> = buildSchema(
-            contentType = contentType,
-            schemaType = schemaType,
-            schemaFormat = schemaFormat
-        )
-    }
-
-    /**
-     * Represents a schema for form items (e.g., `PartData.FormItem`).
-     *
-     * @property name The name of the part in the form-data request, used as the property name.
-     * @property description An optional description for this schema.
-     */
-    data class FormItem(
-        @JsonIgnore override val definition: String = FormItem::class.safeName(),
-        @JsonIgnore override val name: String,
-        @JsonIgnore override val isRequired: Boolean,
-        @JsonIgnore val contentType: ContentType = ContentType.Text.Plain,
-        @JsonIgnore val schemaType: ApiType = ApiType.STRING,
-        @JsonIgnore val schemaFormat: ApiFormat? = null,
-        @JsonProperty("description") val description: String?
-    ) : MultipartSchema(
-        definition = definition,
-        name = name,
-        isRequired = isRequired
-    ) {
-        @JsonProperty("content")
-        val content: Map<String, Map<String, Any?>> = buildSchema(
-            contentType = contentType,
-            schemaType = schemaType,
-            schemaFormat = schemaFormat
-        )
-    }
-
-    /**
-     * Represents a schema for binary items (e.g., `PartData.BinaryItem`).
-     *
-     * @property name The name of the part in the form-data request, used as the property name.
-     * @property description An optional description for this schema.
-     */
-    data class BinaryItem(
-        @JsonIgnore override val definition: String = BinaryItem::class.safeName(),
-        @JsonIgnore override val name: String,
-        @JsonIgnore override val isRequired: Boolean,
-        @JsonIgnore val contentType: ContentType = ContentType.Application.OctetStream,
-        @JsonIgnore val schemaType: ApiType = ApiType.STRING,
-        @JsonIgnore val schemaFormat: ApiFormat? = ApiFormat.BINARY,
-        @JsonProperty("description") val description: String?
-    ) : MultipartSchema(
-        definition = definition,
-        name = name,
-        isRequired = isRequired
-    ) {
-        @JsonProperty("content")
-        val content: Map<String, Map<String, Any?>> = buildSchema(
-            contentType = contentType,
-            schemaType = schemaType,
-            schemaFormat = schemaFormat
-        )
-    }
-
-    /**
-     * Represents a schema for binary channel items (e.g., `PartData.BinaryChannelItem`).
-     *
-     * @property name The name of the part in the form-data request, used as the property name.
-     * @property description An optional description for this schema.
-     */
-    data class BinaryChannelItem(
-        @JsonIgnore override val definition: String = BinaryChannelItem::class.safeName(),
-        @JsonIgnore override val name: String,
-        @JsonIgnore override val isRequired: Boolean,
-        @JsonIgnore val contentType: ContentType = ContentType.Application.OctetStream,
-        @JsonIgnore val schemaType: ApiType = ApiType.STRING,
-        @JsonIgnore val schemaFormat: ApiFormat? = ApiFormat.BINARY,
-        @JsonProperty("description") val description: String?
-    ) : MultipartSchema(
-        definition = definition,
-        name = name,
-        isRequired = isRequired
-    ) {
-        @JsonProperty("content")
-        val content: Map<String, Map<String, Any?>> = buildSchema(
-            contentType = contentType,
-            schemaType = schemaType,
-            schemaFormat = schemaFormat
-        )
-    }
-
-    /**
-     * Constructs the schema for the given content type, schema type, and schema format.
-     *
-     * @param contentType The content type of the schema.
-     * @param schemaType The API type of the schema.
-     * @param schemaFormat The API format of the schema.
-     * @return A map representing the schema content.
-     */
-    internal fun buildSchema(
-        contentType: ContentType,
-        schemaType: ApiType,
-        schemaFormat: ApiFormat?
-    ): Map<String, Map<String, Any?>> {
-        return mapOf(
+        val content: Map<String, Map<String, Any?>> = mapOf(
             contentType.toString() to mapOf(
                 "schema" to mapOf(
                     "type" to schemaType,

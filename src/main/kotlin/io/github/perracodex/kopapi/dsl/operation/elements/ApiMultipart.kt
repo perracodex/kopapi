@@ -60,7 +60,7 @@ internal data class ApiMultipart(
     ) {
         init {
             if (name.isBlank()) {
-                throw KopapiException("Multipart part name cannot be empty.")
+                throw KopapiException("Name for Multipart-Part cannot be empty.")
             }
 
             // Ensure the type is a subtype of PartData.

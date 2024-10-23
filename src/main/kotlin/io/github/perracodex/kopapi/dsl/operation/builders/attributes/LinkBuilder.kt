@@ -56,7 +56,11 @@ public class LinkBuilder(
         name: String,
         value: String
     ) {
-        parameters.add(ApiLinkParameter(name = name, value = value))
+        val apiParameter = ApiLinkParameter(
+            name = name.trim(),
+            value = value.trim()
+        )
+        parameters.add(apiParameter)
     }
 
     /**

@@ -9,10 +9,9 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.types.Composition
 
 /**
- * Marker interface for schema types used in OpenAPI.
- * It is used to mark classes as valid schema types in the OpenAPI generation process.
+ * Marker interface for schema types used in OpenAPI generation process.
  */
-internal interface ISchema {
+internal interface IOpenApiSchema {
 
     companion object {
         /**
@@ -30,7 +29,7 @@ internal interface ISchema {
          */
         @OptIn(ComposerAPI::class)
         fun determineSchema(composition: Composition?, schemas: List<ElementSchema>): OpenAPiSchema.ContentSchema {
-            val combinedSchema: ISchema = when {
+            val combinedSchema: IOpenApiSchema = when {
                 schemas.size == 1 -> schemas.first()
                 else -> when (composition ?: Composition.ANY_OF) {
                     Composition.ANY_OF -> CompositionSchema.AnyOf(anyOf = schemas)

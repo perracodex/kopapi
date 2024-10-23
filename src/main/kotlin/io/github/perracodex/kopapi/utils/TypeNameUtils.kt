@@ -20,7 +20,6 @@ internal fun KType.nativeName(): String {
  * If the name cannot be determined, it creates a fallback name based on the type structure.
  */
 internal fun KType.safeName(): String {
-    // Attempt to retrieve the KClass from the classifier and use its safe name if possible.
     val kClass: KClass<*>? = this.classifier as? KClass<*>
     return kClass?.safeName()
         ?: "UnknownType_${this.toString().cleanName()}"

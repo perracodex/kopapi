@@ -335,17 +335,26 @@ public class ApiOperationBuilder internal constructor(
      *
      * #### Sample Multipart
      * ```
-     * // Default ContentType.MultiPart.FormData
-     * multipart {
-     *      part<PartData.FileItem>("myFilePart") {
-     *          description = "The file to upload."
+     * requestBody<Unit> {
+     *      // Implicit ContentType.MultiPart.FormData (default)
+     *      multipart {
+     *          part<PartData.FileItem>("file") {
+     *              description = "The file to upload."
+     *          }
+     *          part<PartData.FormItem>("metadata") {
+     *              description = "Metadata about the file, provided as JSON."
+     *          }
      *      }
-     * }
      *
-     * // Specify the part type explicitly.
-     * multipart(contentType = ContentType.MultiPart.Signed) {
-     *      part<PartData.FormItem>("myFormPart") {
-     *      description = "The form data."
+     *      // Explicit ContentType.MultiPart.Encrypted
+     *      multipart(contentType = ContentType.MultiPart.Encrypted) {
+     *          part<PartData.FileItem>("secureFile") {
+     *              description = "A securely uploaded file."
+     *          }
+     *          part<PartData.FormItem>("metadata") {
+     *              description = "Additional metadata about the file."
+     *          }
+     *      }
      * }
      * ```
      *
@@ -368,7 +377,6 @@ public class ApiOperationBuilder internal constructor(
             val builder: RequestBodyBuilder = RequestBodyBuilder().apply {
                 // Associate the primary type T with the builder's contentTypes.
                 addType<T>(contentType = contentType)
-
                 // Apply additional configurations, which can include more types.
                 apply(configure)
             }
@@ -496,16 +504,8 @@ public class ApiOperationBuilder internal constructor(
         configure: ResponseBuilder.() -> Unit = {}
     ) {
         val builder: ResponseBuilder = ResponseBuilder().apply {
-            // Associate the primary type T with the builder's contentTypes if T is not Unit, Nothing, or Any.
-            if (T::class != Unit::class && T::class != Nothing::class && T::class != Any::class) {
-                addType<T>(contentType = contentType)
-            } else {
-                // If no type is provided, default to JSON,
-                // so that subsequent types which do not specify their
-                // own ContentType will default to JSON.
-                this.primaryContentType = setOf(ContentType.Application.Json)
-            }
-
+            // Associate the primary type and ContentType.
+            addType<T>(contentType = contentType)
             // Apply additional configurations, which can include more types.
             apply(configure)
         }

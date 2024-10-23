@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.dsl.plugin.builders
 
 import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense
+import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
  * Builder for the `License` information.
@@ -22,7 +23,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense
  * @property url The URL of the license.
  */
 @ConfigurationDsl
-public class LicenseBuilder {
+public class LicenseBuilder internal constructor() {
     public var name: String? = null
     public var url: String? = null
 
@@ -30,7 +31,7 @@ public class LicenseBuilder {
      * Produces an immutable [ApiLicense] instance from the builder.
      */
     internal fun build(): ApiLicense = ApiLicense(
-        name = name,
-        url = url
+        name = name.trimOrNull(),
+        url = url.trimOrNull()
     )
 }

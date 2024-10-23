@@ -13,6 +13,7 @@ import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
+import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
@@ -26,7 +27,6 @@ import kotlin.reflect.typeOf
  *
  * @see [ApiOperationBuilder.requestBody]
  */
-@Suppress("DuplicatedCode")
 @OperationDsl
 public class RequestBodyBuilder(
     public var required: Boolean = true,
@@ -70,6 +70,7 @@ public class RequestBodyBuilder(
      * @param contentType Optional set of [ContentType]s to associate with the type.
      *                    Defaults to the primary `ContentType`, or to `JSON` if no primary type is set.
      */
+    @Suppress("DuplicatedCode")
     public inline fun <reified T : Any> addType(contentType: Set<ContentType>? = null) {
         // Ensure there's at least one ContentType.
         val effectiveContentTypes: Set<ContentType> = when {
@@ -80,7 +81,7 @@ public class RequestBodyBuilder(
         // When a request is built, the first registered type is always the primary one.
         // Subsequent types are registered after the primary one.
         // Therefore, any subtype which does not specify its own ContentType will
-        // default to the primary ContentType.
+        // share the primary ContentType.
         if (primaryContentType == null) {
             primaryContentType = effectiveContentTypes
         }
@@ -96,18 +97,24 @@ public class RequestBodyBuilder(
      *
      * #### Sample Usage
      * ```
-     * // Default ContentType.MultiPart.FormData
+     * // Implicit ContentType.MultiPart.FormData (default).
      * multipart {
-     *      part<PartData.FileItem>("myFilePart") {
+     *      part<PartData.FileItem>("file") {
      *          description = "The file to upload."
+     *      }
+     *      part<PartData.FormItem>("metadata") {
+     *          description = "Metadata about the file, provided as JSON."
      *      }
      * }
      *
-     * // Specify the part with explicit details.
-     * part<PartData.FileItem>("avatar", contentType = ContentType.Image.PNG) {
-     *      description = "The profile picture."
-     *      schemaType = ApiType.STRING
-     *      schemaFormat = ApiFormat.BINARY
+     * // Explicit ContentType.MultiPart.Encrypted.
+     * multipart(contentType = ContentType.MultiPart.Encrypted) {
+     *      part<PartData.FileItem>("secureFile") {
+     *          description = "A securely uploaded file."
+     *      }
+     *      part<PartData.FormItem>("metadata") {
+     *          description = "Additional metadata about the file."
+     *      }
      * }
      * ```
      */
@@ -134,24 +141,30 @@ public class RequestBodyBuilder(
     internal fun build(): ApiRequestBody {
         // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to its specific types.
         val contentMap: Map<ContentType, Set<KType>> = allTypes
-            .mapValues { it.value.toSet() }
-            .filterValues { it.isNotEmpty() }
-            .toSortedMap(
+            .mapValues { (_, types) ->
+                // Filter out types that are not explicitly defined.
+                types.filterNot { type ->
+                    val classifier: KClassifier? = type.classifier
+                    (classifier == Unit::class) || (classifier == Any::class) || (classifier == Nothing::class)
+                }.toSet()
+            }.filter { (_, types) ->
+                types.isNotEmpty()
+            }.toSortedMap(
                 compareBy(
                     { it.contentType },
                     { it.contentSubtype }
                 )
             )
 
-        // Determine the final composition without mutating the builder's property.
-        val contentComposition: Composition? = when {
-            allTypes.size > 1 && composition == null -> Composition.ANY_OF
-            allTypes.size > 1 -> composition
-            else -> null
+        // A request must either define an explicit content type or a multipart part. Both can also be defined.
+        if (contentMap.isEmpty() && multipartParts.isEmpty()) {
+            throw KopapiException("RequestBody must define either an explicit type, a multipart part, or both.")
         }
 
-        if (allTypes.isEmpty() && multipartParts.isEmpty()) {
-            throw KopapiException("RequestBody must have at least one type or a multipart part defined.")
+        // Determine the final composition without mutating the builder's property.
+        val contentComposition: Composition? = when {
+            contentMap.size > 1 -> composition ?: Composition.ANY_OF
+            else -> null
         }
 
         return ApiRequestBody(

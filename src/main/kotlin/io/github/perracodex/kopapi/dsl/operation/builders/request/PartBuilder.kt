@@ -19,7 +19,7 @@ import io.github.perracodex.kopapi.utils.string.MultilineString
  * @property schemaFormat Optional schema format for the part.
  */
 @OperationDsl
-public class PartBuilder @PublishedApi internal constructor(
+public class PartBuilder(
     public val name: String,
     public var required: Boolean = true,
     public var schemaType: ApiType? = null,

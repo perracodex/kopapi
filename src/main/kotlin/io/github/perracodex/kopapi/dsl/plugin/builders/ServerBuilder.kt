@@ -30,7 +30,7 @@ import io.ktor.http.*
  * @see [ServerVariableBuilder]
  */
 @ConfigurationDsl
-public class ServerBuilder {
+public class ServerBuilder internal constructor() {
     private val tracer = Tracer<ServerBuilder>()
 
     /** The internal set to enforce uniqueness of server configurations. */
