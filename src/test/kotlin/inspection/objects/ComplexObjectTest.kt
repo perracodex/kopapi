@@ -5,9 +5,9 @@
 package inspection.objects
 
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
-import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.schema.ElementSchema
+import io.github.perracodex.kopapi.schema.SchemaProperty
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import kotlin.reflect.KType

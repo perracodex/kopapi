@@ -6,7 +6,6 @@ package io.github.perracodex.kopapi.schema
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.utils.SchemaConstraints
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.safeName
@@ -29,11 +28,13 @@ internal sealed class ElementSchema(
      *
      * @property schemaType The API type of the schema as defined in the OpenAPI specification.
      * @property properties A map of property names to their corresponding schemas and metadata.
+     * @property required A list of required property names.
      */
     data class Object(
         @JsonIgnore override val definition: String = Object::class.safeName(),
         @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
-        @JsonProperty("properties") val properties: MutableMap<String, SchemaProperty> = mutableMapOf()
+        @JsonProperty("properties") val properties: MutableMap<String, SchemaProperty> = mutableMapOf(),
+        @JsonProperty("required") var required: MutableSet<String>? = null
     ) : ElementSchema(definition = definition, ordinal = 0)
 
     /**

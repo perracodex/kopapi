@@ -328,4 +328,12 @@ internal object SchemaRegistry {
             return schema
         } ?: throw KopapiException("API Configuration not found.")
     }
+
+    /**
+     * Retrieves the set of [TypeSchema] objects generated from the registered API metadata.
+     */
+    fun getSchemaTypes(): Set<TypeSchema> {
+        processTypeSchemas()
+        return typeSchemas
+    }
 }

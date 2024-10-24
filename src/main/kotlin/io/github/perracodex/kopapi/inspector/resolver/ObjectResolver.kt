@@ -8,11 +8,11 @@ import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
-import io.github.perracodex.kopapi.inspector.schema.SchemaProperty
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.PrimitiveFactory
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 import io.github.perracodex.kopapi.schema.ElementSchema
+import io.github.perracodex.kopapi.schema.SchemaProperty
 import io.github.perracodex.kopapi.utils.nativeName
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
@@ -129,6 +129,9 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
         // Retrieve all relevant properties of the generic class.
         val classProperties: List<KProperty1<out Any, *>> = typeInspector.getClassProperties(kClass = kClass)
 
+        // Hold the required properties for the schema.
+        val requiredProperties: MutableSet<String> = mutableSetOf()
+
         // Traverse each property to resolve its schema using the merged type parameters.
         classProperties.forEach { property ->
             val (name: String, schemaProperty: SchemaProperty) = typeInspector.traverseProperty(
@@ -136,7 +139,19 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
                 property = property,
                 typeArgumentBindings = typeArgumentBindings
             )
+
+            if (schemaProperty.isRequired) {
+                requiredProperties.add(name)
+            }
+
             propertiesSchemas.properties[name] = schemaProperty
+        }
+
+        // Add required properties to the schema.
+        if (requiredProperties.isNotEmpty()) {
+            propertiesSchemas.required = propertiesSchemas.required?.apply {
+                addAll(requiredProperties)
+            } ?: requiredProperties
         }
 
         // Once done traversing remove the processing type from the in-memory

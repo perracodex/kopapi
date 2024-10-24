@@ -7,14 +7,14 @@ package io.github.perracodex.kopapi.types
 /**
  * Defines how multiple schemas are logically combined in an OpenAPI specification.
  */
-public enum class Composition {
+public enum class Composition(internal val value: String) {
     /**
      * The data must comply against at least one of the provided schemas.
      *
      * Useful for supporting variations in data structure or type,
      * allowing a field to accept multiple distinct formats or configurations.
      */
-    ANY_OF,
+    ANY_OF(value = "anyOf"),
 
     /**
      * The data must validate against all provided schemas simultaneously,
@@ -22,7 +22,7 @@ public enum class Composition {
      *
      * Often used to add extra requirements or constraints on top of a base schema.
      */
-    ALL_OF,
+    ALL_OF(value = "allOf"),
 
     /**
      * The data must validate against exactly one of the provided schemas,
@@ -30,5 +30,11 @@ public enum class Composition {
      *
      * Useful for defining non-overlapping variants of a data structure.
      */
-    ONE_OF
+    ONE_OF(value = "oneOf");
+
+    /** Returns the string value representing the OpenAPI format. */
+    public operator fun invoke(): String = value
+
+    /** Returns the string value representing the OpenAPI format. */
+    override fun toString(): String = value
 }

@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.composer
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.component.ComponentComposer
 import io.github.perracodex.kopapi.composer.info.InfoSectionComposer
 import io.github.perracodex.kopapi.composer.operation.OperationComposer
 import io.github.perracodex.kopapi.composer.security.GlobalSecurityRequirement
@@ -63,8 +64,14 @@ internal class SchemaComposer(
             securityObject = securityObject
         )
 
+        // Component schemas.
+        val componentSchemas: Map<String, Any?>? = ComponentComposer.compose(
+            typeSchemas = SchemaRegistry.getSchemaTypes()
+        )
+
         // Create the `components` object.
         val components: OpenAPiSchema.Components? = OpenAPiSchema.Components(
+            componentSchemas = componentSchemas,
             securitySchemes = securitySchemes
         ).takeIf { it.hasContent() }
 

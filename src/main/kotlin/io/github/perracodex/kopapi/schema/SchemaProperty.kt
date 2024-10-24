@@ -2,9 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.inspector.schema
-
-import io.github.perracodex.kopapi.schema.ElementSchema
+package io.github.perracodex.kopapi.schema
 
 /**
  * Represents a property within an object schema.

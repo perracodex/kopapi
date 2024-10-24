@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.composer
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.composer.operation.OperationObject
 import io.github.perracodex.kopapi.composer.security.SecurityRequirement
@@ -112,15 +113,15 @@ internal data class OpenAPiSchema(
 
     /**
      * Represents the components section of the OpenAPI schema.
-     *
      * The components section holds various reusable objects for different aspects of the API.
-     * In this context, it primarily includes security schemes that can be referenced throughout
-     * the schema to avoid duplication.
      *
+     * @property componentSchemas A map of schema names to their respective schema definitions.
      * @property securitySchemes A map of security scheme names to their respective [ApiSecurityScheme] definitions.
      */
+    @JsonTypeName("components")
     data class Components(
-        val securitySchemes: Map<String, ApiSecurityScheme>?
+        @JsonProperty("schemas") val componentSchemas: Map<String, Any?>?,
+        @JsonProperty("securitySchemes") val securitySchemes: Map<String, ApiSecurityScheme>?
     ) {
         /**
          * Checks if the components object contains any security schemes.
@@ -128,7 +129,7 @@ internal data class OpenAPiSchema(
          * @return `true` if there are one or more security schemes defined; `false` otherwise.
          */
         fun hasContent(): Boolean {
-            return !securitySchemes.isNullOrEmpty()
+            return !componentSchemas.isNullOrEmpty() || !securitySchemes.isNullOrEmpty()
         }
     }
 
