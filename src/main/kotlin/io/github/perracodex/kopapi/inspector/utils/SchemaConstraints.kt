@@ -74,7 +74,7 @@ internal object SchemaConstraints {
             }
 
             else -> {
-                // Ensure no string- or number-specific constraints are applied to other types (like arrays, booleans, etc.)
+                // Ensure no string or number-specific constraints are applied to other types (like arrays, booleans, etc.)
                 if (
                     listOf(
                         minLength,
@@ -86,7 +86,9 @@ internal object SchemaConstraints {
                         multipleOf
                     ).any { it != null }
                 ) {
-                    throw KopapiException("Constraints (minLength, maxLength, minimum, maximum, etc.) can only be used with strings or numbers.")
+                    throw KopapiException(
+                        "Constraints (minLength, maxLength, minimum, maximum, etc.) can only be used with strings or numbers."
+                    )
                 }
             }
         }
@@ -104,23 +106,40 @@ internal object SchemaConstraints {
         // Validate string-specific constraints.
         minLength?.let {
             if (it < 0) {
-                throw KopapiException("Minimum length must be greater than or equal to zero.")
+                throw KopapiException(
+                    "Minimum length must be greater than or equal to zero.\n" +
+                            "To Resolve:\n" +
+                            "   - Ensure that 'minLength' is a positive integer or zero.\n"
+                )
             }
         }
         maxLength?.let {
             if (it < 0) {
-                throw KopapiException("Maximum length must be greater than or equal to zero.")
+                throw KopapiException(
+                    "Maximum length must be greater than or equal to zero.\n" +
+                            "To Resolve:\n" +
+                            "   - Ensure that 'maxLength' is a positive integer or zero.\n"
+                )
             }
         }
         minLength?.let {
             if (maxLength != null && minLength > maxLength) {
-                throw KopapiException("Minimum length must be less than or equal to maximum length.")
+                throw KopapiException(
+                    "Minimum length must be less than or equal to maximum length.\n" +
+                            "To Resolve:\n" +
+                            "   - Ensure that 'minLength' is less than or equal to 'maxLength'.\n"
+                )
             }
         }
 
         // Ensure no number-specific constraints are applied.
         if (listOf(minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf).any { it != null }) {
-            throw KopapiException("Number constraints (minimum, maximum, multipleOf, etc.) cannot be applied to strings.")
+            throw KopapiException(
+                "Number constraints (minimum, maximum, multipleOf, etc.) cannot be applied to strings.\n" +
+                        "To Resolve:\n" +
+                        "   - Ensure that constraints like 'minimum', 'maximum', or 'multipleOf' are not used for STRING types.\n" +
+                        "   - For string types, only 'minLength' and 'maxLength' are valid constraints.\n"
+            )
         }
     }
 
@@ -135,28 +154,48 @@ internal object SchemaConstraints {
     ) {
         minimum?.let {
             if (maximum != null && minimum.toDouble() > maximum.toDouble()) {
-                throw KopapiException("'minimum' value must be less than or equal to 'maximum' value.")
+                throw KopapiException(
+                    "'Minimum' value must be less than or equal to 'Maximum' value.\n" +
+                            "To Resolve:\n" +
+                            "   - Ensure that 'minimum' is less than or equal to 'maximum'.\n"
+                )
             }
         }
         exclusiveMinimum?.let {
             if (minimum != null && exclusiveMinimum.toDouble() <= minimum.toDouble()) {
-                throw KopapiException("'exclusiveMinimum' must be strictly greater than the 'minimum' value.")
+                throw KopapiException(
+                    "'ExclusiveMinimum' must be strictly greater than the 'Minimum' value.\n" +
+                            "To Resolve:\n" +
+                            "   - Ensure that 'exclusiveMinimum' is strictly greater than 'minimum'.\n"
+                )
             }
         }
         exclusiveMaximum?.let {
             if (maximum != null && exclusiveMaximum.toDouble() >= maximum.toDouble()) {
-                throw KopapiException("'exclusiveMaximum' must be strictly less than the 'maximum' value.")
+                throw KopapiException(
+                    "'ExclusiveMaximum' must be strictly less than the 'Maximum' value.\n" +
+                            "To Resolve:\n" +
+                            "   - Ensure that 'exclusiveMaximum' is strictly less than 'maximum'.\n"
+                )
             }
         }
         multipleOf?.let {
             if (multipleOf.toDouble() <= 0.0) {
-                throw KopapiException("'multipleOf' must be greater than zero.")
+                throw KopapiException(
+                    "'MultipleOf' must be greater than zero.\n" +
+                            "To Resolve:\n" +
+                            "   - Ensure that 'multipleOf' is a positive number greater than zero.\n"
+                )
             }
         }
 
         // Ensure no string-specific constraints are applied.
         if (listOf(minLength, maxLength).any { it != null }) {
-            throw KopapiException("String constraints (minLength, maxLength) cannot be applied to numbers.")
+            throw KopapiException(
+                "String constraints (minLength, maxLength) cannot be applied to numbers.\n" +
+                        "To Resolve:\n" +
+                        "   - Remove 'minLength' and 'maxLength' when applying constraints to numeric types.\n"
+            )
         }
     }
 }
