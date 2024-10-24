@@ -11,12 +11,18 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
+import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @Suppress("SameParameterValue")
 class ApiInfoConfigurationTest {
+
+    @BeforeEach
+    fun reset() {
+        SchemaRegistry.clear()
+    }
 
     @Test
     fun `test plugin API info configuration`() = testApplication {

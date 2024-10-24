@@ -12,6 +12,7 @@ import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
+import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -19,6 +20,11 @@ import kotlin.test.assertTrue
 
 @Suppress("SameParameterValue")
 class ApiInfoJsonTest {
+
+    @BeforeEach
+    fun reset() {
+        SchemaRegistry.clear()
+    }
 
     @Test
     fun `test plugin API info raw Json`() = testApplication {

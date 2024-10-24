@@ -11,11 +11,17 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
+import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class KopapiPluginDisabledTest {
+
+    @BeforeEach
+    fun reset() {
+        SchemaRegistry.clear()
+    }
 
     @Test
     fun `test plugin disabled - apiInfo and servers are discarded`() = testApplication {

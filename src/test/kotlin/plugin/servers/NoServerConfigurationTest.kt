@@ -10,11 +10,17 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
+import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class NoServerConfigurationTest {
+
+    @BeforeEach
+    fun reset() {
+        SchemaRegistry.clear()
+    }
 
     @Test
     fun `test plugin no server configuration, expecting a default server`() = testApplication {

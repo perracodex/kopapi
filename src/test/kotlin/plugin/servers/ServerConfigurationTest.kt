@@ -10,11 +10,17 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
+import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class ServerConfigurationTest {
+
+    @BeforeEach
+    fun reset() {
+        SchemaRegistry.clear()
+    }
 
     @Test
     fun `test plugin server configuration`() = testApplication {
