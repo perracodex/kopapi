@@ -20,7 +20,7 @@ import io.ktor.http.*
  * @property links A list of [ApiLink] objects representing possible links to other operations.
  */
 @ComposerAPI
-internal data class PathResponse(
+internal data class ResponseObject(
     @JsonProperty("description") val description: String?,
     @JsonProperty("headers") val headers: Set<ApiHeader>?,
     @JsonProperty("content") var content: Map<ContentType, OpenAPiSchema.ContentSchema>?,

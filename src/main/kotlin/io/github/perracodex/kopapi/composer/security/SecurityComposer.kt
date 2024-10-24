@@ -104,22 +104,22 @@ internal class SecuritySectionComposer(
     /**
      * Associates each API operation with its specific security requirements.
      *
-     * Creates a list of [OperationSecurity] objects, each linking an API operation
+     * Creates a list of [SecurityObject] objects, each linking an API operation
      * (identified by its HTTP method and path) with the relevant security schemes.
      * API Operations that do not require security are associated with an empty security
      * list (`security: []`), effectively disabling security for those endpoints.
      *
-     * @return A list of [OperationSecurity] objects representing the security configuration
+     * @return A list of [SecurityObject] objects representing the security configuration
      *         for each API operation. Returns `null` if no operations are present.
      */
-    fun composeOperationSecurity(): List<OperationSecurity>? {
-        val operationSecurityList: MutableList<OperationSecurity> = mutableListOf()
+    fun composeOperationSecurity(): List<SecurityObject>? {
+        val securityObjectList: MutableList<SecurityObject> = mutableListOf()
 
         apiOperations.forEach { operation ->
             // If skipSecurity is set, explicitly disable security by assigning an empty list.
             if (operation.skipSecurity) {
-                operationSecurityList.add(
-                    OperationSecurity(
+                securityObjectList.add(
+                    SecurityObject(
                         method = operation.method.value,
                         path = operation.path,
                         security = emptyList() // This will produce `security: []` in OpenAPI.
@@ -130,8 +130,8 @@ internal class SecuritySectionComposer(
                 val securityRequirements: List<SecurityRequirement> =
                     operation.securitySchemes?.map(this::mapSchemeToRequirement) ?: emptyList()
 
-                operationSecurityList.add(
-                    OperationSecurity(
+                securityObjectList.add(
+                    SecurityObject(
                         method = operation.method.value,
                         path = operation.path,
                         security = securityRequirements.takeIf { it.isNotEmpty() }
@@ -140,7 +140,7 @@ internal class SecuritySectionComposer(
             }
         }
 
-        return operationSecurityList.takeIf { it.isNotEmpty() }
+        return securityObjectList.takeIf { it.isNotEmpty() }
     }
 
     /**

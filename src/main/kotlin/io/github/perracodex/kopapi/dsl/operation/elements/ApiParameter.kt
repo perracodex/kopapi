@@ -4,27 +4,30 @@
 
 package io.github.perracodex.kopapi.dsl.operation.elements
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter.Location
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.types.DefaultValue
 import io.github.perracodex.kopapi.types.ParameterStyle
+import io.github.perracodex.kopapi.types.PathParameterType
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 
 /**
  * Represents the metadata of an API endpoint parameter.
  *
- * @property type The [KType] of the parameter, specifying the Kotlin type.
+ * @property complexType The [KType] of the parameter, used for non-`path` parameters.
+ * @property pathType The [PathParameterType] of the parameter, specifying the type for `path` parameters.
  * @property name The name of the parameter as it appears in the API endpoint.
- * @property description A human-readable description of the parameter.
+ * @property description Optional human-readable explanation of the parameter's purpose.
  * @property location The [Location] of the parameter, indicating where in the request it is included.
- * @property required Indicates whether the parameter is mandatory.
- * @property defaultValue The default value for the parameter, used if no value is provided.
- * @property style Describes how the parameter value is formatted when sent in a request.
- * @property explode Specifies whether arrays and objects should be exploded (true) or not (false).
+ * @property required Whether if this parameter is mandatory. Path parameters must always be required.
+ * @property allowEmptyValue Allows empty values for query parameters if set to true. Ignored for other parameter types.
+ * @property allowReserved Whether reserved characters (e.g., `?`, `/`) are allowed. Only applicable to query parameters.
+ * @property defaultValue Optional default value for the parameter.
+ * @property style Defines the serialization style of the parameter.
+ * @property explode Determines how arrays and objects are serialized. Only applicable to query and cookie parameters.
  * @property deprecated Indicates whether the parameter is deprecated and should be avoided.
  *
  * @see [ApiOperationBuilder.headerParameter]
@@ -33,12 +36,15 @@ import kotlin.reflect.KType
  * @see [ApiOperationBuilder.cookieParameter]
  */
 internal data class ApiParameter(
-    @JsonIgnore val type: KType,
+    val complexType: KType?,
+    val pathType: PathParameterType?,
     val name: String,
     val description: String?,
-    @JsonProperty("in") val location: Location,
+    val location: Location,
     val required: Boolean,
-    @JsonProperty("default") val defaultValue: Any?,
+    val allowEmptyValue: Boolean?,
+    val allowReserved: Boolean?,
+    val defaultValue: DefaultValue?,
     val style: ParameterStyle?,
     val explode: Boolean?,
     val deprecated: Boolean?
@@ -48,9 +54,43 @@ internal data class ApiParameter(
             throw KopapiException("Parameter name must not be empty.")
         }
 
-        val classifier: KClassifier? = type.classifier
+        // Validate the parameter based on its location.
+        when (location) {
+            Location.PATH -> validatePathParameter()
+            else -> validateNonPathParameter()
+        }
+    }
+
+    /**
+     * Validates the path parameter.
+     * Ensures that `pathType` is not null and that `type` is null for path parameters.
+     */
+    private fun validatePathParameter() {
+        if (pathType == null) {
+            throw KopapiException("Path parameters must have a PathParameterType defined.")
+        }
+        if (complexType != null) {
+            throw KopapiException("Path parameters should not have a KType defined.")
+        }
+    }
+
+    /**
+     * Validates the non-path parameter.
+     * Ensures that `type` is not null and that `pathType` is null for non-path parameters.
+     * Also checks for unsupported types like `Any`, `Unit`, and `Nothing`.
+     */
+    private fun validateNonPathParameter() {
+        if (complexType == null) {
+            throw KopapiException("Non-path parameters must have a KType defined.")
+        }
+        if (pathType != null) {
+            throw KopapiException("Non-path parameters should not have a `PathParameterType` defined.")
+        }
+
+        // Ensure unsupported types are not used for non-path parameters.
+        val classifier: KClassifier? = complexType.classifier
         if (classifier == Any::class || classifier == Unit::class || classifier == Nothing::class) {
-            throw KopapiException("Route Parameter cannot be of type '${type.classifier}'. Define an explicit type.")
+            throw KopapiException("Parameter cannot be of unsupported type '${complexType.classifier}'. Define a valid type.")
         }
     }
 

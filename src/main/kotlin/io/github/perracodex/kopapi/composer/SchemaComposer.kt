@@ -6,9 +6,9 @@ package io.github.perracodex.kopapi.composer
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.composer.info.InfoSectionComposer
-import io.github.perracodex.kopapi.composer.path.PathComposer
+import io.github.perracodex.kopapi.composer.operation.OperationComposer
 import io.github.perracodex.kopapi.composer.security.GlobalSecurityRequirement
-import io.github.perracodex.kopapi.composer.security.OperationSecurity
+import io.github.perracodex.kopapi.composer.security.SecurityObject
 import io.github.perracodex.kopapi.composer.security.SecuritySectionComposer
 import io.github.perracodex.kopapi.composer.tags.TagsComposer
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
@@ -55,12 +55,12 @@ internal class SchemaComposer(
         val securityComposer = SecuritySectionComposer(apiConfiguration = apiConfiguration, apiOperations = apiOperations)
         val globalSecurity: GlobalSecurityRequirement? = securityComposer.composeGlobalSecurityRequirements()
         val securitySchemes: Map<String, ApiSecurityScheme>? = securityComposer.composeSecuritySchemes()
-        val operationSecurity: List<OperationSecurity>? = securityComposer.composeOperationSecurity()
+        val securityObject: List<SecurityObject>? = securityComposer.composeOperationSecurity()
 
-        // Compose the `Paths` section.
-        val pathsSection: Map<String, OpenAPiSchema.PathItem> = PathComposer.compose(
+        // Compose the `Path Items` section.
+        val pathItems: Map<String, OpenAPiSchema.PathItemObject> = OperationComposer.compose(
             apiOperations = apiOperations,
-            operationSecurity = operationSecurity
+            securityObject = securityObject
         )
 
         // Create the `components` object.
@@ -74,7 +74,7 @@ internal class SchemaComposer(
             info = infoSection,
             servers = serversSection,
             tags = tags,
-            paths = pathsSection,
+            pathItems = pathItems,
             components = components,
             security = globalSecurity?.toOpenAPISpec(),
         )

@@ -4,6 +4,9 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.elements
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+
 /**
  * Builder for the `Info` section of the OpenAPI schema.
  *
@@ -14,11 +17,11 @@ package io.github.perracodex.kopapi.dsl.plugin.elements
  * @property contact The contact information for the API.
  * @property license The license information for the API.
  */
-internal data class ApiInfo(
-    val title: String,
-    val description: String,
-    val version: String,
-    val termsOfService: String?,
-    val contact: ApiContact?,
-    val license: ApiLicense?
+internal data class ApiInfo @JsonCreator constructor(
+    @JsonProperty("title") val title: String = "",
+    @JsonProperty("description") val description: String = "",
+    @JsonProperty("version") val version: String = "",
+    @JsonProperty("termsOfService") val termsOfService: String? = null,
+    @JsonProperty("contact") val contact: ApiContact? = null,
+    @JsonProperty("license") val license: ApiLicense? = null
 )

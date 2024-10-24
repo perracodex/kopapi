@@ -17,7 +17,7 @@ import io.ktor.http.*
  * @property content A map of [ContentType] to [OpenAPiSchema.ContentSchema] representing the content of the request body.
  */
 @ComposerAPI
-internal data class PathRequestBody internal constructor(
+internal data class RequestBodyObject internal constructor(
     @JsonProperty("description") val description: String?,
     @JsonProperty("required") val required: Boolean,
     @JsonProperty("content") var content: Map<ContentType, OpenAPiSchema.ContentSchema>?

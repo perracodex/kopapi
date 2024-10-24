@@ -9,7 +9,7 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 /**
  * Represents the security configuration for a specific API operation.
  *
- * Each [OperationSecurity] instance associates an API operation, identified by its HTTP method
+ * Each [SecurityObject] instance associates an API operation, identified by its HTTP method
  * and path, with a list of security requirements that must be satisfied to access the operation.
  * An empty security list indicates that the operation is publicly accessible without any security measures.
  *
@@ -22,7 +22,7 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
  *                    the API Operation does not require any security, overriding any global security settings.
  */
 @ComposerAPI
-internal data class OperationSecurity(
+internal data class SecurityObject(
     val method: String,
     val path: String,
     val security: List<SecurityRequirement>?

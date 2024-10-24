@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.dsl.operation.builders.parameter
 import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
+import io.github.perracodex.kopapi.types.DefaultValue
 import io.github.perracodex.kopapi.types.ParameterStyle
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -17,7 +18,7 @@ import kotlin.reflect.KType
  *
  * @property description A description of the parameter's purpose and usage.
  * @property required Indicates whether the parameter is mandatory for the API call.
- * @property defaultValue The default value for the parameter if one is not provided.
+ * @property defaultValue Optional default value for the parameter.
  * @property style The style in which the parameter is serialized in the URL.
  * @property explode Whether to send arrays and objects as separate parameters.
  * @property deprecated Indicates if the parameter is deprecated and should be avoided.
@@ -29,8 +30,8 @@ import kotlin.reflect.KType
  */
 @OperationDsl
 public class CookieParameterBuilder(
-    public var required: Boolean = true,
-    public var defaultValue: Any? = null,
+    public var required: Boolean = false,
+    public var defaultValue: DefaultValue? = null,
     public var style: ParameterStyle = ParameterStyle.FORM,
     public var explode: Boolean = true,
     public var deprecated: Boolean = false
@@ -47,11 +48,14 @@ public class CookieParameterBuilder(
     @PublishedApi
     internal fun build(name: String, type: KType): ApiParameter {
         return ApiParameter(
-            type = type,
+            complexType = type,
+            pathType = null,
             location = ApiParameter.Location.COOKIE,
             name = name.trim(),
             description = description.trimOrNull(),
             required = required,
+            allowReserved = null,
+            allowEmptyValue = null,
             defaultValue = defaultValue,
             style = style.takeIf { it != ParameterStyle.FORM },
             explode = explode.takeIf { !it },

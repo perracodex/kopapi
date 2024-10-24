@@ -24,6 +24,7 @@ import kotlin.reflect.KClassifier
  * Responsible for composing the `request body` section of the OpenAPI schema.
  * This includes handling both standard request bodies and multipart/form-data bodies.
  *
+ * @see [RequestBodyObject]
  * @see [ApiRequestBody]
  * @see [ApiMultipart]
  * @see [ApiMultipart.Part]
@@ -36,9 +37,9 @@ internal object RequestBodyComposer {
      * This method processes both standard request bodies and multipart request bodies.
      *
      * @param requestBody The [ApiRequestBody] object containing the request body metadata.
-     * @return The constructed [PathRequestBody] object representing the OpenAPI request body.
+     * @return The constructed [RequestBodyObject] object representing the OpenAPI request body.
      */
-    fun compose(requestBody: ApiRequestBody): PathRequestBody {
+    fun compose(requestBody: ApiRequestBody): RequestBodyObject {
         val standardContent: Map<ContentType, OpenAPiSchema.ContentSchema>? = processStandardContent(
             requestBody = requestBody
         )
@@ -53,7 +54,7 @@ internal object RequestBodyComposer {
             throw KopapiException("No content types found for the request body.")
         }
 
-        return PathRequestBody(
+        return RequestBodyObject(
             description = requestBody.description,
             required = requestBody.required,
             content = content

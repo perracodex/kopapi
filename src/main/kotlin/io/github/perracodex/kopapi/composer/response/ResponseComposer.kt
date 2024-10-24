@@ -19,6 +19,7 @@ import kotlin.collections.set
 /**
  * Composes the `responses` section of the OpenAPI schema.
  *
+ * @see [ResponseObject]
  * @see [ApiResponse]
  */
 @ComposerAPI
@@ -28,15 +29,15 @@ internal object ResponseComposer {
      * to its corresponding schema, if applicable.
      *
      * @param responses A map of API response status codes to their corresponding [ApiResponse] objects.
-     * @return A map of status codes to [PathResponse] objects representing the OpenAPI responses.
+     * @return A map of status codes to [ResponseObject] instances representing the OpenAPI responses.
      */
-    fun compose(responses: Map<String, ApiResponse>): Map<String, PathResponse> {
-        val composedResponses: MutableMap<String, PathResponse> = mutableMapOf()
+    fun compose(responses: Map<String, ApiResponse>): Map<String, ResponseObject> {
+        val composedResponses: MutableMap<String, ResponseObject> = mutableMapOf()
 
         responses.forEach { (statusCode, apiResponse) ->
             if (apiResponse.content.isNullOrEmpty()) {
                 // No types associated with the response; create a PathResponse without content.
-                composedResponses[statusCode] = PathResponse(
+                composedResponses[statusCode] = ResponseObject(
                     description = apiResponse.description,
                     headers = apiResponse.headers,
                     content = null,
@@ -71,7 +72,7 @@ internal object ResponseComposer {
                 }
 
             // Create the PathResponse with the composed content.
-            composedResponses[statusCode] = PathResponse(
+            composedResponses[statusCode] = ResponseObject(
                 description = apiResponse.description,
                 headers = apiResponse.headers,
                 content = finalContent,

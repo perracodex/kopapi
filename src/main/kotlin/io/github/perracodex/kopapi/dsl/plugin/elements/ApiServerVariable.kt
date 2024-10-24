@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * Represents an immutable server variable.
  *
- * @property defaultValue The default value of the variable.
+ * @property defaultValue Default value for the server variable.
  * @property choices The possible values of the variable.
  * @property description A human-readable description of the variable.
  */

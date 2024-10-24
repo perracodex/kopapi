@@ -6,9 +6,8 @@ package io.github.perracodex.kopapi.composer
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
-import io.github.perracodex.kopapi.composer.path.PathOperation
+import io.github.perracodex.kopapi.composer.operation.OperationObject
 import io.github.perracodex.kopapi.composer.security.SecurityRequirement
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
@@ -28,7 +27,7 @@ import io.ktor.http.*
  * @property info Provides metadata about the API, including title, description, version, etc.
  * @property servers A list of server objects that provide connectivity information to the API.
  * @property tags A list of tags used to group API operations together for documentation purposes.
- * @property paths An object that holds the relative paths to the individual endpoints and their operations.
+ * @property pathItems An object that holds the relative paths to the individual endpoints and their operations.
  * @property components An object to hold various reusable components such as security schemes, responses, parameters, etc.
  * @property security The global security requirements that apply to all operations unless overridden.
  */
@@ -38,7 +37,7 @@ internal data class OpenAPiSchema(
     val info: ApiInfo,
     val servers: List<ApiServerConfig>?,
     val tags: List<ApiTag>?,
-    val paths: Map<String, PathItem>?,
+    val pathItems: Map<String, PathItemObject>?,
     val components: Components?,
     val security: List<Map<String, List<String>>?>?,
 ) {
@@ -56,39 +55,38 @@ internal data class OpenAPiSchema(
      * @property head The HEAD operation for the path, if defined.
      * @property patch The PATCH operation for the path, if defined.
      */
-    data class PathItem(
-        var get: PathOperation? = null,
-        var put: PathOperation? = null,
-        var post: PathOperation? = null,
-        var delete: PathOperation? = null,
-        var options: PathOperation? = null,
-        var head: PathOperation? = null,
-        var patch: PathOperation? = null,
+    data class PathItemObject(
+        var get: OperationObject? = null,
+        var put: OperationObject? = null,
+        var post: OperationObject? = null,
+        var delete: OperationObject? = null,
+        var options: OperationObject? = null,
+        var head: OperationObject? = null,
+        var patch: OperationObject? = null,
     ) {
         /**
-         * Adds an API Operation to the [PathItem] based on the specified HTTP method,
+         * Adds an API Operation to the [OperationObject] based on the specified HTTP method,
          * ensuring that each operation is correctly associated with its corresponding
          * HTTP method within the path item.
          *
          * @param method The HTTP method of the operation (e.g., "GET", "POST").
-         * @param apiOperation The [ApiOperation] object containing the operation's metadata and configurations.
+         * @param operationObject The [OperationObject] object representing the operation's metadata.
          */
-        fun addOperation(method: HttpMethod, apiOperation: ApiOperation) {
-            val pathOperation: PathOperation = PathOperation.fromApiOperation(apiOperation = apiOperation)
+        fun addOperation(method: HttpMethod, operationObject: OperationObject) {
             when (method) {
-                HttpMethod.Get -> get = pathOperation
-                HttpMethod.Put -> put = pathOperation
-                HttpMethod.Post -> post = pathOperation
-                HttpMethod.Delete -> delete = pathOperation
-                HttpMethod.Options -> options = pathOperation
-                HttpMethod.Head -> head = pathOperation
-                HttpMethod.Patch -> patch = pathOperation
+                HttpMethod.Get -> get = operationObject
+                HttpMethod.Put -> put = operationObject
+                HttpMethod.Post -> post = operationObject
+                HttpMethod.Delete -> delete = operationObject
+                HttpMethod.Options -> options = operationObject
+                HttpMethod.Head -> head = operationObject
+                HttpMethod.Patch -> patch = operationObject
                 else -> throw KopapiException("Unsupported HTTP method: $method")
             }
         }
 
         /**
-         * Assigns security configurations to a specific operation within the PathItem based on the HTTP method.
+         * Assigns security configurations to a specific operation within the [PathItemObject] based on the HTTP method.
          *
          * It updates the security requirements for the specified HTTP method by mapping
          * each [SecurityRequirement] to its corresponding map structure as defined by the OpenAPI Specification.
