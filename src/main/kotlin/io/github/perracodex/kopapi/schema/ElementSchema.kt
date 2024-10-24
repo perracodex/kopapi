@@ -28,13 +28,11 @@ internal sealed class ElementSchema(
      *
      * @property schemaType The API type of the schema as defined in the OpenAPI specification.
      * @property properties A map of property names to their corresponding schemas and metadata.
-     * @property required A list of required property names.
      */
     data class Object(
-        @JsonIgnore override val definition: String = Object::class.safeName(),
-        @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
-        @JsonProperty("properties") val properties: MutableMap<String, SchemaProperty> = mutableMapOf(),
-        @JsonProperty("required") var required: MutableSet<String>? = null
+        override val definition: String = Object::class.safeName(),
+        val schemaType: ApiType = ApiType.OBJECT,
+        val properties: MutableMap<String, SchemaProperty> = mutableMapOf()
     ) : ElementSchema(definition = definition, ordinal = 0)
 
     /**
@@ -138,4 +136,36 @@ internal sealed class ElementSchema(
         @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
         @JsonProperty("additionalProperties") val additionalProperties: ElementSchema
     ) : ElementSchema(definition = definition, ordinal = 5)
+
+    /**
+     * Represents a schema marked as nullable.
+     * In such cases, the schema can be either the give schema or `null`.
+     *
+     * @property anyOf The map structure that includes the base schema marked as nullable.
+     */
+    data class Nullable(
+        @JsonIgnore override val definition: String = Nullable::class.safeName(),
+        @JsonProperty("anyOf") val anyOf: List<Any>
+    ) : ElementSchema(definition = "Nullable", ordinal = 6) {
+        constructor(schema: ElementSchema) : this(
+            anyOf = listOf(
+                schema,
+                mapOf("type" to ApiType.NULL())
+            )
+        )
+    }
+
+    /**
+     * Represents a transformed object schema ready for OpenAPI generation.
+     *
+     * @property schemaType The API type of the schema as defined in the OpenAPI specification.
+     * @property properties A map of property names to their corresponding schemas and metadata.
+     * @property required A set of required property names.
+     */
+    data class TransformedObject(
+        @JsonIgnore override val definition: String = TransformedObject::class.safeName(),
+        @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
+        @JsonProperty("properties") val properties: Map<String, ElementSchema>?,
+        @JsonProperty("required") var required: MutableSet<String>?
+    ) : ElementSchema(definition = definition, ordinal = 7)
 }

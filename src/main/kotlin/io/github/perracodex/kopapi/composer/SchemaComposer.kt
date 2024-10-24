@@ -19,6 +19,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
+import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 
 /**
@@ -65,7 +66,7 @@ internal class SchemaComposer(
         )
 
         // Component schemas.
-        val componentSchemas: Map<String, Any?>? = ComponentComposer.compose(
+        val componentSchemas: Map<String, ElementSchema>? = ComponentComposer.compose(
             typeSchemas = SchemaRegistry.getSchemaTypes()
         )
 
