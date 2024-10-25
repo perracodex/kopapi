@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.routing.debugRoute
 import io.github.perracodex.kopapi.routing.openApiRoutes
+import io.github.perracodex.kopapi.routing.redocRoute
 import io.github.perracodex.kopapi.routing.swaggerRoute
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -41,11 +42,20 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
 
     // Configure the plugin endpoints using the extracted function.
     application.routing {
-        debugRoute(debugUrl = apiConfiguration.debugUrl)
+        debugRoute(
+            debugUrl = apiConfiguration.debugUrl
+        )
         openApiRoutes(
             openapiJsonUrl = apiConfiguration.openapiJsonUrl,
             openapiYamlUrl = apiConfiguration.openapiYamlUrl
         )
-        swaggerRoute(swaggerUrl = apiConfiguration.swaggerUrl)
+        redocRoute(
+            openapiYamlUrl = apiConfiguration.openapiYamlUrl,
+            redocUrl = apiConfiguration.redocUrl
+        )
+        swaggerRoute(
+            openapiYamlUrl = apiConfiguration.openapiYamlUrl,
+            swaggerUrl = apiConfiguration.swaggerUrl
+        )
     }
 }

@@ -10,7 +10,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 /**
- * Define the OpenAPI endpoints exposed by the plugin.
+ * Define Schema endpoints exposed by the plugin.
  *
  * @param openapiJsonUrl The URL to access the OpenAPI schema in JSON format.
  * @param openapiYamlUrl The URL to access the OpenAPI schema in YAML format.

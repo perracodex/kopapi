@@ -29,7 +29,7 @@ import io.ktor.http.*
  * @property info Provides metadata about the API, including title, description, version, etc.
  * @property servers A list of server objects that provide connectivity information to the API.
  * @property tags A list of tags used to group API operations together for documentation purposes.
- * @property pathItems An object that holds the relative paths to the individual endpoints and their operations.
+ * @property paths An object that holds the relative paths to the individual endpoints and their operations.
  * @property components An object to hold various reusable components such as security schemes, responses, parameters, etc.
  * @property security The global security requirements that apply to all operations unless overridden.
  */
@@ -39,7 +39,7 @@ internal data class OpenAPiSchema(
     val info: ApiInfo,
     val servers: List<ApiServerConfig>?,
     val tags: List<ApiTag>?,
-    val pathItems: Map<String, PathItemObject>?,
+    val paths: Map<String, PathItemObject>?,
     val components: Components?,
     val security: List<Map<String, List<String>>?>?,
 ) {

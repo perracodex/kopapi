@@ -15,6 +15,7 @@ internal data class ApiConfiguration(
     val debugUrl: String,
     val openapiJsonUrl: String,
     val openapiYamlUrl: String,
+    val redocUrl: String,
     val swaggerUrl: String,
     val apiInfo: ApiInfo?,
     val apiServers: Set<ApiServerConfig>?,

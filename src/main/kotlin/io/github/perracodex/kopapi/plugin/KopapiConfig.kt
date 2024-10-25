@@ -38,26 +38,42 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
     public var enabled: Boolean = true
 
     /**
-     * The URL to provide the OpenAPI schema in JSON format.
-     * Relative to the server root URL. Default is `openapi/json`.
+     * The URL to provide the OpenAPI schema in `JSON` format.
+     *
+     * - Relative to the server root URL.
+     * - Default: `/openapi.json`.
      */
     public var openapiJsonUrl: String = DEFAULT_OPENAPI_JSON_URL
 
     /**
-     * The URL to provide the OpenAPI schema in YAML format.
-     * Relative to the server root URL. Default is `openapi/yaml`.
+     * The URL to provide the OpenAPI schema in `YAML` format.
+     *
+     * - Relative to the server root URL.
+     * - Default: `/openapi.yaml`.
      */
     public var openapiYamlUrl: String = DEFAULT_OPENAPI_YAML_URL
 
     /**
-     * The URL to provide the Swagger UI.
-     * Relative to the server root URL. Default is `swagger`.
+     * The URL to provide the OpenAPI `Redoc` documentation.
+     *
+     * - Relative to the server root URL.
+     * - Default: `/redoc`.
+     */
+    public var redocUrl: String = DEFAULT_REDOC_URL
+
+    /**
+     * The URL to provide the `Swagger UI`.
+     *
+     * - Relative to the server root URL.
+     * - Default: `/swagger-ui`.
      */
     public var swaggerUrl: String = DEFAULT_SWAGGER_URL
 
     /**
      * The URL to provide the raw pre-processed API Operations metadata, for debugging purposes.
-     * Relative to the server root URL. Default is `openapi/debug`.
+     *
+     * - Relative to the server root URL.
+     * - Default: `/openapi/debug`.
      */
     public var debugUrl: String = DEFAULT_DEBUG_URL
 
@@ -246,10 +262,11 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
     internal fun build(): ApiConfiguration {
         return ApiConfiguration(
             isEnabled = enabled,
-            debugUrl = debugUrl.trimOrDefault(defaultValue = DEFAULT_DEBUG_URL),
-            openapiJsonUrl = openapiJsonUrl.trimOrDefault(defaultValue = DEFAULT_OPENAPI_JSON_URL),
-            openapiYamlUrl = openapiYamlUrl.trimOrDefault(defaultValue = DEFAULT_OPENAPI_YAML_URL),
-            swaggerUrl = swaggerUrl.trimOrDefault(defaultValue = DEFAULT_SWAGGER_URL),
+            debugUrl = normalizeUrl(url = debugUrl, defaultValue = DEFAULT_DEBUG_URL),
+            redocUrl = normalizeUrl(url = redocUrl, defaultValue = DEFAULT_REDOC_URL),
+            openapiJsonUrl = normalizeUrl(url = openapiJsonUrl, defaultValue = DEFAULT_OPENAPI_JSON_URL),
+            openapiYamlUrl = normalizeUrl(url = openapiYamlUrl, defaultValue = DEFAULT_OPENAPI_YAML_URL),
+            swaggerUrl = normalizeUrl(url = swaggerUrl, defaultValue = DEFAULT_SWAGGER_URL),
             apiInfo = apiInfo,
             apiServers = servers.takeIf { it.isNotEmpty() } ?: setOf(ServerBuilder.defaultServer()),
             apiTags = tags.takeIf { it.isNotEmpty() },
@@ -257,10 +274,25 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
         )
     }
 
+    /**
+     * Normalizes the URL by ensuring it starts with a `/`.
+     *
+     * @param url The URL to normalize.
+     * @param defaultValue The default value to use if the URL is empty.
+     */
+    private fun normalizeUrl(url: String?, defaultValue: String): String {
+        val cleanUrl: String = url.trimOrDefault(defaultValue = defaultValue)
+        return when (cleanUrl.startsWith(prefix = "/")) {
+            true -> cleanUrl
+            false -> "/$cleanUrl"
+        }
+    }
+
     private companion object {
-        const val DEFAULT_OPENAPI_JSON_URL: String = "openapi/json"
-        const val DEFAULT_OPENAPI_YAML_URL: String = "openapi/yaml"
-        const val DEFAULT_SWAGGER_URL: String = "swagger"
-        const val DEFAULT_DEBUG_URL: String = "openapi/debug"
+        const val DEFAULT_OPENAPI_JSON_URL: String = "/openapi.json"
+        const val DEFAULT_OPENAPI_YAML_URL: String = "/openapi.yaml"
+        const val DEFAULT_REDOC_URL: String = "/redoc"
+        const val DEFAULT_SWAGGER_URL: String = "/swagger-ui"
+        const val DEFAULT_DEBUG_URL: String = "/openapi/debug"
     }
 }

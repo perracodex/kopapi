@@ -82,7 +82,7 @@ internal class SchemaComposer(
             info = infoSection,
             servers = serversSection,
             tags = tags,
-            pathItems = pathItems,
+            paths = pathItems,
             components = components,
             security = globalSecurity?.toOpenAPISpec(),
         )
