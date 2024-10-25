@@ -10,6 +10,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.types.OAuthFlowType
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
+import io.ktor.utils.io.*
 
 /**
  * Builds an OAuth2 security scheme in an API endpoint's metadata.
@@ -23,6 +24,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [OpenIdConnectSecurityBuilder]
  * @see [MutualTLSSecurityBuilder]
  */
+@KtorDsl
 @SecurityDsl
 public class OAuth2SecurityBuilder internal constructor() {
     public var description: String by MultilineString()

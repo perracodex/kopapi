@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.dsl.common.security
 import io.github.perracodex.kopapi.dsl.markers.SecurityDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.utils.trimOrNull
+import io.ktor.utils.io.*
 
 /**
  * Builder for configuring an OAuth2 flow.
@@ -21,6 +22,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [OAuth2SecurityBuilder.implicit]
  * @see [OAuth2SecurityBuilder.password]
  */
+@KtorDsl
 @SecurityDsl
 public class OAuthFlowBuilder internal constructor() {
     public var authorizationUrl: String? = null

@@ -11,6 +11,7 @@ import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
+import io.ktor.utils.io.*
 
 /**
  * Builder for configuring a server.
@@ -51,6 +52,7 @@ import io.ktor.http.*
  * @see [ServerVariableBuilder]
  * @see [ServerBuilder]
  */
+@KtorDsl
 @ConfigurationDsl
 public class ServerConfigBuilder(
     private val url: Url

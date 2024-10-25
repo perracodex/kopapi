@@ -10,6 +10,7 @@ import io.github.perracodex.kopapi.plugin.KopapiConfig
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.trimOrNull
+import io.ktor.utils.io.*
 import kotlin.reflect.KType
 
 /**
@@ -45,6 +46,7 @@ import kotlin.reflect.KType
  *
  * @see [KopapiConfig.addType]
  */
+@KtorDsl
 @ConfigurationDsl
 public class CustomTypeBuilder @PublishedApi internal constructor() {
     public var minLength: Int? = null

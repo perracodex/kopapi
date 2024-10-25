@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.string.MultilineString
+import io.ktor.utils.io.*
 
 /**
  * Builder for constructing individual parts of a multipart request body.
@@ -18,6 +19,7 @@ import io.github.perracodex.kopapi.utils.string.MultilineString
  * @property schemaType Optional schema type for the part. Defaults to `string`.
  * @property schemaFormat Optional schema format for the part.
  */
+@KtorDsl
 @OperationDsl
 public class PartBuilder(
     public val name: String,

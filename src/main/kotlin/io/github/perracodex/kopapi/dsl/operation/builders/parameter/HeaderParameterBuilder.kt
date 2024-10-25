@@ -11,6 +11,7 @@ import io.github.perracodex.kopapi.types.DefaultValue
 import io.github.perracodex.kopapi.types.ParameterStyle
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
+import io.ktor.utils.io.*
 import kotlin.reflect.KType
 
 /**
@@ -27,6 +28,7 @@ import kotlin.reflect.KType
  * @see [PathParameterBuilder]
  * @see [QueryParameterBuilder]
  */
+@KtorDsl
 @OperationDsl
 public class HeaderParameterBuilder(
     public var required: Boolean = false,

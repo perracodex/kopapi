@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
+import io.ktor.utils.io.*
 
 /**
  * Builds a Mutual TLS security scheme in an API endpoint's metadata.
@@ -21,6 +22,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [OAuth2SecurityBuilder]
  * @see [OpenIdConnectSecurityBuilder]
  */
+@KtorDsl
 @SecurityDsl
 public class MutualTLSSecurityBuilder internal constructor() {
     public var description: String by MultilineString()
