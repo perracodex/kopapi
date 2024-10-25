@@ -19,7 +19,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.system.KopapiException
-import io.github.perracodex.kopapi.types.PathParameterType
+import io.github.perracodex.kopapi.types.PathType
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.string.SpacedString
 import io.ktor.http.*
@@ -174,13 +174,17 @@ public class ApiOperationBuilder internal constructor(
      *
      * #### Sample Usage
      * ```
-     * pathParameter<String>(name = "id", type = PathParameterType.STRING) {
+     * pathParameter<PathType.String>(name = "id") {
      *     description = "The unique identifier of the item."
      * }
      * ```
      *
+     * Contrary to `query`, `cookie`, and `header` parameters, `path` parameters are
+     * more constrained in the types they can represent, so the class `PathType`
+     * must be used instead of a generic type.
+     *
+     * @param T The [PathType] of the parameter.
      * @param name The name of the parameter as it appears in the URL path.
-     * @param type The [PathParameterType] of the parameter.
      * @param configure A lambda receiver for configuring the [PathParameterBuilder].
      *
      * @see [PathParameterBuilder]
@@ -189,13 +193,13 @@ public class ApiOperationBuilder internal constructor(
      * @see [queryParameter]
      * @see [requestBody]
      */
-    public inline fun ApiOperationBuilder.pathParameter(
+    public inline fun <reified T : PathType?> ApiOperationBuilder.pathParameter(
         name: String,
-        type: PathParameterType,
         configure: PathParameterBuilder.() -> Unit = {}
     ) {
+        val pathType: PathType? = T::class.objectInstance
         val builder: PathParameterBuilder = PathParameterBuilder().apply(configure)
-        val parameter: ApiParameter = builder.build(name = name, pathType = type)
+        val parameter: ApiParameter = builder.build(name = name, pathType = pathType)
         addApiParameter(apiParameter = parameter)
     }
 

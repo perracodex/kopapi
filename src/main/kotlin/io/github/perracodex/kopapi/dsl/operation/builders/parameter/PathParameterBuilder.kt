@@ -8,7 +8,7 @@ import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.types.ParameterStyle
-import io.github.perracodex.kopapi.types.PathParameterType
+import io.github.perracodex.kopapi.types.PathType
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.utils.io.*
@@ -37,11 +37,11 @@ public class PathParameterBuilder(
      * Builds an [ApiParameter] instance from the current builder state.
      *
      * @param name The name of the parameter as it appears in the URL path.
-     * @param pathType The [PathParameterType] of the parameter.
+     * @param pathType The [PathType] of the parameter.
      * @return The constructed [ApiParameter] instance.
      */
     @PublishedApi
-    internal fun build(name: String, pathType: PathParameterType?): ApiParameter {
+    internal fun build(name: String, pathType: PathType?): ApiParameter {
         return ApiParameter(
             complexType = null,
             pathType = pathType,

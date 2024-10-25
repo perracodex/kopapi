@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter.Location
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.DefaultValue
 import io.github.perracodex.kopapi.types.ParameterStyle
-import io.github.perracodex.kopapi.types.PathParameterType
+import io.github.perracodex.kopapi.types.PathType
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 
@@ -18,7 +18,7 @@ import kotlin.reflect.KType
  * Represents the metadata of an API endpoint parameter.
  *
  * @property complexType The [KType] of the parameter, used for non-`path` parameters.
- * @property pathType The [PathParameterType] of the parameter, specifying the type for `path` parameters.
+ * @property pathType The [PathType] of the parameter, specifying the type for `path` parameters.
  * @property name The name of the parameter as it appears in the API endpoint.
  * @property description Optional human-readable explanation of the parameter's purpose.
  * @property location The [Location] of the parameter, indicating where in the request it is included.
@@ -37,7 +37,7 @@ import kotlin.reflect.KType
  */
 internal data class ApiParameter(
     val complexType: KType?,
-    val pathType: PathParameterType?,
+    val pathType: PathType?,
     val name: String,
     val description: String?,
     val location: Location,
