@@ -47,12 +47,7 @@ internal class DebugPanelView {
             }
             // Build the body of the HTML page.
             body {
-                // Information button to display a popup with additional details.
-                button(classes = "configuration-button") {
-                    id = "configuration-popup-button"
-                    onClick = "showPopup()"
-                    +"Configuration Details"
-                }
+                buildActionButtons(htmlTag = this)
 
                 h1(classes = "header") { +"Kopapi Debug Information" }
 
@@ -99,6 +94,52 @@ internal class DebugPanelView {
                 script(src = "/static-kopapi/js/copy.js", type = "text/javascript") {}
                 script(src = "/static-kopapi/js/selection.js", type = "text/javascript") {}
                 script(src = "/static-kopapi/js/popup.js", type = "text/javascript") {}
+            }
+        }
+    }
+
+    /**
+     * Constructs the action buttons in the debug view.
+     *
+     * @param htmlTag The parent HTML element to append the buttons to.
+     */
+    private fun buildActionButtons(htmlTag: FlowContent) {
+        val openApiJson: String = SchemaRegistry.getResourceUrl(url = SchemaRegistry.ResourceUrl.OPENAPI_JSON)
+        val openApiYaml: String = SchemaRegistry.getResourceUrl(url = SchemaRegistry.ResourceUrl.OPENAPI_YAML)
+        val redocUrl: String = SchemaRegistry.getResourceUrl(url = SchemaRegistry.ResourceUrl.REDOC)
+        val swaggerUrl: String = SchemaRegistry.getResourceUrl(url = SchemaRegistry.ResourceUrl.SWAGGER_UI)
+
+        with(htmlTag) {
+            div(classes = "button-container") {
+                button(classes = "action-button") {
+                    id = "configuration-popup-button"
+                    onClick = "showPopup()"
+                    +"Configuration"
+                }
+
+                button(classes = "action-button") {
+                    id = "openapi-yaml-button"
+                    onClick = "window.open('$openApiYaml', '_blank')"
+                    +"Yaml"
+                }
+
+                button(classes = "action-button") {
+                    id = "openapi-json-button"
+                    onClick = "window.open('$openApiJson', '_blank')"
+                    +"Json"
+                }
+
+                button(classes = "action-button") {
+                    id = "swagger-ui-button"
+                    onClick = "window.open('$swaggerUrl', '_blank')"
+                    +"Swagger UI"
+                }
+
+                button(classes = "action-button") {
+                    id = "redoc-button"
+                    onClick = "window.open('$redocUrl', '_blank')"
+                    +"ReDoc"
+                }
             }
         }
     }

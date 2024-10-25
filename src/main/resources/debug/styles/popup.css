@@ -56,26 +56,6 @@
     background-color: #4b4e58;
 }
 
-/* Configuration Button Styling */
-.configuration-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    padding: 8px 12px; /* Adjusted for smaller size */
-    background-color: #3c3f4a;
-    color: #d5d6db;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em; /* Slightly smaller font */
-    z-index: 1001; /* Above the overlay */
-    transition: background-color 0.3s ease; /* Smooth hover transition */
-}
-
-.configuration-button:hover {
-    background-color: #4b4e58;
-}
-
 .popup-content pre {
     white-space: pre-wrap; /* Ensures line breaks are preserved */
     word-wrap: break-word; /* Breaks long lines if necessary */

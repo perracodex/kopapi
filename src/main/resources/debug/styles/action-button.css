@@ -1,0 +1,27 @@
+/*
+ * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
+ */
+
+/* Button Container Styling */
+.button-container {
+    display: flex;
+    gap: 10px;
+    align-self: flex-start;
+}
+
+/* Generic Button Styling */
+.action-button {
+    padding: 8px 12px;
+    background-color: #3c3f4a;
+    color: #d5d6db;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    z-index: 1001;
+    transition: background-color 0.3s ease; /* Smooth hover transition */
+}
+
+.action-button:hover {
+    background-color: #4b4e58;
+}

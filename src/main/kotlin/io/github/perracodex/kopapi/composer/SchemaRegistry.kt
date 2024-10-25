@@ -48,6 +48,14 @@ internal object SchemaRegistry {
         API_CONFIGURATION
     }
 
+    /** Represents the different resource URLs for the API documentation. */
+    enum class ResourceUrl {
+        OPENAPI_JSON,
+        OPENAPI_YAML,
+        REDOC,
+        SWAGGER_UI,
+    }
+
     /**
      * The enabled state of the schema provider. Defaults to `true`.
      * Overridden by the plugin configuration.
@@ -335,5 +343,22 @@ internal object SchemaRegistry {
     fun getSchemaTypes(): Set<TypeSchema> {
         processTypeSchemas()
         return typeSchemas
+    }
+
+    /**
+     * Retrieves the URL for a specific API documentation resource.
+     *
+     * @param url The [ResourceUrl] indicating the type of resource to retrieve.
+     * @return The URL for the specified API documentation resource.
+     */
+    fun getResourceUrl(url: ResourceUrl): String {
+        return apiConfiguration?.let { configuration ->
+            when (url) {
+                ResourceUrl.OPENAPI_JSON -> configuration.openapiJsonUrl
+                ResourceUrl.OPENAPI_YAML -> configuration.openapiYamlUrl
+                ResourceUrl.REDOC -> configuration.redocUrl
+                ResourceUrl.SWAGGER_UI -> configuration.swaggerUrl
+            }
+        } ?: ""
     }
 }
