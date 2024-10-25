@@ -25,9 +25,9 @@ get("/items/{group_id}/{item_id?}") {
 ### Characteristics:
 
 * Lightweight and minimally invasive integration.
+* Provides `Swagger UI` and `ReDoc` for testing and documentation.
 * Flexible and expressive `DSL` builder syntax.
 * Support for arbitrary types, including `generics`, `collections` and complex nested structures.
-* Detects conflict for duplicate Model definitions.
 * Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) annotations.
 * Support for [Jackson](https://github.com/FasterXML/jackson-module-kotlin) annotations (under development).
 * Generate schema outputs in `YAML` or `JSON` format,
