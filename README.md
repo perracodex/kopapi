@@ -12,14 +12,15 @@ Kopapi is library to generate the OpenAPI documentation from [Ktor](https://ktor
 get("/items/{data_id}/{item_id?}") {
     // Handle GET request
 } api {
+    tags("Items", "Data")
     summary = "Retrieve data items."
     description = "Fetches all items for a group."
-    tags("Items", "Data")
+    operationId = "getDataItems"
     pathParameter<PathType.Uuid>("data_id") { description = "The data set Id." }
     queryParameter<String>("item_id") { description = "Optional item Id to locate." }
     response<List<Item>>(status = HttpStatusCode.OK) { description = "Successful fetch." }
     response(status = HttpStatusCode.NotFound) { description = "Data not found." }
-  httpSecurity(name = "Authentication", method = AuthenticationMethod.BEARER) { description = "Access to data." }
+    httpSecurity(name = "Authentication", method = AuthenticationMethod.BEARER) { description = "Access to data." }
 }
 ```
 

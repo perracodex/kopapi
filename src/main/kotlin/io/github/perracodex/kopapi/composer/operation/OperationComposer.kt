@@ -97,9 +97,10 @@ internal object OperationComposer {
             ResponseComposer.compose(responses = apiOperation.responses)
         }
         return OperationObject(
+            tags = apiOperation.tags.takeIf { !it.isNullOrEmpty() },
             summary = apiOperation.summary,
             description = apiOperation.description,
-            tags = apiOperation.tags.takeIf { !it.isNullOrEmpty() },
+            operationId = apiOperation.operationId,
             parameters = parameters.takeIf { !it.isNullOrEmpty() },
             requestBody = requestBody,
             responses = responses.takeIf { !it.isNullOrEmpty() },

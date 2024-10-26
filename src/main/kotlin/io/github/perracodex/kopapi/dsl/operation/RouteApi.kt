@@ -26,11 +26,13 @@ import io.ktor.utils.io.*
  * get("/items/{data_id}/{item_id?}") {
  *     // Handle GET request
  * } api {
+ *     tags("Items", "Data")
+ *
  *     summary = "Retrieve data items."
  *
  *     description = "Fetches all items for a data set."
  *
- *     tags("Items", "Data")
+ *     operationId = "getDataItems"
  *
  *     pathParameter<PathType.Uuid>("data_id") { description = "The data Id." }
  *
@@ -75,9 +77,10 @@ public infix fun Route.api(configure: ApiOperationBuilder.() -> Unit): Route {
     val apiOperation = ApiOperation(
         path = endpointPath,
         method = method,
+        tags = builder._config.tags.takeIf { it.isNotEmpty() },
         summary = builder.summary.trimOrNull(),
         description = builder.description.trimOrNull(),
-        tags = builder._config.tags.takeIf { it.isNotEmpty() },
+        operationId = builder.operationId.trimOrNull(),
         parameters = builder._config.parameters.takeIf { it.isNotEmpty() },
         requestBody = builder._config.requestBody,
         responses = builder._config.responses.takeIf { it.isNotEmpty() },
@@ -115,10 +118,11 @@ private fun buildApiErrorMessage(route: Route): String {
             ```
             get("/items/{data_id}/{item_id?}") {
                 // Handle GET request
-            } api { 
+            } api {
+                tags("Items", "Data")
                 summary = "Retrieve data items."
                 description = "Fetches all items for a data set."
-                tags("Items", "Data")
+                operationId = "getDataItems"
                 pathParameter<PathType.Uuid>("data_id") { description = "The data Id." }
                 queryParameter<String>("item_id") { description = "Optional item Id to locate." }
                 response<List<Item>>(status = HttpStatusCode.OK) { description = "Successful fetch." }

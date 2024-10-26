@@ -137,6 +137,12 @@ public class ApiOperationBuilder internal constructor(
     }
 
     /**
+     * The identifier for the API operation.
+     * Must be unique across all API operations.
+     */
+    public var operationId: String? = null
+
+    /**
      * Disables the security schemes for the API operation.
      * Both top-level global and local security schemes will not be applied to this API Operation.
      *
