@@ -330,7 +330,7 @@ public class ApiOperationBuilder internal constructor(
      * ```
      *
      * @param T The body primary type of the request.
-     * @param contentType Optional set of [ContentType]s to associate with the type. Defaults to `JSON`.
+     * @param contentType Optional set of [ContentType]s to associate with the type. Default: `JSON`.
      * @param configure A lambda receiver for configuring the [RequestBodyBuilder].
      *
      * @see [RequestBodyBuilder]
@@ -365,7 +365,7 @@ public class ApiOperationBuilder internal constructor(
     /**
      * Registers a response.
      *
-     * This function can be used with or without a response body:
+     * Responses can be registered with or without a response body type:
      * ```
      * response<ResponseType>(HttpStatusCode) { ... }
      * response(HttpStatusCode) { ... }
@@ -373,11 +373,9 @@ public class ApiOperationBuilder internal constructor(
      *
      * #### Sample Usage
      *```
-     * response(status = HttpStatusCode.OK) {
-     *      // Optional description.
+     * response<String>(status = HttpStatusCode.OK) {
      *      description = "Successfully retrieved the item."
      *
-     *      // Optional Headers and Links.
      *      header(name = "X-Rate-Limit") {
      *          description = "Number of allowed requests per period."
      *          required = true
@@ -386,24 +384,19 @@ public class ApiOperationBuilder internal constructor(
      *          description = "Link to the next item."
      *      }
      *
-     *      // Optional composition.
      *      // Only meaningful if multiple types are provided.
      *      // If omitted, defaults to `AnyOf`.
      *      composition = Composition.AnyOf
      *
-     *      // Register an additional type.
-     *      addType<AnotherType>()
-     *
-     *      // Register another type to the PDF ContentType
-     *      // instead of the default.
+     *      // Register additional type,
+     *      // and also set it to the PDF ContentType.
      *      addType<YetAnotherType>(
      *          setOf(ContentType.Application.Pdf)
      *      )
      * }
-     * ```
+     *```
      *
      * @param status The [HttpStatusCode] code associated with this response.
-     * @param contentType Optional set of [ContentType]s to associate with the type. Defaults to `JSON`.
      * @param configure A lambda receiver for configuring the [ResponseBuilder].
      *
      * @see [ResponseBuilder]
@@ -413,16 +406,15 @@ public class ApiOperationBuilder internal constructor(
     @JvmName(name = "responseWithoutType")
     public fun ApiOperationBuilder.response(
         status: HttpStatusCode,
-        contentType: Set<ContentType>? = null,
         configure: ResponseBuilder.() -> Unit = {}
     ) {
-        response<Unit>(status = status, contentType = contentType, configure = configure)
+        response<Unit>(status = status, configure = configure)
     }
 
     /**
      * Registers a response.
      *
-     * This function can be used with or without a response body:
+     * Responses can be registered with or without a response body type:
      * ```
      * response<ResponseType>(HttpStatusCode) { ... }
      * response(HttpStatusCode) { ... }
@@ -430,11 +422,9 @@ public class ApiOperationBuilder internal constructor(
      *
      * #### Sample Usage
      *```
-     * response<ResponseType>(status = HttpStatusCode.OK) {
-     *      // Optional description.
+     * response<String>(status = HttpStatusCode.OK) {
      *      description = "Successfully retrieved the item."
      *
-     *      // Optional Headers and Links.
      *      header(name = "X-Rate-Limit") {
      *          description = "Number of allowed requests per period."
      *          required = true
@@ -443,25 +433,77 @@ public class ApiOperationBuilder internal constructor(
      *          description = "Link to the next item."
      *      }
      *
-     *      // Optional composition.
      *      // Only meaningful if multiple types are provided.
      *      // If omitted, defaults to `AnyOf`.
      *      composition = Composition.AnyOf
      *
-     *      // Register an additional type.
-     *      addType<AnotherType>()
-     *
-     *      // Register another type to the PDF ContentType
-     *      // instead of the default.
+     *      // Register additional type,
+     *      // and also set it to the PDF ContentType.
      *      addType<YetAnotherType>(
      *          setOf(ContentType.Application.Pdf)
      *      )
      * }
-     * ```
+     *```
      *
      * @param T The body primary type of the response.
      * @param status The [HttpStatusCode] code associated with this response.
-     * @param contentType Optional set of [ContentType]s to associate with the type. Defaults to `JSON`.
+     * @param contentType One or more [ContentType]s to associate with the response. Default: `JSON`.
+     * @param configure A lambda receiver for configuring the [ResponseBuilder].
+     *
+     * @see [ResponseBuilder]
+     * @see [HeaderBuilder]
+     * @see [LinkBuilder]
+     */
+    @JvmName(name = "responseWithSingleContentType")
+    public inline fun <reified T : Any> ApiOperationBuilder.response(
+        status: HttpStatusCode,
+        contentType: ContentType,
+        configure: ResponseBuilder.() -> Unit = {}
+    ) {
+        response<T>(
+            status = status,
+            contentType = setOf(contentType),
+            configure = configure
+        )
+    }
+
+    /**
+     * Registers a response.
+     *
+     * Responses can be registered with or without a response body type:
+     * ```
+     * response<ResponseType>(HttpStatusCode) { ... }
+     * response(HttpStatusCode) { ... }
+     * ```
+     *
+     * #### Sample Usage
+     *```
+     * response<String>(status = HttpStatusCode.OK) {
+     *      description = "Successfully retrieved the item."
+     *
+     *      header(name = "X-Rate-Limit") {
+     *          description = "Number of allowed requests per period."
+     *          required = true
+     *      }
+     *      link(operationId = "getNextItem") {
+     *          description = "Link to the next item."
+     *      }
+     *
+     *      // Only meaningful if multiple types are provided.
+     *      // If omitted, defaults to `AnyOf`.
+     *      composition = Composition.AnyOf
+     *
+     *      // Register additional type,
+     *      // and also set it to the PDF ContentType.
+     *      addType<YetAnotherType>(
+     *          setOf(ContentType.Application.Pdf)
+     *      )
+     * }
+     *```
+     *
+     * @param T The body primary type of the response.
+     * @param status The [HttpStatusCode] code associated with this response.
+     * @param contentType One or more [ContentType]s to associate with the response. Default: `JSON`.
      * @param configure A lambda receiver for configuring the [ResponseBuilder].
      *
      * @see [ResponseBuilder]
