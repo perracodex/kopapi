@@ -27,12 +27,25 @@ import io.ktor.utils.io.*
  *     // Handle GET request
  * } api {
  *     summary = "Retrieve data items."
+ *
  *     description = "Fetches all items for a data set."
+ *
  *     tags("Items", "Data")
+ *
  *     pathParameter<PathType.Uuid>("data_id") { description = "The data Id." }
+ *
  *     queryParameter<String>("item_id") { description = "Optional item Id." }
+ *
  *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful." }
+ *
  *     response(HttpStatusCode.NotFound) { description = "Data not found." }
+ *
+ *     httpSecurity(
+ *          name = "Authentication",
+ *          method = AuthenticationMethod.BEARER
+ *     ) {
+ *          description = "Access to data."
+ *     }
  * }
  * ```
  *
