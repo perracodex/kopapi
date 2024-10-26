@@ -1,0 +1,53 @@
+/*
+ * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
+ */
+
+package io.github.perracodex.kopapi.composer.operation
+
+import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
+import io.github.perracodex.kopapi.system.KopapiException
+
+@ComposerAPI
+internal object OperationVerifier {
+    /**
+     * Helper method for consistency checks in API Operation.
+     *
+     * @throws KopapiException if detected that any errors in the API Operation configuration.
+     */
+    fun assert(apiOperations: Set<ApiOperation>) {
+        if (apiOperations.isNotEmpty()) {
+            verifyOperationIdUniqueness(apiOperations = apiOperations)
+        }
+    }
+
+    /**
+     * Verifies that all operation IDs are unique across all operations.
+     *
+     * @param apiOperations The set of API operations to verify.
+     */
+    private fun verifyOperationIdUniqueness(apiOperations: Set<ApiOperation>) {
+        val duplicateOperations: Map<String, List<ApiOperation>> = apiOperations.asSequence().mapNotNull { operation ->
+                operation.operationId?.let { operationId ->
+                    operationId.lowercase() to operation
+                }
+            }.groupBy {
+                it.first
+            }.mapValues {
+                it.value.map { (_, operation) ->
+                    operation
+                }
+            }.filterValues { it.size > 1 }
+
+        if (duplicateOperations.isNotEmpty()) {
+            val message: String = duplicateOperations.map { (operationId, operations) ->
+                val endpoints: String = operations.joinToString("\n") { op ->
+                    "   - [${op.method.value}] → '${op.path}'"
+                }
+                "API Operation ID '$operationId' is not unique. Duplicates found in:\n$endpoints\n"
+            }.joinToString(separator = "\n\n")
+
+            throw KopapiException(message)
+        }
+    }
+}

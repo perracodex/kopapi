@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.composer
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.operation.OperationVerifier
 import io.github.perracodex.kopapi.composer.request.RequestBodyComposer
 import io.github.perracodex.kopapi.composer.response.ResponseComposer
 import io.github.perracodex.kopapi.composer.security.SecuritySchemeVerifier
@@ -119,6 +120,10 @@ internal object SchemaRegistry {
         synchronized(apiOperation) {
             if (isEnabled) {
                 apiOperation.add(operation)
+
+                OperationVerifier.assert(
+                    apiOperations = apiOperation
+                )
                 SecuritySchemeVerifier.assert(
                     global = apiConfiguration?.apiSecuritySchemes,
                     apiOperations = apiOperation

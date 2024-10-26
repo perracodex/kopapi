@@ -23,10 +23,6 @@ internal object SecuritySchemeVerifier {
         global: Set<ApiSecurityScheme>?,
         apiOperations: Set<ApiOperation>
     ) {
-        if (global.isNullOrEmpty()) {
-            verifyOperationIdUniqueness(apiOperations = apiOperations)
-        }
-
         if (!global.isNullOrEmpty() && apiOperations.isNotEmpty()) {
             val globalSchemeMap: Map<String, ApiSecurityScheme> = global.associateBy { it.schemeName.lowercase() }
             val trackedOperationSchemes: MutableMap<String, Pair<ApiSecurityScheme, ApiOperation>> = mutableMapOf()
@@ -53,38 +49,6 @@ internal object SecuritySchemeVerifier {
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * Verifies that all operation IDs are unique across all operations.
-     *
-     * @param apiOperations The set of API operations to verify.
-     */
-    private fun verifyOperationIdUniqueness(apiOperations: Set<ApiOperation>) {
-        val duplicateOperations: Map<String, List<ApiOperation>> = apiOperations
-            .asSequence()
-            .mapNotNull { operation ->
-                operation.operationId?.let { operationId ->
-                    operationId.lowercase() to operation
-                }
-            }.groupBy {
-                it.first
-            }.mapValues {
-                it.value.map { (_, operation) ->
-                    operation
-                }
-            }.filterValues { it.size > 1 }
-
-        if (duplicateOperations.isNotEmpty()) {
-            val message: String = duplicateOperations.map { (operationId, operations) ->
-                val endpoints: String = operations.joinToString("\n") { op ->
-                    "   - [${op.method.value}] → '${op.path}'"
-                }
-                "API Operation ID '$operationId' is not unique and is used by the following endpoints:\n$endpoints\n"
-            }.joinToString(separator = "\n\n")
-
-            throw KopapiException(message)
         }
     }
 
