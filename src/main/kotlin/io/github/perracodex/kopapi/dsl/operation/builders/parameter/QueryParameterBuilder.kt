@@ -19,7 +19,7 @@ import kotlin.reflect.KType
  *
  * @property description A description of the parameter's purpose and usage.
  * @property required Indicates whether the parameter is mandatory for the API call.
- * @property allowReserved Whether reserved characters (e.g., `?`, `/`) are allowed. Defaults to `false`.
+ * @property allowReserved Whether reserved characters (e.g., `?`, `/`) are allowed. Default: `false`.
  * @property defaultValue Optional default value for the parameter.
  * @property style The style in which the parameter is serialized in the URL.
  * @property explode Whether to send arrays and objects as separate parameters.
@@ -33,7 +33,7 @@ import kotlin.reflect.KType
 @KtorDsl
 @OperationDsl
 public class QueryParameterBuilder(
-    public var required: Boolean = false,
+    public var required: Boolean = true,
     public var allowReserved: Boolean = false,
     public var defaultValue: DefaultValue? = null,
     public var style: ParameterStyle = ParameterStyle.FORM,

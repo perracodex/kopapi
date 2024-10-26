@@ -27,7 +27,7 @@ import io.ktor.utils.io.*
 @OperationDsl
 public class HeaderBuilder(
     public val name: String,
-    public var required: Boolean = false,
+    public var required: Boolean = true,
     public var deprecated: Boolean = false
 ) {
     public var description: String by MultilineString()

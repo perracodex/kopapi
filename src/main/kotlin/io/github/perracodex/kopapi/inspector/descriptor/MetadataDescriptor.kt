@@ -24,9 +24,9 @@ import kotlin.reflect.full.primaryConstructor
  *
  * @property name The current name of the element. If renamed, this reflects the updated name.
  * @property renamedFrom The original name of the element before renaming. It is `null` if the name was not changed.
- * @property isRequired Indicates whether the element is required. Defaults to true.
- * @property isNullable Indicates whether the element is nullable. Defaults to false.
- * @property isTransient Indicates whether the element should be ignored. Defaults to false.
+ * @property isRequired Indicates whether the element is required. Default: `true`.
+ * @property isNullable Indicates whether the element is nullable. Default: `false`.
+ * @property isTransient Indicates whether the element should be ignored. Default: `false`.
  */
 @TypeInspectorAPI
 internal data class MetadataDescriptor(

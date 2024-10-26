@@ -57,7 +57,8 @@ internal object SchemaRegistry {
     }
 
     /**
-     * The enabled state of the schema provider. Defaults to `true`.
+     * The enabled state of the schema provider. Default: `true`.
+     *
      * Overridden by the plugin configuration.
      */
     private var isEnabled: Boolean = true

@@ -14,9 +14,9 @@ import io.ktor.utils.io.*
  * Builder for constructing individual parts of a multipart request body.
  *
  * @property name The name of the part.
- * @property required Indicates whether the part is mandatory for the multipart request. Defaults to `true`.
+ * @property required Indicates whether the part is mandatory for the multipart request. Default: `true`.
  * @property description Optional description of the part.
- * @property schemaType Optional schema type for the part. Defaults to `string`.
+ * @property schemaType Optional schema type for the part. Default: `string`.
  * @property schemaFormat Optional schema format for the part.
  */
 @KtorDsl

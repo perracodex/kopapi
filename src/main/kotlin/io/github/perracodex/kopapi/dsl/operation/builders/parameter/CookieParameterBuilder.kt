@@ -32,7 +32,7 @@ import kotlin.reflect.KType
 @KtorDsl
 @OperationDsl
 public class CookieParameterBuilder(
-    public var required: Boolean = false,
+    public var required: Boolean = true,
     public var defaultValue: DefaultValue? = null,
     public var style: ParameterStyle = ParameterStyle.FORM,
     public var explode: Boolean = true,
