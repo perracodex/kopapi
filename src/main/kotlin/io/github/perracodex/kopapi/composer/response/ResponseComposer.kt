@@ -67,7 +67,7 @@ internal object ResponseComposer {
                 .mapValues { (_, schemas) ->
                     IOpenApiSchema.determineSchema(
                         composition = apiResponse.composition,
-                        schemas = schemas.sortedBy { it.ordinal }
+                        schemas = schemas.sortedBy { it.definition }
                     )
                 }
 

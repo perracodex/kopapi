@@ -17,11 +17,9 @@ import io.github.perracodex.kopapi.utils.safeName
  * Element schemas are the building blocks for more complex OpenAPI schemas.
  *
  * @property definition A unique identifier for debugging and clarity during schema generation.
- * @property ordinal Specifies the order of schema appearance when sorting.
  */
 internal sealed class ElementSchema(
     @JsonIgnore open val definition: String,
-    @JsonIgnore open val ordinal: Int
 ) : IOpenApiSchema {
     /**
      * Represents an object schema with a set of named properties.
@@ -33,7 +31,7 @@ internal sealed class ElementSchema(
         override val definition: String = Object::class.safeName(),
         val schemaType: ApiType = ApiType.OBJECT,
         val properties: MutableMap<String, SchemaProperty> = mutableMapOf()
-    ) : ElementSchema(definition = definition, ordinal = 0)
+    ) : ElementSchema(definition = definition)
 
     /**
      * Represents a reference to another schema.
@@ -47,7 +45,7 @@ internal sealed class ElementSchema(
         @JsonIgnore override val definition: String = Reference::class.safeName(),
         @JsonIgnore val schemaType: ApiType = ApiType.OBJECT,
         @JsonIgnore val schemaName: String,
-    ) : ElementSchema(definition = definition, ordinal = 1) {
+    ) : ElementSchema(definition = definition) {
         @JsonProperty(REFERENCE)
         val ref: String = "$PATH$schemaName"
 
@@ -85,7 +83,7 @@ internal sealed class ElementSchema(
         @JsonProperty("exclusiveMinimum") val exclusiveMinimum: Number? = null,
         @JsonProperty("exclusiveMaximum") val exclusiveMaximum: Number? = null,
         @JsonProperty("multipleOf") val multipleOf: Number? = null,
-    ) : ElementSchema(definition = definition, ordinal = 2) {
+    ) : ElementSchema(definition = definition) {
         init {
             SchemaConstraints.validate(
                 apiType = schemaType,
@@ -110,7 +108,7 @@ internal sealed class ElementSchema(
         @JsonIgnore override val definition: String = Enum::class.safeName(),
         @JsonProperty("type") val schemaType: ApiType = ApiType.STRING,
         @JsonProperty("enum") val values: List<String>
-    ) : ElementSchema(definition = definition, ordinal = 3)
+    ) : ElementSchema(definition = definition)
 
     /**
      * Represents an array schema, defining a collection of items of a specified schema.
@@ -122,7 +120,7 @@ internal sealed class ElementSchema(
         @JsonIgnore override val definition: String = Array::class.safeName(),
         @JsonProperty("type") val schemaType: ApiType = ApiType.ARRAY,
         @JsonProperty("items") val items: ElementSchema
-    ) : ElementSchema(definition = definition, ordinal = 4)
+    ) : ElementSchema(definition = definition)
 
     /**
      * Represents a schema that allows for additional properties of a specified type.
@@ -135,7 +133,7 @@ internal sealed class ElementSchema(
         @JsonIgnore override val definition: String = AdditionalProperties::class.safeName(),
         @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
         @JsonProperty("additionalProperties") val additionalProperties: ElementSchema
-    ) : ElementSchema(definition = definition, ordinal = 5)
+    ) : ElementSchema(definition = definition)
 
     /**
      * Represents a schema marked as nullable type.
@@ -145,7 +143,7 @@ internal sealed class ElementSchema(
     data class Nullable(
         @JsonIgnore override val definition: String = Nullable::class.safeName(),
         @JsonProperty("anyOf") val anyOf: List<Any>
-    ) : ElementSchema(definition = "Nullable", ordinal = 6) {
+    ) : ElementSchema(definition = "Nullable") {
         constructor(schema: ElementSchema) : this(
             anyOf = listOf(
                 schema,
@@ -166,5 +164,5 @@ internal sealed class ElementSchema(
         @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
         @JsonProperty("properties") val properties: Map<String, ElementSchema>?,
         @JsonProperty("required") var required: MutableSet<String>?
-    ) : ElementSchema(definition = definition, ordinal = 7)
+    ) : ElementSchema(definition = definition)
 }
