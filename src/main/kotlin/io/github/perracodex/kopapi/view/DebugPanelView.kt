@@ -7,10 +7,7 @@ package io.github.perracodex.kopapi.view
 import io.github.perracodex.kopapi.composer.SchemaRegistry
 import kotlinx.html.*
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 
 /**
  * Generates the HTML view of the debug panel, displaying API metadata, object schemas,
@@ -59,7 +56,7 @@ internal class DebugPanelView {
                         htmlTag = this,
                         title = "API Operations",
                         panelId = "api-operation",
-                        keys = listOf("method", "path"),
+                        keys = listOf("operationId", "method", "path"),
                         jsonDataList = apiOperationList
                     )
                     if (typeSchemasList.isNotEmpty()) {
@@ -211,9 +208,11 @@ internal class DebugPanelView {
                     // Populate dropdown with options, including pretty-printed JSON data.
                     jsonDataList.forEach { jsonObject ->
                         // Build a composite key from the specified keys.
-                        val compositeKey: String = keys.joinToString(separator = " → ") { key ->
-                            jsonObject[key]?.jsonPrimitive?.content.orEmpty()
-                        }
+                        val compositeKey: String = keys.mapNotNull { key ->
+                            jsonObject[key]?.takeIf { it !is JsonNull }
+                                ?.jsonPrimitive?.contentOrNull?.takeIf { it.isNotBlank() }
+                        }.joinToString(separator = " → ")
+
                         option {
                             // Store the pretty-printed JSON object as a value.
                             value = json.encodeToString(jsonObject)
