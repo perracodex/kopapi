@@ -229,8 +229,8 @@ internal class TypeInspector {
                 enumResolver.process(enumClass = classifier)
 
             // Handle generics. Must be checked after arrays, collections, and maps
-            // because they also have type arguments.
-            kType.arguments.isNotEmpty() ->
+            // ase they also have type arguments.
+            kType.arguments.isNotEmpty() && kType.arguments.none { it.type == null } ->
                 genericsResolver.traverse(
                     kType = kType,
                     kClass = classifier as KClass<*>,
