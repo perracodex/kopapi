@@ -8,7 +8,10 @@ import io.github.perracodex.kopapi.view.DebugPanelView
 import io.ktor.http.*
 import io.ktor.server.html.*
 import io.ktor.server.http.content.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import java.io.PrintWriter
+import java.io.StringWriter
 
 /**
  * Define the Debug endpoint exposed by the plugin.
@@ -21,8 +24,20 @@ internal fun Routing.debugRoute(
     staticResources(remotePath = "/static-kopapi", basePackage = "debug")
 
     get(debugUrl) {
-        call.respondHtml(status = HttpStatusCode.OK) {
-            DebugPanelView().build(html = this)
+        runCatching {
+            call.respondHtml(status = HttpStatusCode.OK) {
+                DebugPanelView().build(html = this)
+            }
+        }.onFailure { cause ->
+            val stackTrace: String = StringWriter().apply {
+                cause.printStackTrace(PrintWriter(this))
+            }.toString()
+
+            call.respondText(
+                text = "Failed to render the debug panel:\n$stackTrace",
+                status = HttpStatusCode.InternalServerError,
+                contentType = ContentType.Text.Plain
+            )
         }
     }
 }
