@@ -26,8 +26,14 @@ internal fun Route.extractRoutePath(): String {
             is PathSegmentConstantRouteSelector -> selector.value
             is PathSegmentParameterRouteSelector -> "{${selector.name}}"
             is PathSegmentWildcardRouteSelector -> "*"
-            is TrailingSlashRouteSelector, is HttpMethodRouteSelector -> "" // Ignored for path construction.
-            is PathSegmentOptionalParameterRouteSelector -> "" // Query parameters are not included in the path.
+
+            // Ignored for path construction.
+            is TrailingSlashRouteSelector -> ""
+            is HttpMethodRouteSelector -> ""
+
+            // Query parameters are not included in the path.
+            // These are defined as part of the operation using a separate DSL.
+            is PathSegmentOptionalParameterRouteSelector -> ""
             else -> ""
         }.let { segment ->
             if (segment.isNotEmpty()) {
