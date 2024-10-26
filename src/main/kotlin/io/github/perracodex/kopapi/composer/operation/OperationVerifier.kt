@@ -27,17 +27,15 @@ internal object OperationVerifier {
      * @param apiOperations The set of API operations to verify.
      */
     private fun verifyOperationIdUniqueness(apiOperations: Set<ApiOperation>) {
-        val duplicateOperations: Map<String, List<ApiOperation>> = apiOperations.asSequence().mapNotNull { operation ->
+        val duplicateOperations: Map<String, List<ApiOperation>> = apiOperations.asSequence()
+            .mapNotNull { operation ->
                 operation.operationId?.let { operationId ->
                     operationId.lowercase() to operation
                 }
-            }.groupBy {
-                it.first
-            }.mapValues {
-                it.value.map { (_, operation) ->
-                    operation
-                }
-            }.filterValues { it.size > 1 }
+            }
+            .groupBy { it.first }
+            .filterValues { it.size > 1 }
+            .mapValues { it.value.map { (_, operation) -> operation } }
 
         if (duplicateOperations.isNotEmpty()) {
             val message: String = duplicateOperations.map { (operationId, operations) ->
