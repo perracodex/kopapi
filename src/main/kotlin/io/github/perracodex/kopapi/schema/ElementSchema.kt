@@ -41,14 +41,12 @@ internal sealed class ElementSchema(
      *
      * @property schemaType The API type of the schema as defined in the OpenAPI specification.
      * @property schemaName The name of the schema being referenced.
-     * @property nullable Whether the reference is nullable.
      * @property ref The reference path to the schema definition.
      */
     data class Reference(
         @JsonIgnore override val definition: String = Reference::class.safeName(),
         @JsonIgnore val schemaType: ApiType = ApiType.OBJECT,
         @JsonIgnore val schemaName: String,
-        @JsonProperty("nullable") val nullable: Boolean? = null
     ) : ElementSchema(definition = definition, ordinal = 1) {
         @JsonProperty(REFERENCE)
         val ref: String = "$PATH$schemaName"

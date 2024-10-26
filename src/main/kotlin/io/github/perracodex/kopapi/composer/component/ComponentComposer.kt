@@ -47,14 +47,7 @@ internal object ComponentComposer {
                     // Skip transient properties and rebuild the schema if necessary.
                     if (!property.isTransient) {
                         val rebuiltSchema: ElementSchema = if (property.isNullable) {
-                            if (property.schema is ElementSchema.Reference) {
-                                ElementSchema.Reference(
-                                    schemaName = property.schema.schemaName,
-                                    nullable = true
-                                )
-                            } else {
-                                ElementSchema.Nullable(schema = property.schema)
-                            }
+                            ElementSchema.Nullable(schema = property.schema)
                         } else {
                             property.schema
                         }
