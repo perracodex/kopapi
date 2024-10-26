@@ -5,48 +5,62 @@
  */
 
 /**
- * Shows the popup by setting the overlay's display to flex and applying Prism syntax highlighting.
+ * Displays a popup for the specified panel by setting the overlay's display to 'flex'
+ * and applying syntax highlighting to the JSON code block within the popup.
+ *
+ * @param {string} panelId - The ID of the panel for which to show the popup.
  */
-function showPopup() {
-    const overlay = document.getElementById('popup-overlay');
+function showPopup(panelId) {
+    const overlayId = `${panelId}-overlay`;
+    const overlay = document.getElementById(overlayId);
     if (overlay) {
         overlay.style.display = 'flex';
 
         const codeBlock = overlay.querySelector('code.language-json');
         if (codeBlock) {
-            Prism.highlightElement(codeBlock);  // Apply syntax highlighting to the popup's code block
+            // Apply syntax highlighting to the popup's code block.
+            Prism.highlightElement(codeBlock);
         } else {
             console.error("Code block not found for Prism.");
         }
     } else {
-        console.error("Popup overlay not found.");
+        console.error("Popup overlay not found for ID:", overlayId);
     }
 }
 
 /**
- * Hides the popup by setting the overlay's display to none.
+ * Hides the popup for the specified panel by setting the overlay's display to 'none'.
+ *
+ * @param {string} panelId - The ID of the panel for which to hide the popup.
  */
-function hidePopup() {
-    const overlay = document.getElementById('popup-overlay');
+function hidePopup(panelId) {
+    const overlayId = `${panelId}-overlay`;
+    const overlay = document.getElementById(overlayId);
     if (overlay) {
         overlay.style.display = 'none';
     } else {
-        console.error("Popup overlay not found.");
+        console.error("Popup overlay not found for ID:", overlayId);
     }
 }
 
 /**
- * Closes the popup when clicking outside the popup content.
+ * Event listener that hides popups when clicking out of the popup content.
+ * It iterates over a list of panel IDs, checks if the click was outside the content area,
+ * and hides the respective overlay if necessary.
  */
 document.addEventListener('click', function (event) {
-    const overlay = document.getElementById('popup-overlay');
-    const popupContent = document.getElementById('popup-content');
-    const popupButton = document.getElementById('configuration-popup-button');
+    const panels = ["configuration-panel", "openapi-yaml-panel", "openapi-json-panel"];
+    panels.forEach(panelId => {
+        const overlayId = `${panelId}-overlay`;
+        const overlay = document.getElementById(overlayId);
+        const content = overlay ? overlay.querySelector('.popup-content') : null;
+        const button = document.getElementById(`${panelId}-button`);
 
-    // If the click is outside the popup content and not on the popup button, hide the popup
-    if (overlay && popupContent && popupButton &&
-        !popupContent.contains(event.target) &&
-        event.target !== popupButton) {
-        overlay.style.display = 'none';
-    }
+        // Hide the popup if the click is outside the content and not on the associated button.
+        if (overlay && content && button &&
+            !content.contains(event.target) &&
+            event.target !== button) {
+            overlay.style.display = 'none';
+        }
+    });
 });

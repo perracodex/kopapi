@@ -24,6 +24,8 @@ internal class DebugPanelView {
     private val typeSchemasJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.TYPE_SCHEMAS)
     private val schemaConflictsJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.SCHEMA_CONFLICTS)
     private val configurationJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.API_CONFIGURATION)
+    private val openApiYaml: String = SchemaRegistry.getOpenApiSchema(format = SchemaRegistry.Format.YAML)
+    private val openApiJson: String = SchemaRegistry.getOpenApiSchema(format = SchemaRegistry.Format.JSON)
 
     private val json = Json { prettyPrint = true }
 
@@ -80,10 +82,24 @@ internal class DebugPanelView {
                     }
                 }
 
-                // Include the configuration popup in the debug view.
-                buildConfigurationPopup(
+                // Popups.
+                buildPopup(
                     htmlTag = this,
+                    panelId = "configuration-panel",
+                    title = "Configuration",
                     jsonString = configurationJson.first()
+                )
+                buildPopup(
+                    htmlTag = this,
+                    panelId = "openapi-yaml-panel",
+                    title = "YAML",
+                    jsonString = openApiYaml
+                )
+                buildPopup(
+                    htmlTag = this,
+                    panelId = "openapi-json-panel",
+                    title = "JSON",
+                    jsonString = openApiJson
                 )
 
                 // Include Prism.js for syntax highlighting.
@@ -104,28 +120,26 @@ internal class DebugPanelView {
      * @param htmlTag The parent HTML element to append the buttons to.
      */
     private fun buildActionButtons(htmlTag: FlowContent) {
-        val openApiJson: String = SchemaRegistry.getResourceUrl(url = SchemaRegistry.ResourceUrl.OPENAPI_JSON)
-        val openApiYaml: String = SchemaRegistry.getResourceUrl(url = SchemaRegistry.ResourceUrl.OPENAPI_YAML)
         val redocUrl: String = SchemaRegistry.getResourceUrl(url = SchemaRegistry.ResourceUrl.REDOC)
         val swaggerUrl: String = SchemaRegistry.getResourceUrl(url = SchemaRegistry.ResourceUrl.SWAGGER_UI)
 
         with(htmlTag) {
             div(classes = "button-container") {
                 button(classes = "action-button") {
-                    id = "configuration-popup-button"
-                    onClick = "showPopup()"
+                    id = "configuration-panel-button"
+                    onClick = "showPopup('configuration-panel')"
                     +"Configuration"
                 }
 
                 button(classes = "action-button") {
-                    id = "openapi-yaml-button"
-                    onClick = "window.open('$openApiYaml', '_blank')"
+                    id = "openapi-yaml-panel-button"
+                    onClick = "showPopup('openapi-yaml-panel')"
                     +"Yaml"
                 }
 
                 button(classes = "action-button") {
-                    id = "openapi-json-button"
-                    onClick = "window.open('$openApiJson', '_blank')"
+                    id = "openapi-json-panel-button"
+                    onClick = "showPopup('openapi-json-panel')"
                     +"Json"
                 }
 
@@ -221,36 +235,51 @@ internal class DebugPanelView {
     }
 
     /**
-     * Constructs the configuration popup in the debug view.
+     * Constructs a popup in the debug view.
      *
      * @param htmlTag The parent HTML element to append the popup to.
+     * @param panelId The unique identifier for the panel element.
+     * @param title The title of the popup.
      * @param jsonString The JSON object to be displayed in the popup.
      */
-    private fun buildConfigurationPopup(
+    private fun buildPopup(
         htmlTag: FlowContent,
+        panelId: String,
+        title: String,
         jsonString: String
     ) {
-        val panelId = "configuration-panel"
+        val overlayId = "${panelId}-overlay"
+        val contentId = "${panelId}-content"
 
         with(htmlTag) {
             div(classes = "popup-overlay") {
-                id = "popup-overlay"
+                id = overlayId
 
                 div(classes = "popup-content") {
-                    id = "popup-content"
+                    id = contentId
 
                     div(classes = "panel") {
                         id = panelId
+
+                        div(classes = "panel-title") {
+                            span { +title }
+
+                            span(classes = "copy-action") {
+                                onClick = "copyToClipboard('$panelId')"
+                                +"copy"
+                            }
+                        }
+
                         pre(classes = "panel-content") {
                             code(classes = "language-json") {
                                 +jsonString
                             }
                         }
-                    }
 
-                    button(classes = "close-popup") {
-                        onClick = "hidePopup()"
-                        +"Close"
+                        button(classes = "close-popup") {
+                            onClick = "hidePopup('$panelId')"
+                            +"Close"
+                        }
                     }
                 }
             }
