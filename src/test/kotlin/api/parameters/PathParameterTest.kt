@@ -27,7 +27,7 @@ class PathParameterTest {
     }
 
     @Test
-    fun `test path parameter simple types`() = testApplication {
+    fun `path parameter with simple types`() = testApplication {
         application {
             // Set some non-default configuration values.
             install(Kopapi) {

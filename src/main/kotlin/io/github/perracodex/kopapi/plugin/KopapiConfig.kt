@@ -288,7 +288,7 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
         }
     }
 
-    private companion object {
+    internal companion object {
         const val DEFAULT_OPENAPI_JSON_URL: String = "/openapi.json"
         const val DEFAULT_OPENAPI_YAML_URL: String = "/openapi.yaml"
         const val DEFAULT_REDOC_URL: String = "/redoc"

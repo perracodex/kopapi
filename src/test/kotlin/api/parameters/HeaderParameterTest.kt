@@ -29,7 +29,7 @@ class HeaderParameterTest {
     }
 
     @Test
-    fun `test header parameter`() = testApplication {
+    fun `header parameter`() = testApplication {
         application {
             // Install Kopapi plugin.
             install(Kopapi) {

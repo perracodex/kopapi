@@ -29,7 +29,7 @@ class CookieParameterTest {
     }
 
     @Test
-    fun `test cookie parameter`() = testApplication {
+    fun `cookie parameter`() = testApplication {
         application {
             // Install Kopapi plugin.
             install(Kopapi) {

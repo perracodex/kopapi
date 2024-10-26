@@ -29,7 +29,7 @@ class QueryParameterTest {
     }
 
     @Test
-    fun `test query parameter`() = testApplication {
+    fun `query parameter`() = testApplication {
         application {
             // Install Kopapi plugin.
             install(Kopapi) {
