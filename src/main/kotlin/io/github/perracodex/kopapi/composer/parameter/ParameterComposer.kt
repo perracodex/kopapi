@@ -46,7 +46,6 @@ internal object ParameterComposer {
                 location = parameter.location,
                 description = parameter.description.trimOrNull(),
                 required = parameter.required,
-                allowEmptyValue = parameter.allowEmptyValue,
                 allowReserved = parameter.allowReserved,
                 style = parameter.style?.value,
                 explode = parameter.explode.takeIf { it == true },

@@ -16,7 +16,6 @@ import io.github.perracodex.kopapi.schema.ElementSchema
  * @property location Specifies where the parameter is found: path, query, header, or cookie.
  * @property description Optional human-readable explanation of the parameter's purpose.
  * @property required Whether if this parameter is mandatory. Path parameters must always be required.
- * @property allowEmptyValue Allows empty values for query parameters if set to true. Ignored for other parameter types.
  * @property allowReserved Whether reserved characters (e.g., `?`, `/`) are allowed. Only applicable to query parameters.
  * @property style Defines the serialization style of the parameter.
  * @property explode Determines how arrays and objects are serialized. Only applicable to query and cookie parameters.
@@ -30,7 +29,6 @@ internal data class ParameterObject(
     @JsonProperty("in") val location: ApiParameter.Location,
     @JsonProperty("description") val description: String?,
     @JsonProperty("required") val required: Boolean,
-    @JsonProperty("allowEmptyValue") val allowEmptyValue: Boolean?,
     @JsonProperty("allowReserved") val allowReserved: Boolean?,
     @JsonProperty("style") val style: String?,
     @JsonProperty("explode") val explode: Boolean?,

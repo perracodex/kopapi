@@ -50,7 +50,6 @@ public class PathParameterBuilder(
             description = description.trimOrNull(),
             required = true,
             allowReserved = null,
-            allowEmptyValue = null,
             defaultValue = null,
             style = style.takeIf { it != ParameterStyle.SIMPLE },
             explode = null,

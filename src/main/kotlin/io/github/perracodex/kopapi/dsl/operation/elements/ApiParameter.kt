@@ -23,7 +23,6 @@ import kotlin.reflect.KType
  * @property description Optional human-readable explanation of the parameter's purpose.
  * @property location The [Location] of the parameter, indicating where in the request it is included.
  * @property required Whether if this parameter is mandatory. Path parameters must always be required.
- * @property allowEmptyValue Allows empty values for query parameters if set to true. Ignored for other parameter types.
  * @property allowReserved Whether reserved characters (e.g., `?`, `/`) are allowed. Only applicable to query parameters.
  * @property defaultValue Optional default value for the parameter.
  * @property style Defines the serialization style of the parameter.
@@ -42,7 +41,6 @@ internal data class ApiParameter(
     val description: String?,
     val location: Location,
     val required: Boolean,
-    val allowEmptyValue: Boolean?,
     val allowReserved: Boolean?,
     val defaultValue: DefaultValue?,
     val style: ParameterStyle?,

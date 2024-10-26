@@ -57,7 +57,6 @@ public class CookieParameterBuilder(
             description = description.trimOrNull(),
             required = required,
             allowReserved = null,
-            allowEmptyValue = null,
             defaultValue = defaultValue,
             style = style.takeIf { it != ParameterStyle.FORM },
             explode = explode.takeIf { !it },

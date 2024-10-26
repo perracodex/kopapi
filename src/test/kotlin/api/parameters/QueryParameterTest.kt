@@ -46,7 +46,6 @@ class QueryParameterTest {
                     queryParameter<String>(name = "queryParam") {
                         description = "A query parameter with various properties"
                         required = true
-                        allowEmptyValue = true
                         allowReserved = true
                         defaultValue = DefaultValue.ofString(value = "defaultValue")
                         style = ParameterStyle.SIMPLE
@@ -75,7 +74,6 @@ class QueryParameterTest {
             assertEquals(expected = ApiParameter.Location.QUERY.value, actual = queryParameter["in"].asText())
             assertEquals(expected = "A query parameter with various properties", actual = queryParameter["description"].asText())
             assertEquals(expected = true, actual = queryParameter["required"].asBoolean())
-            assertEquals(expected = true, actual = queryParameter["allowEmptyValue"].asBoolean())
             assertEquals(expected = true, actual = queryParameter["allowReserved"].asBoolean())
             assertEquals(expected = "defaultValue", actual = queryParameter["default"].asText())
             assertEquals(expected = ParameterStyle.SIMPLE.value, actual = queryParameter["style"].asText())

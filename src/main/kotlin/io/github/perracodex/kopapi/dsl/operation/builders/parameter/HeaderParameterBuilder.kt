@@ -55,7 +55,6 @@ public class HeaderParameterBuilder(
             description = description.trimOrNull(),
             required = required,
             allowReserved = null,
-            allowEmptyValue = null,
             defaultValue = defaultValue,
             style = style.takeIf { it != ParameterStyle.SIMPLE },
             explode = null,

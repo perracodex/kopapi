@@ -19,7 +19,6 @@ import kotlin.reflect.KType
  *
  * @property description A description of the parameter's purpose and usage.
  * @property required Indicates whether the parameter is mandatory for the API call.
- * @property allowEmptyValue Whether to allow empty query parameter values. Defaults to `false`.
  * @property allowReserved Whether reserved characters (e.g., `?`, `/`) are allowed. Defaults to `false`.
  * @property defaultValue Optional default value for the parameter.
  * @property style The style in which the parameter is serialized in the URL.
@@ -35,7 +34,6 @@ import kotlin.reflect.KType
 @OperationDsl
 public class QueryParameterBuilder(
     public var required: Boolean = false,
-    public var allowEmptyValue: Boolean = false,
     public var allowReserved: Boolean = false,
     public var defaultValue: DefaultValue? = null,
     public var style: ParameterStyle = ParameterStyle.FORM,
@@ -60,7 +58,6 @@ public class QueryParameterBuilder(
             name = name.trim(),
             description = description.trimOrNull(),
             required = required,
-            allowEmptyValue = allowEmptyValue,
             allowReserved = allowReserved,
             defaultValue = defaultValue,
             style = style.takeIf { it != ParameterStyle.FORM },
