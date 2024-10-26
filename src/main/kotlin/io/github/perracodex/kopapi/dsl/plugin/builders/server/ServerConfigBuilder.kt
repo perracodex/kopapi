@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl.plugin.builders
+package io.github.perracodex.kopapi.dsl.plugin.builders.server
 
 import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
@@ -10,8 +10,8 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
-import io.ktor.http.*
 import io.ktor.utils.io.*
+import kotlin.collections.set
 
 /**
  * Builder for configuring a server.
@@ -19,34 +19,31 @@ import io.ktor.utils.io.*
  * #### Sample Usage
  * ```
  * servers {
- *     add(urlString = "http://localhost:8080") {
+ *      // Simple example with no variables.
+ *      add(urlString = "http://localhost:8080") {
  *         description = "Local server for development."
- *     }
+ *      }
  *
- *     add(urlString = "https://{environment}.example.com") {
- *         description = "The server for the API with environment variable."
- *         variable(name = "environment", defaultValue = "production") {
- *             choices = setOf("production", "staging", "development")
- *             description = "Specifies the environment (production, etc.)"
- *         }
- *         variable(name = "version", defaultValue = "v1") {
- *             choices = setOf("v1", "v2")
- *             description = "The version of the API."
- *         }
- *     }
+ *      // Example with variable placeholders.
+ *      add(urlString = "https://{environment}.example.com:{port}") {
+ *          description = "The server with environment variable."
  *
- *     add(urlString = "https://{region}.api.example.com") {
- *         description = "Server for the API by region"
- *         variable(name = "region", defaultValue = "us") {
- *             choices = setOf("us", "eu")
- *             description = "Specifies the region for the API (us, eu)."
- *         }
- *     }
+ *          // Environment variable.
+ *          variable(name = "environment", defaultValue = "production") {
+ *              choices = setOf("production", "staging", "development")
+ *              description = "Specifies the environment (production, etc)"
+ *          }
+ *
+ *         // Port variable.
+ *          variable(name = "port", defaultValue = "8080") {
+ *               choices = setOf("8080", "8443")
+ *              description = "The port for the server."
+ *          }
+ *      }
  * }
  * ```
- * Multiple descriptions can be defined to construct a final multiline description.
  *
- * @property url The URL of the server.
+ * @property urlString The URL of the server.
  * @property description A description of the server.
  *
  * @see [ServerVariableBuilder]
@@ -55,9 +52,11 @@ import io.ktor.utils.io.*
 @KtorDsl
 @ConfigurationDsl
 public class ServerConfigBuilder(
-    private val url: Url
+    private val urlString: String
 ) {
     public var description: String by MultilineString()
+
+    /** Holds constructed server variables. */
     private val variables: MutableMap<String, ApiServerVariable> = mutableMapOf()
 
     /**
@@ -100,7 +99,7 @@ public class ServerConfigBuilder(
      * Builds the final immutable [ApiServerConfig].
      */
     internal fun build(): ApiServerConfig = ApiServerConfig(
-        url = url.toString(),
+        url = urlString.trim(),
         description = description.trimOrNull(),
         variables = variables.takeIf { it.isNotEmpty() }?.toMap()
     )

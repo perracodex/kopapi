@@ -8,8 +8,8 @@ import io.github.perracodex.kopapi.dsl.common.SecuritySchemeConfigurable
 import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
 import io.github.perracodex.kopapi.dsl.plugin.builders.CustomTypeBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
-import io.github.perracodex.kopapi.dsl.plugin.builders.ServerBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.TagBuilder
+import io.github.perracodex.kopapi.dsl.plugin.builders.server.ServerBuilder
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
@@ -270,7 +270,7 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
             apiInfo = apiInfo,
             apiServers = servers.takeIf { it.isNotEmpty() } ?: setOf(ServerBuilder.defaultServer()),
             apiTags = tags.takeIf { it.isNotEmpty() },
-            apiSecuritySchemes = securitySchemes.takeIf { it.isNotEmpty() }
+            apiSecuritySchemes = _securityConfig.securitySchemes.takeIf { it.isNotEmpty() }
         )
     }
 

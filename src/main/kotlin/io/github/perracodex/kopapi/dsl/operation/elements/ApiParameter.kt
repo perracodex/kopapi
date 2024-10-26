@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.elements
 
 import com.fasterxml.jackson.annotation.JsonValue
-import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter.Location
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.DefaultValue
@@ -67,7 +67,7 @@ internal data class ApiParameter(
      */
     private fun validatePathParameter() {
         if (pathType == null) {
-            throw KopapiException("Path parameters must have a PathParameterType defined.")
+            throw KopapiException("Path parameters must have a `PathType` defined.")
         }
         if (complexType != null) {
             throw KopapiException("Path parameters should not have a KType defined.")
@@ -84,7 +84,7 @@ internal data class ApiParameter(
             throw KopapiException("Non-path parameters must have a KType defined.")
         }
         if (pathType != null) {
-            throw KopapiException("Non-path parameters should not have a `PathParameterType` defined.")
+            throw KopapiException("Non-path parameters should not have a `PathType` defined.")
         }
 
         // Ensure unsupported types are not used for non-path parameters.

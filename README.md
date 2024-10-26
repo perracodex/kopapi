@@ -9,16 +9,16 @@ Kopapi is library to generate the OpenAPI documentation from [Ktor](https://ktor
 **Quick sample usage before diving into the Wiki:**
 
 ```kotlin
-get("/items/{group_id}/{item_id?}") {
+get("/items/{data_id}/{item_id?}") {
     // Handle GET request
 } api {
     summary = "Retrieve data items."
     description = "Fetches all items for a group."
     tags("Items", "Data")
-    pathParameter<Uuid>("group_id") { description = "The Id of the group to resolve." }
+    pathParameter<PathType.Uuid>("data_id") { description = "The data set Id." }
     queryParameter<String>("item_id") { description = "Optional item Id to locate." }
-    response<List<Item>>(HttpStatusCode.OK) { description = "Successful fetch" }
-    response(HttpStatusCode.NotFound) { description = "Data not found" }
+    response<List<Item>>(status = HttpStatusCode.OK) { description = "Successful fetch." }
+    response(status = HttpStatusCode.NotFound) { description = "Data not found." }
 }
 ```
 

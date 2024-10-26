@@ -6,7 +6,7 @@ package io.github.perracodex.kopapi.dsl.operation
 
 import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.dsl.markers.OperationDsl
-import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.extractRoutePath
@@ -23,16 +23,16 @@ import io.ktor.utils.io.*
  *
  * #### Sample Usage
  * ```
- * get("/items/{group_id}/{item_id?}") {
+ * get("/items/{data_id}/{item_id?}") {
  *     // Handle GET request
  * } api {
  *     summary = "Retrieve data items."
- *     description = "Fetches all items for a group."
+ *     description = "Fetches all items for a data set."
  *     tags("Items", "Data")
- *     pathParameter<Uuid>("group_id") { description = "The Id of the group." }
+ *     pathParameter<PathType.Uuid>("data_id") { description = "The data Id." }
  *     queryParameter<String>("item_id") { description = "Optional item Id." }
- *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful" }
- *     response(HttpStatusCode.NotFound) { description = "Data not found" }
+ *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful." }
+ *     response(HttpStatusCode.NotFound) { description = "Data not found." }
  * }
  * ```
  *
@@ -64,12 +64,12 @@ public infix fun Route.api(configure: ApiOperationBuilder.() -> Unit): Route {
         method = method,
         summary = builder.summary.trimOrNull(),
         description = builder.description.trimOrNull(),
-        tags = builder.tags.takeIf { it.isNotEmpty() },
-        parameters = builder.parameters.takeIf { it.isNotEmpty() },
-        requestBody = builder.requestBody,
-        responses = builder.responses.takeIf { it.isNotEmpty() },
-        securitySchemes = builder.securitySchemes.takeIf { it.isNotEmpty() },
-        skipSecurity = builder.skipSecurity
+        tags = builder._config.tags.takeIf { it.isNotEmpty() },
+        parameters = builder._config.parameters.takeIf { it.isNotEmpty() },
+        requestBody = builder._config.requestBody,
+        responses = builder._config.responses.takeIf { it.isNotEmpty() },
+        securitySchemes = builder._securityConfig.securitySchemes.takeIf { it.isNotEmpty() },
+        skipSecurity = builder._securityConfig.skipSecurity
     )
 
     SchemaRegistry.registerApiOperation(operation = apiOperation)
@@ -100,16 +100,16 @@ private fun buildApiErrorMessage(route: Route): String {
 
         Example of proper usage (infix notation):
             ```
-            get("/items/{group_id}/{item_id?}") {
+            get("/items/{data_id}/{item_id?}") {
                 // Handle GET request
             } api { 
                 summary = "Retrieve data items."
-                description = "Fetches all items for a group."
+                description = "Fetches all items for a data set."
                 tags("Items", "Data")
-                pathParameter<Uuid>("group_id") { description = "The Id of the group to resolve." }
+                pathParameter<PathType.Uuid>("data_id") { description = "The data Id." }
                 queryParameter<String>("item_id") { description = "Optional item Id to locate." }
-                response<List<Item>>(HttpStatusCode.OK) { description = "Successful fetch" }
-                response(HttpStatusCode.NotFound) { description = "Data not found" }
+                response<List<Item>>(status = HttpStatusCode.OK) { description = "Successful fetch." }
+                response(status = HttpStatusCode.NotFound) { description = "Data not found." }
             }
             ```
 

@@ -25,7 +25,7 @@ import io.ktor.utils.io.*
  */
 @KtorDsl
 @ConfigurationDsl
-public class LicenseBuilder internal constructor() {
+public class LicenseBuilder {
     public var name: String? = null
     public var url: String? = null
 

@@ -23,12 +23,12 @@ import kotlin.reflect.typeOf
  */
 @KtorDsl
 @OperationDsl
-public class MultipartBuilder internal constructor() {
-    /** Holds the parts of the multipart request. */
-    @PublishedApi
-    internal val parts: MutableList<ApiMultipart.Part> = mutableListOf()
-
+public class MultipartBuilder {
     public var description: String by MultilineString()
+
+    @Suppress("PropertyName")
+    @PublishedApi
+    internal val _config: Config = Config()
 
     /**
      * Adds a part to the multipart request body.
@@ -67,7 +67,7 @@ public class MultipartBuilder internal constructor() {
         configure: PartBuilder.() -> Unit = {}
     ) {
         val partName: String = name.trim()
-        if (parts.find { it.name.equals(partName, ignoreCase = true) } != null) {
+        if (_config.parts.find { it.name.equals(partName, ignoreCase = true) } != null) {
             throw KopapiException("Part with name '$name' has already being defined in the multipart request.")
         }
 
@@ -83,6 +83,12 @@ public class MultipartBuilder internal constructor() {
             isRequired = partBuilder.required
         )
 
-        parts.add(part)
+        _config.parts.add(part)
+    }
+
+    @PublishedApi
+    internal class Config {
+        /** Holds the parts of the multipart request. */
+        val parts: MutableList<ApiMultipart.Part> = mutableListOf()
     }
 }

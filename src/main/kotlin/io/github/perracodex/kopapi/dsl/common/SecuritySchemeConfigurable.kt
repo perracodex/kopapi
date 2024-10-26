@@ -19,17 +19,8 @@ import io.ktor.utils.io.*
 @KtorDsl
 @SecurityDsl
 public abstract class SecuritySchemeConfigurable {
-    /**
-     * Set of security schemes detailing with authentication.
-     */
-    @PublishedApi
-    internal val securitySchemes: LinkedHashSet<ApiSecurityScheme> = linkedSetOf()
-
-    /**
-     * Flag to indicate that no security is required for the API operation.
-     * Once set to `true`, all security schemes are ignored.
-     */
-    internal var skipSecurity: Boolean = false
+    @Suppress("PropertyName")
+    internal val _securityConfig: Config = Config()
 
     /**
      * Adds an HTTP security scheme to the API metadata (e.g., Basic, Bearer).
@@ -57,7 +48,7 @@ public abstract class SecuritySchemeConfigurable {
     ) {
         val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
         val scheme: ApiSecurityScheme = builder.build(name = name, method = method)
-        addSecurityScheme(scheme = scheme)
+        _securityConfig.addSecurityScheme(scheme = scheme)
     }
 
     /**
@@ -92,7 +83,7 @@ public abstract class SecuritySchemeConfigurable {
     ) {
         val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
         val scheme: ApiSecurityScheme = builder.build(name = name, apiKeyName = apiKeyName, location = location)
-        addSecurityScheme(scheme = scheme)
+        _securityConfig.addSecurityScheme(scheme = scheme)
     }
 
     /**
@@ -144,7 +135,7 @@ public abstract class SecuritySchemeConfigurable {
     ) {
         val builder: OAuth2SecurityBuilder = OAuth2SecurityBuilder().apply(configure)
         val scheme: ApiSecurityScheme = builder.build(name = name)
-        addSecurityScheme(scheme = scheme)
+        _securityConfig.addSecurityScheme(scheme = scheme)
     }
 
     /**
@@ -174,7 +165,7 @@ public abstract class SecuritySchemeConfigurable {
     ) {
         val builder: OpenIdConnectSecurityBuilder = OpenIdConnectSecurityBuilder().apply(configure)
         val scheme: ApiSecurityScheme = builder.build(name = name, url = url)
-        addSecurityScheme(scheme = scheme)
+        _securityConfig.addSecurityScheme(scheme = scheme)
     }
 
     /**
@@ -199,33 +190,45 @@ public abstract class SecuritySchemeConfigurable {
         name: String,
         configure: MutualTLSSecurityBuilder.() -> Unit = {}
     ) {
-        val builder: MutualTLSSecurityBuilder = MutualTLSSecurityBuilder()
-            .apply(configure)
+        val builder: MutualTLSSecurityBuilder = MutualTLSSecurityBuilder().apply(configure)
         val scheme: ApiSecurityScheme = builder.build(name = name)
-        addSecurityScheme(scheme = scheme)
+        _securityConfig.addSecurityScheme(scheme = scheme)
     }
 
-    /**
-     * Adds a custom security scheme to the cache,
-     * ensuring that the security scheme name is unique.
-     *
-     * @param scheme The [ApiSecurityScheme] instance to add to the cache.
-     * @throws KopapiException If a security scheme with the same name already exists.
-     */
-    private fun addSecurityScheme(scheme: ApiSecurityScheme) {
-        if (skipSecurity) {
-            securitySchemes.clear()
-            return
-        }
+    internal class Config {
+        /**
+         * Set of security schemes detailing with authentication.
+         */
+        val securitySchemes: LinkedHashSet<ApiSecurityScheme> = linkedSetOf()
 
-        if (securitySchemes.any { it.schemeName.equals(other = scheme.schemeName, ignoreCase = true) }) {
-            throw KopapiException(
-                "Attempting to register security scheme with name '${scheme.schemeName}' more than once.\n" +
-                        "Names must be unique across all the Security Schemes, " +
-                        "both globally and for all Routes."
-            )
-        }
+        /**
+         * Flag to indicate that no security is required for the API operation.
+         * Once set to `true`, all security schemes are ignored.
+         */
+        var skipSecurity: Boolean = false
 
-        securitySchemes.add(scheme)
+        /**
+         * Adds a custom security scheme to the cache,
+         * ensuring that the security scheme name is unique.
+         *
+         * @param scheme The [ApiSecurityScheme] instance to add to the cache.
+         * @throws KopapiException If a security scheme with the same name already exists.
+         */
+        fun addSecurityScheme(scheme: ApiSecurityScheme) {
+            if (skipSecurity) {
+                securitySchemes.clear()
+                return
+            }
+
+            if (securitySchemes.any { it.schemeName.equals(other = scheme.schemeName, ignoreCase = true) }) {
+                throw KopapiException(
+                    "Attempting to register security scheme with name '${scheme.schemeName}' more than once.\n" +
+                            "Names must be unique across all the Security Schemes, " +
+                            "both globally and for all Routes."
+                )
+            }
+
+            securitySchemes.add(scheme)
+        }
     }
 }

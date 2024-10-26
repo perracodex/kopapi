@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl.operation.builders
+package io.github.perracodex.kopapi.dsl.operation.builders.operation
 
 import io.github.perracodex.kopapi.dsl.common.SecuritySchemeConfigurable
 import io.github.perracodex.kopapi.dsl.markers.OperationDsl
@@ -60,16 +60,16 @@ import kotlin.reflect.typeOf
  *
  * #### Sample Usage
  * ```
- * get("/items/{group_id}/{item_id?}") {
+ * get("/items/{data_id}/{item_id?}") {
  *     // Handle GET request
  * } api {
  *     summary = "Retrieve data items."
- *     description = "Fetches all items for a group."
+ *     description = "Fetches all items for a data set."
  *     tags("Items", "Data")
- *     pathParameter<Uuid>("group_id") { description = "The Id of the group." }
+ *     pathParameter<PathType.Uuid>("data_id") { description = "The data Id." }
  *     queryParameter<String>("item_id") { description = "Optional item Id." }
- *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful" }
- *     response(HttpStatusCode.NotFound) { description = "Data not found" }
+ *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful." }
+ *     response(HttpStatusCode.NotFound) { description = "Data not found." }
  * }
  * ```
  *
@@ -80,6 +80,11 @@ import kotlin.reflect.typeOf
 public class ApiOperationBuilder internal constructor(
     @PublishedApi internal val endpoint: String
 ) : SecuritySchemeConfigurable() {
+
+    @Suppress("PropertyName")
+    @PublishedApi
+    internal val _config: Config = Config(endpoint = endpoint)
+
     /**
      * Optional short description of the endpoint's purpose.
      *
@@ -115,29 +120,6 @@ public class ApiOperationBuilder internal constructor(
 
     /**
      * Optional set of descriptive tags for categorizing the endpoint in API documentation.
-     */
-    internal val tags: TreeSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
-
-    /**
-     * Optional set of parameters detailing type, necessity, and location in the request.
-     */
-    @PublishedApi
-    internal var parameters: LinkedHashSet<ApiParameter> = linkedSetOf()
-
-    /**
-     * Optional structure and type of the request body.
-     */
-    @PublishedApi
-    internal var requestBody: ApiRequestBody? = null
-
-    /**
-     * Optional set of possible responses, outlining expected status codes and content types.
-     */
-    @PublishedApi
-    internal var responses: SortedMap<String, ApiResponse> = TreeMap(Comparator.comparingInt(String::toInt))
-
-    /**
-     * Optional set of descriptive tags for categorizing the endpoint in API documentation.
      *
      * Declaring multiple `tags` will append all the of them to the existing list.
      * Repeated tags are discarded in a case-insensitive manner.
@@ -151,7 +133,7 @@ public class ApiOperationBuilder internal constructor(
      * @see [description]
      */
     public fun ApiOperationBuilder.tags(vararg tags: String) {
-        this.tags.addAll(tags.map { it.trim() }.filter { it.isNotBlank() })
+        _config.tags.addAll(tags.map { it.trim() }.filter { it.isNotBlank() })
     }
 
     /**
@@ -165,8 +147,8 @@ public class ApiOperationBuilder internal constructor(
      * @see [openIdConnectSecurity]
      */
     public fun skipSecurity() {
-        securitySchemes.clear()
-        skipSecurity = true
+        _securityConfig.securitySchemes.clear()
+        _securityConfig.skipSecurity = true
     }
 
     /**
@@ -200,7 +182,7 @@ public class ApiOperationBuilder internal constructor(
         val pathType: PathType? = T::class.objectInstance
         val builder: PathParameterBuilder = PathParameterBuilder().apply(configure)
         val parameter: ApiParameter = builder.build(name = name, pathType = pathType)
-        addApiParameter(apiParameter = parameter)
+        _config.addApiParameter(apiParameter = parameter)
     }
 
     /**
@@ -234,7 +216,7 @@ public class ApiOperationBuilder internal constructor(
     ) {
         val builder: QueryParameterBuilder = QueryParameterBuilder().apply(configure)
         val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
-        addApiParameter(apiParameter = parameter)
+        _config.addApiParameter(apiParameter = parameter)
     }
 
     /**
@@ -264,7 +246,7 @@ public class ApiOperationBuilder internal constructor(
     ) {
         val builder: HeaderParameterBuilder = HeaderParameterBuilder().apply(configure)
         val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
-        addApiParameter(apiParameter = parameter)
+        _config.addApiParameter(apiParameter = parameter)
     }
 
     /**
@@ -293,26 +275,7 @@ public class ApiOperationBuilder internal constructor(
     ) {
         val builder: CookieParameterBuilder = CookieParameterBuilder().apply(configure)
         val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
-        addApiParameter(apiParameter = parameter)
-    }
-
-    /**
-     * Adds a new path parameter to the API operation,
-     * ensuring that the parameter name is unique.
-     *
-     * @param apiParameter The [ApiParameter] instance to add to the cache.
-     * @throws KopapiException If an [ApiParameter] with the same name already exists.
-     */
-    @PublishedApi
-    internal fun addApiParameter(apiParameter: ApiParameter) {
-        if (parameters.any { it.name.equals(other = apiParameter.name, ignoreCase = true) }) {
-            throw KopapiException(
-                "Attempting to register parameter with name '${apiParameter.name}' more than once " +
-                        "in the operation '$endpoint'."
-            )
-        }
-
-        parameters.add(apiParameter)
+        _config.addApiParameter(apiParameter = parameter)
     }
 
     /**
@@ -381,7 +344,7 @@ public class ApiOperationBuilder internal constructor(
         contentType: Set<ContentType>? = null,
         configure: RequestBodyBuilder.() -> Unit = {}
     ) {
-        if (requestBody == null) {
+        if (_config.requestBody == null) {
             val builder: RequestBodyBuilder = RequestBodyBuilder().apply {
                 // Associate the primary type T with the builder's contentTypes.
                 addType<T>(contentType = contentType)
@@ -389,7 +352,7 @@ public class ApiOperationBuilder internal constructor(
                 apply(configure)
             }
 
-            requestBody = builder.build()
+            _config.requestBody = builder.build()
 
         } else {
             throw KopapiException(
@@ -520,11 +483,44 @@ public class ApiOperationBuilder internal constructor(
 
         val apiResponse: ApiResponse = builder.build(status = status)
 
-        responses.merge(
+        _config.responses.merge(
             status.value.toString(),
             apiResponse
         ) { existing, new ->
             existing.mergeWith(other = new)
+        }
+    }
+
+    @PublishedApi
+    internal class Config(private val endpoint: String) {
+        /** Optional set of descriptive tags for categorizing the endpoint in API documentation. */
+        val tags: TreeSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
+
+        /**  Optional set of parameters detailing type, necessity, and location in the request. */
+        var parameters: LinkedHashSet<ApiParameter> = linkedSetOf()
+
+        /** Optional structure and type of the request body. */
+        var requestBody: ApiRequestBody? = null
+
+        /** Optional set of possible responses, outlining expected status codes and content types. */
+        var responses: SortedMap<String, ApiResponse> = TreeMap(Comparator.comparingInt(String::toInt))
+
+        /**
+         * Adds a new path parameter to the API operation,
+         * ensuring that the parameter name is unique.
+         *
+         * @param apiParameter The [ApiParameter] instance to add to the cache.
+         * @throws KopapiException If an [ApiParameter] with the same name already exists.
+         */
+        fun addApiParameter(apiParameter: ApiParameter) {
+            if (parameters.any { it.name.equals(other = apiParameter.name, ignoreCase = true) }) {
+                throw KopapiException(
+                    "Attempting to register parameter with name '${apiParameter.name}' more than once." +
+                            "with the same API Operation: '$endpoint'."
+                )
+            }
+
+            parameters.add(apiParameter)
         }
     }
 }

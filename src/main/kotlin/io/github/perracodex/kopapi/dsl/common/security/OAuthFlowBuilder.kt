@@ -24,10 +24,12 @@ import io.ktor.utils.io.*
  */
 @KtorDsl
 @SecurityDsl
-public class OAuthFlowBuilder internal constructor() {
+public class OAuthFlowBuilder {
     public var authorizationUrl: String? = null
     public var tokenUrl: String? = null
     public var refreshUrl: String? = null
+
+    /** Hold constructed scopes for the OAuth2 flow. */
     private val scopes: MutableMap<String, String> = mutableMapOf()
 
     /**

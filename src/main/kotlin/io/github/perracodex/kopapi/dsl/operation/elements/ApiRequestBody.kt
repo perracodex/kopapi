@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.elements
 
-import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.safeName

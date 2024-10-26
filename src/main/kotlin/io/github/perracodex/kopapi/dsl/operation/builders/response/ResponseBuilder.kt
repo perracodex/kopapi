@@ -5,9 +5,9 @@
 package io.github.perracodex.kopapi.dsl.operation.builders.response
 
 import io.github.perracodex.kopapi.dsl.markers.OperationDsl
-import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
+import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
@@ -30,23 +30,13 @@ import kotlin.reflect.typeOf
  */
 @KtorDsl
 @OperationDsl
-public class ResponseBuilder @PublishedApi internal constructor() {
+public class ResponseBuilder {
     public var description: String by MultilineString()
     public var composition: Composition? = null
 
-    private val headers: MutableSet<ApiHeader> = mutableSetOf()
-    private val links: MutableSet<ApiLink> = mutableSetOf()
-
-    /** Holds the types associated with the response. */
+    @Suppress("PropertyName")
     @PublishedApi
-    internal val allTypes: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
-
-    /**
-     * The primary `ContentType` for the response.
-     * Applied to subsequent types if these do not specify their own `ContentType`.
-     */
-    @PublishedApi
-    internal var primaryContentType: Set<ContentType>? = null
+    internal val _config: Config = Config()
 
     /**
      * Registers a new type for the response.
@@ -76,15 +66,15 @@ public class ResponseBuilder @PublishedApi internal constructor() {
         // Therefore, any subtype which does not specify its own ContentType will
         // share the primary ContentType.
         if (T::class == Unit::class || T::class == Nothing::class || T::class == Any::class) {
-            if (this.primaryContentType == null) {
-                this.primaryContentType = contentType ?: setOf(ContentType.Application.Json)
+            if (_config.primaryContentType == null) {
+                _config.primaryContentType = contentType ?: setOf(ContentType.Application.Json)
             }
             return
         }
 
         // Ensure there's at least one ContentType.
         val effectiveContentTypes: Set<ContentType> = when {
-            contentType.isNullOrEmpty() -> primaryContentType ?: setOf(ContentType.Application.Json)
+            contentType.isNullOrEmpty() -> _config.primaryContentType ?: setOf(ContentType.Application.Json)
             else -> contentType
         }
 
@@ -92,20 +82,20 @@ public class ResponseBuilder @PublishedApi internal constructor() {
         // Subsequent types are registered after the primary one.
         // Therefore, any subtype which does not specify its own ContentType will
         // default to the primary ContentType.
-        if (primaryContentType == null) {
-            primaryContentType = effectiveContentTypes
+        if (_config.primaryContentType == null) {
+            _config.primaryContentType = effectiveContentTypes
         }
 
         val type: KType = typeOf<T>()
         effectiveContentTypes.forEach { contentTypeKey ->
-            allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(type)
+            _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(type)
         }
     }
 
     @PublishedApi
     internal fun build(status: HttpStatusCode): ApiResponse {
         // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to its specific types.
-        val contentMap: Map<ContentType, Set<KType>>? = allTypes.takeIf { it.isNotEmpty() }
+        val contentMap: Map<ContentType, Set<KType>>? = _config.allTypes.takeIf { it.isNotEmpty() }
             ?.mapValues { it.value.toSet() }
             ?.filterValues { it.isNotEmpty() }
             ?.toSortedMap(
@@ -119,10 +109,10 @@ public class ResponseBuilder @PublishedApi internal constructor() {
         return ApiResponse(
             status = status,
             description = description.trimOrNull(),
-            headers = headers.takeIf { it.isNotEmpty() },
+            headers = _config.headers.takeIf { it.isNotEmpty() },
             composition = composition,
             content = contentMap,
-            links = links.takeIf { it.isNotEmpty() }
+            links = _config.links.takeIf { it.isNotEmpty() }
         )
     }
 
@@ -142,7 +132,7 @@ public class ResponseBuilder @PublishedApi internal constructor() {
      */
     public fun header(name: String, configure: HeaderBuilder.() -> Unit) {
         val header: ApiHeader = HeaderBuilder(name = name).apply(configure).build()
-        addHeader(header = header)
+        _config.addHeader(header = header)
     }
 
     /**
@@ -160,19 +150,37 @@ public class ResponseBuilder @PublishedApi internal constructor() {
      */
     public fun link(operationId: String, configure: LinkBuilder.() -> Unit) {
         val link: ApiLink = LinkBuilder(operationId = operationId).apply(configure).build()
-        links.add(link)
+        _config.links.add(link)
     }
 
-    /**
-     * Adds a new [ApiHeader] instance to the cache, ensuring that the header name is unique
-     *
-     * @param header The [ApiHeader] instance to add to the cache.
-     * @throws KopapiException If an [ApiHeader] with the same name already exists.
-     */
-    private fun addHeader(header: ApiHeader) {
-        if (headers.any { it.name == header.name }) {
-            throw KopapiException("Header with name '${header.name}' already exists within the same response.")
+    @PublishedApi
+    internal class Config {
+        /** Holds the types associated with the response. */
+        val allTypes: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
+
+        /**
+         * The primary `ContentType` for the response.
+         * Applied to subsequent types if these do not specify their own `ContentType`.
+         */
+        var primaryContentType: Set<ContentType>? = null
+
+        /** Holds the headers associated with the response. */
+        val headers: MutableSet<ApiHeader> = mutableSetOf()
+
+        /** Holds the links associated with the response. */
+        val links: MutableSet<ApiLink> = mutableSetOf()
+
+        /**
+         * Adds a new [ApiHeader] instance to the cache, ensuring that the header name is unique
+         *
+         * @param header The [ApiHeader] instance to add to the cache.
+         * @throws KopapiException If an [ApiHeader] with the same name already exists.
+         */
+        fun addHeader(header: ApiHeader) {
+            if (headers.any { it.name == header.name }) {
+                throw KopapiException("Header with name '${header.name}' already exists within the same response.")
+            }
+            headers.add(header)
         }
-        headers.add(header)
     }
 }

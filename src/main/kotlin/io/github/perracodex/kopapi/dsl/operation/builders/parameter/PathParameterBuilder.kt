@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.builders.parameter
 
 import io.github.perracodex.kopapi.dsl.markers.OperationDsl
-import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.types.ParameterStyle
 import io.github.perracodex.kopapi.types.PathType

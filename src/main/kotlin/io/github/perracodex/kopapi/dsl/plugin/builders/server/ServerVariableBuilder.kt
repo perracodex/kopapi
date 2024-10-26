@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl.plugin.builders
+package io.github.perracodex.kopapi.dsl.plugin.builders.server
 
 import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable

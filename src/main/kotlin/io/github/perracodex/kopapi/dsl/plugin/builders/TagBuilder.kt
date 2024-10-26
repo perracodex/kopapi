@@ -14,11 +14,11 @@ import io.ktor.utils.io.*
  */
 @KtorDsl
 @ConfigurationDsl
-public class TagBuilder internal constructor() {
+public class TagBuilder {
     private val tracer = Tracer<TagBuilder>()
 
     /** The internal set to enforce uniqueness of tags. */
-    private val internalSet: MutableSet<ApiTag> = LinkedHashSet()
+    private val tags: MutableSet<ApiTag> = LinkedHashSet()
 
     /**
      * Adds a tag to the set of tags for the API.
@@ -43,8 +43,8 @@ public class TagBuilder internal constructor() {
 
         // Replace any existing tag with the same name.
         val tag = ApiTag(name = tagName, description = description)
-        internalSet.removeIf { it.name.equals(other = tagName, ignoreCase = true) }
-        internalSet.add(tag)
+        tags.removeIf { it.name.equals(other = tagName, ignoreCase = true) }
+        tags.add(tag)
     }
 
     /**
@@ -53,9 +53,9 @@ public class TagBuilder internal constructor() {
      * @return A read-only set of tags.
      */
     internal fun build(): Set<ApiTag> {
-        return internalSet.toSet()
+        return tags.toSet()
     }
 
     /** Clears the internal set of tags. */
-    override fun toString(): String = internalSet.toString()
+    override fun toString(): String = tags.toString()
 }

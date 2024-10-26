@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
 import io.github.perracodex.kopapi.dsl.markers.OperationDsl
-import io.github.perracodex.kopapi.dsl.operation.builders.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.system.KopapiException
@@ -36,20 +36,9 @@ public class RequestBodyBuilder(
 ) {
     public var description: String by MultilineString()
 
-    /** Holds the types associated with the request body (non-multipart). */
+    @Suppress("PropertyName")
     @PublishedApi
-    internal val allTypes: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
-
-    /** Holds the multipart parts schema. */
-    @PublishedApi
-    internal val multipartParts: MutableMap<ContentType, ApiMultipart> = mutableMapOf()
-
-    /**
-     * The primary `ContentType` for the request.
-     * Applied to subsequent types if these do not specify their own `ContentType`.
-     */
-    @PublishedApi
-    internal var primaryContentType: Set<ContentType>? = null
+    internal val _config: Config = Config()
 
     /**
      * Registers a new type for the request body.
@@ -76,7 +65,7 @@ public class RequestBodyBuilder(
     public inline fun <reified T : Any> addType(contentType: Set<ContentType>? = null) {
         // Ensure there's at least one ContentType.
         val effectiveContentTypes: Set<ContentType> = when {
-            contentType.isNullOrEmpty() -> primaryContentType ?: setOf(ContentType.Application.Json)
+            contentType.isNullOrEmpty() -> _config.primaryContentType ?: setOf(ContentType.Application.Json)
             else -> contentType
         }
 
@@ -84,13 +73,13 @@ public class RequestBodyBuilder(
         // Subsequent types are registered after the primary one.
         // Therefore, any subtype which does not specify its own ContentType will
         // share the primary ContentType.
-        if (primaryContentType == null) {
-            primaryContentType = effectiveContentTypes
+        if (_config.primaryContentType == null) {
+            _config.primaryContentType = effectiveContentTypes
         }
 
         val type: KType = typeOf<T>()
         effectiveContentTypes.forEach { contentTypeKey ->
-            allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(type)
+            _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(type)
         }
     }
 
@@ -128,10 +117,10 @@ public class RequestBodyBuilder(
         val apiMultipart = ApiMultipart(
             contentType = contentType,
             description = multipartBuilder.description.trimOrNull(),
-            parts = multipartBuilder.parts
+            parts = multipartBuilder._config.parts
         )
 
-        multipartParts[contentType] = apiMultipart
+        _config.multipartParts[contentType] = apiMultipart
     }
 
     /**
@@ -142,7 +131,7 @@ public class RequestBodyBuilder(
     @PublishedApi
     internal fun build(): ApiRequestBody {
         // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to its specific types.
-        val contentMap: Map<ContentType, Set<KType>> = allTypes
+        val contentMap: Map<ContentType, Set<KType>> = _config.allTypes
             .mapValues { (_, types) ->
                 // Filter out types that are not explicitly defined.
                 types.filterNot { type ->
@@ -159,7 +148,7 @@ public class RequestBodyBuilder(
             )
 
         // A request must either define an explicit content type or a multipart part. Both can also be defined.
-        if (contentMap.isEmpty() && multipartParts.isEmpty()) {
+        if (contentMap.isEmpty() && _config.multipartParts.isEmpty()) {
             throw KopapiException("RequestBody must define either an explicit type, a multipart part, or both.")
         }
 
@@ -174,7 +163,22 @@ public class RequestBodyBuilder(
             required = required,
             composition = contentComposition,
             content = contentMap.takeIf { it.isNotEmpty() },
-            multipartContent = multipartParts.takeIf { it.isNotEmpty() }
+            multipartContent = _config.multipartParts.takeIf { it.isNotEmpty() }
         )
+    }
+
+    @PublishedApi
+    internal class Config {
+        /** Holds the types associated with the request body (non-multipart). */
+        val allTypes: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
+
+        /** Holds the multipart parts schema. */
+        val multipartParts: MutableMap<ContentType, ApiMultipart> = mutableMapOf()
+
+        /**
+         * The primary `ContentType` for the request.
+         * Applied to subsequent types if these do not specify their own `ContentType`.
+         */
+        var primaryContentType: Set<ContentType>? = null
     }
 }

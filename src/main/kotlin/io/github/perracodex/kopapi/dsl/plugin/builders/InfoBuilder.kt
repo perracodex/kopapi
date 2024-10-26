@@ -65,12 +65,16 @@ import io.ktor.utils.io.*
  */
 @KtorDsl
 @ConfigurationDsl
-public class InfoBuilder internal constructor() {
+public class InfoBuilder {
     public var title: String = "API Title"
     public var description: String by MultilineString()
     public var version: String = "1.0.0"
     public var termsOfService: String? = null
+
+    /** Holds a constructed contact object. */
     private var contact: ApiContact? = null
+
+    /** Holds a constructed license object. */
     private var license: ApiLicense? = null
 
     /**

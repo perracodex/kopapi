@@ -29,16 +29,14 @@ public class LinkBuilder(
 ) {
     public var description: String by MultilineString()
 
+    /** A set representing parameters to pass to the linked operation. */
+    private var parameters: LinkedHashSet<ApiLinkParameter> = linkedSetOf()
+
     init {
         if (operationId.isBlank()) {
             throw KopapiException("Link operation ID must not be empty.")
         }
     }
-
-    /**
-     * A set representing parameters to pass to the linked operation.
-     */
-    internal var parameters: LinkedHashSet<ApiLinkParameter> = linkedSetOf()
 
     /**
      * Adds a parameter to the link.

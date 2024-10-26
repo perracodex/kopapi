@@ -26,7 +26,7 @@ import io.ktor.utils.io.*
  */
 @KtorDsl
 @ConfigurationDsl
-public class ContactBuilder internal constructor() {
+public class ContactBuilder {
     public var name: String? = null
     public var url: String? = null
     public var email: String? = null

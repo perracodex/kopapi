@@ -48,7 +48,7 @@ import kotlin.reflect.KType
  */
 @KtorDsl
 @ConfigurationDsl
-public class CustomTypeBuilder @PublishedApi internal constructor() {
+public class CustomTypeBuilder {
     public var minLength: Int? = null
     public var maxLength: Int? = null
     public var minimum: Number? = null

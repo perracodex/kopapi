@@ -30,13 +30,13 @@ public class HeaderBuilder(
     public var required: Boolean = false,
     public var deprecated: Boolean = false
 ) {
+    public var description: String by MultilineString()
+
     init {
         if (name.isBlank()) {
             throw KopapiException("Header name must not be empty.")
         }
     }
-
-    public var description: String by MultilineString()
 
     /**
      * Builds an [ApiHeader] instance from the current builder state.
