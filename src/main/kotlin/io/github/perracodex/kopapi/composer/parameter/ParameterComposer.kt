@@ -10,6 +10,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.types.DefaultValue
 import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
@@ -38,16 +39,26 @@ internal object ParameterComposer {
         apiParameters.forEach { parameter ->
             tracer.debug("Composing parameter: ${parameter.name}")
 
-            val schema: ElementSchema = parameter.complexType?.let { complexType ->
+            // Determine the schema for the parameter (complex or path type), and inspect accordingly.
+            val baseSchema: ElementSchema = parameter.complexType?.let { complexType ->
                 SchemaRegistry.inspectType(type = complexType)?.schema
                     ?: throw KopapiException("No schema found for type: $complexType")
             } ?: parameter.pathType?.let { pathType ->
+                // For path types, we only need the primitive schema
+                // as path types are more constrained and limited in scope.
                 ElementSchema.Primitive(
                     schemaType = pathType.apiType,
                     format = pathType.apiFormat?.value
                 )
             } ?: throw KopapiException("No schema found for parameter: ${parameter.name}")
 
+            // If a default value is present, create a copy of the schema with the default value.
+            val schemaWithDefault: ElementSchema = parameter.defaultValue?.let { defaultValue ->
+                tracer.debug("Found default value for parameter: ${parameter.name}")
+                applyDefaultValue(baseSchema = baseSchema, defaultValue = defaultValue)
+            } ?: baseSchema
+
+            // Construct the parameter object.
             val parameterObject = ParameterObject(
                 name = parameter.name,
                 location = parameter.location,
@@ -57,15 +68,35 @@ internal object ParameterComposer {
                 style = parameter.style?.value,
                 explode = parameter.explode.takeIf { it == true },
                 deprecated = parameter.deprecated.takeIf { it == true },
-                schema = schema,
-                defaultValue = parameter.defaultValue?.toValue()
+                schema = schemaWithDefault
             )
-
             parameterObjects.add(parameterObject)
         }
 
         tracer.debug("Composed ${parameterObjects.size} parameters.")
 
         return parameterObjects
+    }
+
+    /**
+     * Applies the default value to the given schema by creating a copy of the specific schema subclass.
+     *
+     * @param baseSchema The original schema without the default value.
+     * @param defaultValue The default value to apply to the schema.
+     * @return A new [ElementSchema] instance with the default value set.
+     * @throws KopapiException If the schema type is unsupported for applying a default value.
+     */
+    private fun applyDefaultValue(baseSchema: ElementSchema, defaultValue: DefaultValue): ElementSchema {
+        tracer.debug("Applying default value to schema: ${baseSchema.definition}")
+        return when (baseSchema) {
+            is ElementSchema.Object -> baseSchema.copy(defaultValue = defaultValue.toValue())
+            is ElementSchema.Reference -> baseSchema.copy(defaultValue = defaultValue.toValue())
+            is ElementSchema.Primitive -> baseSchema.copy(defaultValue = defaultValue.toValue())
+            is ElementSchema.Enum -> baseSchema.copy(defaultValue = defaultValue.toValue())
+            is ElementSchema.Array -> baseSchema.copy(defaultValue = defaultValue.toValue())
+            is ElementSchema.AdditionalProperties -> baseSchema.copy(defaultValue = defaultValue.toValue())
+            is ElementSchema.TransformedObject -> baseSchema.copy(defaultValue = defaultValue.toValue())
+            else -> throw KopapiException("Unsupported schema type for defaultValue: ${baseSchema.definition}")
+        }
     }
 }

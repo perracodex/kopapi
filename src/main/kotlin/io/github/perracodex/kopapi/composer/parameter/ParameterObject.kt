@@ -21,7 +21,6 @@ import io.github.perracodex.kopapi.schema.ElementSchema
  * @property explode Determines how arrays and objects are serialized. Only applicable to query and cookie parameters.
  * @property deprecated Indicates whether the parameter is deprecated and should be avoided.
  * @property schema The schema defining the structure and data type of the parameter, such as string, integer, or object.
- * @property defaultValue Optional default value for the parameter.
  */
 @ComposerAPI
 internal data class ParameterObject(
@@ -34,5 +33,4 @@ internal data class ParameterObject(
     @JsonProperty("explode") val explode: Boolean?,
     @JsonProperty("deprecated") val deprecated: Boolean?,
     @JsonProperty("schema") val schema: ElementSchema,
-    @JsonProperty("default") val defaultValue: Any?
 )

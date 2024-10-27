@@ -17,9 +17,11 @@ import io.github.perracodex.kopapi.utils.safeName
  * Element schemas are the building blocks for more complex OpenAPI schemas.
  *
  * @property definition A unique identifier for debugging and clarity during schema generation.
+ * @property defaultValue An optional default value for the schema.
  */
 internal sealed class ElementSchema(
     @JsonIgnore open val definition: String,
+    @JsonProperty("default") open val defaultValue: Any? = null
 ) : IOpenApiSchema {
     /**
      * Represents an object schema with a set of named properties.
@@ -30,8 +32,9 @@ internal sealed class ElementSchema(
     data class Object(
         override val definition: String = Object::class.safeName(),
         val schemaType: ApiType = ApiType.OBJECT,
-        val properties: MutableMap<String, SchemaProperty> = mutableMapOf()
-    ) : ElementSchema(definition = definition)
+        val properties: MutableMap<String, SchemaProperty> = mutableMapOf(),
+        override val defaultValue: Any? = null
+    ) : ElementSchema(definition = definition, defaultValue = defaultValue)
 
     /**
      * Represents a reference to another schema.
@@ -45,7 +48,8 @@ internal sealed class ElementSchema(
         @JsonIgnore override val definition: String = Reference::class.safeName(),
         @JsonIgnore val schemaType: ApiType = ApiType.OBJECT,
         @JsonIgnore val schemaName: String,
-    ) : ElementSchema(definition = definition) {
+        @JsonProperty("default") override val defaultValue: Any? = null
+    ) : ElementSchema(definition = definition, defaultValue = defaultValue) {
         @JsonProperty(REFERENCE)
         val ref: String = "$PATH$schemaName"
 
@@ -83,7 +87,8 @@ internal sealed class ElementSchema(
         @JsonProperty("exclusiveMinimum") val exclusiveMinimum: Number? = null,
         @JsonProperty("exclusiveMaximum") val exclusiveMaximum: Number? = null,
         @JsonProperty("multipleOf") val multipleOf: Number? = null,
-    ) : ElementSchema(definition = definition) {
+        @JsonProperty("default") override val defaultValue: Any? = null
+    ) : ElementSchema(definition = definition, defaultValue = defaultValue) {
         init {
             SchemaConstraints.validate(
                 apiType = schemaType,
@@ -107,8 +112,9 @@ internal sealed class ElementSchema(
     data class Enum(
         @JsonIgnore override val definition: String = Enum::class.safeName(),
         @JsonProperty("type") val schemaType: ApiType = ApiType.STRING,
-        @JsonProperty("enum") val values: List<String>
-    ) : ElementSchema(definition = definition)
+        @JsonProperty("enum") val values: List<String>,
+        @JsonProperty("default") override val defaultValue: Any? = null
+    ) : ElementSchema(definition = definition, defaultValue = defaultValue)
 
     /**
      * Represents an array schema, defining a collection of items of a specified schema.
@@ -119,8 +125,9 @@ internal sealed class ElementSchema(
     data class Array(
         @JsonIgnore override val definition: String = Array::class.safeName(),
         @JsonProperty("type") val schemaType: ApiType = ApiType.ARRAY,
-        @JsonProperty("items") val items: ElementSchema
-    ) : ElementSchema(definition = definition)
+        @JsonProperty("items") val items: ElementSchema,
+        @JsonProperty("default") override val defaultValue: Any? = null
+    ) : ElementSchema(definition = definition, defaultValue = defaultValue)
 
     /**
      * Represents a schema that allows for additional properties of a specified type.
@@ -132,8 +139,9 @@ internal sealed class ElementSchema(
     data class AdditionalProperties(
         @JsonIgnore override val definition: String = AdditionalProperties::class.safeName(),
         @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
-        @JsonProperty("additionalProperties") val additionalProperties: ElementSchema
-    ) : ElementSchema(definition = definition)
+        @JsonProperty("additionalProperties") val additionalProperties: ElementSchema,
+        @JsonProperty("default") override val defaultValue: Any? = null
+    ) : ElementSchema(definition = definition, defaultValue = defaultValue)
 
     /**
      * Represents a schema marked as nullable type.
@@ -142,8 +150,9 @@ internal sealed class ElementSchema(
      */
     data class Nullable(
         @JsonIgnore override val definition: String = Nullable::class.safeName(),
-        @JsonProperty("anyOf") val anyOf: List<Any>
-    ) : ElementSchema(definition = "Nullable") {
+        @JsonProperty("anyOf") val anyOf: List<Any>,
+        @JsonProperty("default") override val defaultValue: Any? = null
+    ) : ElementSchema(definition = "Nullable", defaultValue = defaultValue) {
         constructor(schema: ElementSchema) : this(
             anyOf = listOf(
                 schema,
@@ -163,6 +172,7 @@ internal sealed class ElementSchema(
         @JsonIgnore override val definition: String = TransformedObject::class.safeName(),
         @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
         @JsonProperty("properties") val properties: Map<String, ElementSchema>?,
-        @JsonProperty("required") var required: MutableSet<String>?
-    ) : ElementSchema(definition = definition)
+        @JsonProperty("required") var required: MutableSet<String>?,
+        @JsonProperty("default") override val defaultValue: Any? = null
+    ) : ElementSchema(definition = definition, defaultValue = defaultValue)
 }
