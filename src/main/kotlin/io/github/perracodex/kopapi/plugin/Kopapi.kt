@@ -11,6 +11,7 @@ import io.github.perracodex.kopapi.routing.openApiRoutes
 import io.github.perracodex.kopapi.routing.redocRoute
 import io.github.perracodex.kopapi.routing.swaggerRoute
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.utils.NetworkUtils
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 
@@ -59,6 +60,19 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
             swaggerUrl = apiConfiguration.swaggerUrl
         )
     }
+
+    // Dump the configured endpoints to the log.
+    val server: String = NetworkUtils.getServerUrl(environment = application.environment)
+    Tracer<KopapiConfig>().info(
+        """
+        |Kopapi plugin enabled.
+        |  OpenAPI YAML: $server${apiConfiguration.openapiYamlUrl}
+        |  OpenAPI JSON: $server${apiConfiguration.openapiJsonUrl}
+        |  Swagger UI: $server${apiConfiguration.swaggerUrl}
+        |  ReDoc: $server${apiConfiguration.redocUrl}
+        |  Debug: $server${apiConfiguration.debugUrl}
+        """.trimMargin()
+    )
 
     // Enable logging if the plugin is configured to do so.
     // Done as last step to allow logging of the plugin setup.
