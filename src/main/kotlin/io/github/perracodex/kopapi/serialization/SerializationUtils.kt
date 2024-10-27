@@ -65,6 +65,8 @@ internal class SerializationUtils {
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_BY_DECLARATION_ORDER)
         .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+        .disable(YAMLGenerator.Feature.SPLIT_LINES)
+        .enable(YAMLGenerator.Feature.ALLOW_LONG_KEYS)
         .addModule(serializerModule())
         .build()
 
