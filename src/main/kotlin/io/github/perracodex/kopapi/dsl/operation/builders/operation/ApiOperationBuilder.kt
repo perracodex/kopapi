@@ -168,9 +168,10 @@ public class ApiOperationBuilder internal constructor(
      * }
      * ```
      *
-     * Contrary to `query`, `cookie`, and `header` parameters, `path` parameters are
-     * more constrained in the types they can represent, so the class `PathType`
-     * must be used instead of a generic type.
+     * #### Attention:
+     * Contrary to `query`, `cookie`, and `header` parameters, `path` parameters
+     * are more constrained in the types they can represent, so the class `PathType`
+     * must be used instead of defining generic type.
      *
      * @param T The [PathType] of the parameter.
      * @param name The name of the parameter as it appears in the URL path.
