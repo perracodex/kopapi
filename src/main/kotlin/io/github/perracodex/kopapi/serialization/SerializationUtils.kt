@@ -22,7 +22,7 @@ import kotlin.reflect.KType
 /**
  * Provides utility functions for serialization.
  */
-internal object SerializationUtils {
+internal class SerializationUtils {
     /** Configured Jackson Mapper. for debugging purposes. */
     val debugJson: JsonMapper = JsonMapper.builder()
         .addModule(kotlinModule())

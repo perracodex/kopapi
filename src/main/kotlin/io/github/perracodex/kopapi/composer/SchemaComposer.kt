@@ -95,8 +95,8 @@ internal class SchemaComposer(
 
         // Serialize the OpenAPI schema, producing the final schema.
         val schema: String = when (format) {
-            SchemaRegistry.Format.JSON -> SerializationUtils.toJson(instance = openApiSchema)
-            SchemaRegistry.Format.YAML -> SerializationUtils.toYaml(instance = openApiSchema)
+            SchemaRegistry.Format.JSON -> SerializationUtils().toJson(instance = openApiSchema)
+            SchemaRegistry.Format.YAML -> SerializationUtils().toYaml(instance = openApiSchema)
         }
 
         return schema

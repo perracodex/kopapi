@@ -62,7 +62,7 @@ class ApiInfoJsonTest {
                 message = "Expected API info to be empty."
             )
 
-            val apiInfo: ApiInfo = SerializationUtils.fromRawJson(json = jsonApiInfo.first())
+            val apiInfo: ApiInfo = SerializationUtils().fromRawJson(json = jsonApiInfo.first())
             validateApiInfo(
                 info = apiInfo,
                 expectedTitle = "Test API",

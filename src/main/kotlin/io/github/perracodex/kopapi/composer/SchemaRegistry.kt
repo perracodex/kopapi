@@ -287,7 +287,7 @@ internal object SchemaRegistry {
         }
 
         return debugJsonCache[section] ?: run {
-            val json: String = SerializationUtils.toRawJson(instance)
+            val json: String = SerializationUtils().toRawJson(instance)
             debugJsonCache[section] = setOf(json)
             setOf(json)
         }
@@ -306,7 +306,7 @@ internal object SchemaRegistry {
 
         return debugJsonCache[section] ?: run {
             instance
-                .map { SerializationUtils.toRawJson(instance = it) }
+                .map { SerializationUtils().toRawJson(instance = it) }
                 .toSortedSet()
                 .also { sortedSet ->
                     debugJsonCache[section] = sortedSet
