@@ -172,6 +172,8 @@ internal data class MetadataDescriptor(
             property: KProperty1<out Any, *>,
             elementName: ElementName
         ): Boolean {
+            tracer.debug("Determining if property is required: $property")
+
             return try {
                 // First check if the property is annotated.
                 // If no annotation is found, use the class kotlinx serializer.
@@ -187,6 +189,11 @@ internal data class MetadataDescriptor(
             } catch (e: Exception) {
                 // If there is an error (e.g., no serializer found)
                 // fallback to checking the primary constructor.
+                tracer.debug(
+                    message = "Unable to determine if property is required by annotation or serializer. " +
+                            "Falling back to primary constructor.",
+                )
+
                 determineIfRequiredByConstructor(
                     kClass = classKType.classifier as KClass<*>,
                     property = property,

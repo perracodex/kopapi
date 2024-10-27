@@ -10,6 +10,7 @@ import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
+import io.github.perracodex.kopapi.system.Tracer
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
@@ -27,6 +28,8 @@ import kotlin.reflect.full.createType
  */
 @TypeInspectorAPI
 internal class EnumResolver(private val typeInspector: TypeInspector) {
+    private val tracer = Tracer<EnumResolver>()
+
     /**
      * Processes the given [enumClass] and creates a [TypeSchema] for it.
      *
@@ -34,6 +37,8 @@ internal class EnumResolver(private val typeInspector: TypeInspector) {
      * @return The resolved [TypeSchema] for the enum type.
      */
     fun process(enumClass: KClass<*>): TypeSchema {
+        tracer.debug("Processing enum type: $enumClass.")
+
         val enumValues: List<String> = enumClass.java.enumConstants?.map {
             (it as Enum<*>).name
         } ?: emptyList()
@@ -45,6 +50,8 @@ internal class EnumResolver(private val typeInspector: TypeInspector) {
         // If the enum type has not been processed yet,
         // create a schema for it and cache it for future reference.
         if (!typeInspector.isCached(kType = enumKType)) {
+            tracer.debug("Creating schema for enum type: $enumClass.")
+
             val typeSchema: TypeSchema = TypeSchema.of(
                 name = enumClassName,
                 kType = enumKType,

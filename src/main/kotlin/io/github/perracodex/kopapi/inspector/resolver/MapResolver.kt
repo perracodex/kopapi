@@ -42,6 +42,8 @@ internal class MapResolver(private val typeInspector: TypeInspector) {
         kType: KType,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
+        tracer.debug("Resolving Map type: $kType.")
+
         val (keyType: KType?, valueType: KType?) = resolveMapComponents(
             kType = kType,
             typeArgumentBindings = typeArgumentBindings
@@ -61,6 +63,7 @@ internal class MapResolver(private val typeInspector: TypeInspector) {
         // If the value type is null, default to an object schema with the name
         // of the kType to highlight the issue.
         val typeSchema: TypeSchema = valueType?.let {
+            tracer.debug("Traversing Map value type: $valueType.")
             typeInspector.traverseType(kType = valueType, typeArgumentBindings = typeArgumentBindings)
         } ?: TypeSchema.of(
             name = ElementName(name = "MapOf${kType}"),

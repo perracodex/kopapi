@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
+import io.github.perracodex.kopapi.system.Tracer
 import java.util.*
 
 /**
@@ -18,6 +19,8 @@ internal class TagsComposer(
     private val apiConfiguration: ApiConfiguration,
     private val apiOperations: Set<ApiOperation>
 ) {
+    private val tracer = Tracer<TagsComposer>()
+
     /**
      * Collects and merges tags from both API operations and top-level configuration.
      * Prioritizes top-level tags for descriptions and ensures uniqueness by name (case-insensitive).
@@ -25,6 +28,8 @@ internal class TagsComposer(
      * @return A list of [ApiTag] items, sorted alphabetically by name, possibly empty.
      */
     fun compose(): List<ApiTag>? {
+        tracer.info("Composing tags section.")
+
         // Collect tags from API operations, ignoring descriptions.
         val operationTags: Map<String, ApiTag> = collectOperationTags()
             .associateBy { it.name.lowercase() }
@@ -42,6 +47,8 @@ internal class TagsComposer(
                 }
             }
         }.values.toSortedSet(compareBy { it.name })
+
+        tracer.debug("Merged tags: $mergedTags")
 
         return mergedTags.takeIf { it.isNotEmpty() }?.toList()
     }

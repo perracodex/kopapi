@@ -42,6 +42,8 @@ internal class CustomTypeResolver(private val typeInspector: TypeInspector) {
      * @return The resolved [TypeSchema] for the custom type.
      */
     fun process(kType: KType): TypeSchema {
+        tracer.debug("Processing custom type: $kType.")
+
         val typeName = ElementName(name = "CustomTypeOf${kType.safeName()}")
 
         // If attempting to resolve a custom type that does not exist, log an error
@@ -58,6 +60,8 @@ internal class CustomTypeResolver(private val typeInspector: TypeInspector) {
 
         // If the custom type has not been processed yet, create a schema for it and cache it.
         if (!typeInspector.isCached(kType = kType)) {
+            tracer.debug("Creating schema for custom type: $kType.")
+
             val primitiveSchema: ElementSchema.Primitive = ElementSchema.Primitive(
                 schemaType = customType.apiType,
                 format = customType.apiFormat.trimOrNull(),
@@ -77,6 +81,8 @@ internal class CustomTypeResolver(private val typeInspector: TypeInspector) {
             )
 
             typeInspector.addToCache(schema = schemaType)
+        } else {
+            tracer.debug("Custom type already processed: $kType.")
         }
 
         // Return a reference to the custom type schema.

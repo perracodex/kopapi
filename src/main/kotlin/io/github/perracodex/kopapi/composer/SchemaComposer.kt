@@ -21,6 +21,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
+import io.github.perracodex.kopapi.system.Tracer
 
 /**
  * Responsible for generating the OpenAPI schema.
@@ -31,6 +32,8 @@ internal class SchemaComposer(
     private val apiOperations: Set<ApiOperation>,
     private val schemaConflicts: Set<SchemaConflicts.Conflict>,
 ) {
+    private val tracer = Tracer<SchemaComposer>()
+
     /**
      * Serves the OpenAPI schema in the specified format.
      *
@@ -38,6 +41,8 @@ internal class SchemaComposer(
      * @return The OpenAPI schema in the specified format.
      */
     fun compose(format: SchemaRegistry.Format): String {
+        tracer.info("Initiating schema composition. Format: $format")
+
         // Compose the `Info` section.
         val infoSection: ApiInfo = InfoSectionComposer.compose(
             apiInfo = apiConfiguration.apiInfo,
@@ -77,6 +82,7 @@ internal class SchemaComposer(
         ).takeIf { it.hasContent() }
 
         // Create the OpenAPI schema.
+        tracer.info("Composing the OpenAPI schema object.")
         val openApiSchema = OpenAPiSchema(
             openapi = OPEN_API_VERSION,
             info = infoSection,

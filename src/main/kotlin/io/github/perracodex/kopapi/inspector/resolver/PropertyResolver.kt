@@ -50,6 +50,8 @@ internal class PropertyResolver(private val typeInspector: TypeInspector) {
         property: KProperty1<out Any, *>,
         typeArgumentBindings: Map<KClassifier, KType>
     ): Pair<String, SchemaProperty> {
+        tracer.debug("Processing property: ${property.name}.")
+
         val metadata: MetadataDescriptor = MetadataDescriptor.of(
             classKType = classKType,
             property = property
@@ -90,6 +92,8 @@ internal class PropertyResolver(private val typeInspector: TypeInspector) {
      * @return A list of [KProperty1] items sorted according to their declaration order.
      */
     fun getProperties(kClass: KClass<*>): List<KProperty1<out Any, *>> {
+        tracer.debug("Retrieving properties for class: $kClass.")
+
         val orderedProperties: MutableList<KProperty1<out Any, *>> = mutableListOf()
         val processedClasses: MutableSet<KClass<*>> = mutableSetOf()
         var currentClass: KClass<*>? = kClass
@@ -161,6 +165,8 @@ internal class PropertyResolver(private val typeInspector: TypeInspector) {
 
         if (orderedProperties.isEmpty()) {
             tracer.error("No properties found for class: $kClass")
+        } else {
+            tracer.debug("Retrieved ${orderedProperties.size} properties for class: $kClass.")
         }
 
         return orderedProperties

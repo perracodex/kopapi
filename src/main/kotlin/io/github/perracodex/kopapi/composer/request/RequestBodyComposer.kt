@@ -13,6 +13,7 @@ import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.schema.IOpenApiSchema
 import io.github.perracodex.kopapi.schema.MultipartSchema
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -31,6 +32,8 @@ import kotlin.reflect.KClassifier
  */
 @ComposerAPI
 internal object RequestBodyComposer {
+    private val tracer = Tracer<RequestBodyComposer>()
+
     /**
      * Generates the `request body` section of the OpenAPI schema.
      *
@@ -40,6 +43,8 @@ internal object RequestBodyComposer {
      * @return The constructed [RequestBodyObject] object representing the OpenAPI request body.
      */
     fun compose(requestBody: ApiRequestBody): RequestBodyObject {
+        tracer.info("Composing the 'request body' section of the OpenAPI schema.")
+
         val standardContent: Map<ContentType, OpenAPiSchema.ContentSchema>? = processStandardContent(
             requestBody = requestBody
         )
@@ -71,12 +76,15 @@ internal object RequestBodyComposer {
         requestBody: ApiRequestBody
     ): Map<ContentType, OpenAPiSchema.ContentSchema>? {
         if (requestBody.content.isNullOrEmpty()) {
+            tracer.info("No standard content types found for the request body.")
             return null
         }
 
         val schemas: MutableMap<ContentType, MutableList<ElementSchema>> = mutableMapOf()
 
         requestBody.content.forEach { (contentType, types) ->
+            tracer.debug("Processing standard content type: $contentType")
+
             types.forEach { type ->
                 val schema: ElementSchema = SchemaRegistry.inspectType(type = type)?.schema
                     ?: throw KopapiException("No schema found for type: $type with content type: $contentType")
@@ -99,10 +107,13 @@ internal object RequestBodyComposer {
         requestBody: ApiRequestBody
     ): Map<ContentType, OpenAPiSchema.ContentSchema>? {
         if (requestBody.multipartContent.isNullOrEmpty()) {
+            tracer.info("No multipart content types found for the request body.")
             return null
         }
 
         return requestBody.multipartContent.mapValues { (_, apiMultipart) ->
+            tracer.debug("Processing multipart content type: ${apiMultipart.contentType}")
+
             val properties: MutableMap<String, MultipartSchema> = mutableMapOf()
             val requiredFields: MutableList<String> = mutableListOf()
 

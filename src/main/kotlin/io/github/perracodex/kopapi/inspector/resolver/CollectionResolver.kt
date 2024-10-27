@@ -47,6 +47,8 @@ internal class CollectionResolver(private val typeInspector: TypeInspector) {
         classifier: KClassifier,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
+        tracer.debug("Traversing collection type: $kType.")
+
         val className: ElementName = MetadataDescriptor.getClassName(kClass = (classifier as KClass<*>))
 
         val argumentType: KType = kType.arguments.firstOrNull()?.resolveTypeBinding(
@@ -63,6 +65,7 @@ internal class CollectionResolver(private val typeInspector: TypeInspector) {
         }
 
         // Traverse the collection argument element to resolve its respective TypeSchema.
+        tracer.debug("Traversing collection element type: $argumentType.")
         val typeSchema: TypeSchema = typeInspector.traverseType(
             kType = argumentType,
             typeArgumentBindings = typeArgumentBindings

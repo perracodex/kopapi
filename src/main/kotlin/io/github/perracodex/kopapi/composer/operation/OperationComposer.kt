@@ -15,6 +15,7 @@ import io.github.perracodex.kopapi.composer.response.ResponseObject
 import io.github.perracodex.kopapi.composer.security.SecurityObject
 import io.github.perracodex.kopapi.composer.security.SecurityRequirement
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
+import io.github.perracodex.kopapi.system.Tracer
 
 /**
  * Responsible for composing the `paths` section of the OpenAPI schema.
@@ -26,6 +27,8 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
  */
 @ComposerAPI
 internal object OperationComposer {
+    private val tracer = Tracer<OperationComposer>()
+
     /**
      * Generates the `paths` section of the OpenAPI schema by iterating over each API operation
      * and organizing them based on their HTTP method and path.
@@ -44,10 +47,13 @@ internal object OperationComposer {
         apiOperations: Set<ApiOperation>,
         securityObject: List<SecurityObject>?
     ): Map<String, OpenAPiSchema.PathItemObject> {
+        tracer.info("Composing the 'paths' section of the OpenAPI schema.")
 
         val pathItems: MutableMap<String, OpenAPiSchema.PathItemObject> = mutableMapOf()
 
         apiOperations.forEach { operation ->
+            tracer.debug("Composing operation: [${operation.method}] → ${operation.path}")
+
             // Retrieve or create the PathItemObject for the operation's path.
             val pathItemObject: OpenAPiSchema.PathItemObject = pathItems.getOrPut(operation.path) {
                 OpenAPiSchema.PathItemObject()
@@ -73,6 +79,8 @@ internal object OperationComposer {
                 security = securityConfig
             )
         }
+
+        tracer.debug("Composed ${pathItems.size} path items.")
 
         return pathItems.toSortedMap()
     }

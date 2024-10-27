@@ -7,12 +7,15 @@ package io.github.perracodex.kopapi.composer.info
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
+import io.github.perracodex.kopapi.system.Tracer
 
 /**
  * Composes the `Info` section of the OpenAPI schema.
  */
 @ComposerAPI
 internal object InfoSectionComposer {
+    private val tracer = Tracer<InfoSectionComposer>()
+
     private const val DEFAULT_TITLE: String = "API"
     private const val DEFAULT_DESCRIPTION: String = "API Description"
     private const val DEFAULT_VERSION: String = "1.0.0"
@@ -26,6 +29,8 @@ internal object InfoSectionComposer {
      * @return The updated [ApiInfo] object ready for serialization.
      */
     fun compose(apiInfo: ApiInfo?, schemaConflicts: Set<SchemaConflicts.Conflict>): ApiInfo {
+        tracer.info("Composing the 'Info' section of the OpenAPI schema.")
+
         val baseApiInfo: ApiInfo = apiInfo ?: ApiInfo(
             title = DEFAULT_TITLE,
             description = DEFAULT_DESCRIPTION,
@@ -37,8 +42,11 @@ internal object InfoSectionComposer {
 
         // If no schema conflicts are detected, return the result immediately.
         if (schemaConflicts.isEmpty()) {
+            tracer.info("No schema conflicts detected. Returning the base 'Info' section.")
             return baseApiInfo
         }
+
+        tracer.info("Detected ${schemaConflicts.size} schema conflicts. Updating the 'Info' section with error messages.")
 
         // Build the error messages for each conflict.
         val errors: Set<String> = schemaConflicts.map { conflict ->

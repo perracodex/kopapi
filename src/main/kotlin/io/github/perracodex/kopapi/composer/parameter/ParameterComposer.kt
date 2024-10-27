@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
@@ -19,6 +20,8 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  */
 @ComposerAPI
 internal object ParameterComposer {
+    private val tracer = Tracer<ParameterComposer>()
+
     /**
      * Generates the `parameters` section of the OpenAPI schema.
      *
@@ -28,9 +31,13 @@ internal object ParameterComposer {
     fun compose(
         apiParameters: Set<ApiParameter>,
     ): Set<ParameterObject> {
+        tracer.info("Composing the 'parameters' section of the OpenAPI schema.")
+
         val parameterObjects: MutableSet<ParameterObject> = mutableSetOf()
 
         apiParameters.forEach { parameter ->
+            tracer.debug("Composing parameter: ${parameter.name}")
+
             val schema: ElementSchema = parameter.complexType?.let { complexType ->
                 SchemaRegistry.inspectType(type = complexType)?.schema
                     ?: throw KopapiException("No schema found for type: $complexType")
@@ -56,6 +63,8 @@ internal object ParameterComposer {
 
             parameterObjects.add(parameterObject)
         }
+
+        tracer.debug("Composed ${parameterObjects.size} parameters.")
 
         return parameterObjects
     }

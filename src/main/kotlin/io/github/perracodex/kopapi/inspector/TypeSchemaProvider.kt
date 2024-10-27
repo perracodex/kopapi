@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.system.Tracer
 import kotlin.reflect.KType
 
 /**
@@ -23,6 +24,8 @@ import kotlin.reflect.KType
  */
 @OptIn(TypeInspectorAPI::class)
 internal class TypeSchemaProvider {
+    private val tracer = Tracer<TypeSchemaProvider>()
+
     /** Instance of [SchemaConflicts] to keep track of conflicting [TypeSchema] objects. */
     private val conflicts = SchemaConflicts(schemaProvider = this)
 
@@ -39,6 +42,7 @@ internal class TypeSchemaProvider {
         if (kType.classifier == Unit::class) {
             throw KopapiException("Type 'Unit' cannot be inspected.")
         }
+        tracer.debug("Initiating inspection of type: $kType.")
         val result: TypeSchema = typeInspector.traverseType(kType = kType, typeArgumentBindings = emptyMap())
         conflicts.analyze(newSchema = result)
         return result
@@ -67,6 +71,7 @@ internal class TypeSchemaProvider {
      * All collected [TypeSchema] objects and [SchemaConflicts] will be cleared.
      */
     fun reset() {
+        tracer.info("Resetting TypeSchemaProvider.")
         conflicts.clear()
         typeInspector.clear()
     }

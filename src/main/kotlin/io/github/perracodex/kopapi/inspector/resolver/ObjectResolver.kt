@@ -13,6 +13,7 @@ import io.github.perracodex.kopapi.inspector.schema.factory.PrimitiveFactory
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.schema.SchemaProperty
+import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.nativeName
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
@@ -51,6 +52,8 @@ import kotlin.reflect.KType
  */
 @TypeInspectorAPI
 internal class ObjectResolver(private val typeInspector: TypeInspector) {
+    private val tracer = Tracer<ObjectResolver>()
+
     /** Semaphore to prevent infinite recursion during type processing. */
     private val semaphore: MutableSet<String> = mutableSetOf()
 
@@ -68,6 +71,8 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
         kClass: KClass<*>,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
+        tracer.debug("Traversing object type: $kType.")
+
         val className: ElementName = MetadataDescriptor.getClassName(kClass = kClass)
 
         // Handle primitive types.
@@ -106,6 +111,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
     ): TypeSchema {
         // Prevent infinite recursion for self-referencing objects.
         if (semaphore.contains(kType.nativeName())) {
+            tracer.debug("Circular reference for type: $kType.")
             return TypeSchema.of(
                 name = className,
                 kType = kType,
@@ -144,6 +150,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
         // tracker to handle different branches.
         semaphore.remove(kType.nativeName())
 
+        tracer.debug("Resolved object type: $kType.")
         return TypeSchema.of(
             name = className,
             kType = kType,

@@ -191,6 +191,8 @@ internal class TypeInspector {
         kType: KType,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
+        tracer.debug("Traversing type: $kType. typeArgumentBindings=$typeArgumentBindings.")
+
         // Resolve the type's classifier, if unavailable, log an error and return an unknown type.
         val classifier: KClassifier = kType.classifier
             ?: run {

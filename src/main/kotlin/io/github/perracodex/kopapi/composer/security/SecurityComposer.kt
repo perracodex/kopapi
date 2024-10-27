@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
+import io.github.perracodex.kopapi.system.Tracer
 
 /**
  * Responsible for composing the security-related sections of the OpenAPI schema.
@@ -23,6 +24,8 @@ internal class SecuritySectionComposer(
     private val apiConfiguration: ApiConfiguration,
     private val apiOperations: Set<ApiOperation>
 ) {
+    private val tracer = Tracer<SecuritySectionComposer>()
+
     /**
      * Determines and composes the global security requirements for the OpenAPI schema.
      *
@@ -34,10 +37,13 @@ internal class SecuritySectionComposer(
      *         Returns `null` if no operations require global security.
      */
     fun composeGlobalSecurityRequirements(): GlobalSecurityRequirement? {
+        tracer.info("Composing the global security requirements.")
+
         // Determine if any API Operation requires security.
         val requiresGlobalSecurity: Boolean = apiOperations.any { !it.skipSecurity }
         if (!requiresGlobalSecurity) {
             // All API Operated are marked as skipSecurity; no global security required.
+            tracer.debug("No operations require global security.")
             return null
         }
 
@@ -47,8 +53,10 @@ internal class SecuritySectionComposer(
 
         // Only return if there are security schemes defined
         return if (requirements.isNotEmpty()) {
+            tracer.info("Global security schemes defined: ${requirements.size}")
             GlobalSecurityRequirement(requirements = requirements)
         } else {
+            tracer.info("No global security schemes defined.")
             null
         }
     }
@@ -68,6 +76,8 @@ internal class SecuritySectionComposer(
      * @see [composeGlobalSecurityRequirements]
      */
     fun composeSecuritySchemes(): Map<String, ApiSecurityScheme>? {
+        tracer.info("Composing the security schemes for the OpenAPI schema.")
+
         val schemes: MutableMap<String, ApiSecurityScheme> = mutableMapOf()
         val schemeNames: MutableSet<String> = mutableSetOf()
 
@@ -98,6 +108,8 @@ internal class SecuritySectionComposer(
             }
         }
 
+        tracer.info("Composed ${schemes.size} schemes.")
+
         return schemes.toSortedMap().takeIf { it.isNotEmpty() }
     }
 
@@ -113,9 +125,13 @@ internal class SecuritySectionComposer(
      *         for each API operation. Returns `null` if no operations are present.
      */
     fun composeOperationSecurity(): List<SecurityObject>? {
+        tracer.info("Composing the API operation security requirements.")
+
         val securityObjectList: MutableList<SecurityObject> = mutableListOf()
 
         apiOperations.forEach { operation ->
+            tracer.debug("Composing security for operation: [${operation.method}] → ${operation.path}")
+
             // If skipSecurity is set, explicitly disable security by assigning an empty list.
             if (operation.skipSecurity) {
                 securityObjectList.add(
@@ -139,6 +155,8 @@ internal class SecuritySectionComposer(
                 )
             }
         }
+
+        tracer.info("Composed ${securityObjectList.size} security objects.")
 
         return securityObjectList.takeIf { it.isNotEmpty() }
     }

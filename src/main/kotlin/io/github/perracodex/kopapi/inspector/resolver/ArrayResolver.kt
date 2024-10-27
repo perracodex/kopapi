@@ -48,11 +48,14 @@ internal class ArrayResolver(private val typeInspector: TypeInspector) {
         classifier: KClassifier,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
+        tracer.debug("Traversing array type: $kType.")
+
         val className: ElementName = MetadataDescriptor.getClassName(kClass = (classifier as KClass<*>))
 
         // Check if dealing with a primitive array first, such as IntArray, ByteArray, etc.,
         // and return the corresponding schema if it is.
         if (TypeDescriptor.isPrimitiveArray(classifier = classifier)) {
+            tracer.debug("Processing a primitive array: $classifier.")
             val schema: ElementSchema? = PrimitiveFactory.newSchema(kClass = classifier)
             return TypeSchema.of(
                 name = className,
@@ -72,6 +75,7 @@ internal class ArrayResolver(private val typeInspector: TypeInspector) {
         }
 
         // If dealing with a typed array (Array<T>), delegate to the CollectionResolver to handle it.
+        tracer.debug("Delegating array processing to CollectionResolver for typed array: $kType.")
         return typeInspector.traverseCollection(
             kType = kType,
             classifier = classifier,

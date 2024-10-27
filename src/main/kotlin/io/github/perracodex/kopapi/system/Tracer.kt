@@ -18,28 +18,36 @@ internal class Tracer(private val logger: Logger) {
      * Logs a message with debug severity level.
      */
     fun debug(message: String) {
-        logger.debug(message)
+        if (enabled) {
+            logger.debug(message)
+        }
     }
 
     /**
      * Logs a message with info severity level.
      */
     fun info(message: String) {
-        logger.info(message)
+        if (enabled) {
+            logger.info(message)
+        }
     }
 
     /**
      * Logs a message with warning severity level.
      */
     fun warning(message: String) {
-        logger.warn(message)
+        if (enabled) {
+            logger.warn(message)
+        }
     }
 
     /**
      * Logs a message with error severity level.
      */
     fun error(message: String) {
-        logger.error(message)
+        if (enabled) {
+            logger.error(message)
+        }
     }
 
     /**
@@ -56,6 +64,15 @@ internal class Tracer(private val logger: Logger) {
         /** Toggle for full package name or simple name. */
         const val LOG_FULL_PACKAGE: Boolean = true
 
+        /** Default group name for package filtering. */
+        private val GROUP: String = "io.github.perracodex.kopapi."
+
+        /** Enables or disables the Tracer. */
+        var enabled: Boolean = true
+
+        /** Logger instance for disabled Tracer. */
+        private val disabledLogger: Tracer = Tracer(logger = KtorSimpleLogger(name = "Disabled"))
+
         /**
          * Creates a new [Tracer] instance for a given class.
          * Intended for classes where the class context is applicable.
@@ -64,9 +81,17 @@ internal class Tracer(private val logger: Logger) {
          * @return Tracer instance with a logger named after the class.
          */
         inline operator fun <reified T : Any> invoke(): Tracer {
+            if (!enabled) {
+                return disabledLogger
+            }
+
             val loggerName: String = when {
-                LOG_FULL_PACKAGE -> T::class.qualifiedName ?: T::class.safeName()
-                else -> T::class.safeName()
+                LOG_FULL_PACKAGE ->
+                    T::class.qualifiedName?.removePrefix(prefix = GROUP)
+                        ?: T::class.safeName()
+
+                else ->
+                    T::class.safeName()
             }
             return Tracer(logger = KtorSimpleLogger(name = loggerName))
         }
@@ -79,9 +104,19 @@ internal class Tracer(private val logger: Logger) {
          * @return Tracer instance named after the function and its declaring class (if available).
          */
         operator fun <T> invoke(ref: KFunction<T>): Tracer {
+            if (!enabled) {
+                return disabledLogger
+            }
+
             val loggerName: String = when {
-                LOG_FULL_PACKAGE -> "${ref.javaMethod?.declaringClass?.name ?: "Unknown"}.${ref.name}"
-                else -> ref.name
+                LOG_FULL_PACKAGE ->
+                    "${
+                        ref.javaMethod?.declaringClass?.name?.removePrefix(prefix = GROUP)
+                            ?: "Unknown"
+                    }.${ref.name}"
+
+                else ->
+                    ref.name
             }
             return Tracer(logger = KtorSimpleLogger(name = loggerName))
         }

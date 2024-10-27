@@ -11,6 +11,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.schema.IOpenApiSchema
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import kotlin.collections.component1
@@ -25,6 +26,8 @@ import kotlin.collections.set
  */
 @ComposerAPI
 internal object ResponseComposer {
+    private val tracer = Tracer<ResponseComposer>()
+
     /**
      * Generates the `responses` section of the OpenAPI schema by mapping each API response
      * to its corresponding schema, if applicable.
@@ -33,9 +36,13 @@ internal object ResponseComposer {
      * @return A map of status codes to [ResponseObject] instances representing the OpenAPI responses.
      */
     fun compose(responses: Map<HttpStatusCode, ApiResponse>): Map<String, ResponseObject> {
+        tracer.info("Composing the 'responses' section of the OpenAPI schema.")
+
         val composedResponses: MutableMap<String, ResponseObject> = mutableMapOf()
 
         responses.forEach { (statusCode, apiResponse) ->
+            tracer.debug("Composing response: [${statusCode.value}] → ${apiResponse.description}")
+
             if (apiResponse.content.isNullOrEmpty()) {
                 // No types associated with the response; create a PathResponse without content.
                 composedResponses[statusCode.value.toString()] = ResponseObject(
@@ -80,6 +87,8 @@ internal object ResponseComposer {
                 links = apiResponse.links
             )
         }
+
+        tracer.info("Composed ${composedResponses.size} responses.")
 
         return composedResponses
     }

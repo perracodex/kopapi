@@ -78,6 +78,18 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
     public var debugUrl: String = DEFAULT_DEBUG_URL
 
     /**
+     * Whether to enable internal logging for the plugin. Default: `false`.
+     *
+     * When enabled the plugin will include additional logging information
+     * such as when traversing types, resolving schemas, and building the OpenAPI schema.
+     *
+     * #### Attention
+     * Enabling this option may produce quite verbose logs
+     * and is recommended for debugging purposes only.
+     */
+    public var enableLogging: Boolean = false
+
+    /**
      * The [ApiInfo] metadata for the OpenAPI schema.
      */
     private var apiInfo: ApiInfo? = null

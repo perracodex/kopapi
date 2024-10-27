@@ -13,6 +13,7 @@ import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.schema.SchemaProperty
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.system.Tracer
 import kotlin.reflect.*
 
 /**
@@ -136,6 +137,8 @@ import kotlin.reflect.*
  */
 @TypeInspectorAPI
 internal class GenericsResolver(private val typeInspector: TypeInspector) {
+    private val tracer = Tracer<GenericsResolver>()
+
     /**
      * Handles generics types, considering nested and complex generics.
      *
@@ -149,11 +152,14 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
         kClass: KClass<*>,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
+        tracer.debug("Traversing generics type: $kType.")
+
         val genericsTypeName: String = generateTypeName(kType = kType, kClass = kClass)
 
         // Check if the generics type has already been processed,
         // if not, traverse the generics type to resolve its properties and cache it.
         if (!typeInspector.isCached(kType = kType)) {
+            tracer.debug("Generics type not cached, processing: $kType.")
             traverse(
                 kType = kType,
                 kClass = kClass,
@@ -263,6 +269,7 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
         val classProperties: List<KProperty1<out Any, *>> = typeInspector.getClassProperties(kClass = kClass)
 
         // Traverse each property to resolve its schema using the merged type parameters.
+        tracer.debug("Traversing properties of generics type: $kType.")
         classProperties.forEach { property ->
             val (name: String, schemaProperty: SchemaProperty) = typeInspector.traverseProperty(
                 classKType = kType,
