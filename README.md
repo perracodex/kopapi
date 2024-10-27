@@ -12,7 +12,7 @@ Kopapi is library to generate the OpenAPI documentation from [Ktor](https://ktor
 get("/items/{data_id}/{item_id?}") {
     // Handle GET request
 } api {
-    tags("Items", "Data")
+  tags = setOf("Items", "Data")
     summary = "Retrieve data items."
     description = "Fetches all items for a group."
     operationId = "getDataItems"

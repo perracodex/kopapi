@@ -64,9 +64,9 @@ import kotlin.reflect.typeOf
  * get("/items/{data_id}/{item_id?}") {
  *     // Handle GET request
  * } api {
+ *     tags = setOf("Items", "Data")
  *     summary = "Retrieve data items."
  *     description = "Fetches all items for a data set."
- *     tags("Items", "Data")
  *     pathParameter<PathType.Uuid>("data_id") { description = "The data Id." }
  *     queryParameter<String>("item_id") { description = "Optional item Id." }
  *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful." }
@@ -127,15 +127,18 @@ public class ApiOperationBuilder internal constructor(
      *
      * #### Sample Usage
      * ```
-     * tags("Items", "Data")
+     * tags = setOf("Items", "Data")
+     * tags = setOf("NewTag1", "NewTag2")
      * ```
      *
      * @see [summary]
      * @see [description]
      */
-    public fun ApiOperationBuilder.tags(vararg tags: String) {
-        _config.tags.addAll(tags.map { it.trim() }.filter { it.isNotBlank() })
-    }
+    public var tags: Set<String>
+        get() = _config.tags.toSet()
+        set(value) {
+            _config.tags.addAll(value.map { it.trim() }.filter { it.isNotBlank() })
+        }
 
     /**
      * The identifier for the API operation.

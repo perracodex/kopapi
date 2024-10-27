@@ -25,7 +25,7 @@ import io.ktor.utils.io.*
  * get("/items/{data_id}/{item_id?}") {
  *     // Handle GET request
  * } api {
- *     tags("Items", "Data")
+ *     tags = setOf("Items", "Data")
  *
  *     summary = "Retrieve data items."
  *
@@ -111,7 +111,7 @@ private fun buildApiErrorMessage(route: Route): String {
             get("/items/{data_id}/{item_id?}") {
                 // Handle GET request
             } api {
-                tags("Items", "Data")
+                tags = setOf("Items", "Data")
                 summary = "Retrieve data items."
                 description = "Fetches all items for a data set."
                 operationId = "getDataItems"
