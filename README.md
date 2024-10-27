@@ -34,7 +34,6 @@ get("/items/{data_id}/{item_id?}") {
 * Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) annotations.
 * Support for [Jackson](https://github.com/FasterXML/jackson-module-kotlin) annotations (under development).
 * Generate schema outputs in `YAML` or `JSON` format,
-* Includes a debug panel for inspecting schema generation issues.
 
 ---
 
