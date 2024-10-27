@@ -33,7 +33,7 @@ import kotlin.reflect.KType
 @KtorDsl
 @OperationDsl
 public class QueryParameterBuilder(
-    public var required: Boolean = true,
+    public var required: Boolean = false,
     public var allowReserved: Boolean = false,
     public var defaultValue: DefaultValue? = null,
     public var style: ParameterStyle = ParameterStyle.FORM,

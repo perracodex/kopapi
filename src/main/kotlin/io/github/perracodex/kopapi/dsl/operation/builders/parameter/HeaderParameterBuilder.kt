@@ -31,7 +31,7 @@ import kotlin.reflect.KType
 @KtorDsl
 @OperationDsl
 public class HeaderParameterBuilder(
-    public var required: Boolean = true,
+    public var required: Boolean = false,
     public var defaultValue: DefaultValue? = null,
     public var style: ParameterStyle = ParameterStyle.SIMPLE,
     public var deprecated: Boolean = false
