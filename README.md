@@ -28,7 +28,8 @@ get("/items/{data_id}/{item_id?}") {
 
 * Lightweight and minimally invasive integration.
 * Provides `Swagger UI` and `ReDoc` for testing and documentation.
-* Flexible and expressive `DSL` builder syntax.
+* Flexible and expressive `DSL` builder.
+* No unnatural modifications to your routes. Just add the `api` documentation block after it.
 * Support for arbitrary types, including `generics`, `collections` and complex nested structures.
 * Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) annotations.
 * Support for [Jackson](https://github.com/FasterXML/jackson-module-kotlin) annotations (under development).
