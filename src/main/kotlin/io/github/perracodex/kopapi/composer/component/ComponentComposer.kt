@@ -21,14 +21,14 @@ internal object ComponentComposer {
      * @return The `Components` section of the OpenAPI schema.
      */
     fun compose(typeSchemas: Set<TypeSchema>): Map<String, ElementSchema>? {
-        val components: MutableMap<String, ElementSchema> = mutableMapOf()
+        val components: LinkedHashMap<String, ElementSchema> = linkedMapOf()
 
-        typeSchemas.forEach { typeSchema ->
+        typeSchemas.sortedBy { it.name }.forEach { typeSchema ->
             val elementSchema: ElementSchema = transform(typeSchema = typeSchema)
             components[typeSchema.name] = elementSchema
         }
 
-        return components.takeIf { it.isNotEmpty() }?.toSortedMap()
+        return components.takeIf { it.isNotEmpty() }
     }
 
     /**

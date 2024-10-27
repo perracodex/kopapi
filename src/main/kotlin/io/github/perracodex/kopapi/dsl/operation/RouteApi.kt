@@ -10,7 +10,6 @@ import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.extractRoutePath
-import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import io.ktor.server.routing.*
 import io.ktor.utils.io.*
@@ -74,20 +73,13 @@ public infix fun Route.api(configure: ApiOperationBuilder.() -> Unit): Route {
     val builder: ApiOperationBuilder = ApiOperationBuilder(
         endpoint = "[$method] $endpointPath"
     ).apply(configure)
-    val apiOperation = ApiOperation(
-        path = endpointPath,
+    val apiOperation: ApiOperation = builder.build(
         method = method,
-        tags = builder._config.tags.takeIf { it.isNotEmpty() },
-        summary = builder.summary.trimOrNull(),
-        description = builder.description.trimOrNull(),
-        operationId = builder.operationId.trimOrNull(),
-        parameters = builder._config.parameters.takeIf { it.isNotEmpty() },
-        requestBody = builder._config.requestBody,
-        responses = builder._config.responses.takeIf { it.isNotEmpty() },
-        securitySchemes = builder._securityConfig.securitySchemes.takeIf { it.isNotEmpty() },
-        skipSecurity = builder._securityConfig.skipSecurity
+        endpointPath = endpointPath
     )
 
+    // Register the operation with the schema registry
+    // for later use in generating OpenAPI documentation.
     SchemaRegistry.registerApiOperation(operation = apiOperation)
 
     return this

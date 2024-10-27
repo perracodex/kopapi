@@ -116,4 +116,22 @@ internal data class ApiResponse(
             )
         )
     }
+
+    companion object {
+        /**
+         * Builds an `ApiResponse` instance with no content.
+         *
+         * @return A new `ApiResponse` instance with no content.
+         */
+        fun buildWithNoContent(): ApiResponse {
+            return ApiResponse(
+                status = HttpStatusCode.NoContent,
+                description = HttpStatusCode.NoContent.description,
+                headers = null,
+                composition = null,
+                content = null,
+                links = null
+            )
+        }
+    }
 }

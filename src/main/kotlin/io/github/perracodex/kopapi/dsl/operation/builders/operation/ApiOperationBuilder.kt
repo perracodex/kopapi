@@ -22,6 +22,7 @@ import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.PathType
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.string.SpacedString
+import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import io.ktor.utils.io.*
 import java.util.*
@@ -532,11 +533,44 @@ public class ApiOperationBuilder internal constructor(
         val apiResponse: ApiResponse = builder.build(status = status)
 
         _config.responses.merge(
-            status.value.toString(),
+            status,
             apiResponse
         ) { existing, new ->
             existing.mergeWith(other = new)
         }
+    }
+
+    /**
+     * Constructs the API operation metadata for the route endpoint.
+     *
+     * @param method The [HttpMethod] associated with the route.
+     * @param endpointPath The URL path for the route.
+     * @return The constructed [ApiOperation] instance.
+     */
+    internal fun build(method: HttpMethod, endpointPath: String): ApiOperation {
+        // If no responses are defined, add a default NoContent response,
+        // otherwise sort the responses by status code.
+        val responses: LinkedHashMap<HttpStatusCode, ApiResponse> = if (_config.responses.isEmpty()) {
+            linkedMapOf(HttpStatusCode.NoContent to ApiResponse.buildWithNoContent())
+        } else {
+            _config.responses.entries
+                .sortedBy { it.key.value }
+                .associateTo(LinkedHashMap()) { it.toPair() }
+        }
+
+        return ApiOperation(
+            path = endpointPath,
+            method = method,
+            tags = _config.tags.takeIf { it.isNotEmpty() },
+            summary = summary.trimOrNull(),
+            description = description.trimOrNull(),
+            operationId = operationId.trimOrNull(),
+            parameters = _config.parameters.takeIf { it.isNotEmpty() },
+            requestBody = _config.requestBody,
+            responses = responses,
+            securitySchemes = _securityConfig.securitySchemes.takeIf { it.isNotEmpty() },
+            skipSecurity = _securityConfig.skipSecurity
+        )
     }
 
     @PublishedApi
@@ -551,7 +585,7 @@ public class ApiOperationBuilder internal constructor(
         var requestBody: ApiRequestBody? = null
 
         /** Optional set of possible responses, outlining expected status codes and content types. */
-        var responses: SortedMap<String, ApiResponse> = TreeMap(Comparator.comparingInt(String::toInt))
+        var responses: MutableMap<HttpStatusCode, ApiResponse> = mutableMapOf()
 
         /**
          * Adds a new path parameter to the API operation,

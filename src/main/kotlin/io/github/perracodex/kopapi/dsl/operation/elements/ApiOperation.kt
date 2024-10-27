@@ -38,7 +38,7 @@ internal data class ApiOperation(
     val operationId: String?,
     val parameters: Set<ApiParameter>?,
     val requestBody: ApiRequestBody?,
-    val responses: Map<String, ApiResponse>?,
+    val responses: Map<HttpStatusCode, ApiResponse>?,
     val securitySchemes: Set<ApiSecurityScheme>?,
     val skipSecurity: Boolean
 ) {
@@ -48,25 +48,7 @@ internal data class ApiOperation(
         }
 
         if (responses.isNullOrEmpty()) {
-            throw KopapiException(
-                """Api Operation must have at least one response defined.
-                        - [${method.value}] → '$path'
-                    To resolve:
-                        - Add a response using the 'response' function.
-                    Example:
-                        ```
-                        ${method.value.lowercase()}("$path") {
-                            // Handle [${method.value}] request.
-                        } api { 
-                            // Example response with no content.
-                            response(HttpStatusCode.OK) { description = "Successful" }
-                            
-                            // Example response with content.
-                            response<List<String>>(HttpStatusCode.OK) { description = "Successful" }
-                        }
-                        ```
-                """.trimIndent()
-            )
+            throw KopapiException("Api Operation must have at least one response defined.")
         }
     }
 }

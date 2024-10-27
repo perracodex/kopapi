@@ -74,7 +74,7 @@ internal object OperationComposer {
             )
         }
 
-        return pathItems
+        return pathItems.toSortedMap()
     }
 
     /**
