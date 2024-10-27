@@ -138,32 +138,32 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
      * #### Sample Usage
      * ```
      * servers {
-     *     add("http://localhost:8080") {
+     *      // Simple example with no variables.
+     *      add(urlString = "http://localhost:8080") {
      *         description = "Local server for development."
-     *     }
+     *      }
      *
-     *     add("https://{environment}.example.com") {
-     *         description = "The server for the API with environment variable."
-     *         variable("environment") {
-     *             description = "Specifies the environment (production, etc.)"
-     *             defaultValue = "production"
-     *             choices = setOf("production", "staging", "development")
-     *         }
-     *         variable("version") {
-     *             description = "The version of the API."
-     *             defaultValue = "v1"
-     *             choices = setOf("v1", "v2")
-     *         }
-     *     }
+     *      // Example with variable placeholders.
+     *      add(urlString = "{protocol}://{environment}.example.com:{port}") {
+     *          description = "The server with environment variable."
      *
-     *     add("https://{region}.api.example.com") {
-     *         description = "Server for the API by region."
-     *         variable("region") {
-     *             description = "Specifies the region for the API (us, eu)."
-     *             defaultValue = "us"
-     *             choices = setOf("us", "eu")
-     *         }
-     *     }
+     *          // Environment.
+     *          variable(name = "environment", defaultValue = "production") {
+     *              choices = setOf("production", "staging", "development")
+     *              description = "Specifies the environment (production, etc)"
+     *          }
+     *
+     *          // Port.
+     *          variable(name = "port", defaultValue = "8080") {
+     *              choices = setOf("8080", "8443")
+     *              description = "The port for the server."
+     *          }
+     *
+     *          // Protocol.
+     *          variable(name = "protocol", defaultValue = "http") {
+     *              choices = setOf("http", "https")
+     *          }
+     *      }
      * }
      * ```
      *

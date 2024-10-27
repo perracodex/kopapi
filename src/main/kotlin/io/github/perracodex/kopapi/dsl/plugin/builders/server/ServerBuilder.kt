@@ -12,19 +12,6 @@ import io.ktor.utils.io.*
 /**
  * Builder constructing server configurations.
  *
- * #### Sample Usage
- * ```
- * servers {
- *      add(urlString = "https://{environment}.example.com") {
- *          description = "Server with environment variable."
- *          variable(name = "environment", defaultValue = "production") {
- *              choices = setOf("production", "staging", "development")
- *              description = "API environment."
- *          }
- *      }
- * }
- * ```
- *
  * @see [ServerConfigBuilder]
  * @see [ServerVariableBuilder]
  */
@@ -48,19 +35,24 @@ public class ServerBuilder {
      *      }
      *
      *      // Example with variable placeholders.
-     *      add(urlString = "https://{environment}.example.com:{port}") {
+     *      add(urlString = "{protocol}://{environment}.example.com:{port}") {
      *          description = "The server with environment variable."
      *
-     *         // Environment variable.
+     *          // Environment.
      *          variable(name = "environment", defaultValue = "production") {
      *              choices = setOf("production", "staging", "development")
      *              description = "Specifies the environment (production, etc)"
      *          }
      *
-     *          // Port variable.
+     *          // Port.
      *          variable(name = "port", defaultValue = "8080") {
-     *               choices = setOf("8080", "8443")
+     *              choices = setOf("8080", "8443")
      *              description = "The port for the server."
+     *          }
+     *
+     *          // Protocol.
+     *          variable(name = "protocol", defaultValue = "http") {
+     *              choices = setOf("http", "https")
      *          }
      *      }
      * }

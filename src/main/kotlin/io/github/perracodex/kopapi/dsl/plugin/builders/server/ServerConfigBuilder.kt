@@ -16,33 +16,6 @@ import kotlin.collections.set
 /**
  * Builder for configuring a server.
  *
- * #### Sample Usage
- * ```
- * servers {
- *      // Simple example with no variables.
- *      add(urlString = "http://localhost:8080") {
- *         description = "Local server for development."
- *      }
- *
- *      // Example with variable placeholders.
- *      add(urlString = "https://{environment}.example.com:{port}") {
- *          description = "The server with environment variable."
- *
- *          // Environment variable.
- *          variable(name = "environment", defaultValue = "production") {
- *              choices = setOf("production", "staging", "development")
- *              description = "Specifies the environment (production, etc)"
- *          }
- *
- *         // Port variable.
- *          variable(name = "port", defaultValue = "8080") {
- *               choices = setOf("8080", "8443")
- *              description = "The port for the server."
- *          }
- *      }
- * }
- * ```
- *
  * @property urlString The URL of the server.
  * @property description A description of the server.
  *
