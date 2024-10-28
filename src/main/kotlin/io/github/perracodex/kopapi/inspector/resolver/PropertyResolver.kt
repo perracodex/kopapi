@@ -94,69 +94,60 @@ internal class PropertyResolver(private val typeInspector: TypeInspector) {
     fun getProperties(kClass: KClass<*>): List<KProperty1<out Any, *>> {
         tracer.debug("Retrieving properties for class: $kClass.")
 
+        // Hold the output ordered properties.
         val orderedProperties: MutableList<KProperty1<out Any, *>> = mutableListOf()
+
+        // Hold processed classes to avoid infinite loops in inheritance hierarchies.
         val processedClasses: MutableSet<KClass<*>> = mutableSetOf()
+
+        // Track added property names globally across the class hierarchy.
+        // Needed to avoid duplicate properties in case of shadowing.
+        val addedPropertyNames: MutableSet<String> = mutableSetOf()
+
         var currentClass: KClass<*>? = kClass
 
         while (currentClass != null && currentClass != Any::class && !processedClasses.contains(currentClass)) {
             processedClasses.add(currentClass)
 
             runCatching {
-                // 1. Retrieve declared fields using Java reflection to maintain order.
-                // Kotlin reflection does not guarantee order for properties.
-                val declaredFields: Array<out Field>? = currentClass?.java?.declaredFields
-                if (declaredFields == null) {
-                    tracer.error("Failed to retrieve fields for class: $kClass")
+                // 1. Retrieve declared fields using Java reflection to maintain order,
+                // as Kotlin reflection does not guarantee order for properties.
+                val declaredFields: List<Field> = currentClass?.java?.declaredFields?.filter { !it.isSynthetic } ?: emptyList()
+                if (declaredFields.isEmpty()) {
+                    tracer.warning("No backing fields found for class: $currentClass")
                     return@runCatching
                 }
 
                 // 2. Retrieve all properties declared directly within the current class.
                 // This includes both properties from the primary constructor and those declared in the class body.
-                val declaredMemberProperties: Collection<KProperty1<out Any, *>>? = currentClass?.declaredMemberProperties
-                if (declaredMemberProperties == null) {
-                    tracer.error("Failed to retrieve properties for class: $kClass")
+                val declaredMemberProperties: Collection<KProperty1<out Any, *>> = currentClass
+                    ?.declaredMemberProperties?.filter { it.visibility == KVisibility.PUBLIC } ?: emptyList()
+                if (declaredMemberProperties.isEmpty()) {
+                    tracer.warning("No public properties found for class: $currentClass")
                     return@runCatching
                 }
 
                 // 3. Map of property names to their corresponding Kotlin property instances for quick lookup.
                 val kotlinPropertiesMap: Map<String, KProperty1<out Any, *>> = declaredMemberProperties.associateBy { it.name }
 
-                // 4. Create a Set to keep track of properties already added, to prevent duplicates.
-                val addedPropertyNames: MutableSet<String> = mutableSetOf()
-
-                // 5. Map Java fields to Kotlin properties in the order they are declared in the source code.
+                // 4. Map Java fields to Kotlin properties in the order they are declared in the source code.
                 for (field in declaredFields) {
-                    if (field.isSynthetic) continue
-
                     val propertyName: String = field.name
                     if (propertyName.isNotBlank()) {
-                        val kotlinProperty: KProperty1<out Any, *>? = kotlinPropertiesMap[propertyName]
-                        if (kotlinProperty != null) {
-                            // Only include public properties.
-                            if (kotlinProperty.visibility == KVisibility.PUBLIC) {
-                                // Avoid adding duplicate properties (in case of shadowing).
-                                if (orderedProperties.none { it.name == kotlinProperty.name }) {
-                                    orderedProperties.add(kotlinProperty)
-                                    addedPropertyNames.add(propertyName)
-                                }
+                        kotlinPropertiesMap[propertyName]?.let { kotlinProperty ->
+                            // Avoid adding duplicate properties, in case of shadowing.
+                            if (addedPropertyNames.add(propertyName)) {
+                                orderedProperties.add(kotlinProperty)
                             }
                         }
                     }
                 }
 
-                // 6. If failed to resolve the properties through the java fields, fallback to declared properties.
-                // Note that if a property doesn't have a backing field, it won't be included in the Java fields.
-                // This is correct as we don't want to include properties that are not backed by fields, since
-                // these are not serialized by default.
                 if (orderedProperties.isEmpty()) {
-                    val additionalProperties: List<KProperty1<out Any, *>> = declaredMemberProperties
-                        .filter {
-                            it.visibility == KVisibility.PUBLIC
-                        }
-                    orderedProperties.addAll(additionalProperties)
+                    tracer.warning("No properties found through Java fields for class: $currentClass.")
                 }
             }.onFailure { error ->
-                tracer.error(message = "Failed to retrieve properties for class: $kClass", cause = error)
+                tracer.error(message = "Failed to retrieve properties for class: $currentClass", cause = error)
             }
 
             // Move to the superclass, if any.
