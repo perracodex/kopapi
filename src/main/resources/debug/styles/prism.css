@@ -117,3 +117,33 @@ pre[class*="language-"] {
 .token.entity {
     cursor: help;
 }
+
+/**
+ * YAML-specific styling using the same theme colors.
+ */
+
+code.language-yaml .token.tag {
+    color: #ffa947;
+}
+
+code.language-yaml .token.anchor,
+code.language-yaml .token.alias {
+    color: #ffb86c;
+}
+
+code.language-yaml .token.boolean,
+code.language-yaml .token.null {
+    color: #ff5ec6;
+}
+
+code.language-yaml .token.string {
+    color: #76c7b7;
+}
+
+code.language-yaml .token.property {
+    color: #ffd700;
+}
+
+code.language-yaml .token.comment {
+    color: #6a7381;
+}

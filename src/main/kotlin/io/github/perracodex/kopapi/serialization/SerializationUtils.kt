@@ -39,7 +39,7 @@ internal class SerializationUtils {
     /**
      * Configured Jackson JSON Mapper, strictly for OpenAPI schema serialization.
      */
-    private val openApiJsonMapper: JsonMapper = JsonMapper.builder()
+    val openApiJsonMapper: JsonMapper = JsonMapper.builder()
         .addModule(kotlinModule())
         .enable(SerializationFeature.INDENT_OUTPUT)
         .serializationInclusion(JsonInclude.Include.NON_NULL)
@@ -53,7 +53,7 @@ internal class SerializationUtils {
     /**
      * Configured Jackson YAML Mapper, strictly for OpenAPI schema serialization.
      */
-    private val openApiYamlMapper: YAMLMapper = YAMLMapper.builder()
+    val openApiYamlMapper: YAMLMapper = YAMLMapper.builder()
         .addModule(kotlinModule())
         .enable(SerializationFeature.INDENT_OUTPUT)
         .serializationInclusion(JsonInclude.Include.NON_NULL)

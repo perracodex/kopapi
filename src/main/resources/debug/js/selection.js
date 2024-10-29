@@ -3,128 +3,62 @@
 /*
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
-
 const FILTER_SUFFIX = '-data-filter';
 
 /**
- * Updates the displayed JSON content within a specific panel based on the selected dropdown value.
+ * Updates the displayed content within a specific panel based on the selected format and option.
  *
- * @param {string} panelId - The ID of the panel to update. This corresponds to the panel's container element.
+ * @param {string} panelId - The ID of the panel to update.
  */
-function filterJsonContent(panelId) {
-    // Retrieve the dropdown (select) element associated with the panel.
+function updatePanelContent(panelId) {
+    let format;
+
+    // Force 'json' format for the conflicts panel.
+    if (panelId === 'type-schema-conflicts') {
+        format = 'json';
+    } else {
+        // Get the selected format from localStorage.
+        format = localStorage.getItem(`${panelId}-activeFormat`) || 'yaml';
+        localStorage.setItem(`${panelId}-activeFormat`, format);
+    }
+
+    // Retrieve and set the selected format's data
     const filterElementId = `${panelId}${FILTER_SUFFIX}`;
     const selectElement = document.getElementById(filterElementId);
-    if (!selectElement) {
-        console.error(`Select element with ID '${filterElementId}' not found.`);
-        return;
-    }
-
-    // Get the currently selected option within the dropdown,
-    // and extract the value of the selected option.
     const selectedOption = selectElement.options[selectElement.selectedIndex];
-    const selectedValue = selectedOption.value;
+    const data = selectedOption.getAttribute(`data-${format}`);
 
-    // Locate the <code> element within the panel where JSON content is displayed.
+    // Update content only if panel exists
     const panelElement = document.getElementById(panelId);
-    if (!panelElement) {
-        console.error(`Panel element with ID '${panelId}' not found.`);
-        return;
-    }
-    const codeElement = panelElement.querySelector('code');
-    if (!codeElement) {
-        console.error(`Code element within panel '${panelId}' not found.`);
-        return;
-    }
+    const codeElement = panelElement?.querySelector('code');
+    if (!codeElement) return;
 
-    if (selectedValue === "ALL") {
-        // Display all JSON data from the data-full-json attribute.
-        codeElement.textContent = selectedOption.getAttribute('data-full-json');
-    } else {
-        // Display the selected JSON object.
-        codeElement.textContent = selectedValue;
-    }
+    // Set the content and apply the language class
+    codeElement.textContent = data;
+    codeElement.className = ''; // Reset any previous classes
+    codeElement.classList.add(`language-${format === 'yaml' ? 'yaml' : 'json'}`);
 
-    // Re-apply syntax highlighting using Prism.js to ensure the JSON is properly formatted.
+    // Re-highlight
     Prism.highlightElement(codeElement);
-}
-
-/**
- * Toggles the visibility of panels.
- * When a panel is expanded, other panels are hidden. Clicking again restores the original layout.
- *
- * @param {string} panelId - The ID of the panel to toggle.
- */
-function togglePanel(panelId) {
-    const panels = document.querySelectorAll('.panel');
-    const targetPanel = document.getElementById(panelId);
-    const toggleIcon = targetPanel.querySelector('.toggle-icon');
-
-    if (!targetPanel || !toggleIcon) {
-        console.error(`Panel or toggle icon with ID '${panelId}' not found.`);
-        return;
-    }
-
-    const isExpanded = targetPanel.classList.contains('expanded');
-
-    if (isExpanded) {
-        // Restore all panels except the popup panel.
-        togglePanels(panels, false, panelId);
-        // Restore the gap.
-        document.querySelector('.panel-container').style.gap = '20px';
-    } else {
-        // Hide all other panels except the popup panel, and expand the target panel.
-        togglePanels(panels, true, panelId);
-        // Remove the gap when only one panel is visible.
-        document.querySelector('.panel-container').style.gap = '0';
-    }
-}
-
-/**
- * Toggles the visibility of panels based on the provided condition.
- *
- * @param {NodeListOf<Element>} panels - List of all panels to be toggled.
- * @param {boolean} hide - Whether to hide all panels except the target one.
- * @param {string} targetId - The ID of the panel that should be expanded.
- */
-function togglePanels(panels, hide, targetId) {
-    panels.forEach(panel => {
-        const icon = panel.querySelector('.toggle-icon');
-
-        if (!panel.closest('.popup-content')) {
-            if (hide) {
-                if (panel.id === targetId) {
-                    panel.classList.add('expanded');
-                    if (icon) icon.textContent = "-";
-                } else {
-                    panel.classList.add('hidden');
-                }
-            } else {
-                panel.classList.remove('hidden', 'expanded');
-                if (icon) icon.textContent = "+";
-            }
-        }
-    });
 }
 
 /**
  * Initializes event listeners for all filter dropdowns once the DOM content is fully loaded.
  */
 document.addEventListener('DOMContentLoaded', function () {
-    // Select all elements used for filtering JSON data.
+    // Select all elements used for filtering data.
     const filterElements = document.querySelectorAll(`[id$="${FILTER_SUFFIX}"]`);
 
     // Iterate over each filter ID to set up its corresponding event listener.
     filterElements.forEach(selectElement => {
         // Get the dropdown (select) element by its ID,
-        // and derive the panel ID by removing the '-filter' suffix from the dropdown ID.
-        // Derive the panel ID by removing the '-filter' suffix from the dropdown ID.
+        // and derive the panel ID by removing the '-data-filter' suffix from the dropdown ID.
         const panelId = selectElement.id.replace(FILTER_SUFFIX, '');
 
         // Add a 'change' event listener to handle user selection changes.
         selectElement.addEventListener('change', function () {
-            // Invoke the filterJsonContent function to update the panel's displayed JSON.
-            filterJsonContent(panelId);
+            // Invoke the updatePanelContent function to update the panel's displayed content.
+            updatePanelContent(panelId);
         });
     });
 });

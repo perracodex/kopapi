@@ -4,7 +4,10 @@
 
 package io.github.perracodex.kopapi.routing
 
+import io.github.perracodex.kopapi.view.DebugInfo
 import io.github.perracodex.kopapi.view.DebugPanelView
+import io.github.perracodex.kopapi.view.DebugViewUtils
+import io.github.perracodex.kopapi.view.annotation.DebugViewAPI
 import io.ktor.http.*
 import io.ktor.server.html.*
 import io.ktor.server.http.content.*
@@ -18,6 +21,7 @@ import java.io.StringWriter
  *
  * @param debugUrl The URL to access the debug panel.
  */
+@OptIn(DebugViewAPI::class)
 internal fun Routing.debugRoute(
     debugUrl: String
 ) {
@@ -25,8 +29,11 @@ internal fun Routing.debugRoute(
 
     get(debugUrl) {
         runCatching {
+            val debugInfo: DebugInfo = DebugViewUtils().extractSections()
+            val debugPanelView = DebugPanelView(debugInfo = debugInfo)
+
             call.respondHtml(status = HttpStatusCode.OK) {
-                DebugPanelView().build(html = this)
+                debugPanelView.build(html = this)
             }
         }.onFailure { cause ->
             val stackTrace: String = StringWriter().apply {

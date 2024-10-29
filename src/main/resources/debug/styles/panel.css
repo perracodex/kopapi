@@ -35,19 +35,26 @@
 
 /* Panel Title */
 .panel-title {
-    white-space: nowrap; /* Prevent text from wrapping */
-    display: flex; /* Use Flexbox to align the content */
-    justify-content: space-between; /* Align text to the left and icons to the right */
+    display: flex; /* Use Flexbox for layout */
     align-items: center; /* Vertically center both text and icons */
+    justify-content: space-between; /* Space between the title and action buttons */
     padding: 10px;
     background-color: #2e323d;
     border-bottom: 1px solid #3c3f4a;
-    flex-shrink: 0; /* Prevent shrinking */
     font-size: 1.2em;
     margin: 0; /* Remove default margins */
     width: 100%; /* Ensure it takes the full width of the column */
     box-sizing: border-box; /* Ensure padding and borders are included in width calculation */
-    overflow: hidden; /* Prevent the icon from spilling out of the column */
+}
+
+/* Title Styling */
+.panel-title-text {
+    flex-grow: 1; /* Allow the title to take up the remaining space */
+    overflow: hidden; /* Prevent overflowing if text is too long */
+    white-space: nowrap; /* Prevent the title from wrapping */
+    text-overflow: ellipsis; /* Show ellipsis if the title is too long */
+    text-align: left; /* Ensure the title is left-aligned */
+    padding-left: 6px;
 }
 
 /* Panel Content */
@@ -74,16 +81,52 @@
 /* Toggle Icon Styling */
 .toggle-icon {
     cursor: pointer;
-    margin-left: 6px;
-    margin-right: 10px;
+    padding: 0 10px 0 10px;
     font-size: 1.25em;
+    flex-shrink: 0; /* Prevent shrinking */
+    min-width: 12px;
 }
 
-/* Copy Action Styling */
-.copy-action {
+/* Panel Action Styling (For json, yaml, raw buttons) */
+.panel-action {
+    display: inline-flex; /* Keep the buttons compact */
     cursor: pointer;
-    margin-left: 10px;
-    margin-right: 6px;
-    flex-shrink: 0;
-    font-size: 0.7em;
+    font-size: 0.7em; /* Keep the buttons small */
+    margin: 0 8px; /* Minimal space between action buttons */
+    padding: 2px;
+    line-height: 1; /* Keep button height aligned with the text */
+    vertical-align: middle; /* Align properly with the title text */
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+    box-sizing: content-box; /* Only include padding in the box size */
+    color: #70737e; /* Default text color for inactive buttons */
+    opacity: 0.8; /* Dimmed state for inactive buttons */
+    transition: color 0.3s ease, opacity 0.3s ease; /* Smooth transition for color changes */
+}
+
+/* Active state for the raw, yaml, and json buttons */
+.panel-action.active {
+    color: #53e4ff; /* Highlight color for active buttons */
+    opacity: 1; /* Fully visible when active */
+}
+
+/* Specific styling for the copy button */
+.copy-action {
+    color: #ffffff; /* Keep copy button text color white */
+    opacity: 1; /* Always fully visible */
+    cursor: default; /* Indicate that it's a copy action */
+}
+
+/* Ensure the other buttons retain their styling */
+.json-button,
+.yaml-button,
+.raw-button {
+    color: #767888; /* Reset color to default */
+    opacity: 0.8; /* Dimmed state */
+}
+
+/* Ensure buttons are not affected by the opacity of the inactive buttons */
+.json-button:hover,
+.yaml-button:hover,
+.raw-button:hover {
+    opacity: 1; /* Make them fully visible on hover */
 }

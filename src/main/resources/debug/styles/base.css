@@ -9,7 +9,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    height: 90vh; /* Full viewport height */
+    height: 95vh; /* Full viewport height */
     display: flex;
     flex-direction: column;
 }
