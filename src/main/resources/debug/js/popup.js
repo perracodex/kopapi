@@ -6,7 +6,7 @@
 
 /**
  * Displays a popup for the specified panel by setting the overlay's display to 'flex'
- * and applying syntax highlighting to the JSON code block within the popup.
+ * and applying syntax highlighting to the code block within the popup.
  *
  * @param {string} panelId - The ID of the panel for which to show the popup.
  */
@@ -16,9 +16,16 @@ function showPopup(panelId) {
     if (overlay) {
         overlay.style.display = 'flex';
 
-        const codeBlock = overlay.querySelector('code.language-json');
+        const codeBlock = overlay.querySelector('code');
         if (codeBlock) {
-            // Apply syntax highlighting to the popup's code block.
+            // Determine the code format based on the panel ID
+            const format = panelId === 'openapi-yaml-panel' ? 'yaml' : 'json';
+
+            // Apply the format class
+            codeBlock.className = ''; // Clear any existing classes
+            codeBlock.classList.add(`language-${format}`);
+
+            // Re-highlight the code block with the correct language
             Prism.highlightElement(codeBlock);
         } else {
             console.error("Code block not found for Prism.");

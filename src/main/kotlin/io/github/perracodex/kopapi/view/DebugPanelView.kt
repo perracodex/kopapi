@@ -43,8 +43,8 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
             // Build the head of the HTML page.
             head {
                 title { +"Kopapi Debug Information" }
-                link(rel = "stylesheet", type = "text/css", href = "/static-kopapi/styles/prism.css")
                 link(rel = "stylesheet", type = "text/css", href = "/static-kopapi/styles/view.css")
+                link(rel = "stylesheet", type = "text/css", href = "/static-kopapi/styles/prism.css")
 
                 // Include Prism.js for syntax highlighting.
                 script(src = "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js") {}
@@ -98,19 +98,19 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                     htmlTag = this,
                     panelId = "configuration-panel",
                     title = "Kopapi Configuration",
-                    jsonString = configurationJson.first()
+                    content = configurationJson.first()
                 )
                 buildPopup(
                     htmlTag = this,
                     panelId = "openapi-yaml-panel",
                     title = "YAML OpenAPI Schema",
-                    jsonString = openApiYaml
+                    content = openApiYaml
                 )
                 buildPopup(
                     htmlTag = this,
                     panelId = "openapi-json-panel",
                     title = "JSON OpenAPI Schema",
-                    jsonString = openApiJson
+                    content = openApiJson
                 )
             }
         }
@@ -332,13 +332,13 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
      * @param htmlTag The parent HTML element to append the popup to.
      * @param panelId The unique identifier for the panel element.
      * @param title The title of the popup.
-     * @param jsonString The JSON object to be displayed in the popup.
+     * @param content The content to be displayed in the popup.
      */
     private fun buildPopup(
         htmlTag: FlowContent,
         panelId: String,
         title: String,
-        jsonString: String
+        content: String
     ) {
         val overlayId = "${panelId}-overlay"
         val contentId = "${panelId}-content"
@@ -364,7 +364,7 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
 
                         pre(classes = "panel-content") {
                             code(classes = "language-json") {
-                                +jsonString
+                                +content
                             }
                         }
 

@@ -26,18 +26,18 @@ function copyToClipboard(elementId) {
     if (navigator.clipboard) {
         navigator.clipboard.writeText(textToCopy)
             .then(() => {
-                showNotification('Content copied to clipboard', 'success');
+                showNotification('Copied to clipboard', 'success');
             })
             .catch(() => {
-                showNotification('Failed to copy content', 'error');
+                showNotification('Failed to copy', 'error');
             });
     } else {
         try {
             // noinspection JSDeprecatedSymbols
             document.execCommand('copy');
-            showNotification('Content copied to clipboard', 'success');
+            showNotification('Copied to clipboard', 'success');
         } catch (e) {
-            showNotification('Failed to copy content', 'error');
+            showNotification('Failed to copy', 'error');
         }
     }
 
