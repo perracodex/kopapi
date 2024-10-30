@@ -3,11 +3,11 @@
 [versions]
 
 dokka = "1.9.20"                        # https://github.com/Kotlin/dokka/releases
-jackson_version = "2.18.0"              # https://github.com/FasterXML/jackson-module-kotlin/tags
+jackson_version = "2.18.1"              # https://github.com/FasterXML/jackson-module-kotlin/tags
 kotlin = "2.0.21"                       # https://github.com/JetBrains/kotlin/releases
 kotlinx-datetime = "0.6.1"              # https://github.com/Kotlin/kotlinx-datetime/releases
 kotlinx-serialization = "1.7.3"         # https://github.com/Kotlin/kotlinx.serialization/releases
-ktor = "3.0.0"                          # https://ktor.io/docs/releases.html#release-details
+ktor = "3.0.1"                          # https://ktor.io/docs/releases.html#release-details
 mockk = "1.13.13"                       # https://github.com/mockk/mockk/releases
 swaggerUi = "5.17.14"                   # https://github.com/swagger-api/swagger-ui/releases
 vanniktech = "0.29.0"                   # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
