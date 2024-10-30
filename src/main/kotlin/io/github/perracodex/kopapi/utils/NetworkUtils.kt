@@ -13,6 +13,13 @@ import io.ktor.server.application.*
 internal object NetworkUtils {
     private val tracer = Tracer<NetworkUtils>()
 
+    private const val DEFAULT_HOST: String = "0.0.0.0"
+    private const val DEFAULT_HTTP_PORT: Int = 80
+    private const val DEFAULT_HTTPS_PORT: Int = 443
+    private const val CUSTOM_DEFAULT_PORT: Int = 8080
+    private const val HTTP_PROTOCOL: String = "http"
+    private const val HTTPS_PROTOCOL: String = "https"
+
     /**
      * Attempts to resolve the server URL based on the current environment configuration.
      *
@@ -21,25 +28,29 @@ internal object NetworkUtils {
      */
     fun getServerUrl(environment: ApplicationEnvironment): String {
         return runCatching {
-            // Extract host and port from environment configurations.
-            val host: String = environment.config.propertyOrNull(path = "ktor.deployment.host")
-                ?.getString() ?: "0.0.0.0"
-            val port: Int = environment.config.propertyOrNull(path = "ktor.deployment.port")
-                ?.getString()?.toIntOrNull() ?: 8080
+            // Extract host from environment configurations or use the default host.
+            val host: String = environment.config.propertyOrNull("ktor.deployment.host")
+                ?.getString() ?: DEFAULT_HOST
 
-            // Check for SSL configuration to determine the protocol.
-            val sslEnabled: Boolean = environment.config.propertyOrNull(path = "ktor.deployment.ssl")
+            // Extract port from environment configurations or use the custom default port.
+            val port: Int = environment.config.propertyOrNull("ktor.deployment.port")
+                ?.getString()?.toIntOrNull() ?: CUSTOM_DEFAULT_PORT
+
+            // Determine if SSL is enabled based on environment configurations.
+            val sslEnabled: Boolean = environment.config.propertyOrNull("ktor.deployment.ssl")
                 ?.getString()?.toBoolean() ?: false
 
-            // Determine the protocol.
-            val protocol: String = if (sslEnabled) "https" else "http"
-
-            // Include the port only if it's not the default for the protocol.
-            val portPart: String = when {
-                (protocol == "http" && port == 80) || (protocol == "https" && port == 443) -> ""
-                else -> ":$port"
+            // Select the appropriate protocol and default port based on SSL configuration.
+            val (protocol, defaultPort) = if (sslEnabled) {
+                HTTPS_PROTOCOL to DEFAULT_HTTPS_PORT
+            } else {
+                HTTP_PROTOCOL to DEFAULT_HTTP_PORT
             }
 
+            // Determine whether to include the port in the URL.
+            val portPart: String = if (port != defaultPort) ":$port" else ""
+
+            // Construct and return the server URL.
             "$protocol://$host$portPart"
         }.onFailure { error ->
             tracer.error(message = "Failed to get the server URL.", cause = error)

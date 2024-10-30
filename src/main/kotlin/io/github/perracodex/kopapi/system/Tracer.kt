@@ -65,7 +65,7 @@ internal class Tracer(private val logger: Logger) {
         const val LOG_FULL_PACKAGE: Boolean = true
 
         /** Default group name for package filtering. */
-        private val GROUP: String = "io.github.perracodex.kopapi."
+        private const val GROUP: String = "io.github.perracodex.kopapi."
 
         /** Enables or disables the Tracer. */
         var enabled: Boolean = true

@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.composer.info.InfoSectionComposer
 import io.github.perracodex.kopapi.composer.operation.OperationComposer
 import io.github.perracodex.kopapi.composer.security.GlobalSecurityRequirement
 import io.github.perracodex.kopapi.composer.security.SecurityObject
-import io.github.perracodex.kopapi.composer.security.SecuritySectionComposer
+import io.github.perracodex.kopapi.composer.security.SecurityComposer
 import io.github.perracodex.kopapi.composer.tags.TagsComposer
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
@@ -59,7 +59,7 @@ internal class SchemaComposer(
         ).compose()
 
         // Compose the `Security` sections.
-        val securityComposer = SecuritySectionComposer(apiConfiguration = apiConfiguration, apiOperations = apiOperations)
+        val securityComposer = SecurityComposer(apiConfiguration = apiConfiguration, apiOperations = apiOperations)
         val globalSecurity: GlobalSecurityRequirement? = securityComposer.composeGlobalSecurityRequirements()
         val securitySchemes: Map<String, ApiSecurityScheme>? = securityComposer.composeSecuritySchemes()
         val securityObject: List<SecurityObject>? = securityComposer.composeOperationSecurity()

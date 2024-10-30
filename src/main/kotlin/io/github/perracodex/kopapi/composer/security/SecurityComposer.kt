@@ -20,11 +20,11 @@ import io.github.perracodex.kopapi.system.Tracer
  * @property apiOperations A set of [ApiOperation] objects representing each API endpoint's metadata.
  */
 @ComposerAPI
-internal class SecuritySectionComposer(
+internal class SecurityComposer(
     private val apiConfiguration: ApiConfiguration,
     private val apiOperations: Set<ApiOperation>
 ) {
-    private val tracer = Tracer<SecuritySectionComposer>()
+    private val tracer = Tracer<SecurityComposer>()
 
     /**
      * Determines and composes the global security requirements for the OpenAPI schema.

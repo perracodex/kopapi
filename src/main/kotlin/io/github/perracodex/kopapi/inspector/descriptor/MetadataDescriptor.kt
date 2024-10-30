@@ -174,7 +174,7 @@ internal data class MetadataDescriptor(
         ): Boolean {
             tracer.debug("Determining if property is required: $property")
 
-            return try {
+            return runCatching {
                 // First check if the property is annotated.
                 // If no annotation is found, use the class kotlinx serializer.
                 when {
@@ -186,7 +186,7 @@ internal data class MetadataDescriptor(
                         !classSerializer.descriptor.isElementOptional(index = index)
                     }
                 }
-            } catch (e: Exception) {
+            }.getOrElse {
                 // If there is an error (e.g., no serializer found)
                 // fallback to checking the primary constructor.
                 tracer.debug(
