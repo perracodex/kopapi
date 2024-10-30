@@ -33,7 +33,7 @@ import io.ktor.utils.io.*
  *
  *     operationId = "getDataItems"
  *
- *     pathParameter<PathType.Uuid>("data_id") { description = "The data Id." }
+ *     pathParameter("data_id", PathType.Uuid) { description = "The data Id." }
  *
  *     queryParameter<String>("item_id") { description = "Optional item Id." }
  *
@@ -115,7 +115,7 @@ private fun buildApiErrorMessage(route: Route): String {
                 summary = "Retrieve data items."
                 description = "Fetches all items for a data set."
                 operationId = "getDataItems"
-                pathParameter<PathType.Uuid>("data_id") { description = "The data Id." }
+                pathParameter("data_id", PathType.Uuid) { description = "The data Id." }
                 queryParameter<String>("item_id") { description = "Optional item Id to locate." }
                 response<List<Item>>(status = HttpStatusCode.OK) { description = "Successful fetch." }
                 response(status = HttpStatusCode.NotFound) { description = "Data not found." }

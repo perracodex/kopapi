@@ -67,7 +67,7 @@ import kotlin.reflect.typeOf
  *     tags = setOf("Items", "Data")
  *     summary = "Retrieve data items."
  *     description = "Fetches all items for a data set."
- *     pathParameter<PathType.Uuid>("data_id") { description = "The data Id." }
+ *     pathParameter("data_id", PathType.Uuid) { description = "The data Id." }
  *     queryParameter<String>("item_id") { description = "Optional item Id." }
  *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful." }
  *     response(HttpStatusCode.NotFound) { description = "Data not found." }
@@ -166,7 +166,7 @@ public class ApiOperationBuilder internal constructor(
      *
      * #### Sample Usage
      * ```
-     * pathParameter<PathType.String>(name = "id") {
+     * pathParameter(name = "id", type = PathType.String) {
      *     description = "The unique identifier of the item."
      * }
      * ```
@@ -176,8 +176,8 @@ public class ApiOperationBuilder internal constructor(
      * are more constrained in the types they can represent, so the class `PathType`
      * must be used instead of defining generic type.
      *
-     * @param T The [PathType] of the parameter.
      * @param name The name of the parameter as it appears in the URL path.
+     * @param type The [PathType] for the parameter.
      * @param configure A lambda receiver for configuring the [PathParameterBuilder].
      *
      * @see [PathParameterBuilder]
@@ -186,13 +186,13 @@ public class ApiOperationBuilder internal constructor(
      * @see [queryParameter]
      * @see [requestBody]
      */
-    public inline fun <reified T : PathType?> ApiOperationBuilder.pathParameter(
+    public inline fun ApiOperationBuilder.pathParameter(
+        type: PathType,
         name: String,
         configure: PathParameterBuilder.() -> Unit = {}
     ) {
-        val pathType: PathType? = T::class.objectInstance
         val builder: PathParameterBuilder = PathParameterBuilder().apply(configure)
-        val parameter: ApiParameter = builder.build(name = name, pathType = pathType)
+        val parameter: ApiParameter = builder.build(name = name, pathType = type)
         _config.addApiParameter(apiParameter = parameter)
     }
 

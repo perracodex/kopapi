@@ -41,7 +41,7 @@ class PathParameterTest {
                 get("/path/{id}") {
                     // Do nothing.
                 } api {
-                    pathParameter<PathType.String>(name = "id") {
+                    pathParameter(name = "id", type = PathType.String) {
                         description = "The ID of the resource."
                         deprecated = false
                     }

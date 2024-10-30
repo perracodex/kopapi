@@ -16,7 +16,7 @@ get("/items/{data_id}/{item_id?}") {
   summary = "Retrieve data items."
   description = "Fetches all items for a group."
   operationId = "getDataItems"
-  pathParameter<PathType.Uuid>("data_id") { description = "The data set Id." }
+  pathParameter("data_id", type = PathType.String) { description = "The data set Id." }
   queryParameter<String>("item_id") { description = "Optional item Id to locate." }
   response<List<Item>>(status = HttpStatusCode.OK) { description = "Successful fetch." }
   response(status = HttpStatusCode.NotFound) { description = "Data not found." }
