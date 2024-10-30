@@ -5,11 +5,10 @@
 package io.github.perracodex.kopapi.types
 
 /**
- * Defines the allowed types and formats for path parameters.
+ * Defines the allowed types and formats for `path` parameters.
  *
- * Contrary to `query`, `cookie`, and `header` parameters, `path` parameters are
- * more constrained in the types they can represent, so the class `PathType`
- * must be used instead of a generic type.
+ * Only certain scalars are allowed as `path` parameters,
+ * therefore `PathType` is used to define its type.
  *
  * @property apiType The primary [ApiType] representing the OpenAPI type.
  * @property apiFormat An optional [ApiFormat] providing additional formatting details.

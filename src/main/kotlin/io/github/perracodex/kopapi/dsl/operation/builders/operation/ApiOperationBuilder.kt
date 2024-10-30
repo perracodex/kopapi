@@ -172,9 +172,8 @@ public class ApiOperationBuilder internal constructor(
      * ```
      *
      * #### Attention:
-     * Contrary to `query`, `cookie`, and `header` parameters, `path` parameters
-     * are more constrained in the types they can represent, so the class `PathType`
-     * must be used instead of defining generic type.
+     * Only certain scalars are allowed as `path` parameters,
+     * therefore `PathType` is used to define its type.
      *
      * @param name The name of the parameter as it appears in the URL path.
      * @param type The [PathType] for the parameter.
@@ -187,8 +186,8 @@ public class ApiOperationBuilder internal constructor(
      * @see [requestBody]
      */
     public inline fun ApiOperationBuilder.pathParameter(
-        type: PathType,
         name: String,
+        type: PathType,
         configure: PathParameterBuilder.() -> Unit = {}
     ) {
         val builder: PathParameterBuilder = PathParameterBuilder().apply(configure)
