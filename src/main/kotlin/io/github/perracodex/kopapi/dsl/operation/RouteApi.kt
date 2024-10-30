@@ -12,7 +12,6 @@ import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.extractRoutePath
 import io.ktor.http.*
 import io.ktor.server.routing.*
-import io.ktor.utils.io.*
 
 /**
  * Attaches API Operation metadata to a Ktor route, intended for use with terminal route handlers that define an HTTP method.
@@ -56,7 +55,6 @@ import io.ktor.utils.io.*
  *
  * @see [ApiOperationBuilder]
  */
-@KtorDsl
 @OperationDsl
 public infix fun Route.api(configure: ApiOperationBuilder.() -> Unit): Route {
     if (this !is RoutingNode) {

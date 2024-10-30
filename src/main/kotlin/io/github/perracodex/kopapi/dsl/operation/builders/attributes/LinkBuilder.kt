@@ -11,7 +11,6 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiLinkParameter
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
-import io.ktor.utils.io.*
 
 /**
  * Builds a possible design-time link for a response.
@@ -22,7 +21,6 @@ import io.ktor.utils.io.*
  * @see [ResponseBuilder]
  * @see [HeaderBuilder]
  */
-@KtorDsl
 @OperationDsl
 public class LinkBuilder(
     public val operationId: String

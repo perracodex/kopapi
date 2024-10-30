@@ -6,7 +6,6 @@ package io.github.perracodex.kopapi.dsl.plugin.builders
 
 import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiContact
-import io.ktor.utils.io.*
 
 /**
  * Builder for the `Contact` information.
@@ -24,7 +23,6 @@ import io.ktor.utils.io.*
  * @property url The URL of the contact person/organization.
  * @property email The email of the contact person/organization.
  */
-@KtorDsl
 @ConfigurationDsl
 public class ContactBuilder {
     public var name: String? = null

@@ -13,7 +13,6 @@ import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
-import io.ktor.utils.io.*
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -28,7 +27,6 @@ import kotlin.reflect.typeOf
  *
  * @see [ApiOperationBuilder.requestBody]
  */
-@KtorDsl
 @OperationDsl
 public class RequestBodyBuilder(
     public var required: Boolean = true,

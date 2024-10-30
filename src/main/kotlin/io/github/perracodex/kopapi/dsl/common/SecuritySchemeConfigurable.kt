@@ -12,12 +12,10 @@ import io.github.perracodex.kopapi.types.AuthenticationMethod
 import io.github.perracodex.kopapi.types.SecurityLocation
 import io.github.perracodex.kopapi.utils.normalizeComponentKey
 import io.ktor.http.*
-import io.ktor.utils.io.*
 
 /**
  * Abstract base class to handle security scheme configurations.
  */
-@KtorDsl
 @SecurityDsl
 public abstract class SecuritySchemeConfigurable {
     @Suppress("PropertyName")

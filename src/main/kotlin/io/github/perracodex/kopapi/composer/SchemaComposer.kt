@@ -9,8 +9,8 @@ import io.github.perracodex.kopapi.composer.component.ComponentComposer
 import io.github.perracodex.kopapi.composer.info.InfoSectionComposer
 import io.github.perracodex.kopapi.composer.operation.OperationComposer
 import io.github.perracodex.kopapi.composer.security.GlobalSecurityRequirement
-import io.github.perracodex.kopapi.composer.security.SecurityObject
 import io.github.perracodex.kopapi.composer.security.SecurityComposer
+import io.github.perracodex.kopapi.composer.security.SecurityObject
 import io.github.perracodex.kopapi.composer.tags.TagsComposer
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme

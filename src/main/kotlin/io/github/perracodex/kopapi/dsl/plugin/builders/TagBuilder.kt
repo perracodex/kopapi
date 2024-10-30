@@ -7,12 +7,10 @@ package io.github.perracodex.kopapi.dsl.plugin.builders
 import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.system.Tracer
-import io.ktor.utils.io.*
 
 /**
  * Builder constructing top level tags for the API.
  */
-@KtorDsl
 @ConfigurationDsl
 public class TagBuilder {
     private val tracer = Tracer<TagBuilder>()

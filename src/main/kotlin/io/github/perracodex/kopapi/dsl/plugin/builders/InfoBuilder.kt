@@ -9,7 +9,6 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiContact
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense
 import io.github.perracodex.kopapi.utils.string.MultilineString
-import io.ktor.utils.io.*
 
 /**
  * Constructs the information for the API documentation.
@@ -63,7 +62,6 @@ import io.ktor.utils.io.*
  * @property contact The contact information for the API.
  * @property license The license information for the API.
  */
-@KtorDsl
 @ConfigurationDsl
 public class InfoBuilder {
     public var title: String = "API Title"

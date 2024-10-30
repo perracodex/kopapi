@@ -7,7 +7,6 @@ package io.github.perracodex.kopapi.dsl.plugin.builders
 import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense
 import io.github.perracodex.kopapi.utils.trimOrNull
-import io.ktor.utils.io.*
 
 /**
  * Builder for the `License` information.
@@ -23,7 +22,6 @@ import io.ktor.utils.io.*
  * @property name The name of the license.
  * @property url The URL of the license.
  */
-@KtorDsl
 @ConfigurationDsl
 public class LicenseBuilder {
     public var name: String? = null

@@ -11,7 +11,6 @@ import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.utils.io.*
 import kotlin.reflect.typeOf
 
 /**
@@ -21,7 +20,6 @@ import kotlin.reflect.typeOf
  *
  * @property description An optional description of the multipart request.
  */
-@KtorDsl
 @OperationDsl
 public class MultipartBuilder {
     public var description: String by MultilineString()

@@ -11,7 +11,6 @@ import io.github.perracodex.kopapi.types.ParameterStyle
 import io.github.perracodex.kopapi.types.PathType
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
-import io.ktor.utils.io.*
 
 /**
  * Builds a path parameter for an API endpoint's metadata.
@@ -25,7 +24,6 @@ import io.ktor.utils.io.*
  * @see [HeaderParameterBuilder]
  * @see [QueryParameterBuilder]
  */
-@KtorDsl
 @OperationDsl
 public class PathParameterBuilder(
     public var style: ParameterStyle = ParameterStyle.SIMPLE,

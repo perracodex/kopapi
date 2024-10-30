@@ -10,7 +10,6 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.types.SecurityLocation
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
-import io.ktor.utils.io.*
 
 /**
  * Builds an API key security scheme in an API endpoint's metadata.
@@ -23,7 +22,6 @@ import io.ktor.utils.io.*
  * @see [OpenIdConnectSecurityBuilder]
  * @see [MutualTLSSecurityBuilder]
  */
-@KtorDsl
 @SecurityDsl
 public class ApiKeySecurityBuilder {
     public var description: String by MultilineString()

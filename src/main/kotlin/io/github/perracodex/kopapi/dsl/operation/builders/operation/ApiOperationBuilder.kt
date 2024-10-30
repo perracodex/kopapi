@@ -24,7 +24,6 @@ import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.string.SpacedString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
-import io.ktor.utils.io.*
 import java.util.*
 import kotlin.reflect.typeOf
 
@@ -76,7 +75,6 @@ import kotlin.reflect.typeOf
  *
  * @see [ApiOperation]
  */
-@KtorDsl
 @OperationDsl
 public class ApiOperationBuilder internal constructor(
     @PublishedApi internal val endpoint: String

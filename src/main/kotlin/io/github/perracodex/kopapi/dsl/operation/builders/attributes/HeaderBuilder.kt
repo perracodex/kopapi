@@ -10,7 +10,6 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
-import io.ktor.utils.io.*
 
 /**
  * Builds a response header for an API endpoint.
@@ -23,7 +22,6 @@ import io.ktor.utils.io.*
  * @see [ResponseBuilder]
  * @see [HeaderBuilder]
  */
-@KtorDsl
 @OperationDsl
 public class HeaderBuilder(
     public val name: String,

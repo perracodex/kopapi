@@ -16,7 +16,6 @@ import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
-import io.ktor.utils.io.*
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
@@ -28,7 +27,6 @@ import kotlin.reflect.typeOf
  *
  * @see [ApiOperationBuilder.response]
  */
-@KtorDsl
 @OperationDsl
 public class ResponseBuilder {
     public var description: String by MultilineString()

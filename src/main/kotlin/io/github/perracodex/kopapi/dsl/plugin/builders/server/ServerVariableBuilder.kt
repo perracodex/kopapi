@@ -9,7 +9,6 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
-import io.ktor.utils.io.*
 
 /**
  * Builder for server variables.
@@ -30,7 +29,6 @@ import io.ktor.utils.io.*
  * @see [ServerConfigBuilder]
  * @see [ServerBuilder]
  */
-@KtorDsl
 @ConfigurationDsl
 public class ServerVariableBuilder(
     public val defaultValue: String

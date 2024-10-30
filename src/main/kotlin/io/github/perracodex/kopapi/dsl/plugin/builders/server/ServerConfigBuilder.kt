@@ -10,7 +10,6 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
-import io.ktor.utils.io.*
 import kotlin.collections.set
 
 /**
@@ -22,7 +21,6 @@ import kotlin.collections.set
  * @see [ServerVariableBuilder]
  * @see [ServerBuilder]
  */
-@KtorDsl
 @ConfigurationDsl
 public class ServerConfigBuilder(
     private val urlString: String
