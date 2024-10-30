@@ -76,7 +76,7 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                     if (typeSchemaSections.isNotEmpty()) {
                         buildPanel(
                             htmlTag = this,
-                            title = "Schema Components",
+                            title = "Schemas",
                             panelId = "type-schemas",
                             sections = typeSchemaSections,
                             allRawData = typeSchemaSections.values.joinToString("\n") { it.rawSection },
@@ -261,7 +261,7 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
         keys: List<String>,
         jsonDataList: List<JsonObject>
     ) {
-        val title = "Schema Components Conflicts"
+        val title = "Schema Conflicts"
         val panelId = "type-schema-conflicts"
         val jsonData: String = jsonParser.encodeToString(jsonDataList)
         val filterId = "$panelId-data-filter"
