@@ -166,6 +166,8 @@ public class ApiOperationBuilder internal constructor(
      * ```
      * pathParameter<Uuid>(name = "id") {
      *     description = "The unique identifier of the item."
+     *     style = ParameterStyle.SIMPLE
+     *     deprecated = false
      * }
      * ```
      *
@@ -195,11 +197,12 @@ public class ApiOperationBuilder internal constructor(
      * ```
      * queryParameter<Int>(name = "page") {
      *     description = "The page number to retrieve."
-     * }
-     * queryParameter<Int>(name = "size") {
-     *     description = "The number of items per page."
-     *     required = false
-     *     defaultValue = 1
+     *     required = true
+     *     allowReserved = false
+     *     defaultValue = DefaultValue.ofInt(1)
+     *     style = ParameterStyle.FORM
+     *     explode = false
+     *     deprecated = false
      * }
      * ```
      *
@@ -230,6 +233,9 @@ public class ApiOperationBuilder internal constructor(
      * headerParameter<String>(name = "X-Custom-Header") {
      *     description = "A custom header for special purposes."
      *     required = true
+     *     defaultValue = DefaultValue.ofString("default")
+     *     style = ParameterStyle.SIMPLE
+     *     deprecated = false
      * }
      * ```
      *
@@ -259,6 +265,11 @@ public class ApiOperationBuilder internal constructor(
      * ```
      * cookieParameter<String>(name = "session") {
      *     description = "The session ID for authentication."
+     *     required = true
+     *     defaultValue = DefaultValue.ofString("default")
+     *     style = ParameterStyle.FORM
+     *     explode = false
+     *     deprecated = false
      * }
      * ```
      *
