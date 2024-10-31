@@ -20,7 +20,7 @@ object ParameterTestUtils {
         val rootNode: JsonNode = objectMapper.readTree(schemaJson)
 
         // Navigate to the specified path and check for parameters.
-        val parametersNode: JsonNode = rootNode["pathItems"]?.get(path)?.get("get")?.get("parameters")
+        val parametersNode: JsonNode = rootNode["paths"]?.get(path)?.get("get")?.get("parameters")
             ?: return null
 
         // Find the parameter by name.

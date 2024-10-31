@@ -48,8 +48,7 @@ public class CookieParameterBuilder(
     @PublishedApi
     internal fun build(name: String, type: KType): ApiParameter {
         return ApiParameter(
-            complexType = type,
-            pathType = null,
+            type = type,
             location = ApiParameter.Location.COOKIE,
             name = name.trim(),
             description = description.trimOrNull(),

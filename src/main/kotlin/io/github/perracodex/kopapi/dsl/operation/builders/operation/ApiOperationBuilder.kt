@@ -19,7 +19,6 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.system.KopapiException
-import io.github.perracodex.kopapi.types.PathType
 import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.string.SpacedString
@@ -67,7 +66,7 @@ import kotlin.reflect.typeOf
  *     tags = setOf("Items", "Data")
  *     summary = "Retrieve data items."
  *     description = "Fetches all items for a data set."
- *     pathParameter("data_id", PathType.Uuid) { description = "The data Id." }
+ *     pathParameter<Uuid>("data_id") { description = "The data Id." }
  *     queryParameter<String>("item_id") { description = "Optional item Id." }
  *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful." }
  *     response(HttpStatusCode.NotFound) { description = "Data not found." }
@@ -165,17 +164,13 @@ public class ApiOperationBuilder internal constructor(
      *
      * #### Sample Usage
      * ```
-     * pathParameter(name = "id", type = PathType.String) {
+     * pathParameter<Uuid>(name = "id") {
      *     description = "The unique identifier of the item."
      * }
      * ```
      *
-     * #### Attention:
-     * Only certain scalars are allowed as `path` parameters,
-     * therefore `PathType` is used to define its type.
-     *
+     * @param T The type of the parameter.
      * @param name The name of the parameter as it appears in the URL path.
-     * @param type The [PathType] for the parameter.
      * @param configure A lambda receiver for configuring the [PathParameterBuilder].
      *
      * @see [PathParameterBuilder]
@@ -184,13 +179,12 @@ public class ApiOperationBuilder internal constructor(
      * @see [queryParameter]
      * @see [requestBody]
      */
-    public inline fun ApiOperationBuilder.pathParameter(
+    public inline fun <reified T : Any> ApiOperationBuilder.pathParameter(
         name: String,
-        type: PathType,
         configure: PathParameterBuilder.() -> Unit = {}
     ) {
         val builder: PathParameterBuilder = PathParameterBuilder().apply(configure)
-        val parameter: ApiParameter = builder.build(name = name, pathType = type)
+        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
         _config.addApiParameter(apiParameter = parameter)
     }
 

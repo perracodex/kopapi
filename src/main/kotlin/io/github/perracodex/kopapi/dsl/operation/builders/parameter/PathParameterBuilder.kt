@@ -8,9 +8,9 @@ import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.types.ParameterStyle
-import io.github.perracodex.kopapi.types.PathType
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
+import kotlin.reflect.KType
 
 /**
  * Builds a path parameter for an API endpoint's metadata.
@@ -35,14 +35,13 @@ public class PathParameterBuilder(
      * Builds an [ApiParameter] instance from the current builder state.
      *
      * @param name The name of the parameter as it appears in the URL path.
-     * @param pathType The [PathType] of the parameter.
+     * @param type The [KType] of the parameter.
      * @return The constructed [ApiParameter] instance.
      */
     @PublishedApi
-    internal fun build(name: String, pathType: PathType?): ApiParameter {
+    internal fun build(name: String, type: KType): ApiParameter {
         return ApiParameter(
-            complexType = null,
-            pathType = pathType,
+            type = type,
             location = ApiParameter.Location.PATH,
             name = name.trim(),
             description = description.trimOrNull(),

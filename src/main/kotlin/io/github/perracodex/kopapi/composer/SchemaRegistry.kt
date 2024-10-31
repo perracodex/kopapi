@@ -161,9 +161,7 @@ internal object SchemaRegistry {
         apiOperation.forEach { metadata ->
             // Inspect each parameter type.
             metadata.parameters?.forEach { parameter ->
-                parameter.complexType?.let { type ->
-                    inspectType(type = type)
-                }
+                inspectType(type = parameter.type)
             }
 
             // Inspect the request body type.

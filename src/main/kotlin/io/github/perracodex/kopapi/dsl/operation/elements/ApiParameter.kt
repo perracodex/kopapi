@@ -10,15 +10,13 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter.Location
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.DefaultValue
 import io.github.perracodex.kopapi.types.ParameterStyle
-import io.github.perracodex.kopapi.types.PathType
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 
 /**
  * Represents the metadata of an API endpoint parameter.
  *
- * @property complexType The [KType] of the parameter, used for non-`path` parameters.
- * @property pathType The [PathType] of the parameter, specifying the type for `path` parameters.
+ * @property type The [KType] of the parameter.
  * @property name The name of the parameter as it appears in the API endpoint.
  * @property description Optional human-readable explanation of the parameter's purpose.
  * @property location The [Location] of the parameter, indicating where in the request it is included.
@@ -35,8 +33,7 @@ import kotlin.reflect.KType
  * @see [ApiOperationBuilder.cookieParameter]
  */
 internal data class ApiParameter(
-    val complexType: KType?,
-    val pathType: PathType?,
+    val type: KType,
     val name: String,
     val description: String?,
     val location: Location,
@@ -52,43 +49,10 @@ internal data class ApiParameter(
             throw KopapiException("Parameter name must not be empty.")
         }
 
-        // Validate the parameter based on its location.
-        when (location) {
-            Location.PATH -> validatePathParameter()
-            else -> validateNonPathParameter()
-        }
-    }
-
-    /**
-     * Validates the path parameter.
-     * Ensures that `pathType` is not null and that `type` is null for path parameters.
-     */
-    private fun validatePathParameter() {
-        if (pathType == null) {
-            throw KopapiException("Path parameters must have a `PathType` defined.")
-        }
-        if (complexType != null) {
-            throw KopapiException("Path parameters should not have a KType defined.")
-        }
-    }
-
-    /**
-     * Validates the non-path parameter.
-     * Ensures that `type` is not null and that `pathType` is null for non-path parameters.
-     * Also checks for unsupported types like `Any`, `Unit`, and `Nothing`.
-     */
-    private fun validateNonPathParameter() {
-        if (complexType == null) {
-            throw KopapiException("Non-path parameters must have a KType defined.")
-        }
-        if (pathType != null) {
-            throw KopapiException("Non-path parameters should not have a `PathType` defined.")
-        }
-
-        // Ensure unsupported types are not used for non-path parameters.
-        val classifier: KClassifier? = complexType.classifier
+        // Ensure non-supported types are not used.
+        val classifier: KClassifier? = type.classifier
         if (classifier == Any::class || classifier == Unit::class || classifier == Nothing::class) {
-            throw KopapiException("Parameter cannot be of unsupported type '${complexType.classifier}'. Define a valid type.")
+            throw KopapiException("Parameter cannot of type '${type.classifier}'. Define an explicit type.")
         }
     }
 

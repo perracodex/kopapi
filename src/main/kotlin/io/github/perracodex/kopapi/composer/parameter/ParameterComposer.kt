@@ -40,17 +40,8 @@ internal object ParameterComposer {
             tracer.debug("Composing parameter: ${parameter.name}")
 
             // Determine the schema for the parameter (complex or path type), and inspect accordingly.
-            val baseSchema: ElementSchema = parameter.complexType?.let { complexType ->
-                SchemaRegistry.inspectType(type = complexType)?.schema
-                    ?: throw KopapiException("No schema found for type: $complexType")
-            } ?: parameter.pathType?.let { pathType ->
-                // For path types, we only need the primitive schema
-                // as path types are more constrained and limited in scope.
-                ElementSchema.Primitive(
-                    schemaType = pathType.apiType,
-                    format = pathType.apiFormat?.value
-                )
-            } ?: throw KopapiException("No schema found for parameter: ${parameter.name}")
+            val baseSchema: ElementSchema = SchemaRegistry.inspectType(type = parameter.type)?.schema
+                ?: throw KopapiException("No schema found for type: ${parameter.name}")
 
             // If a default value is present, create a copy of the schema with the default value.
             val schemaWithDefault: ElementSchema = parameter.defaultValue?.let { defaultValue ->

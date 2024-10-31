@@ -46,8 +46,7 @@ public class HeaderParameterBuilder(
     @PublishedApi
     internal fun build(name: String, type: KType): ApiParameter {
         return ApiParameter(
-            complexType = type,
-            pathType = null,
+            type = type,
             location = ApiParameter.Location.HEADER,
             name = name.trim(),
             description = description.trimOrNull(),

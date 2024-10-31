@@ -174,7 +174,7 @@ internal class DebugViewUtils {
                 val yamlSection: String = yamlSectionDeferred.await()
                 val jsonSection: String = jsonSectionDeferred.await()
 
-                val compositeKey: String = listOf(operationId, method, path)
+                val compositeKey: String = listOf(path, method, operationId)
                     .filter { it.isNotEmpty() }
                     .joinToString(separator = " → ")
 

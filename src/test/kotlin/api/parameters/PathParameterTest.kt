@@ -9,7 +9,8 @@ import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.dsl.operation.api
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.plugin.Kopapi
-import io.github.perracodex.kopapi.types.PathType
+import io.github.perracodex.kopapi.types.ApiFormat
+import io.github.perracodex.kopapi.types.ApiType
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.uuid.Uuid
 
 class PathParameterTest {
 
@@ -41,7 +43,7 @@ class PathParameterTest {
                 get("/path/{id}") {
                     // Do nothing.
                 } api {
-                    pathParameter(name = "id", type = PathType.String) {
+                    pathParameter<Uuid>(name = "id") {
                         description = "The ID of the resource."
                         deprecated = false
                     }
@@ -64,8 +66,8 @@ class PathParameterTest {
             assertNotNull(actual = idParameter, message = "Expected 'id' parameter to be defined.")
             assertEquals(expected = ApiParameter.Location.PATH.value, actual = idParameter["in"].asText())
             assertEquals(expected = "The ID of the resource.", actual = idParameter["description"].asText())
-            assertEquals(expected = PathType.String.apiType.value, actual = idParameter["schema"]["type"].asText())
-            assertEquals(expected = PathType.String.apiFormat?.value, actual = idParameter["schema"]["format"]?.asText())
+            assertEquals(expected = ApiType.STRING.value, actual = idParameter["schema"]["type"].asText())
+            assertEquals(expected = ApiFormat.UUID.value, actual = idParameter["schema"]["format"]?.asText())
             assertEquals(expected = true, actual = idParameter["required"].asBoolean())
         }
     }

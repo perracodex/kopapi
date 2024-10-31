@@ -50,8 +50,7 @@ public class QueryParameterBuilder(
     @PublishedApi
     internal fun build(name: String, type: KType): ApiParameter {
         return ApiParameter(
-            complexType = type,
-            pathType = null,
+            type = type,
             location = ApiParameter.Location.QUERY,
             name = name.trim(),
             description = description.trimOrNull(),
