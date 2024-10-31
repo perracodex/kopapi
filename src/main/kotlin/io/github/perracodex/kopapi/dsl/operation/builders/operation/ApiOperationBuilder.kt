@@ -20,6 +20,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.PathType
+import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.string.SpacedString
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -565,7 +566,7 @@ public class ApiOperationBuilder internal constructor(
             tags = _config.tags.takeIf { it.isNotEmpty() },
             summary = summary.trimOrNull(),
             description = description.trimOrNull(),
-            operationId = operationId.trimOrNull(),
+            operationId = operationId.trimOrNull()?.sanitize(),
             parameters = _config.parameters.takeIf { it.isNotEmpty() },
             requestBody = _config.requestBody,
             responses = responses,

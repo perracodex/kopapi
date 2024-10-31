@@ -10,7 +10,6 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.AuthenticationMethod
 import io.github.perracodex.kopapi.types.SecurityLocation
-import io.github.perracodex.kopapi.utils.normalizeComponentKey
 import io.ktor.http.*
 
 /**
@@ -46,7 +45,7 @@ public abstract class SecuritySchemeConfigurable {
         configure: HttpSecurityBuilder.() -> Unit = {}
     ) {
         val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name.normalizeComponentKey(), method = method)
+        val scheme: ApiSecurityScheme = builder.build(name = name, method = method)
         _securityConfig.addSecurityScheme(scheme = scheme)
     }
 
@@ -81,11 +80,7 @@ public abstract class SecuritySchemeConfigurable {
         configure: ApiKeySecurityBuilder.() -> Unit = {}
     ) {
         val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(
-            name = name.normalizeComponentKey(),
-            apiKeyName = apiKeyName,
-            location = location
-        )
+        val scheme: ApiSecurityScheme = builder.build(name = name, apiKeyName = apiKeyName, location = location)
         _securityConfig.addSecurityScheme(scheme = scheme)
     }
 
@@ -137,7 +132,7 @@ public abstract class SecuritySchemeConfigurable {
         configure: OAuth2SecurityBuilder.() -> Unit = {}
     ) {
         val builder: OAuth2SecurityBuilder = OAuth2SecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name.normalizeComponentKey())
+        val scheme: ApiSecurityScheme = builder.build(name = name)
         _securityConfig.addSecurityScheme(scheme = scheme)
     }
 
@@ -167,7 +162,7 @@ public abstract class SecuritySchemeConfigurable {
         configure: OpenIdConnectSecurityBuilder.() -> Unit = {}
     ) {
         val builder: OpenIdConnectSecurityBuilder = OpenIdConnectSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name.normalizeComponentKey(), url = url)
+        val scheme: ApiSecurityScheme = builder.build(name = name, url = url)
         _securityConfig.addSecurityScheme(scheme = scheme)
     }
 
@@ -194,7 +189,7 @@ public abstract class SecuritySchemeConfigurable {
         configure: MutualTLSSecurityBuilder.() -> Unit = {}
     ) {
         val builder: MutualTLSSecurityBuilder = MutualTLSSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name.normalizeComponentKey())
+        val scheme: ApiSecurityScheme = builder.build(name = name)
         _securityConfig.addSecurityScheme(scheme = scheme)
     }
 

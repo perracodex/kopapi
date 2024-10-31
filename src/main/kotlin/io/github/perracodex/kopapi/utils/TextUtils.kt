@@ -27,16 +27,18 @@ internal fun String?.trimOrDefault(defaultValue: String): String {
 }
 
 /**
- * Sanitizes the name of the component key to ensure it adheres to OpenAPI specifications.
+ * Sanitizes a string to ensure it adheres to OpenAPI specifications.
  *
  * Rules:
  * 1. If the string is entirely lowercase or entirely uppercase, replace spaces with underscores.
- * 2. If the string has mixed case, remove all spaces to produce CamelCase.
+ * 2. If the string has mixed case:
+ *    a. If the first character is lowercase, convert to camelCase by removing spaces and capitalizing subsequent words.
+ *    b. If the first character is uppercase, convert to PascalCase by removing spaces and capitalizing all words.
  * 3. Replace any invalid characters with underscores.
  *
  * @return A sanitized string suitable for OpenAPI component keys.
  */
-internal fun String.normalizeComponentKey(): String {
+internal fun String.sanitize(): String {
     val trimmed: String = this.trim()
     if (trimmed.isBlank()) {
         return ""
@@ -47,21 +49,26 @@ internal fun String.normalizeComponentKey(): String {
     val isAllLowerCase: Boolean = letters.isNotEmpty() && letters.all { it.isLowerCase() }
     val isAllUpperCase: Boolean = letters.isNotEmpty() && letters.all { it.isUpperCase() }
 
-    // Process based on the case.
-    val processed: String = when {
-        isAllLowerCase || isAllUpperCase -> {
-            // Replace one or more whitespace characters with a single underscore.
-            trimmed.replace(regex = "\\s+".toRegex(), replacement = "_")
-        }
+    val processed: String = if (isAllLowerCase || isAllUpperCase) {
+        // Replace one or more whitespace characters with a single underscore.
+        trimmed.replace(regex = "\\s+".toRegex(), replacement = "_")
+    } else {
+        // Split the string into words based on whitespace.
+        val words: List<String> = trimmed.split("\\s+".toRegex())
 
-        else -> {
-            // For mixed case, remove all whitespace to produce CamelCase.
-            trimmed.split(regex = "\\s+".toRegex())
-                .joinToString(separator = "") { word ->
-                    word.replaceFirstChar { letter ->
-                        if (letter.isLowerCase()) letter.titlecase() else letter.toString()
-                    }
-                }
+        // Check the case of the first character of the first word.
+        if (words.first().firstOrNull()?.isLowerCase() == true) {
+            // camelCase: first word lowercase, subsequent words capitalized.
+            val firstWord: String = words.first().replaceFirstChar { it.lowercase() }
+            val subsequentWords: String = words.drop(n = 1).joinToString(separator = "") {
+                it.replaceFirstChar { char -> char.uppercase() }
+            }
+            firstWord + subsequentWords
+        } else {
+            // PascalCase: all words capitalized.
+            words.joinToString(separator = "") {
+                it.replaceFirstChar { char -> char.uppercase() }
+            }
         }
     }
 

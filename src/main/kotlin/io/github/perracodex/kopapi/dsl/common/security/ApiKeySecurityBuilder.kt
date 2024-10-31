@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.dsl.markers.SecurityDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.types.SecurityLocation
+import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 
@@ -37,7 +38,7 @@ public class ApiKeySecurityBuilder {
     @PublishedApi
     internal fun build(name: String, apiKeyName: String, location: SecurityLocation): ApiSecurityScheme {
         return ApiSecurityScheme.ApiKey(
-            schemeName = name.trim(),
+            schemeName = name.sanitize(),
             apiKeyName = apiKeyName.trim(),
             description = description.trimOrNull(),
             location = location

@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.dsl.common.security
 import io.github.perracodex.kopapi.dsl.markers.SecurityDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
+import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 
@@ -34,7 +35,7 @@ public class MutualTLSSecurityBuilder {
     @PublishedApi
     internal fun build(name: String): ApiSecurityScheme {
         return ApiSecurityScheme.MutualTLS(
-            schemeName = name.trim(),
+            schemeName = name.sanitize(),
             description = description.trimOrNull()
         )
     }
