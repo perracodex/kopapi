@@ -14,10 +14,8 @@ import io.ktor.http.*
 import io.ktor.server.routing.*
 
 /**
- * Attaches API Operation metadata to a Ktor route, intended for use with terminal route handlers that define an HTTP method.
- *
- * The metadata includes the endpoint full path, the HTTP method associated with the route, and optionally other
- * concrete details such as a summary, description, tags, parameters, request body, and responses.
+ * Defines API Operation metadata for a Ktor route.
+ * Intended for use with terminal route handlers that define an HTTP method.
  *
  * #### Sample Usage
  * ```
@@ -50,8 +48,8 @@ import io.ktor.server.routing.*
  * ```
  *
  * @param configure A lambda receiver for configuring the [ApiOperationBuilder].
- * @return The current [Route] instance with attached metadata.
- * @throws IllegalArgumentException If the route does not have an HTTP method selector.
+ * @return The current [Route] instance
+ * @throws KopapiException If the route does not have an HTTP method selector.
  *
  * @see [ApiOperationBuilder]
  */
