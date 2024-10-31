@@ -44,7 +44,10 @@ internal fun Route.extractRoutePath(): String {
         currentRoute = currentRoute.parent
     }
 
-    return segments.asReversed()
-        .joinToString(separator = "/", prefix = "/")
-        .trimEnd('/')
+    val path: String = segments.asReversed().joinToString(separator = "/", prefix = "/")
+    return if (path == "/") {
+        path // Root path.
+    } else {
+        path.trimEnd('/')
+    }
 }
