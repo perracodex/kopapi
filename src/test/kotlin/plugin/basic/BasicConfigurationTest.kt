@@ -30,6 +30,7 @@ class BasicConfigurationTest {
                 openapiYamlUrl = "openapi/yaml2"
                 swaggerUrl = "swagger3"
                 debugUrl = "openapi/debug4"
+                redocUrl = "openapi/redoc5"
             }
 
             val plugin: PluginInstance = plugin(Kopapi)
@@ -53,6 +54,16 @@ class BasicConfigurationTest {
                 actual = SchemaRegistry.apiConfiguration?.swaggerUrl,
                 message = "Expected Swagger URL to match."
             )
+            assertEquals(
+                expected = "openapi/debug4",
+                actual = SchemaRegistry.apiConfiguration?.debugUrl,
+                message = "Expected debug URL to match."
+            )
+            assertEquals(
+                expected = "openapi/redoc5",
+                actual = SchemaRegistry.apiConfiguration?.redocUrl,
+                message = "Expected Redoc URL to match."
+            )
         }
     }
 
@@ -66,6 +77,7 @@ class BasicConfigurationTest {
                 openapiYamlUrl = "openapi/yaml2"
                 swaggerUrl = "swagger3"
                 debugUrl = "openapi/debug4"
+                redocUrl = "openapi/redoc5"
             }
 
             val plugin: PluginInstance = plugin(Kopapi)

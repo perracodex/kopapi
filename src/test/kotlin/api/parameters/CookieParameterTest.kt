@@ -43,6 +43,7 @@ class CookieParameterTest {
                 get("/path") {
                     // Do nothing.
                 } api {
+                    summary = "A simple API endpoint"
                     cookieParameter<String>(name = "cookieParam") {
                         description = "A cookie parameter with various properties"
                         required = true
