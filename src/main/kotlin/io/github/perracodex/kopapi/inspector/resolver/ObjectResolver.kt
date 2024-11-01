@@ -102,7 +102,6 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
      * @param typeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
      * @return The resolved [TypeSchema] for the complex type.
      */
-    @Suppress("DuplicatedCode")
     private fun handleComplexType(
         className: ElementName,
         kType: KType,

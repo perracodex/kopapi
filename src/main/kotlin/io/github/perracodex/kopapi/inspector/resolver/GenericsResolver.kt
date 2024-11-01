@@ -225,7 +225,6 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
      * @param inheritedTypeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
      * @param typeInspector The [TypeInspector] instance to cache resolved schemas.
      */
-    @Suppress("DuplicatedCode")
     private fun traverse(
         kType: KType,
         kClass: KClass<*>,
