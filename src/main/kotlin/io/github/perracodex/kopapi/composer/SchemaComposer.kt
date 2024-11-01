@@ -19,9 +19,12 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
+import io.github.perracodex.kopapi.schema.CompositionSchema
 import io.github.perracodex.kopapi.schema.ElementSchema
+import io.github.perracodex.kopapi.schema.IOpenApiSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.types.Composition
 
 /**
  * Responsible for generating the OpenAPI schema.
@@ -102,8 +105,35 @@ internal class SchemaComposer(
         return schema
     }
 
-    private companion object {
+    companion object {
         /** The version of the OpenAPI specification used by the plugin. */
         private const val OPEN_API_VERSION = "3.1.0"
+
+        /**
+         * Determines the appropriate [OpenAPiSchema.ContentSchema] based on the given composition
+         * and a list of `Schema` objects.
+         *
+         * - If only one schema is present, it returns that schema directly.
+         * - If multiple schemas are present, it combines them according to
+         *   the specified `composition` type, defaulting to `Composition.ANY_OF`.
+         *
+         * @param composition The [Composition] type to apply when combining multiple schemas.
+         *                    Defaults to `Composition.ANY_OF` if null.
+         * @param schemas The list of [ElementSchema] objects to be combined. Assumes the list is non-empty and preprocessed.
+         * @return An [OpenAPiSchema.ContentSchema] representing the combined schema.
+         */
+        @OptIn(ComposerAPI::class)
+        fun determineSchema(composition: Composition?, schemas: List<ElementSchema>): OpenAPiSchema.ContentSchema {
+            val combinedSchema: IOpenApiSchema = when {
+                schemas.size == 1 -> schemas.first()
+                else -> when (composition ?: Composition.ANY_OF) {
+                    Composition.ANY_OF -> CompositionSchema.AnyOf(anyOf = schemas)
+                    Composition.ALL_OF -> CompositionSchema.AllOf(allOf = schemas)
+                    Composition.ONE_OF -> CompositionSchema.OneOf(oneOf = schemas)
+                }
+            }
+
+            return OpenAPiSchema.ContentSchema(schema = combinedSchema)
+        }
     }
 }

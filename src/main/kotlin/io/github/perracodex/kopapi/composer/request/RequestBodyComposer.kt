@@ -5,12 +5,12 @@
 package io.github.perracodex.kopapi.composer.request
 
 import io.github.perracodex.kopapi.composer.OpenAPiSchema
+import io.github.perracodex.kopapi.composer.SchemaComposer
 import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.schema.ElementSchema
-import io.github.perracodex.kopapi.schema.IOpenApiSchema
 import io.github.perracodex.kopapi.schema.MultipartSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
@@ -93,7 +93,7 @@ internal object RequestBodyComposer {
         }
 
         return schemas.mapValues { (_, schemas) ->
-            IOpenApiSchema.determineSchema(composition = requestBody.composition, schemas = schemas)
+            SchemaComposer.determineSchema(composition = requestBody.composition, schemas = schemas)
         }
     }
 

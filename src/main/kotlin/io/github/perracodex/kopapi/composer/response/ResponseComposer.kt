@@ -5,11 +5,11 @@
 package io.github.perracodex.kopapi.composer.response
 
 import io.github.perracodex.kopapi.composer.OpenAPiSchema
+import io.github.perracodex.kopapi.composer.SchemaComposer
 import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.schema.ElementSchema
-import io.github.perracodex.kopapi.schema.IOpenApiSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -73,7 +73,7 @@ internal object ResponseComposer {
             val finalContent: Map<ContentType, OpenAPiSchema.ContentSchema> = schemasByContentType
                 .toSortedMap(compareBy({ it.contentType }, { it.contentSubtype }))
                 .mapValues { (_, schemas) ->
-                    IOpenApiSchema.determineSchema(
+                    SchemaComposer.determineSchema(
                         composition = apiResponse.composition,
                         schemas = schemas.sortedBy { it.definition }
                     )
