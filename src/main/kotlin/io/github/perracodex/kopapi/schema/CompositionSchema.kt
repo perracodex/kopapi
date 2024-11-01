@@ -15,11 +15,9 @@ import io.github.perracodex.kopapi.utils.safeName
  * These schemas allow combining or constraining the data using multiple schema rules.
  *
  * @property definition A unique identifier for debugging and clarity during schema generation.
- * @property ordinal Specifies the order of schema appearance when sorting.
  */
 internal sealed class CompositionSchema(
     @JsonIgnore open val definition: String,
-    @JsonIgnore open val ordinal: Int
 ) : IOpenApiSchema {
     /**
      * Represents a schema that allows for one or more schemas to be used interchangeably.
@@ -29,7 +27,7 @@ internal sealed class CompositionSchema(
     data class AnyOf(
         @JsonIgnore override val definition: String = AnyOf::class.safeName(),
         @JsonProperty("anyOf") val anyOf: List<ElementSchema>
-    ) : CompositionSchema(definition = definition, ordinal = 1)
+    ) : CompositionSchema(definition = definition)
 
     /**
      * Represents a schema that requires all listed schemas to be validated against the data.
@@ -39,7 +37,7 @@ internal sealed class CompositionSchema(
     data class AllOf(
         @JsonIgnore override val definition: String = AllOf::class.safeName(),
         @JsonProperty("allOf") val allOf: List<ElementSchema>
-    ) : CompositionSchema(definition = definition, ordinal = 2)
+    ) : CompositionSchema(definition = definition)
 
     /**
      * Represents a schema where data must match exactly one of the listed schemas.
@@ -49,5 +47,5 @@ internal sealed class CompositionSchema(
     data class OneOf(
         @JsonIgnore override val definition: String = OneOf::class.safeName(),
         @JsonProperty("oneOf") val oneOf: List<ElementSchema>
-    ) : CompositionSchema(definition = definition, ordinal = 3)
+    ) : CompositionSchema(definition = definition)
 }
