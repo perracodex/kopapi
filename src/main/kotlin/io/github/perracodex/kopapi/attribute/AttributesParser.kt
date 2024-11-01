@@ -81,8 +81,8 @@ internal object AttributesParser {
 
         // Try parsing based on the classifier first
         val parsedNumber: Number? = when (classifier) {
-            Int::class -> value.toIntOrNull()
-            Long::class -> value.toLongOrNull()
+            Int::class, UInt::class, Short::class, UShort::class, Byte::class, UByte::class -> value.toIntOrNull()
+            Long::class, ULong::class -> value.toLongOrNull()
             Float::class -> value.toFloatOrNull()
             Double::class -> value.toDoubleOrNull()
             BigDecimal::class -> value.toBigDecimalOrNull()
