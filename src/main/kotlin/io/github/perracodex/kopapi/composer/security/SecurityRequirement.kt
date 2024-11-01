@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.security
 
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 
 /**
@@ -19,7 +19,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
  *                used with OAuth2 security schemes to define access privileges.
  *                Defaults to `null` if no scopes are required.
  */
-@ComposerAPI
+@ComposerApi
 internal data class SecurityRequirement(
     val securityScheme: ApiSecurityScheme,
     val scopes: List<String>? = null
@@ -31,7 +31,7 @@ internal data class SecurityRequirement(
      *         If no scopes are required, the value is omitted for non-OAuth2 schemes.
      *         For OAuth2 schemes, scopes must not be null or empty.
      */
-    fun toOpenAPISpec(): Map<String, List<String>> {
+    fun toOpenApiSpec(): Map<String, List<String>> {
         return mapOf(securityScheme.schemeName to (scopes ?: emptyList()))
     }
 }

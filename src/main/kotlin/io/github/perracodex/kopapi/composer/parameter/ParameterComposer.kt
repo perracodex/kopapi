@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.parameter
 
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
@@ -19,7 +19,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [ParameterObject]
  * @see [ApiParameter]
  */
-@ComposerAPI
+@ComposerApi
 internal object ParameterComposer {
     private val tracer = Tracer<ParameterComposer>()
 

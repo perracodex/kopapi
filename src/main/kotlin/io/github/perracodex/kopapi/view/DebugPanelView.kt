@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.view
 
 import io.github.perracodex.kopapi.schema.SchemaRegistry
-import io.github.perracodex.kopapi.view.annotation.DebugViewAPI
+import io.github.perracodex.kopapi.view.annotation.DebugViewApi
 import kotlinx.html.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
@@ -17,7 +17,7 @@ import kotlinx.serialization.json.*
  * The HTML page is built using Kotlin's HTML DSL, with separate panels for each data type.
  * Each panel includes a dropdown for filtering the displayed JSON data and syntax highlighting.
  */
-@DebugViewAPI
+@DebugViewApi
 internal class DebugPanelView(private val debugInfo: DebugInfo) {
     // Keep existing SchemaRegistry usages for conflicts and top action buttons
     private val schemaConflictsJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.SCHEMA_CONFLICTS)

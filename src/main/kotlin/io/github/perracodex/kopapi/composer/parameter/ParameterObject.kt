@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.composer.parameter
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
 
@@ -22,7 +22,7 @@ import io.github.perracodex.kopapi.schema.facets.ElementSchema
  * @property deprecated Indicates whether the parameter is deprecated and should be avoided.
  * @property schema The schema defining the structure and data type of the parameter, such as string, integer, or object.
  */
-@ComposerAPI
+@ComposerApi
 internal data class ParameterObject(
     @JsonProperty("name") val name: String,
     @JsonProperty("in") val location: ApiParameter.Location,

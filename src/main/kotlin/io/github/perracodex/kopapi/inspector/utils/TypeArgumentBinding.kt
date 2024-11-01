@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.utils
 
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
@@ -34,7 +34,7 @@ import kotlin.reflect.KTypeProjection
  *
  * @see [KTypeProjection.resolveTypeBinding]
  */
-@TypeInspectorAPI
+@TypeInspectorApi
 internal fun KType.resolveArgumentBinding(bindings: Map<KClassifier, KType>): KType {
     return classifier?.let {
         bindings.getOrDefault(key = classifier, defaultValue = this)
@@ -63,7 +63,7 @@ internal fun KType.resolveArgumentBinding(bindings: Map<KClassifier, KType>): KT
  *
  * @see [KType.resolveArgumentBinding]
  */
-@TypeInspectorAPI
+@TypeInspectorApi
 internal fun KTypeProjection.resolveTypeBinding(bindings: Map<KClassifier, KType>): KType? {
     return this.type?.resolveArgumentBinding(bindings)
 }

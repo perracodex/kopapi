@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.schema
 
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
@@ -44,7 +44,7 @@ internal data class TypeSchema private constructor(
          * @param schema The processed [ElementSchema] specification for the type.
          * @return A new instance of [TypeSchema].
          */
-        @TypeInspectorAPI
+        @TypeInspectorApi
         fun of(name: ElementName, kType: KType, schema: ElementSchema): TypeSchema {
             val qualifiedName: String = kType.nativeName()
             return TypeSchema(
@@ -61,7 +61,7 @@ internal data class TypeSchema private constructor(
          * @param kType The unknown [KType] to build a schema for.
          * @return A new instance of [TypeSchema] representing the unknown type.
          */
-        @TypeInspectorAPI
+        @TypeInspectorApi
         fun ofUnknown(
             kType: KType,
         ): TypeSchema {

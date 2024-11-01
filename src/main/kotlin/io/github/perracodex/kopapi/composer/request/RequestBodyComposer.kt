@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.composer.request
 
 import io.github.perracodex.kopapi.composer.SchemaComposer
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.schema.OpenApiSchema
@@ -30,7 +30,7 @@ import kotlin.reflect.KClassifier
  * @see [ApiMultipart]
  * @see [ApiMultipart.Part]
  */
-@ComposerAPI
+@ComposerApi
 internal object RequestBodyComposer {
     private val tracer = Tracer<RequestBodyComposer>()
 

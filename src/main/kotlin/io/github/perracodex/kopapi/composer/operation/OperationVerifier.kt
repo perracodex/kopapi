@@ -4,11 +4,11 @@
 
 package io.github.perracodex.kopapi.composer.operation
 
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.system.KopapiException
 
-@ComposerAPI
+@ComposerApi
 internal object OperationVerifier {
     /**
      * Helper method for consistency checks in API Operation.

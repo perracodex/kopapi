@@ -4,12 +4,12 @@
 
 package io.github.perracodex.kopapi.view
 
-import io.github.perracodex.kopapi.view.annotation.DebugViewAPI
+import io.github.perracodex.kopapi.view.annotation.DebugViewApi
 
 /**
  * Data class for storing debug view sections.
  */
-@DebugViewAPI
+@DebugViewApi
 internal data class DebugInfo(
     val apiOperationSections: Map<String, Section>,
     val typeSchemaSections: Map<String, Section>,

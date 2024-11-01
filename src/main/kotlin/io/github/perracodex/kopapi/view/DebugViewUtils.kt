@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.serialization.SerializationUtils
-import io.github.perracodex.kopapi.view.annotation.DebugViewAPI
+import io.github.perracodex.kopapi.view.annotation.DebugViewApi
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -17,7 +17,7 @@ import kotlinx.coroutines.coroutineScope
 /**
  * Utility class for producing structured debug sections for API operations and type schemas.
  */
-@DebugViewAPI
+@DebugViewApi
 internal class DebugViewUtils {
     private val apiOperationJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.API_OPERATION)
     private val typeSchemasJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.TYPE_SCHEMAS)

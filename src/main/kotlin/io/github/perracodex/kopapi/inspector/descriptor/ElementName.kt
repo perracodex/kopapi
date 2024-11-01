@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.descriptor
 
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 
 /**
  * Holds naming details for an element, including any renaming information.
@@ -14,7 +14,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
  * @property name The current name of the element. If renamed, this reflects the updated name.
  * @property renamedFrom The original name of the element before renaming. It is `null` if the name was not changed.
  */
-@TypeInspectorAPI
+@TypeInspectorApi
 internal data class ElementName(
     val name: String,
     val renamedFrom: String? = null

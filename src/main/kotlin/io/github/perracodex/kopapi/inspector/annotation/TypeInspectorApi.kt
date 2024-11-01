@@ -9,4 +9,4 @@ package io.github.perracodex.kopapi.inspector.annotation
  */
 @RequiresOptIn(level = RequiresOptIn.Level.ERROR, message = "Only to be used within the TypeInspector API.")
 @Retention(AnnotationRetention.BINARY)
-internal annotation class TypeInspectorAPI
+internal annotation class TypeInspectorApi

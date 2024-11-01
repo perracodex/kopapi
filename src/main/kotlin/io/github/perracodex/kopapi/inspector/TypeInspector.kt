@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector
 
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
 import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.resolver.*
@@ -40,7 +40,7 @@ import kotlin.reflect.full.isSubclassOf
  * - Jackson (partial support):
  *     - `JsonTypeName`, `@JsonProperty`, `@JsonIgnore`
  */
-@TypeInspectorAPI
+@TypeInspectorApi
 internal class TypeInspector {
     private val tracer = Tracer<TypeInspector>()
 

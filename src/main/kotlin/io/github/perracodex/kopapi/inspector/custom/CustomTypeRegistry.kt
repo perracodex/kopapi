@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.inspector.custom
 
 import io.github.perracodex.kopapi.dsl.plugin.builders.CustomTypeBuilder
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.plugin.KopapiConfig
 import kotlin.reflect.KType
 
@@ -18,7 +18,7 @@ import kotlin.reflect.KType
  * @see [CustomType]
  */
 @PublishedApi
-@TypeInspectorAPI
+@TypeInspectorApi
 internal object CustomTypeRegistry {
     /** The set of all registered `custom types`. */
     private val registry: MutableSet<CustomType> = mutableSetOf()

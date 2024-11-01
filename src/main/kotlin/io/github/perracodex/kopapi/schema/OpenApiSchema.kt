@@ -6,7 +6,7 @@ package io.github.perracodex.kopapi.schema
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.operation.OperationObject
 import io.github.perracodex.kopapi.composer.security.SecurityRequirement
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
@@ -33,7 +33,7 @@ import io.ktor.http.*
  * @property components An object to hold various reusable components such as security schemes, responses, parameters, etc.
  * @property security The global security requirements that apply to all operations unless overridden.
  */
-@ComposerAPI
+@ComposerApi
 internal data class OpenApiSchema(
     val openapi: String,
     val info: ApiInfo,
@@ -98,7 +98,7 @@ internal data class OpenApiSchema(
          *                 An empty list (`security: []`) indicates that the operation does not require security.
          */
         fun setSecurity(method: HttpMethod, security: List<SecurityRequirement>?) {
-            val securityMaps: List<Map<String, List<String>>>? = security?.map { it.toOpenAPISpec() }
+            val securityMaps: List<Map<String, List<String>>>? = security?.map { it.toOpenApiSpec() }
             when (method) {
                 HttpMethod.Get -> get?.security = securityMaps
                 HttpMethod.Put -> put?.security = securityMaps

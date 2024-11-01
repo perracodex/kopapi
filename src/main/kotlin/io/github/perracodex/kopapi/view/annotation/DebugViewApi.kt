@@ -9,4 +9,4 @@ package io.github.perracodex.kopapi.view.annotation
  */
 @RequiresOptIn(level = RequiresOptIn.Level.ERROR, message = "Only to be used within the DebugView API.")
 @Retention(AnnotationRetention.BINARY)
-internal annotation class DebugViewAPI
+internal annotation class DebugViewApi

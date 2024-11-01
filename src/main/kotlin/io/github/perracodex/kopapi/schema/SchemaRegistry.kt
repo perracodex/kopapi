@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.schema
 
 import io.github.perracodex.kopapi.composer.SchemaComposer
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.operation.OperationVerifier
 import io.github.perracodex.kopapi.composer.request.RequestBodyComposer
 import io.github.perracodex.kopapi.composer.response.ResponseComposer
@@ -24,7 +24,7 @@ import kotlin.reflect.KType
 /**
  * Singleton for registering and serving OpenAPI schema data.
  */
-@OptIn(ComposerAPI::class)
+@OptIn(ComposerApi::class)
 internal object SchemaRegistry {
     private val tracer = Tracer<SchemaRegistry>()
 

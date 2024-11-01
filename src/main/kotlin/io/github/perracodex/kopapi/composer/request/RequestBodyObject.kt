@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.composer.request
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.ktor.http.*
 
@@ -16,7 +16,7 @@ import io.ktor.http.*
  * @property required Indicates whether the request body is mandatory.
  * @property content A map of [ContentType] to [OpenApiSchema.ContentSchema] representing the content of the request body.
  */
-@ComposerAPI
+@ComposerApi
 internal data class RequestBodyObject internal constructor(
     @JsonProperty("description") val description: String?,
     @JsonProperty("required") val required: Boolean,

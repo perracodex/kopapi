@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.inspector.schema
 
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 
 /**
  * Manager caching conflicting [TypeSchema] objects.
@@ -27,7 +27,7 @@ internal class SchemaConflicts(private val schemaProvider: TypeSchemaProvider) {
      *
      * @param newSchema The [TypeSchema] to check for conflicts.
      */
-    @TypeInspectorAPI
+    @TypeInspectorApi
     fun analyze(newSchema: TypeSchema) {
         // Retrieve all existing TypeSchemas and filter out those that have the same name
         // as newSchema (case-insensitive) but a different type (also case-insensitive).

@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.schema.factory
 
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -15,7 +15,7 @@ import kotlin.uuid.Uuid
 /**
  * Factory for constructing primitive schemas.
  */
-@TypeInspectorAPI
+@TypeInspectorApi
 internal object PrimitiveFactory {
     /**
      * Constructs a new [ElementSchema] representing the given primitive type.

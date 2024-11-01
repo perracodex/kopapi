@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.security
 
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 
 /**
  * Represents the security configuration for a specific API operation.
@@ -21,7 +21,7 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
  *                    a security scheme and its associated scopes. An empty list denotes that
  *                    the API Operation does not require any security, overriding any global security settings.
  */
-@ComposerAPI
+@ComposerApi
 internal data class SecurityObject(
     val method: String,
     val path: String,

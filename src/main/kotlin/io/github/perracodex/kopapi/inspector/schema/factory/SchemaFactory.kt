@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.schema.factory
 
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
@@ -15,7 +15,7 @@ import io.github.perracodex.kopapi.types.ApiType
  * @see [ApiType]
  * @see [ApiFormat]
  */
-@TypeInspectorAPI
+@TypeInspectorApi
 internal object SchemaFactory {
     /** Creates a specification entry for an `object` type. */
     fun ofObject(): ElementSchema.Object {

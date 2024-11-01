@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeInspector
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
@@ -27,7 +27,7 @@ import kotlin.reflect.KTypeProjection
  *
  * @see [TypeInspector]
  */
-@TypeInspectorAPI
+@TypeInspectorApi
 internal class MapResolver(private val typeInspector: TypeInspector) {
     private val tracer = Tracer<MapResolver>()
 

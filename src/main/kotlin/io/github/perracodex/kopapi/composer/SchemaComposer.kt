@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.composer
 
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.component.ComponentComposer
 import io.github.perracodex.kopapi.composer.info.InfoSectionComposer
 import io.github.perracodex.kopapi.composer.operation.OperationComposer
@@ -31,7 +31,7 @@ import io.github.perracodex.kopapi.types.Composition
 /**
  * Responsible for generating the OpenAPI schema.
  */
-@ComposerAPI
+@ComposerApi
 internal class SchemaComposer(
     private val apiConfiguration: ApiConfiguration,
     private val apiOperations: Set<ApiOperation>,
@@ -95,7 +95,7 @@ internal class SchemaComposer(
             tags = tags,
             paths = pathItems,
             components = components,
-            security = globalSecurity?.toOpenAPISpec(),
+            security = globalSecurity?.toOpenApiSpec(),
         )
 
         // Serialize the OpenAPI schema, producing the final schema.
@@ -124,7 +124,7 @@ internal class SchemaComposer(
          * @param schemas The list of [ElementSchema] objects to be combined. Assumes the list is non-empty and preprocessed.
          * @return An [OpenApiSchema.ContentSchema] representing the combined schema.
          */
-        @OptIn(ComposerAPI::class)
+        @OptIn(ComposerApi::class)
         fun determineSchema(composition: Composition?, schemas: List<ElementSchema>): OpenApiSchema.ContentSchema {
             val combinedSchema: ISchemaFacet = when {
                 schemas.size == 1 -> schemas.first()

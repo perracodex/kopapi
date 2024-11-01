@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.inspector.resolver
 
 import io.github.perracodex.kopapi.inspector.TypeInspector
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
@@ -30,7 +30,7 @@ import kotlin.reflect.KType
  * @see [CollectionResolver]
  * @see [TypeInspector]
  */
-@TypeInspectorAPI
+@TypeInspectorApi
 internal class ArrayResolver(private val typeInspector: TypeInspector) {
     private val tracer = Tracer<ArrayResolver>()
 

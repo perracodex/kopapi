@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.tags
 
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
@@ -14,7 +14,7 @@ import java.util.*
 /**
  * Composes the `Tags` section of the OpenAPI schema.
  */
-@ComposerAPI
+@ComposerApi
 internal class TagsComposer(
     private val apiConfiguration: ApiConfiguration,
     private val apiOperations: Set<ApiOperation>

@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.inspector.descriptor
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.cleanName
 import io.github.perracodex.kopapi.utils.safeName
@@ -28,7 +28,7 @@ import kotlin.reflect.full.primaryConstructor
  * @property isNullable Indicates whether the element is nullable. Default: `false`.
  * @property isTransient Indicates whether the element should be ignored. Default: `false`.
  */
-@TypeInspectorAPI
+@TypeInspectorApi
 internal data class MetadataDescriptor(
     val name: String,
     val renamedFrom: String? = null,

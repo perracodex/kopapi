@@ -14,7 +14,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.inspector.custom.CustomType
 import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
 import io.github.perracodex.kopapi.types.ApiFormat
@@ -221,7 +221,7 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
      *
      * @see [CustomTypeBuilder]
      */
-    @OptIn(TypeInspectorAPI::class)
+    @OptIn(TypeInspectorApi::class)
     public inline fun <reified T : Any> addType(
         type: ApiType,
         format: String? = null,
@@ -257,7 +257,7 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
      *
      * @see [CustomTypeBuilder]
      */
-    @OptIn(TypeInspectorAPI::class)
+    @OptIn(TypeInspectorApi::class)
     public inline fun <reified T : Any> addType(
         type: ApiType,
         format: ApiFormat,

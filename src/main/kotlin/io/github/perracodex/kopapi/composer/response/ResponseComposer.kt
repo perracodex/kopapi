@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.composer.response
 
 import io.github.perracodex.kopapi.composer.SchemaComposer
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.schema.SchemaRegistry
@@ -24,7 +24,7 @@ import kotlin.collections.set
  * @see [ResponseObject]
  * @see [ApiResponse]
  */
-@ComposerAPI
+@ComposerApi
 internal object ResponseComposer {
     private val tracer = Tracer<ResponseComposer>()
 

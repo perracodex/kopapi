@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.info
 
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.system.Tracer
@@ -12,7 +12,7 @@ import io.github.perracodex.kopapi.system.Tracer
 /**
  * Composes the `Info` section of the OpenAPI schema.
  */
-@ComposerAPI
+@ComposerApi
 internal object InfoSectionComposer {
     private val tracer = Tracer<InfoSectionComposer>()
 

@@ -9,4 +9,4 @@ package io.github.perracodex.kopapi.composer.annotation
  */
 @RequiresOptIn(level = RequiresOptIn.Level.ERROR, message = "Only to be used within the Composer API.")
 @Retention(AnnotationRetention.BINARY)
-internal annotation class ComposerAPI
+internal annotation class ComposerApi

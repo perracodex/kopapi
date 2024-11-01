@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector
 
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.system.KopapiException
@@ -22,7 +22,7 @@ import kotlin.reflect.KType
  * @see [SchemaConflicts]
  * @see [TypeSchema]
  */
-@OptIn(TypeInspectorAPI::class)
+@OptIn(TypeInspectorApi::class)
 internal class TypeSchemaProvider {
     private val tracer = Tracer<TypeSchemaProvider>()
 

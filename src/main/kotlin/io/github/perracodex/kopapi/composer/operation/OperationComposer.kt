@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.operation
 
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.parameter.ParameterComposer
 import io.github.perracodex.kopapi.composer.parameter.ParameterObject
 import io.github.perracodex.kopapi.composer.request.RequestBodyComposer
@@ -25,7 +25,7 @@ import io.github.perracodex.kopapi.system.Tracer
  *
  * @see [OpenApiSchema.PathItemObject]
  */
-@ComposerAPI
+@ComposerApi
 internal object OperationComposer {
     private val tracer = Tracer<OperationComposer>()
 

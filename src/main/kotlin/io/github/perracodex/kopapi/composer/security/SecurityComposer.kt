@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.security
 
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
@@ -19,7 +19,7 @@ import io.github.perracodex.kopapi.system.Tracer
  * @property apiConfiguration The plugin [ApiConfiguration] containing global security schemes.
  * @property apiOperations A set of [ApiOperation] objects representing each API endpoint's metadata.
  */
-@ComposerAPI
+@ComposerApi
 internal class SecurityComposer(
     private val apiConfiguration: ApiConfiguration,
     private val apiOperations: Set<ApiOperation>

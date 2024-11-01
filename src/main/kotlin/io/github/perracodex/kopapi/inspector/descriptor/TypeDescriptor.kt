@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.descriptor
 
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
+import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
@@ -13,7 +13,7 @@ import kotlin.reflect.full.isSuperclassOf
 /**
  * Provides functionality to evaluate types and determine their characteristics.
  */
-@TypeInspectorAPI
+@TypeInspectorApi
 internal object TypeDescriptor {
     /**
      * Determines whether the given [KType] represents a `Collection` as `List`, `Set`, etc.

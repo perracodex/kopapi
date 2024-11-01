@@ -4,14 +4,14 @@
 
 package io.github.perracodex.kopapi.composer.security
 
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.OAuthFlowType
 import io.github.perracodex.kopapi.utils.safeName
 
-@ComposerAPI
+@ComposerApi
 internal object SecuritySchemeVerifier {
     /**
      * Helper method for consistency checks between global and operation-level security schemes.

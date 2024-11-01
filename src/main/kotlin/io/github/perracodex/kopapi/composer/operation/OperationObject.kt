@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.composer.operation
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.parameter.ParameterObject
 import io.github.perracodex.kopapi.composer.request.RequestBodyObject
 import io.github.perracodex.kopapi.composer.response.ResponseObject
@@ -26,7 +26,7 @@ import io.github.perracodex.kopapi.composer.response.ResponseObject
  * @property security A list of security requirement maps, each specifying a security scheme and its scopes.
  *                    An empty list (`security: []`) signifies that the operation is publicly accessible.
  */
-@ComposerAPI
+@ComposerApi
 internal data class OperationObject(
     @JsonProperty("tags") val tags: Set<String>?,
     @JsonProperty("summary") val summary: String?,
