@@ -2,7 +2,7 @@
     <img src=".wiki/images/logo.png" width="256" alt="Kopapi">
 </a>
 
-Kopapi is library to generate the OpenAPI documentation from [Ktor](https://ktor.io/) routes using `DSL`.
+**Kopapi** is library to generate OpenAPI documentation from [Ktor](https://ktor.io/) routes.
 
 ---
 
