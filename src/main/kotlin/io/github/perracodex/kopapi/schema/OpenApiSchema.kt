@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.composer
+package io.github.perracodex.kopapi.schema
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
@@ -13,8 +13,6 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
-import io.github.perracodex.kopapi.schema.ElementSchema
-import io.github.perracodex.kopapi.schema.IOpenApiSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.ktor.http.*
 
@@ -34,7 +32,7 @@ import io.ktor.http.*
  * @property security The global security requirements that apply to all operations unless overridden.
  */
 @ComposerAPI
-internal data class OpenAPiSchema(
+internal data class OpenApiSchema(
     val openapi: String,
     val info: ApiInfo,
     val servers: List<ApiServerConfig>?,
@@ -135,15 +133,15 @@ internal data class OpenAPiSchema(
     }
 
     /**
-     * Represents the [IOpenApiSchema] definition for content in an API operation.
+     * Represents the [ISchema] definition for content in an API operation.
      *
      * This class is used to wrap the schema under the `schema` key for any content type
      * (e.g., `application/json`, `application/xml`), ensuring compatibility with the OpenAPI
      * specification.
      *
-     * @property schema The [IOpenApiSchema] representing the structure of the content.
+     * @property schema The [ISchema] representing the structure of the content.
      */
     data class ContentSchema(
-        @JsonProperty("schema") var schema: IOpenApiSchema?
+        @JsonProperty("schema") var schema: ISchema?
     )
 }

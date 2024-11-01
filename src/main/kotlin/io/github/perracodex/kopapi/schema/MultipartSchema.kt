@@ -21,7 +21,7 @@ import io.ktor.http.content.*
 internal sealed class MultipartSchema(
     @JsonIgnore open val definition: String,
     @JsonIgnore open val isRequired: Boolean
-) : IOpenApiSchema {
+) : ISchema {
     /**
      * Represents an object schema for multipart data with a set of named `part` properties.
      *

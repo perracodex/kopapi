@@ -18,7 +18,7 @@ import io.github.perracodex.kopapi.utils.safeName
  */
 internal sealed class CompositionSchema(
     @JsonIgnore open val definition: String,
-) : IOpenApiSchema {
+) : ISchema {
     /**
      * Represents a schema that allows for one or more schemas to be used interchangeably.
      *

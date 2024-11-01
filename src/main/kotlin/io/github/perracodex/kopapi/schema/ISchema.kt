@@ -7,4 +7,4 @@ package io.github.perracodex.kopapi.schema
 /**
  * Marker interface for schema types used in OpenAPI generation process.
  */
-internal interface IOpenApiSchema
+internal interface ISchema

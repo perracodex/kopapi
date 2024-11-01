@@ -21,7 +21,8 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.schema.CompositionSchema
 import io.github.perracodex.kopapi.schema.ElementSchema
-import io.github.perracodex.kopapi.schema.IOpenApiSchema
+import io.github.perracodex.kopapi.schema.ISchema
+import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.types.Composition
@@ -68,7 +69,7 @@ internal class SchemaComposer(
         val securityObject: List<SecurityObject>? = securityComposer.composeOperationSecurity()
 
         // Compose the `Path Items` section.
-        val pathItems: Map<String, OpenAPiSchema.PathItemObject> = OperationComposer.compose(
+        val pathItems: Map<String, OpenApiSchema.PathItemObject> = OperationComposer.compose(
             apiOperations = apiOperations,
             securityObject = securityObject
         )
@@ -79,14 +80,14 @@ internal class SchemaComposer(
         )
 
         // Create the `components` object.
-        val components: OpenAPiSchema.Components? = OpenAPiSchema.Components(
+        val components: OpenApiSchema.Components? = OpenApiSchema.Components(
             componentSchemas = componentSchemas,
             securitySchemes = securitySchemes
         ).takeIf { it.hasContent() }
 
         // Create the OpenAPI schema.
         tracer.info("Composing the OpenAPI schema object.")
-        val openApiSchema = OpenAPiSchema(
+        val openApiSchema = OpenApiSchema(
             openapi = OPEN_API_VERSION,
             info = infoSection,
             servers = serversSection,
@@ -110,7 +111,7 @@ internal class SchemaComposer(
         private const val OPEN_API_VERSION = "3.1.0"
 
         /**
-         * Determines the appropriate [OpenAPiSchema.ContentSchema] based on the given composition
+         * Determines the appropriate [OpenApiSchema.ContentSchema] based on the given composition
          * and a list of `Schema` objects.
          *
          * - If only one schema is present, it returns that schema directly.
@@ -120,11 +121,11 @@ internal class SchemaComposer(
          * @param composition The [Composition] type to apply when combining multiple schemas.
          *                    Defaults to `Composition.ANY_OF` if null.
          * @param schemas The list of [ElementSchema] objects to be combined. Assumes the list is non-empty and preprocessed.
-         * @return An [OpenAPiSchema.ContentSchema] representing the combined schema.
+         * @return An [OpenApiSchema.ContentSchema] representing the combined schema.
          */
         @OptIn(ComposerAPI::class)
-        fun determineSchema(composition: Composition?, schemas: List<ElementSchema>): OpenAPiSchema.ContentSchema {
-            val combinedSchema: IOpenApiSchema = when {
+        fun determineSchema(composition: Composition?, schemas: List<ElementSchema>): OpenApiSchema.ContentSchema {
+            val combinedSchema: ISchema = when {
                 schemas.size == 1 -> schemas.first()
                 else -> when (composition ?: Composition.ANY_OF) {
                     Composition.ANY_OF -> CompositionSchema.AnyOf(anyOf = schemas)
@@ -133,7 +134,7 @@ internal class SchemaComposer(
                 }
             }
 
-            return OpenAPiSchema.ContentSchema(schema = combinedSchema)
+            return OpenApiSchema.ContentSchema(schema = combinedSchema)
         }
     }
 }

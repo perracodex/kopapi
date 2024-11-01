@@ -4,7 +4,6 @@
 
 package io.github.perracodex.kopapi.composer.operation
 
-import io.github.perracodex.kopapi.composer.OpenAPiSchema
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.composer.parameter.ParameterComposer
 import io.github.perracodex.kopapi.composer.parameter.ParameterObject
@@ -15,6 +14,7 @@ import io.github.perracodex.kopapi.composer.response.ResponseObject
 import io.github.perracodex.kopapi.composer.security.SecurityObject
 import io.github.perracodex.kopapi.composer.security.SecurityRequirement
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
+import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.system.Tracer
 
 /**
@@ -23,7 +23,7 @@ import io.github.perracodex.kopapi.system.Tracer
  * The `paths` section maps each API endpoint to its corresponding HTTP methods and associated
  * configurations, including parameters, request bodies, responses, and security requirements.
  *
- * @see [OpenAPiSchema.PathItemObject]
+ * @see [OpenApiSchema.PathItemObject]
  */
 @ComposerAPI
 internal object OperationComposer {
@@ -40,23 +40,23 @@ internal object OperationComposer {
      * @param securityObject A list of [SecurityObject] objects detailing the security
      *                       configurations for each API operation. This parameter can be `null`
      *                       if no operations require security.
-     * @return A map where each key is an API Operation path and the value is an [OpenAPiSchema.PathItemObject]
+     * @return A map where each key is an API Operation path and the value is an [OpenApiSchema.PathItemObject]
      * object containing the HTTP methods and their configurations for that path.
      */
     fun compose(
         apiOperations: Set<ApiOperation>,
         securityObject: List<SecurityObject>?
-    ): Map<String, OpenAPiSchema.PathItemObject> {
+    ): Map<String, OpenApiSchema.PathItemObject> {
         tracer.info("Composing the 'paths' section of the OpenAPI schema.")
 
-        val pathItems: MutableMap<String, OpenAPiSchema.PathItemObject> = mutableMapOf()
+        val pathItems: MutableMap<String, OpenApiSchema.PathItemObject> = mutableMapOf()
 
         apiOperations.forEach { operation ->
             tracer.debug("Composing operation: [${operation.method}] → ${operation.path}")
 
             // Retrieve or create the PathItemObject for the operation's path.
-            val pathItemObject: OpenAPiSchema.PathItemObject = pathItems.getOrPut(operation.path) {
-                OpenAPiSchema.PathItemObject()
+            val pathItemObject: OpenApiSchema.PathItemObject = pathItems.getOrPut(operation.path) {
+                OpenApiSchema.PathItemObject()
             }
 
             // Transform the ApiOperation.

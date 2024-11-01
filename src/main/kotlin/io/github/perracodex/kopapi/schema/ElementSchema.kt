@@ -21,7 +21,7 @@ import io.github.perracodex.kopapi.utils.safeName
 internal sealed class ElementSchema(
     @JsonIgnore open val definition: String,
     @JsonProperty("default") open val defaultValue: Any? = null
-) : IOpenApiSchema {
+) : ISchema {
     /**
      * Represents an object schema with a set of named properties.
      * This class holds the raw schema data before transformation into OpenAPI format.

@@ -5,8 +5,9 @@
 package io.github.perracodex.kopapi.schema
 
 /**
- * Represents a property within an object schema.
- * Use when traversing the schema to keep track of the property's metadata.
+ * Represents a property within an `object` schema.
+ *
+ * Used when traversing the schema to keep track of the property's metadata.
  *
  * @property schema The [ElementSchema] for the property.
  * @property isNullable Whether the property is nullable.

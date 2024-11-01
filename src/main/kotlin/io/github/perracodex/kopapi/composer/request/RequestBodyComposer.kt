@@ -4,7 +4,6 @@
 
 package io.github.perracodex.kopapi.composer.request
 
-import io.github.perracodex.kopapi.composer.OpenAPiSchema
 import io.github.perracodex.kopapi.composer.SchemaComposer
 import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
@@ -12,6 +11,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.schema.MultipartSchema
+import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.types.ApiFormat
@@ -45,16 +45,16 @@ internal object RequestBodyComposer {
     fun compose(requestBody: ApiRequestBody): RequestBodyObject {
         tracer.info("Composing the 'request body' section of the OpenAPI schema.")
 
-        val standardContent: Map<ContentType, OpenAPiSchema.ContentSchema>? = processStandardContent(
+        val standardContent: Map<ContentType, OpenApiSchema.ContentSchema>? = processStandardContent(
             requestBody = requestBody
         )
 
-        val multipartContent: Map<ContentType, OpenAPiSchema.ContentSchema>? = processMultipartContent(
+        val multipartContent: Map<ContentType, OpenApiSchema.ContentSchema>? = processMultipartContent(
             requestBody = requestBody
         )
 
         // Combine both standardContent and multipartContent.
-        val content: Map<ContentType, OpenAPiSchema.ContentSchema> = (standardContent.orEmpty() + multipartContent.orEmpty())
+        val content: Map<ContentType, OpenApiSchema.ContentSchema> = (standardContent.orEmpty() + multipartContent.orEmpty())
         if (content.isEmpty()) {
             throw KopapiException("No content types found for the request body.")
         }
@@ -70,11 +70,11 @@ internal object RequestBodyComposer {
      * Processes `standard (non-multipart)` content types and generates their corresponding schemas.
      *
      * @param requestBody The [ApiRequestBody] object containing the request body metadata.
-     * @return A map of [ContentType] to [OpenAPiSchema.ContentSchema] for standard content.
+     * @return A map of [ContentType] to [OpenApiSchema.ContentSchema] for standard content.
      */
     private fun processStandardContent(
         requestBody: ApiRequestBody
-    ): Map<ContentType, OpenAPiSchema.ContentSchema>? {
+    ): Map<ContentType, OpenApiSchema.ContentSchema>? {
         if (requestBody.content.isNullOrEmpty()) {
             tracer.info("No standard content types found for the request body.")
             return null
@@ -101,11 +101,11 @@ internal object RequestBodyComposer {
      * Processes `multipart` content types and generates their corresponding schemas.
      *
      * @param requestBody The [ApiRequestBody] object containing the request body metadata.
-     * @return A map of [ContentType] to [OpenAPiSchema.ContentSchema] for multipart content.
+     * @return A map of [ContentType] to [OpenApiSchema.ContentSchema] for multipart content.
      */
     private fun processMultipartContent(
         requestBody: ApiRequestBody
-    ): Map<ContentType, OpenAPiSchema.ContentSchema>? {
+    ): Map<ContentType, OpenApiSchema.ContentSchema>? {
         if (requestBody.multipartContent.isNullOrEmpty()) {
             tracer.info("No multipart content types found for the request body.")
             return null
@@ -134,7 +134,7 @@ internal object RequestBodyComposer {
                 requiredFields = requiredFields.ifEmpty { null }
             )
 
-            OpenAPiSchema.ContentSchema(schema = schema)
+            OpenApiSchema.ContentSchema(schema = schema)
         }
     }
 
