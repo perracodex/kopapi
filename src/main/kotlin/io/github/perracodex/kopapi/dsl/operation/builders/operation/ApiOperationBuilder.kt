@@ -583,7 +583,7 @@ public class ApiOperationBuilder internal constructor(
     @PublishedApi
     internal class Config(private val endpoint: String) {
         /** Optional set of descriptive tags for categorizing the endpoint in API documentation. */
-        val tags: TreeSet<String> = TreeSet(String.CASE_INSENSITIVE_ORDER)
+        val tags: SortedSet<String> = sortedSetOf(comparator = String.CASE_INSENSITIVE_ORDER)
 
         /**  Optional set of parameters detailing type, necessity, and location in the request. */
         var parameters: LinkedHashSet<ApiParameter> = linkedSetOf()
