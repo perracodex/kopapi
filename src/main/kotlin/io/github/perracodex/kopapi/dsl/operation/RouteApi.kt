@@ -4,10 +4,10 @@
 
 package io.github.perracodex.kopapi.dsl.operation
 
-import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
+import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.extractRoutePath
 import io.ktor.http.*

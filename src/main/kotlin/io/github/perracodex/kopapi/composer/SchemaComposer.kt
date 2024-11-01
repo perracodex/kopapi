@@ -19,10 +19,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
-import io.github.perracodex.kopapi.schema.CompositionSchema
-import io.github.perracodex.kopapi.schema.ElementSchema
-import io.github.perracodex.kopapi.schema.ISchema
-import io.github.perracodex.kopapi.schema.OpenApiSchema
+import io.github.perracodex.kopapi.schema.*
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.types.Composition

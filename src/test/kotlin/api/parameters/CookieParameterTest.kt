@@ -5,10 +5,10 @@
 package api.parameters
 
 import com.fasterxml.jackson.databind.JsonNode
-import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.dsl.operation.api
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.plugin.Kopapi
+import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.types.DefaultValue
 import io.github.perracodex.kopapi.types.ParameterStyle
 import io.ktor.http.*

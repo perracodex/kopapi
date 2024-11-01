@@ -6,7 +6,7 @@ package io.github.perracodex.kopapi.view
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.perracodex.kopapi.composer.SchemaRegistry
+import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.view.annotation.DebugViewAPI
 import kotlinx.coroutines.Deferred

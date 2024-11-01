@@ -4,10 +4,10 @@
 
 package plugin.servers
 
-import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.plugin.Kopapi
+import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import org.junit.jupiter.api.BeforeEach

@@ -2,8 +2,9 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.composer
+package io.github.perracodex.kopapi.schema
 
+import io.github.perracodex.kopapi.composer.SchemaComposer
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.composer.operation.OperationVerifier
 import io.github.perracodex.kopapi.composer.request.RequestBodyComposer

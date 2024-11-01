@@ -4,10 +4,10 @@
 
 package swagger
 
-import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.plugin.KopapiConfig
 import io.github.perracodex.kopapi.plugin.Swagger
+import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*

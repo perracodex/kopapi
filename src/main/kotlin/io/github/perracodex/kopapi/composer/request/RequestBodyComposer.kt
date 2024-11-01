@@ -5,13 +5,13 @@
 package io.github.perracodex.kopapi.composer.request
 
 import io.github.perracodex.kopapi.composer.SchemaComposer
-import io.github.perracodex.kopapi.composer.SchemaRegistry
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.schema.MultipartSchema
 import io.github.perracodex.kopapi.schema.OpenApiSchema
+import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.types.ApiFormat
