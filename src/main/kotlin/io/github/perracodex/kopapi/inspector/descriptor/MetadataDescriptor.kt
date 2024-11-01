@@ -7,6 +7,8 @@ package io.github.perracodex.kopapi.inspector.descriptor
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
+import io.github.perracodex.kopapi.attribute.AttributesParser
+import io.github.perracodex.kopapi.attribute.ParsedAttributes
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.cleanName
@@ -23,6 +25,7 @@ import kotlin.reflect.full.primaryConstructor
  * Represents metadata for an element basic properties.
  *
  * @property name The current name of the element. If renamed, this reflects the updated name.
+ * @property attributes The parsed annotation `Attributes` for the element, if present.
  * @property renamedFrom The original name of the element before renaming. It is `null` if the name was not changed.
  * @property isRequired Indicates whether the element is required. Default: `true`.
  * @property isNullable Indicates whether the element is nullable. Default: `false`.
@@ -31,6 +34,7 @@ import kotlin.reflect.full.primaryConstructor
 @TypeInspectorApi
 internal data class MetadataDescriptor(
     val name: String,
+    val attributes: ParsedAttributes? = null,
     val renamedFrom: String? = null,
     val isRequired: Boolean = true,
     val isNullable: Boolean = false,
@@ -62,6 +66,8 @@ internal data class MetadataDescriptor(
         ): MetadataDescriptor {
             val elementName: ElementName = geElementName(target = property)
 
+            val attributes: ParsedAttributes? = AttributesParser.parse(property = property)
+
             val isTransient: Boolean = property.isTransient()
             val isNullable: Boolean = property.isNullable()
             val isRequired: Boolean = !isTransient && determineIfRequired(
@@ -72,6 +78,7 @@ internal data class MetadataDescriptor(
 
             return MetadataDescriptor(
                 name = elementName.name,
+                attributes = attributes,
                 renamedFrom = elementName.renamedFrom,
                 isRequired = isRequired,
                 isNullable = isNullable,

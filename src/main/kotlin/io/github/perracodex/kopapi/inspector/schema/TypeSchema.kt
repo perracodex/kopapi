@@ -19,7 +19,7 @@ import kotlin.reflect.KType
  * @property type The fully qualified type name, typically obtained from [KType.nativeName].
  * @property schema The processed [ElementSchema] specification for the type.
  */
-internal data class TypeSchema private constructor(
+internal data class TypeSchema(
     val name: String,
     val renamedFrom: String?,
     val type: String,

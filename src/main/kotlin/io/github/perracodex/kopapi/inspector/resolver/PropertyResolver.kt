@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.utils.resolveArgumentBinding
+import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.schema.facets.SchemaProperty
 import io.github.perracodex.kopapi.system.Tracer
 import java.lang.reflect.Field
@@ -69,10 +70,28 @@ internal class PropertyResolver(private val typeInspector: TypeInspector) {
             typeArgumentBindings = typeArgumentBindings
         )
 
+        // If attribute metadata is present, apply it to the schema.
+        val schema: ElementSchema = metadata.attributes?.let { attributes ->
+            (typeSchema.schema as? ElementSchema.Primitive)?.let { primitiveSchema ->
+                typeSchema.copy(
+                    schema = primitiveSchema.copy(
+                        description = attributes.description,
+                        maxLength = attributes.maxLength,
+                        minLength = attributes.minLength,
+                        minimum = attributes.minimum,
+                        maximum = attributes.maximum,
+                        exclusiveMinimum = attributes.exclusiveMinimum,
+                        exclusiveMaximum = attributes.exclusiveMaximum,
+                        multipleOf = attributes.multipleOf
+                    )
+                ).schema
+            }
+        } ?: typeSchema.schema
+
         // Create the SchemaProperty with metadata
         return Pair(
             metadata.name, SchemaProperty(
-                schema = typeSchema.schema,
+                schema = schema,
                 isNullable = metadata.isNullable,
                 isRequired = metadata.isRequired,
                 renamedFrom = metadata.renamedFrom,

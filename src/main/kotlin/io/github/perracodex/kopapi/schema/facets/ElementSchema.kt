@@ -83,6 +83,7 @@ internal sealed class ElementSchema(
      * @property schemaType The primitive [ApiType] as defined in the OpenAPI specification.
      * @property schemaType The API type of the schema as defined in the OpenAPI specification.
      * @property format An optional format to further define the api type (e.g., `date-time`, `uuid`).
+     * @property description A brief description of the schema.
      * @property minLength Minimum length for string types.
      * @property maxLength Maximum length for string types.
      * @property minimum Minimum value for numeric types. Defines the inclusive lower bound.
@@ -95,6 +96,7 @@ internal sealed class ElementSchema(
         @JsonIgnore override val definition: String = Primitive::class.safeName(),
         @JsonProperty("type") val schemaType: ApiType,
         @JsonProperty("format") val format: String? = null,
+        @JsonProperty("description") val description: String? = null,
         @JsonProperty("minLength") val minLength: Int? = null,
         @JsonProperty("maxLength") val maxLength: Int? = null,
         @JsonProperty("minimum") val minimum: Number? = null,

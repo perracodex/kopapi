@@ -70,6 +70,7 @@ dependencies {
   - #### [Request Bodies](./.wiki/02.4.api-usage-request-body.md)
   - #### [Responses](./.wiki/02.5.api-usage-responses.md)
   - #### [Security](./.wiki/02.6.api-usage-security.md)
+  - #### [Attributes](./.wiki/02.7.api-usage-attributes.md)
 
 * ### Internals
   - #### [Debug Panel](./.wiki/03.0.internals-debug-panel.md)
