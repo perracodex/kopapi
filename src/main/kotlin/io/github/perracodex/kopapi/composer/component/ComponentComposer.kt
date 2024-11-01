@@ -7,6 +7,8 @@ package io.github.perracodex.kopapi.composer.component
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
+import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
+import io.github.perracodex.kopapi.schema.facets.NullableSchema
 
 /**
  * Composes the `Components` section of the OpenAPI schema.
@@ -40,14 +42,14 @@ internal object ComponentComposer {
     private fun transform(typeSchema: TypeSchema): ElementSchema {
         return when (val schema: ElementSchema = typeSchema.schema) {
             is ElementSchema.Object -> {
-                val properties: MutableMap<String, ElementSchema> = mutableMapOf()
+                val properties: MutableMap<String, ISchemaFacet> = mutableMapOf()
                 val required: MutableSet<String> = mutableSetOf()
 
                 schema.properties.forEach { (name, property) ->
                     // Skip transient properties and rebuild the schema if necessary.
                     if (!property.isTransient) {
-                        val rebuiltSchema: ElementSchema = if (property.isNullable) {
-                            ElementSchema.Nullable(schema = property.schema)
+                        val rebuiltSchema: ISchemaFacet = if (property.isNullable) {
+                            NullableSchema.create(schemaProperty = property)
                         } else {
                             property.schema
                         }
