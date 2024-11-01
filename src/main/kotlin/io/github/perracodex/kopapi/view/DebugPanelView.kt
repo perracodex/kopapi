@@ -128,12 +128,6 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
         with(htmlTag) {
             div(classes = "button-container") {
                 button(classes = "action-button") {
-                    id = "configuration-panel-button"
-                    onClick = "showPopup('configuration-panel')"
-                    +"Configuration"
-                }
-
-                button(classes = "action-button") {
                     id = "openapi-yaml-panel-button"
                     onClick = "showPopup('openapi-yaml-panel')"
                     +"Yaml Schema"
@@ -155,6 +149,12 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                     id = "redoc-button"
                     onClick = "window.open('$redocUrl', '_blank')"
                     +"ReDoc"
+                }
+
+                button(classes = "action-button") {
+                    id = "configuration-panel-button"
+                    onClick = "showPopup('configuration-panel')"
+                    +"Plugin Configuration"
                 }
             }
         }
