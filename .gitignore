@@ -47,4 +47,5 @@ bin/
 ### Custom ###
 .idea/
 .kotlin/
-/publish/
+/.publish/
+
