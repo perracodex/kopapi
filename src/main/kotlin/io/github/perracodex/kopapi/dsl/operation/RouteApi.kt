@@ -40,7 +40,7 @@ import io.ktor.server.routing.*
  *
  *     httpSecurity(
  *          name = "Authentication",
- *          method = AuthenticationMethod.BEARER
+ *          method = AuthMethod.BEARER
  *     ) {
  *          description = "Access to data."
  *     }

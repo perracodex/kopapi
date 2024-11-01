@@ -8,7 +8,7 @@ import io.github.perracodex.kopapi.dsl.common.security.*
 import io.github.perracodex.kopapi.dsl.markers.SecurityDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.system.KopapiException
-import io.github.perracodex.kopapi.types.AuthenticationMethod
+import io.github.perracodex.kopapi.types.AuthMethod
 import io.github.perracodex.kopapi.types.SecurityLocation
 import io.ktor.http.*
 
@@ -25,13 +25,13 @@ public abstract class SecuritySchemeConfigurable {
      *
      * #### Sample Usage
      * ```
-     * httpSecurity(name = "BasicAuth", method = AuthenticationMethod.BASIC) {
+     * httpSecurity(name = "BasicAuth", method = AuthMethod.BASIC) {
      *     description = "Basic Authentication"
      * }
      * ```
      *
      * @param name The unique name of the security scheme.
-     * @param method The [AuthenticationMethod] of the security scheme.
+     * @param method The [AuthMethod] of the security scheme.
      * @param configure A lambda receiver for configuring the [HttpSecurityBuilder].
      *
      * @see [apiKeySecurity]
@@ -41,7 +41,7 @@ public abstract class SecuritySchemeConfigurable {
      */
     public fun httpSecurity(
         name: String,
-        method: AuthenticationMethod,
+        method: AuthMethod,
         configure: HttpSecurityBuilder.() -> Unit = {}
     ) {
         val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)

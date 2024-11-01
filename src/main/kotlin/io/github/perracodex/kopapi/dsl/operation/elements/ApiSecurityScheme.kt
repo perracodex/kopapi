@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.perracodex.kopapi.system.KopapiException
-import io.github.perracodex.kopapi.types.AuthenticationMethod
+import io.github.perracodex.kopapi.types.AuthMethod
 import io.github.perracodex.kopapi.types.SecurityLocation
 
 /**
@@ -65,7 +65,7 @@ internal sealed class ApiSecurityScheme(
     data class Http(
         override val schemeName: String,
         override val description: String?,
-        @JsonProperty("scheme") val method: AuthenticationMethod
+        @JsonProperty("scheme") val method: AuthMethod
     ) : ApiSecurityScheme(schemeName = schemeName, description = description) {
         init {
             if (schemeName.isBlank()) {

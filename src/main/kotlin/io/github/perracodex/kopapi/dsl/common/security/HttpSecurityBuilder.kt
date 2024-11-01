@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.dsl.common.security
 import io.github.perracodex.kopapi.dsl.markers.SecurityDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.types.AuthenticationMethod
+import io.github.perracodex.kopapi.types.AuthMethod
 import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -31,11 +31,11 @@ public class HttpSecurityBuilder {
      * Builds an [ApiSecurityScheme] instance from the current builder state.
      *
      * @param name The name of the security scheme
-     * @param method The [AuthenticationMethod] of the security scheme.
+     * @param method The [AuthMethod] of the security scheme.
      * @return The constructed [ApiSecurityScheme] instance.
      */
     @PublishedApi
-    internal fun build(name: String, method: AuthenticationMethod): ApiSecurityScheme {
+    internal fun build(name: String, method: AuthMethod): ApiSecurityScheme {
         return ApiSecurityScheme.Http(
             schemeName = name.sanitize(),
             description = description.trimOrNull(),
