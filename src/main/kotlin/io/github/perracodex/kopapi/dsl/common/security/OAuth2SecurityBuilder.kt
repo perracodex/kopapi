@@ -37,6 +37,17 @@ public class OAuth2SecurityBuilder {
     /**
      * Configures the OAuth2 `Authorization Code` flow for the security scheme.
      *
+     * #### Sample Usage
+     * ```
+     * authorizationCode {
+     *      authorizationUrl = "https://example.com/oauth2/authorize"
+     *      tokenUrl = "https://example.com/oauth2/token"
+     *      refreshUrl = "https://example.com/oauth2/refresh"
+     *      scope("read:pets", "read your pets")
+     *      scope("write:pets", "modify pets in your account")
+     * }
+     * ```
+     *
      * Used by confidential clients (e.g., server-side apps) to obtain tokens through a two-step process.
      * First, an authorization code is acquired, then exchanged for a token.
      */
@@ -46,6 +57,16 @@ public class OAuth2SecurityBuilder {
 
     /**
      * Configures the OAuth2 `Client Credentials` flow for the security scheme.
+     *
+     * #### Sample Usage
+     * ```
+     * clientCredentials {
+     *      authorizationUrl = "https://example.com/auth"
+     *      tokenUrl = "https://example.com/token"
+     *      refreshUrl = "https://example.com/refresh"
+     *      scope(name = "admin:tools", description = "Administrate Tools")
+     * }
+     * ```
      *
      * For server-to-server communication, where a client can directly
      * obtain an access token using its credentials.
@@ -57,6 +78,16 @@ public class OAuth2SecurityBuilder {
     /**
      * Configures the OAuth2 `Implicit` flow for the security scheme.
      *
+     * #### Sample Usage
+     * ```
+     * implicit {
+     *      authorizationUrl = "https://example.com/auth"
+     *      tokenUrl = "https://example.com/token"
+     *      refreshUrl = "https://example.com/refresh"
+     *      scope(name = "view:projects", description = "View Projects")
+     * }
+     * ```
+     *
      * Primarily for single-page applications (browser-based clients) where tokens are obtained directly
      * from the authorization URL without requiring the client secret.
      */
@@ -66,6 +97,16 @@ public class OAuth2SecurityBuilder {
 
     /**
      * Configures the OAuth2 `Password` flow for the security scheme.
+     *
+     * #### Sample Usage
+     * ```
+     * password {
+     *      authorizationUrl = "https://example.com/auth"
+     *      tokenUrl = "https://example.com/token"
+     *      refreshUrl = "https://example.com/refresh"
+     *      scope(name = "read:reports", description = "Read Reports")
+     * }
+     * ```
      *
      * Allows exchanging user credentials (username/password) for tokens,
      * typically used for first-party applications.

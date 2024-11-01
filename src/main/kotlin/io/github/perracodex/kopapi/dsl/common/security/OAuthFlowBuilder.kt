@@ -14,7 +14,6 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @property authorizationUrl The authorization URL to be used for this flow (required for certain flows).
  * @property tokenUrl The token URL to be used for this flow (required for certain flows).
  * @property refreshUrl The refresh URL to be used for obtaining refresh tokens (optional).
- * @property scopes The scopes defined for this flow.
  *
  * @see [OAuth2SecurityBuilder.authorizationCode]
  * @see [OAuth2SecurityBuilder.clientCredentials]
