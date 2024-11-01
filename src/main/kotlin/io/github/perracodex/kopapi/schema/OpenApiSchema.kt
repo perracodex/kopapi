@@ -13,6 +13,8 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
+import io.github.perracodex.kopapi.schema.facets.ElementSchema
+import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
 import io.github.perracodex.kopapi.system.KopapiException
 import io.ktor.http.*
 
@@ -133,15 +135,15 @@ internal data class OpenApiSchema(
     }
 
     /**
-     * Represents the [ISchema] definition for content in an API operation.
+     * Represents the [ISchemaFacet] definition for content in an API operation.
      *
      * This class is used to wrap the schema under the `schema` key for any content type
      * (e.g., `application/json`, `application/xml`), ensuring compatibility with the OpenAPI
      * specification.
      *
-     * @property schema The [ISchema] representing the structure of the content.
+     * @property schema The [ISchemaFacet] representing the structure of the content.
      */
     data class ContentSchema(
-        @JsonProperty("schema") var schema: ISchema?
+        @JsonProperty("schema") var schema: ISchemaFacet?
     )
 }

@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.schema
+package io.github.perracodex.kopapi.schema.facets
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -18,7 +18,7 @@ import io.github.perracodex.kopapi.utils.safeName
  */
 internal sealed class CompositionSchema(
     @JsonIgnore open val definition: String,
-) : ISchema {
+) : ISchemaFacet {
     /**
      * Represents a schema that allows for one or more schemas to be used interchangeably.
      *

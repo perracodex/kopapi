@@ -19,7 +19,11 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
-import io.github.perracodex.kopapi.schema.*
+import io.github.perracodex.kopapi.schema.OpenApiSchema
+import io.github.perracodex.kopapi.schema.SchemaRegistry
+import io.github.perracodex.kopapi.schema.facets.CompositionSchema
+import io.github.perracodex.kopapi.schema.facets.ElementSchema
+import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.types.Composition
@@ -122,7 +126,7 @@ internal class SchemaComposer(
          */
         @OptIn(ComposerAPI::class)
         fun determineSchema(composition: Composition?, schemas: List<ElementSchema>): OpenApiSchema.ContentSchema {
-            val combinedSchema: ISchema = when {
+            val combinedSchema: ISchemaFacet = when {
                 schemas.size == 1 -> schemas.first()
                 else -> when (composition ?: Composition.ANY_OF) {
                     Composition.ANY_OF -> CompositionSchema.AnyOf(anyOf = schemas)

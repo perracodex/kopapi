@@ -11,7 +11,7 @@ import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
 import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
-import io.github.perracodex.kopapi.schema.ElementSchema
+import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.safeName
 import io.github.perracodex.kopapi.utils.trimOrNull

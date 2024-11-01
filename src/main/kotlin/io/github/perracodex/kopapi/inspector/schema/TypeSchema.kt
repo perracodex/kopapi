@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.inspector.schema
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.ElementName
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
-import io.github.perracodex.kopapi.schema.ElementSchema
+import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.utils.nativeName
 import kotlin.reflect.KType
 

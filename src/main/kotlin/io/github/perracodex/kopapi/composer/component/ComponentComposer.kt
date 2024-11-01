@@ -6,7 +6,7 @@ package io.github.perracodex.kopapi.composer.component
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
-import io.github.perracodex.kopapi.schema.ElementSchema
+import io.github.perracodex.kopapi.schema.facets.ElementSchema
 
 /**
  * Composes the `Components` section of the OpenAPI schema.

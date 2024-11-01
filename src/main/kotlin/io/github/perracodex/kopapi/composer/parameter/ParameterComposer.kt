@@ -6,8 +6,8 @@ package io.github.perracodex.kopapi.composer.parameter
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
-import io.github.perracodex.kopapi.schema.ElementSchema
 import io.github.perracodex.kopapi.schema.SchemaRegistry
+import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.types.DefaultValue

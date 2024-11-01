@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.schema
+package io.github.perracodex.kopapi.schema.facets
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -21,7 +21,7 @@ import io.ktor.http.content.*
 internal sealed class MultipartSchema(
     @JsonIgnore open val definition: String,
     @JsonIgnore open val isRequired: Boolean
-) : ISchema {
+) : ISchemaFacet {
     /**
      * Represents an object schema for multipart data with a set of named `part` properties.
      *

@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.resolver.*
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.PrimitiveFactory
-import io.github.perracodex.kopapi.schema.SchemaProperty
+import io.github.perracodex.kopapi.schema.facets.SchemaProperty
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.nativeName
 import kotlin.reflect.KClass

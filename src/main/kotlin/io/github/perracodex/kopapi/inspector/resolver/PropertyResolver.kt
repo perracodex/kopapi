@@ -9,7 +9,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorAPI
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.utils.resolveArgumentBinding
-import io.github.perracodex.kopapi.schema.SchemaProperty
+import io.github.perracodex.kopapi.schema.facets.SchemaProperty
 import io.github.perracodex.kopapi.system.Tracer
 import java.lang.reflect.Field
 import kotlin.reflect.*

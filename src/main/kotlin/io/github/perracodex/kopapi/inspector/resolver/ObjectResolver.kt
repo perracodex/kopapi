@@ -11,8 +11,8 @@ import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.inspector.schema.factory.PrimitiveFactory
 import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
-import io.github.perracodex.kopapi.schema.ElementSchema
-import io.github.perracodex.kopapi.schema.SchemaProperty
+import io.github.perracodex.kopapi.schema.facets.ElementSchema
+import io.github.perracodex.kopapi.schema.facets.SchemaProperty
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.nativeName
 import kotlin.reflect.KClass
