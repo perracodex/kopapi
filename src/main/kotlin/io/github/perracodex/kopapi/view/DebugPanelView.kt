@@ -202,16 +202,7 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                         +"json"
                     }
 
-                    span(classes = "copy-action") {
-                        onClick = "copyToClipboard('$panelId')"
-                        +"copy"
-                    }
-
-                    // The expand/collapse icon.
-                    span(classes = "toggle-icon") {
-                        onClick = "togglePanel('$panelId')"
-                        +"+" // Initially expanded.
-                    }
+                    commonPanelButtons(htmlTag = this, panelId = panelId)
                 }
 
                 // Dropdown for filtering based on specific keys.
@@ -276,16 +267,7 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                         +"$title: ${jsonDataList.size}"
                     }
 
-                    span(classes = "copy-action") {
-                        onClick = "copyToClipboard('$panelId')"
-                        +"copy"
-                    }
-
-                    // The expand/collapse icon.
-                    span(classes = "toggle-icon") {
-                        onClick = "togglePanel('$panelId')"
-                        +"+" // Initially expanded.
-                    }
+                    commonPanelButtons(htmlTag = this, panelId = panelId)
                 }
 
                 // Dropdown for filtering the JSON based on specific keys.
@@ -322,6 +304,27 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                         +jsonData
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Constructs the common panel buttons for copy and expand/collapse actions.
+     *
+     * @param htmlTag The parent HTML element to append the buttons to.
+     * @param panelId The unique identifier for the panel element.
+     */
+    private fun commonPanelButtons(htmlTag: FlowContent, panelId: String) {
+        with(htmlTag) {
+            span(classes = "copy-action") {
+                onClick = "copyToClipboard('$panelId')"
+                +"copy"
+            }
+
+            // The expand/collapse icon.
+            span(classes = "toggle-icon") {
+                onClick = "togglePanel('$panelId')"
+                +"+" // Initially expanded.
             }
         }
     }
