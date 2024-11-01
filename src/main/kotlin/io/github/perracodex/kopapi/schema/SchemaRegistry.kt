@@ -22,7 +22,7 @@ import kotlin.collections.set
 import kotlin.reflect.KType
 
 /**
- * Singleton for registering and serving API information.
+ * Singleton for registering and serving OpenAPI schema data.
  */
 @OptIn(ComposerAPI::class)
 internal object SchemaRegistry {
