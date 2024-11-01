@@ -5,15 +5,17 @@
 package io.github.perracodex.kopapi.attribute
 
 /**
- * Annotation to define attributes for a field, mimicking OpenAPI 3.1 schema constraints.
+ * Annotation to define attributes for a field, aligned with OpenAPI 3.1 schema specification.
  *
  * #### Sample Usage
  * ```kotlin
  * data class Person(
  *    @Attributes(description = "The first name of the person.", minLength = 3, maxLength = 50)
  *    val firstName: String,
+ *
  *    @Attributes(description = "The age of the person.", minimum = "1", maximum = "120")
  *    val age: String
+ *
  *    // ...
  * )
  * ```
