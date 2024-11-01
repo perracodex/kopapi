@@ -72,9 +72,19 @@ dependencies {
   - #### [Security](./.wiki/02.6.api-usage-security.md)
 
 * ### Internals
+  - #### [Debug Panel](./.wiki/05.debug-panel.md)
   - #### [Type Conflicts](./.wiki/03.type-conflicts.md)
   - #### [Type Introspection](./.wiki/04.type-introspection.md)
-  - #### [Debug Panel](./.wiki/05.debug-panel.md)
+
+---
+
+To see the library in action, check the [Kcrud](https://github.com/perracodex/kcrud) repository:
+
+- https://github.com/perracodex/kcrud/blob/main/kcrud-core/src/main/kotlin/kcrud/core/plugins/ApiSchema.kt
+- https://github.com/perracodex/kcrud/tree/main/kcrud-employee/src/main/kotlin/kcrud/domain/employee/api
+- https://github.com/perracodex/kcrud/tree/main/kcrud-access/src/main/kotlin/kcrud/access/token/api/operate
+- https://github.com/perracodex/kcrud/tree/main/kcrud-access/src/main/kotlin/kcrud/access/rbac/api
+- https://github.com/perracodex/kcrud/tree/main/kcrud-core/src/main/kotlin/kcrud/core/scheduler/api
 
 ---
 
