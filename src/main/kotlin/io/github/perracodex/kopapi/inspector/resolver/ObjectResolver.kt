@@ -108,9 +108,8 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
         kClass: KClass<*>,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
-        // Prevent infinite recursion for self-referencing objects.
-        if (semaphore.contains(kType.nativeName())) {
-            tracer.debug("Circular reference for type: $kType.")
+        // Avoid redundant processing: skip if the type is already processed or self-references itself.
+        if (typeInspector.isCached(kType = kType) || semaphore.contains(kType.nativeName())) {
             return TypeSchema.of(
                 name = className,
                 kType = kType,

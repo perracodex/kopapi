@@ -319,8 +319,8 @@ internal class TypeInspector {
      * in the [TypeSchema] cache.
      */
     fun isCached(kType: KType): Boolean {
-        return typeSchemaCache.any {
-            it.type == kType.nativeName()
+        return typeSchemaCache.any { typeSchema ->
+            typeSchema.type == kType.nativeName()
         }
     }
 
