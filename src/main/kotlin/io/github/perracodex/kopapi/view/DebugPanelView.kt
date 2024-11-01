@@ -188,11 +188,6 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                     div(classes = "panel-title-text") {
                         +"$title: ${sections.size}"
                     }
-
-                    span(classes = "panel-action raw-button") {
-                        onClick = "switchContent('$panelId', 'raw')"
-                        +"raw"
-                    }
                     span(classes = "panel-action yaml-button") {
                         onClick = "switchContent('$panelId', 'yaml')"
                         +"yaml"
@@ -200,6 +195,10 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                     span(classes = "panel-action json-button") {
                         onClick = "switchContent('$panelId', 'json')"
                         +"json"
+                    }
+                    span(classes = "panel-action raw-button") {
+                        onClick = "switchContent('$panelId', 'raw')"
+                        +"raw"
                     }
 
                     commonPanelButtons(htmlTag = this, panelId = panelId)
