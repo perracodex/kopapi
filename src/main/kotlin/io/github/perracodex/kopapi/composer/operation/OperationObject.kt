@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.operation
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.perracodex.kopapi.composer.annotation.ComposerAPI
 import io.github.perracodex.kopapi.composer.parameter.ParameterObject
 import io.github.perracodex.kopapi.composer.request.RequestBodyObject
@@ -27,12 +28,12 @@ import io.github.perracodex.kopapi.composer.response.ResponseObject
  */
 @ComposerAPI
 internal data class OperationObject(
-    val tags: Set<String>?,
-    val summary: String?,
-    val description: String?,
-    val operationId: String?,
-    val parameters: Set<ParameterObject>?,
-    val requestBody: RequestBodyObject?,
-    val responses: Map<String, ResponseObject>?,
-    var security: List<Map<String, List<String>>>?
+    @JsonProperty("tags") val tags: Set<String>?,
+    @JsonProperty("summary") val summary: String?,
+    @JsonProperty("description") val description: String?,
+    @JsonProperty("operationId") val operationId: String?,
+    @JsonProperty("parameters") val parameters: Set<ParameterObject>?,
+    @JsonProperty("requestBody") val requestBody: RequestBodyObject?,
+    @JsonProperty("responses") val responses: Map<String, ResponseObject>?,
+    @JsonProperty("security") var security: List<Map<String, List<String>>>?
 )

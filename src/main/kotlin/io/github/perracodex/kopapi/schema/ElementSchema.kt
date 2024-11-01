@@ -24,6 +24,7 @@ internal sealed class ElementSchema(
 ) : IOpenApiSchema {
     /**
      * Represents an object schema with a set of named properties.
+     * This class holds the raw schema data before transformation into OpenAPI format.
      *
      * @property schemaType The API type of the schema as defined in the OpenAPI specification.
      * @property properties A map of property names to their corresponding schemas and metadata.
@@ -33,6 +34,21 @@ internal sealed class ElementSchema(
         val schemaType: ApiType = ApiType.OBJECT,
         val properties: MutableMap<String, SchemaProperty> = mutableMapOf(),
         override val defaultValue: Any? = null
+    ) : ElementSchema(definition = definition, defaultValue = defaultValue)
+
+    /**
+     * Represents a transformed object schema ready for OpenAPI generation.
+     *
+     * @property schemaType The API type of the schema as defined in the OpenAPI specification.
+     * @property properties A map of property names to their corresponding schemas and metadata.
+     * @property required A set of required property names.
+     */
+    data class TransformedObject(
+        @JsonIgnore override val definition: String = TransformedObject::class.safeName(),
+        @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
+        @JsonProperty("properties") val properties: Map<String, ElementSchema>?,
+        @JsonProperty("required") var required: MutableSet<String>?,
+        @JsonProperty("default") override val defaultValue: Any? = null
     ) : ElementSchema(definition = definition, defaultValue = defaultValue)
 
     /**
@@ -146,19 +162,4 @@ internal sealed class ElementSchema(
             )
         )
     }
-
-    /**
-     * Represents a transformed object schema ready for OpenAPI generation.
-     *
-     * @property schemaType The API type of the schema as defined in the OpenAPI specification.
-     * @property properties A map of property names to their corresponding schemas and metadata.
-     * @property required A set of required property names.
-     */
-    data class TransformedObject(
-        @JsonIgnore override val definition: String = TransformedObject::class.safeName(),
-        @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
-        @JsonProperty("properties") val properties: Map<String, ElementSchema>?,
-        @JsonProperty("required") var required: MutableSet<String>?,
-        @JsonProperty("default") override val defaultValue: Any? = null
-    ) : ElementSchema(definition = definition, defaultValue = defaultValue)
 }

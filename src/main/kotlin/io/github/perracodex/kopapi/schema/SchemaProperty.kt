@@ -6,12 +6,13 @@ package io.github.perracodex.kopapi.schema
 
 /**
  * Represents a property within an object schema.
+ * Use when traversing the schema to keep track of the property's metadata.
  *
  * @property schema The [ElementSchema] for the property.
  * @property isNullable Whether the property is nullable.
  * @property isRequired Whether the property is required.
  * @property isTransient Whether the property is transient, meaning it should be excluded from the schema.
- * @property renamedFrom The original name of the property before renaming. It is `null` if the name was not changed.
+ * @property renamedFrom The original name of the property if such changed occurred due to an annotation.
  */
 internal data class SchemaProperty(
     val schema: ElementSchema,
