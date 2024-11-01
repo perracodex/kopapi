@@ -6,7 +6,6 @@ package io.github.perracodex.kopapi.schema
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.perracodex.kopapi.inspector.utils.SchemaConstraints
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.safeName
 
@@ -88,20 +87,7 @@ internal sealed class ElementSchema(
         @JsonProperty("exclusiveMaximum") val exclusiveMaximum: Number? = null,
         @JsonProperty("multipleOf") val multipleOf: Number? = null,
         @JsonProperty("default") override val defaultValue: Any? = null
-    ) : ElementSchema(definition = definition, defaultValue = defaultValue) {
-        init {
-            SchemaConstraints.validate(
-                apiType = schemaType,
-                minLength = minLength,
-                maxLength = maxLength,
-                minimum = minimum,
-                maximum = maximum,
-                exclusiveMinimum = exclusiveMinimum,
-                exclusiveMaximum = exclusiveMaximum,
-                multipleOf = multipleOf
-            )
-        }
-    }
+    ) : ElementSchema(definition = definition, defaultValue = defaultValue)
 
     /**
      * Represents an enumeration schema, defining a set of allowed values.

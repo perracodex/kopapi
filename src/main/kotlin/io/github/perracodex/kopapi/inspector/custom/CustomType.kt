@@ -5,7 +5,6 @@
 package io.github.perracodex.kopapi.inspector.custom
 
 import io.github.perracodex.kopapi.dsl.plugin.builders.CustomTypeBuilder
-import io.github.perracodex.kopapi.inspector.utils.SchemaConstraints
 import io.github.perracodex.kopapi.plugin.KopapiConfig
 import io.github.perracodex.kopapi.types.ApiType
 import kotlin.reflect.KType
@@ -49,17 +48,4 @@ internal data class CustomType internal constructor(
     val exclusiveMinimum: Number? = null,
     val exclusiveMaximum: Number? = null,
     val multipleOf: Number? = null
-) {
-    init {
-        SchemaConstraints.validate(
-            apiType = apiType,
-            minLength = minLength,
-            maxLength = maxLength,
-            minimum = minimum,
-            maximum = maximum,
-            exclusiveMinimum = exclusiveMinimum,
-            exclusiveMaximum = exclusiveMaximum,
-            multipleOf = multipleOf
-        )
-    }
-}
+)
