@@ -47,10 +47,6 @@ internal data class NullableSchema private constructor(
             schemaProperty: SchemaProperty,
         ): NullableSchema {
             return NullableSchema(
-                anyOf = listOf(
-                    stripAttributes(schema = schemaProperty.schema),
-                    mapOf("type" to ApiType.NULL())
-                ),
                 description = schemaProperty.schema.description,
                 minLength = schemaProperty.schema.minLength,
                 maxLength = schemaProperty.schema.maxLength,
@@ -60,6 +56,10 @@ internal data class NullableSchema private constructor(
                 exclusiveMaximum = schemaProperty.schema.exclusiveMaximum,
                 multipleOf = schemaProperty.schema.multipleOf,
                 defaultValue = schemaProperty.schema.defaultValue,
+                anyOf = listOf(
+                    stripAttributes(schema = schemaProperty.schema),
+                    mapOf("type" to ApiType.NULL())
+                ),
             )
         }
 
