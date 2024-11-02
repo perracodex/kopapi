@@ -10,10 +10,10 @@ package io.github.perracodex.kopapi.annotation
  * #### Sample Usage
  * ```kotlin
  * data class Person(
- *    @Attributes(description = "The first name of the person.", minLength = 3, maxLength = 50)
+ *    @Schema(description = "The first name of the person.", minLength = 3, maxLength = 50)
  *    val firstName: String,
  *
- *    @Attributes(description = "The age of the person.", minimum = "1", maximum = "120")
+ *    @Schema(description = "The age of the person.", minimum = "1", maximum = "120")
  *    val age: String
  *
  *    // ...
