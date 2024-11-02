@@ -52,12 +52,20 @@ internal data class ParsedAttributes(
                     description = attributes.description.trimOrNull(),
                 )
 
-                is ElementSchema.Array -> schema.copy(
-                    description = attributes.description.trimOrNull(),
-                    minItems = attributes.minItems ?: schema.minItems,
-                    maxItems = attributes.maxItems ?: schema.maxItems,
-                    uniqueItems = attributes.uniqueItems ?: schema.uniqueItems
-                )
+                is ElementSchema.Array -> {
+                    // Update item format if provided, applicable only to top-level primitive items.
+                    // Nested arrays retain their original format.
+                    val updatedItems: ElementSchema = attributes.format.trimOrNull()?.let { format ->
+                        (schema.items as? ElementSchema.Primitive)?.copy(format = format)
+                    } ?: schema.items
+                    schema.copy(
+                        description = attributes.description.trimOrNull(),
+                        minItems = attributes.minItems ?: schema.minItems,
+                        maxItems = attributes.maxItems ?: schema.maxItems,
+                        uniqueItems = attributes.uniqueItems ?: schema.uniqueItems,
+                        items = updatedItems
+                    )
+                }
 
                 is ElementSchema.Enum -> schema.copy(
                     description = attributes.description.trimOrNull(),
