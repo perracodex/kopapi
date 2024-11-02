@@ -165,7 +165,7 @@ internal sealed class ElementSchema(
         schemaType = ApiType.OBJECT,
         description = description
     ) {
-        @JsonProperty(REFERENCE)
+        @JsonProperty(REFERENCE_KEY)
         val ref: String = "$PATH$schemaName"
 
         companion object {
@@ -173,7 +173,7 @@ internal sealed class ElementSchema(
             const val PATH: String = "#/components/schemas/"
 
             /** The key used to reference another schema. */
-            const val REFERENCE: String = "\$ref"
+            private const val REFERENCE_KEY: String = "\$ref"
         }
     }
 }
