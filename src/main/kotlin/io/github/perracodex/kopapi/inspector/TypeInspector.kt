@@ -5,7 +5,6 @@
 package io.github.perracodex.kopapi.inspector
 
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
-import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
 import io.github.perracodex.kopapi.inspector.descriptor.TypeDescriptor
 import io.github.perracodex.kopapi.inspector.resolver.*
 import io.github.perracodex.kopapi.inspector.schema.TypeSchema
@@ -49,7 +48,6 @@ internal class TypeInspector {
 
     private val arrayResolver = ArrayResolver(typeInspector = this)
     private val collectionResolver = CollectionResolver(typeInspector = this)
-    private val customTypeResolver = CustomTypeResolver(typeInspector = this)
     private val enumResolver = EnumResolver(typeInspector = this)
     private val genericsResolver = GenericsResolver(typeInspector = this)
     private val mapResolver = MapResolver(typeInspector = this)
@@ -78,17 +76,6 @@ internal class TypeInspector {
      * #### Decision Tree
      * ```
      * traverseType:
-     *     |
-     *     +-> Is the type a Custom Type?
-     *     |    |
-     *     |    +-> Yes:
-     *     |    |   - `CustomTypeResolver` processes the type.
-     *     |    |   - If not cached:
-     *     |    |       - Build schema for the custom type.
-     *     |    |       - Add schema to cache.
-     *     |    |   - Return schema or reference to schema.
-     *     |    |
-     *     |    +-> No: Skip to next decision check.
      *     |
      *     +-> Is the type an Array?
      *     |    |
@@ -201,11 +188,6 @@ internal class TypeInspector {
             }
 
         val typeSchema: TypeSchema = when {
-            // Handle user defined custom types.
-            // Must be checked always first to allow to override standard types.
-            CustomTypeRegistry.isCustomType(kType = kType) ->
-                customTypeResolver.process(kType = kType)
-
             // Handle primitive arrays (e.g.: IntArray), and typed arrays "Array<T>".
             TypeDescriptor.isArray(kType = kType) ->
                 arrayResolver.traverse(

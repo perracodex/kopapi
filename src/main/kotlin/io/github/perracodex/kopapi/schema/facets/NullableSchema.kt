@@ -5,9 +5,9 @@
 package io.github.perracodex.kopapi.schema.facets
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.perracodex.kopapi.attribute.ParsedAttributes
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.types.DefaultValue
+import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
  * Represents a schema marked as nullable type.
@@ -16,33 +16,11 @@ import io.github.perracodex.kopapi.types.DefaultValue
  *
  * @property description Description of the property.
  * @property defaultValue Default value of the property.
- * @property minLength Property-level minimum length (if applicable).
- * @property maxLength Property-level maximum length (if applicable).
- * @property pattern Property-level pattern (if applicable).
- * @property minimum Property-level minimum value (if applicable).
- * @property maximum Property-level maximum value (if applicable).
- * @property exclusiveMinimum Property-level exclusive minimum value (if applicable).
- * @property exclusiveMaximum Property-level exclusive maximum value (if applicable).
- * @property multipleOf Property-level multipleOf value (if applicable).
- * @property minItems Property-level minimum items (if applicable).
- * @property maxItems Property-level maximum items (if applicable).
- * @property uniqueItems Property-level unique items (if applicable).
  * @property anyOf The list that includes the base schema (with stripped attributes) and null type.
  */
 internal data class NullableSchema private constructor(
     @JsonProperty("description") val description: String? = null,
     @JsonProperty("default") val defaultValue: Any? = null,
-    @JsonProperty("minLength") val minLength: Int? = null,
-    @JsonProperty("maxLength") val maxLength: Int? = null,
-    @JsonProperty("pattern") val pattern: String? = null,
-    @JsonProperty("minimum") val minimum: Number? = null,
-    @JsonProperty("maximum") val maximum: Number? = null,
-    @JsonProperty("exclusiveMinimum") val exclusiveMinimum: Number? = null,
-    @JsonProperty("exclusiveMaximum") val exclusiveMaximum: Number? = null,
-    @JsonProperty("multipleOf") val multipleOf: Number? = null,
-    @JsonProperty("minItems") val minItems: Int? = null,
-    @JsonProperty("maxItems") val maxItems: Int? = null,
-    @JsonProperty("uniqueItems") val uniqueItems: Boolean? = null,
     @JsonProperty("anyOf") val anyOf: List<Any>
 ) : ISchemaFacet {
 
@@ -57,15 +35,7 @@ internal data class NullableSchema private constructor(
             val decomposedSchema: DecomposedSchema = decomposeSchema(schema = schemaProperty.schema)
 
             return NullableSchema(
-                description = decomposedSchema.attributes.description,
-                minLength = decomposedSchema.attributes.minLength,
-                maxLength = decomposedSchema.attributes.maxLength,
-                pattern = decomposedSchema.attributes.pattern,
-                minimum = decomposedSchema.attributes.minimum,
-                maximum = decomposedSchema.attributes.maximum,
-                exclusiveMinimum = decomposedSchema.attributes.exclusiveMinimum,
-                exclusiveMaximum = decomposedSchema.attributes.exclusiveMaximum,
-                multipleOf = decomposedSchema.attributes.multipleOf,
+                description = decomposedSchema.description,
                 defaultValue = decomposedSchema.defaultValue,
                 anyOf = listOf(
                     decomposedSchema.strippedSchema,
@@ -76,37 +46,37 @@ internal data class NullableSchema private constructor(
 
         /**
          * Decomposes the provided schema into its core components:
-         *  - the schema itself with certain attributes removed,
-         *  - the extracted attributes,
-         *  - and any default value.
+         * - The schema structure itself, with general attributes like `description` and `default` removed.
+         * - The `description` and `default` attributes as standalone elements, if they are present.
          *
-         * This decomposition is necessary when creating a nullable schema,
-         * allowing the attributes to be handled separately from the schema's core structure.
+         * This decomposition is required for creating nullable schemas using `anyOf`.
+         * by isolating general attributes from the main schema, this method allows the `anyOf`
+         * composition to retain the primary attributes (like `description` and `default`) at
+         * the top level, while type-specific constraints remain embedded within the base type
+         * definition inside `anyOf`.
          *
          * @param schema The original [ElementSchema] to decompose.
          * @return A [DecomposedSchema] containing the decomposed parts of the schema.
          */
         private fun decomposeSchema(schema: ElementSchema): DecomposedSchema {
-            val attributes: ParsedAttributes = getAttributes(schema = schema)
-
             val strippedSchema: ElementSchema = when (schema) {
                 is ElementSchema.Object ->
-                    ElementSchema.Object(objectProperties = schema.objectProperties)
+                    schema.copy(description = null)
 
                 is ElementSchema.AdditionalProperties ->
-                    ElementSchema.AdditionalProperties(additionalProperties = schema.additionalProperties)
+                    schema.copy(description = null, defaultValue = null)
 
                 is ElementSchema.Array ->
-                    ElementSchema.Array(items = schema.items)
+                    schema.copy(description = null, defaultValue = null)
 
                 is ElementSchema.Enum ->
-                    ElementSchema.Enum(values = schema.values)
+                    schema.copy(description = null, defaultValue = null)
 
                 is ElementSchema.Primitive ->
-                    ElementSchema.Primitive(schemaType = schema.schemaType, format = schema.format)
+                    schema.copy(description = null, defaultValue = null)
 
                 is ElementSchema.Reference ->
-                    ElementSchema.Reference(schemaName = schema.schemaName)
+                    schema.copy(description = null, defaultValue = null)
             }
 
             val defaultValue: Any? = when (schema) {
@@ -120,75 +90,22 @@ internal data class NullableSchema private constructor(
 
             return DecomposedSchema(
                 strippedSchema = strippedSchema,
-                attributes = attributes,
+                description = schema.description.trimOrNull(),
                 defaultValue = (defaultValue as? DefaultValue)?.toValue() ?: defaultValue
             )
-        }
-
-        /**
-         * Maps the attributes from the schema to a [ParsedAttributes] instance.
-         */
-        private fun getAttributes(schema: ElementSchema): ParsedAttributes {
-            return when (schema) {
-                is ElementSchema.Object -> {
-                    ParsedAttributes(
-                        description = schema.description,
-                    )
-                }
-
-                is ElementSchema.AdditionalProperties -> {
-                    ParsedAttributes(
-                        description = schema.description,
-                    )
-                }
-
-                is ElementSchema.Array -> {
-                    ParsedAttributes(
-                        description = schema.description,
-                        minItems = schema.minItems,
-                        maxItems = schema.maxItems,
-                        uniqueItems = schema.uniqueItems,
-                    )
-                }
-
-                is ElementSchema.Enum -> {
-                    ParsedAttributes(
-                        description = schema.description,
-                    )
-                }
-
-                is ElementSchema.Primitive -> {
-                    ParsedAttributes(
-                        description = schema.description,
-                        minLength = schema.minLength,
-                        maxLength = schema.maxLength,
-                        minimum = schema.minimum,
-                        maximum = schema.maximum,
-                        exclusiveMinimum = schema.exclusiveMinimum,
-                        exclusiveMaximum = schema.exclusiveMaximum,
-                        multipleOf = schema.multipleOf,
-                    )
-                }
-
-                is ElementSchema.Reference -> {
-                    ParsedAttributes(
-                        description = schema.description,
-                    )
-                }
-            }
         }
     }
 }
 
 /**
- * Represents the decomposition of an [ElementSchema] into its core parts.
+ * Represents the decomposition of an [ElementSchema].
  *
  * @property strippedSchema The schema with specific attributes removed.
- * @property attributes Attributes extracted from the original schema.
+ * @property description The description associated with the schema, if any.
  * @property defaultValue The default value associated with the schema, if any.
  */
 private data class DecomposedSchema(
     val strippedSchema: ElementSchema,
-    val attributes: ParsedAttributes,
+    val description: String?,
     val defaultValue: Any?
 )

@@ -61,7 +61,6 @@ dependencies {
   - #### [Servers](./.wiki/01.1.plugin-servers.md)
   - #### [Security](./.wiki/01.2.plugin-security.md)
   - #### [Top Level Tags](./.wiki/01.3.plugin-tags.md)
-  - #### [Custom Types](./.wiki/01.4.plugin-custom-types.md)
 
 * ### [API Usage](./.wiki/02.0.api-usage.md)
   - #### [Summary and Description](./.wiki/02.1.api-usage-summary-description.md)

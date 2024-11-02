@@ -7,8 +7,8 @@ package io.github.perracodex.kopapi.inspector.descriptor
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
-import io.github.perracodex.kopapi.attribute.AttributesParser
-import io.github.perracodex.kopapi.attribute.ParsedAttributes
+import io.github.perracodex.kopapi.annotation.AttributesParser
+import io.github.perracodex.kopapi.annotation.ParsedAttributes
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.cleanName

@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.attribute
+package io.github.perracodex.kopapi.annotation
 
 /**
  * Annotation to define attributes for a field, aligned with OpenAPI 3.1 schema specification.
@@ -36,23 +36,25 @@ package io.github.perracodex.kopapi.attribute
  * Non-relevant attributes to a type are ignored. This exclusivity ensures that only pertinent constraints
  * are applied based on the field's data type.
  *
- * @property description A brief description of the field. Defaults to an empty string (ignored if not set).
- * @property minLength Specifies the minimum character length for string types. Ignored if default (-1).
- * @property maxLength Specifies the maximum character length for string types. Ignored if default (-1).
- * @property pattern A regular expression pattern that the field must match. Defaults to an empty string.
+ * @property description A brief description of the field.
+ * @property format Overrides the default format for the field allowing for custom formats.
+ * @property minLength Specifies the minimum character length for string types.
+ * @property maxLength Specifies the maximum character length for string types.
+ * @property pattern A regular expression pattern that the field must match.
  * @property minimum The minimum allowed value for numeric types, as a string.
  * @property maximum The maximum allowed value for numeric types, as a string.
  * @property exclusiveMinimum Defines an exclusive lower bound for numeric types, as a string.
  * @property exclusiveMaximum Defines an exclusive upper bound for numeric types, as a string.
  * @property multipleOf Constrains the field value to be a multiple of this number, as a string.
- * @property minItems Specifies the minimum number of items in an array. Ignored if default (-1).
- * @property maxItems Specifies the maximum number of items in an array. Ignored if default (-1).
- * @property uniqueItems Specifies that all items in an array must be unique. Defaults to `false`.
+ * @property minItems Specifies the minimum number of items in an array.
+ * @property maxItems Specifies the maximum number of items in an array.
+ * @property uniqueItems Specifies that all items in an array must be unique.
  */
 @Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-public annotation class Attributes(
+public annotation class Schema(
     val description: String = "",
+    val format: String = "",
     val minLength: Int = -1,
     val maxLength: Int = -1,
     val pattern: String = "",

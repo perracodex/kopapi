@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.attribute
+package io.github.perracodex.kopapi.annotation
 
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -12,13 +12,13 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.full.findAnnotation
 
 /**
- * Utility class to parse the [Attributes] annotation from a property and return a [ParsedAttributes] object.
+ * Utility class to parse the [Schema] annotation from a property and return a [ParsedAttributes] object.
  */
 internal object AttributesParser {
     private val tracer = Tracer<AttributesParser>()
 
     /**
-     * Parses the [Attributes] annotation from the given property and returns a [ParsedAttributes] object.
+     * Parses the [Schema] annotation from the given property and returns a [ParsedAttributes] object.
      *
      * @param property The [KProperty] to parse, which may contain an `Attributes` annotation.
      * @return A `ParsedAttributes` instance with the parsed constraints,
@@ -27,15 +27,18 @@ internal object AttributesParser {
     fun parse(property: KProperty<*>): ParsedAttributes? {
         return runCatching {
             // Retrieve the Attributes annotation from the property.
-            val attributes: Attributes = property.findAnnotation<Attributes>() ?: return null
+            val attributes: Schema = property.findAnnotation<Schema>() ?: return null
 
-            // Extract description and length constraints.
+            // Common attributes.
             val description: String? = attributes.description.trimOrNull()
-            val minLength: Int? = if (attributes.minLength != -1) attributes.minLength else null
-            val maxLength: Int? = if (attributes.maxLength != -1) attributes.maxLength else null
+            val format: String? = attributes.format.trimOrNull()
+
+            // String-specific constraints.
+            val minLength: Int? = attributes.minLength.takeIf { it >= 0 }
+            val maxLength: Int? = attributes.maxLength.takeIf { it >= 0 }
             val pattern: String? = attributes.pattern.trimOrNull()
 
-            // Extract numeric constraints based on property type.
+            // Numeric-specific constraints.
             val minimum: Number? = parseNumber(value = attributes.minimum, classifier = property.returnType.classifier)
             val maximum: Number? = parseNumber(value = attributes.maximum, classifier = property.returnType.classifier)
             val exclusiveMinimum: Number? = parseNumber(value = attributes.exclusiveMinimum, classifier = property.returnType.classifier)
@@ -43,9 +46,9 @@ internal object AttributesParser {
             val multipleOf: Number? = parseNumber(value = attributes.multipleOf, classifier = property.returnType.classifier)
 
             // Array-specific constraints.
-            val minItems: Int? = if (attributes.minItems != -1) attributes.minItems else null
-            val maxItems: Int? = if (attributes.maxItems != -1) attributes.maxItems else null
-            val uniqueItems: Boolean? = if (attributes.uniqueItems) true else null
+            val minItems: Int? = attributes.minItems.takeIf { it >= 0 }
+            val maxItems: Int? = attributes.maxItems.takeIf { it >= 0 }
+            val uniqueItems: Boolean? = attributes.uniqueItems.takeIf { it }
 
             // If all parsed values are null, return null.
             if (description == null && minLength == null && maxLength == null && pattern == null &&
@@ -59,6 +62,7 @@ internal object AttributesParser {
             // Return the parsed attributes for this property.
             return ParsedAttributes(
                 description = description,
+                format = format,
                 minLength = minLength,
                 maxLength = maxLength,
                 pattern = pattern,

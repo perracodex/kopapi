@@ -6,7 +6,6 @@ package io.github.perracodex.kopapi.plugin
 
 import io.github.perracodex.kopapi.dsl.common.SecuritySchemeConfigurable
 import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
-import io.github.perracodex.kopapi.dsl.plugin.builders.CustomTypeBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.TagBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.server.ServerBuilder
@@ -14,13 +13,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
-import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
-import io.github.perracodex.kopapi.inspector.custom.CustomType
-import io.github.perracodex.kopapi.inspector.custom.CustomTypeRegistry
-import io.github.perracodex.kopapi.types.ApiFormat
-import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.trimOrDefault
-import kotlin.reflect.typeOf
 
 /**
  * Configuration for the [Kopapi] plugin.
@@ -190,82 +183,6 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
     public fun tags(init: TagBuilder.() -> Unit) {
         val builder: TagBuilder = TagBuilder().apply(init)
         tags.addAll(builder.build())
-    }
-
-    /**
-     * Registers a new `custom type` to be used when generating the OpenAPI schema.
-     *
-     * #### Syntax
-     * ```
-     * addType<T>(ApiType, String) { configuration }
-     * ```
-     * Where `T` is the new Object class to register, `ApiType` is the type to be used in the OpenAPI schema,
-     * and `format` is a free-text to define the expected api format.
-     *
-     * #### Sample
-     * ```
-     * addType<Quote>(ApiType.STRING) {
-     *      maxLength = 256
-     * }
-     *
-     * addType<DiscountRate>(ApiType.NUMBER, "percentage") {
-     *      minimum = 0
-     *      maximum = 100
-     * }
-     * ```
-     *
-     * @param T The new type to register. [Unit] and [Any] are not allowed.
-     * @param type The [ApiType] to be used in the OpenAPI schema.
-     * @param format Free-text to define expected api format, either standard or custom.
-     * @param configure A lambda receiver to configure the [CustomTypeBuilder].
-     *
-     * @see [CustomTypeBuilder]
-     */
-    @OptIn(TypeInspectorApi::class)
-    public inline fun <reified T : Any> addType(
-        type: ApiType,
-        format: String? = null,
-        configure: CustomTypeBuilder.() -> Unit = {}
-    ) {
-        val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
-        val newCustomType: CustomType = builder.build(type = typeOf<T>(), apiType = type, apiFormat = format)
-        CustomTypeRegistry.register(newCustomType)
-    }
-
-    /**
-     * Registers a new `custom type` to be used when generating the OpenAPI schema.
-     *
-     * #### Syntax
-     * ```
-     * addType<T>(ApiType, ApiFormat) { configuration }
-     * ```
-     * Where `T` is the new Object class to register, `ApiType` is the type to be used in the OpenAPI schema,
-     * and `format` is a field to define the expected api format.
-     *
-     * #### Sample
-     * ```
-     * addType<Pin>(ApiType.NUMBER, ApiFormat.INT32) {
-     *      minimum = 4
-     *      maximum = 6
-     * }
-     * ```
-     *
-     * @param T The new type to register. [Unit] and [Any] are not allowed.
-     * @param type The [ApiType] to be used in the OpenAPI schema.
-     * @param format The [ApiFormat] to be used in the OpenAPI schema.
-     * @param configure A lambda receiver to configure the [CustomTypeBuilder].
-     *
-     * @see [CustomTypeBuilder]
-     */
-    @OptIn(TypeInspectorApi::class)
-    public inline fun <reified T : Any> addType(
-        type: ApiType,
-        format: ApiFormat,
-        configure: CustomTypeBuilder.() -> Unit = {}
-    ) {
-        val builder: CustomTypeBuilder = CustomTypeBuilder().apply(configure)
-        val newCustomType: CustomType = builder.build(type = typeOf<T>(), apiType = type, apiFormat = format)
-        CustomTypeRegistry.register(newCustomType)
     }
 
     /**
