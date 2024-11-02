@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.safeName
+import kotlin.reflect.KType
 
 /**
  * Defines the core element schemas used in OpenAPI.
@@ -155,6 +156,7 @@ internal sealed class ElementSchema(
     data class Reference(
         @JsonIgnore override val definition: String = Reference::class.safeName(),
         @JsonIgnore override val schemaType: ApiType = ApiType.OBJECT,
+        @JsonIgnore val referencedType: KType,
         @JsonIgnore val schemaName: String,
         @JsonProperty("description") override val description: String? = null,
         @JsonProperty("default") val defaultValue: Any? = null

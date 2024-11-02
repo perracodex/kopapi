@@ -65,7 +65,7 @@ internal class EnumResolver(private val typeInspector: TypeInspector) {
         return TypeSchema.of(
             name = enumClassName,
             kType = enumKType,
-            schema = SchemaFactory.ofReference(schemaName = enumClassName.name)
+            schema = SchemaFactory.ofReference(schemaName = enumClassName.name, referencedType = enumKType)
         )
     }
 }

@@ -173,7 +173,7 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
         return TypeSchema.of(
             name = ElementName(name = genericsTypeName),
             kType = kType,
-            schema = SchemaFactory.ofReference(schemaName = genericsTypeName)
+            schema = SchemaFactory.ofReference(schemaName = genericsTypeName, referencedType = kType)
         )
     }
 

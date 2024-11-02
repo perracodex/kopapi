@@ -113,7 +113,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
             return TypeSchema.of(
                 name = className,
                 kType = kType,
-                schema = SchemaFactory.ofReference(schemaName = className.name)
+                schema = SchemaFactory.ofReference(schemaName = className.name, referencedType = kType)
             )
         }
         semaphore.add(kType.nativeName())
@@ -152,7 +152,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
         return TypeSchema.of(
             name = className,
             kType = kType,
-            schema = SchemaFactory.ofReference(schemaName = className.name)
+            schema = SchemaFactory.ofReference(schemaName = className.name, referencedType = kType)
         )
     }
 }
