@@ -15,10 +15,7 @@ import io.ktor.server.routing.*
  * @param openapiYamlUrl The URL to access the OpenAPI schema in YAML format.
  * @param redocUrl The base URL to access the `Redoc` interface.
  */
-internal fun Routing.redocRoute(
-    openapiYamlUrl: String,
-    redocUrl: String
-) {
+internal fun Routing.redocRoute(openapiYamlUrl: String, redocUrl: String) {
     get(redocUrl) {
         val response: String = Swagger.getRedocHtml(openapiYamlUrl = openapiYamlUrl)
         call.respondText(text = response, contentType = ContentType.Text.Html)

@@ -22,9 +22,7 @@ import java.io.StringWriter
  * @param debugUrl The URL to access the debug panel.
  */
 @OptIn(DebugViewApi::class)
-internal fun Routing.debugRoute(
-    debugUrl: String
-) {
+internal fun Routing.debugRoute(debugUrl: String) {
     staticResources(remotePath = "/static-kopapi", basePackage = "debug")
 
     get(debugUrl) {

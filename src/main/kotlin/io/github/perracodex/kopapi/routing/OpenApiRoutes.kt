@@ -15,10 +15,7 @@ import io.ktor.server.routing.*
  * @param openapiJsonUrl The URL to access the OpenAPI schema in JSON format.
  * @param openapiYamlUrl The URL to access the OpenAPI schema in YAML format.
  */
-internal fun Routing.openApiRoutes(
-    openapiJsonUrl: String,
-    openapiYamlUrl: String
-) {
+internal fun Routing.openApiRoutes(openapiJsonUrl: String, openapiYamlUrl: String) {
     get(openapiJsonUrl) {
         val openapiJson: String = SchemaRegistry.getOpenApiSchema(format = SchemaRegistry.Format.JSON)
         call.respondText(text = openapiJson, contentType = ContentType.Application.Json)

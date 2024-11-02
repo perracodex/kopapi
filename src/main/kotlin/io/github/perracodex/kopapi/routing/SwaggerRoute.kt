@@ -16,10 +16,7 @@ import io.ktor.server.routing.*
  * @param openapiYamlUrl The URL to access the OpenAPI schema in YAML format.
  * @param swaggerUrl The base URL to access the Swagger UI interface.
  */
-internal fun Routing.swaggerRoute(
-    openapiYamlUrl: String,
-    swaggerUrl: String
-) {
+internal fun Routing.swaggerRoute(openapiYamlUrl: String, swaggerUrl: String) {
     /**
      * Redirect to the main Swagger UI HTML page.
      */
