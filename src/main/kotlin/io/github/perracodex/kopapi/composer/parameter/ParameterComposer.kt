@@ -80,14 +80,12 @@ internal object ParameterComposer {
     private fun applyDefaultValue(baseSchema: ElementSchema, defaultValue: DefaultValue): ElementSchema {
         tracer.debug("Applying default value to schema: ${baseSchema.definition}")
         return when (baseSchema) {
-            is ElementSchema.Object -> baseSchema.copy(defaultValue = defaultValue.toValue())
-            is ElementSchema.Reference -> baseSchema.copy(defaultValue = defaultValue.toValue())
-            is ElementSchema.Primitive -> baseSchema.copy(defaultValue = defaultValue.toValue())
-            is ElementSchema.Enum -> baseSchema.copy(defaultValue = defaultValue.toValue())
-            is ElementSchema.Array -> baseSchema.copy(defaultValue = defaultValue.toValue())
             is ElementSchema.AdditionalProperties -> baseSchema.copy(defaultValue = defaultValue.toValue())
-            is ElementSchema.TransformedObject -> baseSchema.copy(defaultValue = defaultValue.toValue())
-            else -> throw KopapiException("Unsupported schema type for defaultValue: ${baseSchema.definition}")
+            is ElementSchema.Array -> baseSchema.copy(defaultValue = defaultValue.toValue())
+            is ElementSchema.Enum -> baseSchema.copy(defaultValue = defaultValue.toValue())
+            is ElementSchema.Primitive -> baseSchema.copy(defaultValue = defaultValue.toValue())
+            is ElementSchema.Reference -> baseSchema.copy(defaultValue = defaultValue.toValue())
+            else -> baseSchema
         }
     }
 }

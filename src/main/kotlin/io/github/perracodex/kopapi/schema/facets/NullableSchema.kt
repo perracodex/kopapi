@@ -72,6 +72,10 @@ internal data class NullableSchema private constructor(
          */
         private fun stripAttributes(schema: ElementSchema): ElementSchema {
             return when (schema) {
+                is ElementSchema.Object -> schema.copy(
+                    description = null
+                )
+
                 is ElementSchema.AdditionalProperties -> schema.copy(
                     description = null,
                     minLength = null,
@@ -131,8 +135,6 @@ internal data class NullableSchema private constructor(
                     multipleOf = null,
                     defaultValue = null
                 )
-
-                else -> schema
             }
         }
     }

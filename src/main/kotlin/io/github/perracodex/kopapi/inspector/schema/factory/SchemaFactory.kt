@@ -19,7 +19,7 @@ import io.github.perracodex.kopapi.types.ApiType
 internal object SchemaFactory {
     /** Creates a specification entry for an `object` type. */
     fun ofObject(): ElementSchema.Object {
-        return ElementSchema.Object(properties = mutableMapOf())
+        return ElementSchema.Object()
     }
 
     /** Creates a specification entry for a `string` primitive type. */

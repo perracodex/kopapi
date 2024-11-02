@@ -45,7 +45,7 @@ internal object ComponentComposer {
                 val properties: MutableMap<String, ISchemaFacet> = mutableMapOf()
                 val required: MutableSet<String> = mutableSetOf()
 
-                schema.properties.forEach { (name, property) ->
+                schema.objectProperties.forEach { (name, property) ->
                     // Skip transient properties and rebuild the schema if necessary.
                     if (!property.isTransient) {
                         val rebuiltSchema: ISchemaFacet = if (property.isNullable) {
@@ -63,8 +63,8 @@ internal object ComponentComposer {
                 }
 
                 // Return a new transformed object schema.
-                ElementSchema.TransformedObject(
-                    schemaType = schema.schemaType,
+                schema.copy(
+                    objectProperties = mutableMapOf(),
                     properties = properties.takeIf { it.isNotEmpty() },
                     required = required.takeIf { it.isNotEmpty() }
                 )

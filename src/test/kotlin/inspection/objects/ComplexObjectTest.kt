@@ -68,25 +68,25 @@ class ComplexObjectTest {
         assertTrue(actual = userSchema.schema is ElementSchema.Object, message = "User schema should be a Schema.Object")
 
         // Validate User properties.
-        assertEquals(expected = 6, actual = userSchema.schema.properties.size, message = "User should have six properties")
+        assertEquals(expected = 6, actual = userSchema.schema.objectProperties.size, message = "User should have six properties")
 
         // Validate individual properties.
         validateProperty(
-            properties = userSchema.schema.properties,
+            properties = userSchema.schema.objectProperties,
             propertyName = "id",
             expectedType = ApiType.INTEGER,
             expectedFormat = ApiFormat.INT32
         )
 
         validateProperty(
-            properties = userSchema.schema.properties,
+            properties = userSchema.schema.objectProperties,
             propertyName = "name",
             expectedType = ApiType.STRING,
             isRequired = true
         )
 
         validateProperty(
-            properties = userSchema.schema.properties,
+            properties = userSchema.schema.objectProperties,
             propertyName = "email",
             expectedType = ApiType.STRING,
             isNullable = true,
@@ -94,7 +94,7 @@ class ComplexObjectTest {
         )
 
         validateProperty(
-            properties = userSchema.schema.properties,
+            properties = userSchema.schema.objectProperties,
             propertyName = "status",
             expectedType = ApiType.OBJECT,
             isEnum = true,
@@ -102,7 +102,7 @@ class ComplexObjectTest {
         )
 
         validateProperty(
-            properties = userSchema.schema.properties,
+            properties = userSchema.schema.objectProperties,
             propertyName = "addresses",
             expectedType = ApiType.ARRAY,
             itemsType = ApiType.OBJECT,
@@ -110,7 +110,7 @@ class ComplexObjectTest {
         )
 
         validateProperty(
-            properties = userSchema.schema.properties,
+            properties = userSchema.schema.objectProperties,
             propertyName = "attributes",
             expectedType = ApiType.OBJECT,
             hasAdditionalProperties = true
@@ -121,7 +121,7 @@ class ComplexObjectTest {
             ?: fail("Address schema not found")
         assertTrue(actual = addressSchema.schema is ElementSchema.Object, message = "Address schema should be a Schema.Object")
 
-        val addressProperties: MutableMap<String, SchemaProperty> = addressSchema.schema.properties
+        val addressProperties: MutableMap<String, SchemaProperty> = addressSchema.schema.objectProperties
         assertEquals(expected = 3, actual = addressProperties.size, message = "Address should have three properties")
 
         // Validate Address properties.

@@ -276,7 +276,7 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
                 typeArgumentBindings = mergedTypeArgumentBindings
             )
 
-            propertiesSchemas.properties[name] = schemaProperty
+            propertiesSchemas.objectProperties[name] = schemaProperty
         }
     }
 }

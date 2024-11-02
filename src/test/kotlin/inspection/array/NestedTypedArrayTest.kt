@@ -66,7 +66,7 @@ class NestedTypedArrayTest {
         )
 
         // Validate the 'data' property.
-        val dataProperty: SchemaProperty = nestedBoxArraySchema.schema.properties["data"]
+        val dataProperty: SchemaProperty = nestedBoxArraySchema.schema.objectProperties["data"]
             ?: fail("Property 'data' not found in NestedBoxArray schema")
 
         // Check if 'data' property is nullable.
@@ -112,20 +112,20 @@ class NestedTypedArrayTest {
         // Validate Box properties.
         assertEquals(
             expected = 2,
-            actual = boxSchema.schema.properties.size,
+            actual = boxSchema.schema.objectProperties.size,
             message = "Box should have two properties"
         )
 
         // Validate individual properties.
         validateProperty(
-            properties = boxSchema.schema.properties,
+            properties = boxSchema.schema.objectProperties,
             propertyName = "label",
             expectedType = ApiType.STRING,
             isRequired = true
         )
 
         validateProperty(
-            properties = boxSchema.schema.properties,
+            properties = boxSchema.schema.objectProperties,
             propertyName = "weight",
             expectedType = ApiType.NUMBER,
             expectedFormat = ApiFormat.DOUBLE,

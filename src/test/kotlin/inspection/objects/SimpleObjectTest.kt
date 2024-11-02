@@ -57,7 +57,7 @@ class SimpleObjectTest {
         assertTrue(actual = schema.schema is ElementSchema.Object, message = "Expected schema to be a Schema.Object")
 
         // Validate schema properties.
-        val properties: MutableMap<String, SchemaProperty> = schema.schema.properties
+        val properties: MutableMap<String, SchemaProperty> = schema.schema.objectProperties
         assertEquals(expected = 3, actual = properties.size, message = "Properties should contain exactly three entries")
 
         // Assert each of the properties.

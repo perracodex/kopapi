@@ -141,7 +141,7 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
                 typeArgumentBindings = typeArgumentBindings
             )
 
-            propertiesSchemas.properties[name] = schemaProperty
+            propertiesSchemas.objectProperties[name] = schemaProperty
         }
 
         // Once done traversing remove the processing type from the in-memory

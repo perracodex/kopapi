@@ -28,46 +28,32 @@ import io.github.perracodex.kopapi.utils.safeName
  */
 internal sealed class ElementSchema(
     @JsonIgnore open val definition: String,
-    open val description: String? = null,
-    open val minLength: Int? = null,
-    open val maxLength: Int? = null,
-    open val minimum: Number? = null,
-    open val maximum: Number? = null,
-    open val exclusiveMinimum: Number? = null,
-    open val exclusiveMaximum: Number? = null,
-    open val multipleOf: Number? = null,
-    open val defaultValue: Any? = null
+    @JsonIgnore open val description: String? = null,
+    @JsonIgnore open val minLength: Int? = null,
+    @JsonIgnore open val maxLength: Int? = null,
+    @JsonIgnore open val minimum: Number? = null,
+    @JsonIgnore open val maximum: Number? = null,
+    @JsonIgnore open val exclusiveMinimum: Number? = null,
+    @JsonIgnore open val exclusiveMaximum: Number? = null,
+    @JsonIgnore open val multipleOf: Number? = null,
+    @JsonIgnore open val defaultValue: Any? = null
 ) : ISchemaFacet {
     /**
      * Represents an object schema with a set of named properties.
-     * This class holds the raw schema data before transformation into OpenAPI format.
      *
      * @property schemaType The API type of the schema as defined in the OpenAPI specification.
-     * @property properties A map of property names to their corresponding schemas and metadata.
-     */
-    data class Object(
-        override val definition: String = Object::class.safeName(),
-        val schemaType: ApiType = ApiType.OBJECT,
-        val properties: MutableMap<String, SchemaProperty> = mutableMapOf(),
-        override val defaultValue: Any? = null
-    ) : ElementSchema(definition = definition, defaultValue = defaultValue)
-
-    /**
-     * Represents a transformed object schema ready for OpenAPI generation.
-     *
-     * @property schemaType The API type of the schema as defined in the OpenAPI specification.
-     * @property properties A map of property names to their corresponding schemas and metadata.
+     * @property objectProperties A map of property names to their corresponding raw schemas and metadata.
+     * @property properties A map of property names to their corresponding OpenAPI schemas.
      * @property required A set of required property names.
      */
-    data class TransformedObject(
-        @JsonIgnore override val definition: String = TransformedObject::class.safeName(),
+    data class Object(
+        @JsonIgnore override val definition: String = Object::class.safeName(),
         @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
+        @JsonIgnore val objectProperties: MutableMap<String, SchemaProperty> = mutableMapOf(),
         @JsonProperty("description") override val description: String? = null,
-        @JsonProperty("properties") val properties: Map<String, ISchemaFacet>?,
-        @JsonProperty("required") val required: MutableSet<String>?,
-        @JsonProperty("default") override val defaultValue: Any? = null
-    ) : ElementSchema(definition = definition, defaultValue = defaultValue)
-
+        @JsonProperty("properties") val properties: Map<String, ISchemaFacet>? = null,
+        @JsonProperty("required") val required: MutableSet<String>? = null
+    ) : ElementSchema(definition = definition)
 
     /**
      * Represents an array schema, defining a collection of items of a specified schema.
