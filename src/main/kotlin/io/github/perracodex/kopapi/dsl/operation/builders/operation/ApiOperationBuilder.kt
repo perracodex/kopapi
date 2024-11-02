@@ -57,6 +57,7 @@ import kotlin.reflect.typeOf
  * - [mutualTLSSecurity]: Adds a mutual TLS security scheme to the API metadata.
  * - [oauth2Security]: Adds an OAuth 2.0 security scheme to the API metadata.
  * - [openIdConnectSecurity]: Adds an OpenID Connect security scheme to the API metadata.
+ * - [skipSecurity]: Disables all security schemes for the API operation.
  *
  * #### Sample Usage
  * ```
