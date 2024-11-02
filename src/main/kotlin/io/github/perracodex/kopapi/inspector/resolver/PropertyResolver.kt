@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.inspector.resolver
 
-import io.github.perracodex.kopapi.annotation.ParsedAttributes
+import io.github.perracodex.kopapi.annotation.SchemaAttributeBinder
 import io.github.perracodex.kopapi.inspector.TypeInspector
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.inspector.descriptor.MetadataDescriptor
@@ -78,7 +78,7 @@ internal class PropertyResolver(private val typeInspector: TypeInspector) {
                     typeSchema.schema
 
                 else ->
-                    ParsedAttributes.ofElementSchema(
+                    SchemaAttributeBinder.apply(
                         schema = typeSchema.schema,
                         attributes = attributes
                     )

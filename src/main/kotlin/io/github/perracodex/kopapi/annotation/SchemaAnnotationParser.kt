@@ -12,25 +12,27 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.full.findAnnotation
 
 /**
- * Utility class to parse the [Schema] annotation from a property and return a [ParsedAttributes] object.
+ * Utility class to parse the [Schema] annotation from a property and return a [SchemaAnnotationAttributes] object.
  */
-internal object AttributesParser {
-    private val tracer = Tracer<AttributesParser>()
+internal object SchemaAnnotationParser {
+    private val tracer = Tracer<SchemaAnnotationParser>()
 
     /**
-     * Parses the [Schema] annotation from the given property and returns a [ParsedAttributes] object.
+     * Parses the [Schema] annotation from the given property and returns a [SchemaAnnotationAttributes] object.
      *
      * @param property The [KProperty] to parse, which may contain an `Attributes` annotation.
-     * @return A `ParsedAttributes` instance with the parsed constraints,
+     * @return A `SchemaAnnotationAttributes` instance with the parsed constraints,
      * or `null` if the property is not annotated with `Attributes`.
      */
-    fun parse(property: KProperty<*>): ParsedAttributes? {
+    fun parse(property: KProperty<*>): SchemaAnnotationAttributes? {
         return runCatching {
             // Retrieve the Attributes annotation from the property.
-            val attributes: Schema = property.findAnnotation<Schema>() ?: return null
+            val attributes: Schema = property.findAnnotation<Schema>()
+                ?: return null
 
             // Common attributes.
             val description: String? = attributes.description.trimOrNull()
+            val defaultValue: String? = attributes.defaultValue.trimOrNull()
             val format: String? = attributes.format.trimOrNull()
 
             // String-specific constraints.
@@ -50,18 +52,26 @@ internal object AttributesParser {
             val maxItems: Int? = attributes.maxItems.takeIf { it >= 0 }
             val uniqueItems: Boolean? = attributes.uniqueItems.takeIf { it }
 
+
             // If all parsed values are null, return null.
-            if (description == null && minLength == null && maxLength == null && pattern == null &&
-                minimum == null && maximum == null && exclusiveMinimum == null &&
-                exclusiveMaximum == null && multipleOf == null &&
-                minItems == null && maxItems == null && uniqueItems == null
-            ) {
+            val hasAssignedAttributes: Boolean = listOfNotNull(
+                // Common attributes.
+                description, defaultValue, format,
+                // String-specific constraints.
+                minLength, maxLength, pattern,
+                // Numeric-specific constraints.
+                minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf,
+                // Array-specific constraints.
+                minItems, maxItems, uniqueItems
+            ).isNotEmpty()
+            if (!hasAssignedAttributes) {
                 return null
             }
 
             // Return the parsed attributes for this property.
-            return ParsedAttributes(
+            return SchemaAnnotationAttributes(
                 description = description,
+                defaultValue = defaultValue,
                 format = format,
                 minLength = minLength,
                 maxLength = maxLength,
@@ -76,7 +86,7 @@ internal object AttributesParser {
                 uniqueItems = uniqueItems
             )
         }.onFailure {
-            tracer.error("Failed to parse `Attributes` annotation for property ${property.name}: ${it.message}")
+            tracer.error("Failed to parse `@Schema` annotation for property ${property.name}: ${it.message}")
         }.getOrNull()
     }
 
@@ -96,11 +106,16 @@ internal object AttributesParser {
 
         // Try parsing based on the classifier first
         val parsedNumber: Number? = when (classifier) {
-            Int::class, UInt::class, Short::class, UShort::class, Byte::class, UByte::class -> value.toIntOrNull()
+            Int::class, UInt::class,
+            Short::class, UShort::class,
+            Byte::class, UByte::class,
+            Char::class -> value.toIntOrNull()
+
             Long::class, ULong::class -> value.toLongOrNull()
             Float::class -> value.toFloatOrNull()
             Double::class -> value.toDoubleOrNull()
             BigDecimal::class -> value.toBigDecimalOrNull()
+
             else -> null // If classifier isn't a specific numeric type, fall back to generic parsing.
         }
 

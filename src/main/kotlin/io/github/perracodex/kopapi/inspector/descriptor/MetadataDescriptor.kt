@@ -7,8 +7,8 @@ package io.github.perracodex.kopapi.inspector.descriptor
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
-import io.github.perracodex.kopapi.annotation.AttributesParser
-import io.github.perracodex.kopapi.annotation.ParsedAttributes
+import io.github.perracodex.kopapi.annotation.SchemaAnnotationAttributes
+import io.github.perracodex.kopapi.annotation.SchemaAnnotationParser
 import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.cleanName
@@ -34,7 +34,7 @@ import kotlin.reflect.full.primaryConstructor
 @TypeInspectorApi
 internal data class MetadataDescriptor(
     val name: String,
-    val attributes: ParsedAttributes? = null,
+    val attributes: SchemaAnnotationAttributes? = null,
     val renamedFrom: String? = null,
     val isRequired: Boolean = true,
     val isNullable: Boolean = false,
@@ -66,7 +66,7 @@ internal data class MetadataDescriptor(
         ): MetadataDescriptor {
             val elementName: ElementName = geElementName(target = property)
 
-            val attributes: ParsedAttributes? = AttributesParser.parse(property = property)
+            val attributes: SchemaAnnotationAttributes? = SchemaAnnotationParser.parse(property = property)
 
             val isTransient: Boolean = property.isTransient()
             val isNullable: Boolean = property.isNullable()

@@ -14,17 +14,26 @@ package io.github.perracodex.kopapi.annotation
  *    val firstName: String,
  *
  *    @Schema(description = "The age of the person.", minimum = "1", maximum = "120")
- *    val age: String
+ *    val age: Int
+ *
+ *    @Schema(description = "The list of hobbies.", minItems = 1, maxItems = 5, uniqueItems = true)
+ *    val hobbies: List<String>
+ *
+ *    @Schema(description = "Choice of colors.", defaultValue = "RED")
+ *    val color: Color
+ *
+ *    @Schema(description = "The user's email address.", pattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")
+ *    val email: String
+ *
+ *    @Schema(description = "The person's rating.", exclusiveMinimum = "0", exclusiveMaximum = "5")
+ *    val rating: Double
+ *
+ *    @Schema(description = "The total amount due, in whole dollars.", multipleOf = "5")
+ *    val amountDue: Int
  *
  *    // ...
  * )
  * ```
- *
- * #### Property Notes:
- * - **Default Values**: If a property is left as the default, it is considered "not set" and will be ignored.
- * - **Numeric Properties** (`minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, `multipleOf`):
- *   - These properties must be valid numeric strings if set.
- *   - Parsing will be based on the annotated field's type (e.g., `Int`, `Double`).
  *
  * #### Attribute Applicability
  *
@@ -33,10 +42,10 @@ package io.github.perracodex.kopapi.annotation
  * - **Numeric Fields**: `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, `multipleOf`
  * - **Array Fields**: `minItems`, `maxItems`, `uniqueItems`
  *
- * Non-relevant attributes to a type are ignored. This exclusivity ensures that only pertinent constraints
- * are applied based on the field's data type.
+ * Non-relevant attributes to a type are ignored.
  *
  * @property description A brief description of the field.
+ * @property defaultValue A default value for the field.
  * @property format Overrides the default format for the field allowing for custom formats.
  * @property minLength Specifies the minimum character length for string types.
  * @property maxLength Specifies the maximum character length for string types.
@@ -52,8 +61,10 @@ package io.github.perracodex.kopapi.annotation
  */
 @Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@MustBeDocumented
 public annotation class Schema(
     val description: String = "",
+    val defaultValue: String = "",
     val format: String = "",
     val minLength: Int = -1,
     val maxLength: Int = -1,
@@ -65,5 +76,5 @@ public annotation class Schema(
     val multipleOf: String = "",
     val minItems: Int = -1,
     val maxItems: Int = -1,
-    val uniqueItems: Boolean = false,
+    val uniqueItems: Boolean = false
 )

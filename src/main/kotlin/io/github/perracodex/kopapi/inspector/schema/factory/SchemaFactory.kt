@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
+import kotlin.reflect.KType
 
 /**
  * Provides factory methods for creating [ElementSchema] instances.
@@ -131,9 +132,10 @@ internal object SchemaFactory {
      * Creates a specification entry for a `reference` to a schema.
      *
      * @param schemaName The name of the schema to reference.
+     * @param referencedType The type of the schema being referenced.
      * @return The [ElementSchema.Reference]] instance for the schema reference.
      */
-    fun ofReference(schemaName: String): ElementSchema.Reference {
-        return ElementSchema.Reference(schemaName = schemaName)
+    fun ofReference(schemaName: String, referencedType: KType): ElementSchema.Reference {
+        return ElementSchema.Reference(schemaName = schemaName, referencedType = referencedType)
     }
 }
