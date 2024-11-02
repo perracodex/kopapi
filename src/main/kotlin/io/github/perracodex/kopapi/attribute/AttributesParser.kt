@@ -33,6 +33,7 @@ internal object AttributesParser {
             val description: String? = attributes.description.trimOrNull()
             val minLength: Int? = if (attributes.minLength != -1) attributes.minLength else null
             val maxLength: Int? = if (attributes.maxLength != -1) attributes.maxLength else null
+            val pattern: String? = attributes.pattern.trimOrNull()
 
             // Extract numeric constraints based on property type.
             val minimum: Number? = parseNumber(value = attributes.minimum, classifier = property.returnType.classifier)
@@ -41,10 +42,16 @@ internal object AttributesParser {
             val exclusiveMaximum: Number? = parseNumber(value = attributes.exclusiveMaximum, classifier = property.returnType.classifier)
             val multipleOf: Number? = parseNumber(value = attributes.multipleOf, classifier = property.returnType.classifier)
 
+            // Array-specific constraints.
+            val minItems: Int? = if (attributes.minItems != -1) attributes.minItems else null
+            val maxItems: Int? = if (attributes.maxItems != -1) attributes.maxItems else null
+            val uniqueItems: Boolean? = if (attributes.uniqueItems) true else null
+
             // If all parsed values are null, return null.
-            if (description == null && minLength == null && maxLength == null &&
+            if (description == null && minLength == null && maxLength == null && pattern == null &&
                 minimum == null && maximum == null && exclusiveMinimum == null &&
-                exclusiveMaximum == null && multipleOf == null
+                exclusiveMaximum == null && multipleOf == null &&
+                minItems == null && maxItems == null && uniqueItems == null
             ) {
                 return null
             }
@@ -54,11 +61,15 @@ internal object AttributesParser {
                 description = description,
                 minLength = minLength,
                 maxLength = maxLength,
+                pattern = pattern,
                 minimum = minimum,
                 maximum = maximum,
                 exclusiveMinimum = exclusiveMinimum,
                 exclusiveMaximum = exclusiveMaximum,
-                multipleOf = multipleOf
+                multipleOf = multipleOf,
+                minItems = minItems,
+                maxItems = maxItems,
+                uniqueItems = uniqueItems
             )
         }.onFailure {
             tracer.error("Failed to parse `Attributes` annotation for property ${property.name}: ${it.message}")

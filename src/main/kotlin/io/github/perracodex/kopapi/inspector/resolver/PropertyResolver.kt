@@ -74,12 +74,14 @@ internal class PropertyResolver(private val typeInspector: TypeInspector) {
         // If attribute metadata is present, apply it to the schema.
         val schema: ElementSchema = metadata.attributes?.let { attributes ->
             when (typeSchema.schema) {
-                is ElementSchema.AdditionalProperties -> typeSchema.schema.copyWithAttributes(attributes = attributes)
-                is ElementSchema.Array -> typeSchema.schema.copyWithAttributes(attributes = attributes)
-                is ElementSchema.Enum -> typeSchema.schema.copyWithAttributes(attributes = attributes)
-                is ElementSchema.Primitive -> typeSchema.schema.copyWithAttributes(attributes = attributes)
-                is ElementSchema.Reference -> typeSchema.schema.copyWithAttributes(attributes = attributes)
-                else -> typeSchema.schema
+                is ElementSchema.Object ->
+                    typeSchema.schema
+
+                else ->
+                    ParsedAttributes.ofElementSchema(
+                        schema = typeSchema.schema,
+                        attributes = attributes
+                    )
             }
         } ?: typeSchema.schema
 
@@ -175,72 +177,5 @@ internal class PropertyResolver(private val typeInspector: TypeInspector) {
         }
 
         return orderedProperties
-    }
-}
-
-/**
- * Copies the attributes from the given [attributes] to the current [ElementSchema].
- *
- * @param attributes The [ParsedAttributes] to copy from.
- * @return A new [ElementSchema] with the attributes copied, if applicable, or the original schema.
- */
-private fun ElementSchema.copyWithAttributes(attributes: ParsedAttributes): ElementSchema {
-    return when (this) {
-        is ElementSchema.AdditionalProperties -> this.copy(
-            description = attributes.description ?: this.description,
-            minLength = attributes.minLength ?: this.minLength,
-            maxLength = attributes.maxLength ?: this.maxLength,
-            minimum = attributes.minimum ?: this.minimum,
-            maximum = attributes.maximum ?: this.maximum,
-            exclusiveMinimum = attributes.exclusiveMinimum ?: this.exclusiveMinimum,
-            exclusiveMaximum = attributes.exclusiveMaximum ?: this.exclusiveMaximum,
-            multipleOf = attributes.multipleOf ?: this.multipleOf
-        )
-
-        is ElementSchema.Array -> this.copy(
-            description = attributes.description ?: this.description,
-            minLength = attributes.minLength ?: this.minLength,
-            maxLength = attributes.maxLength ?: this.maxLength,
-            minimum = attributes.minimum ?: this.minimum,
-            maximum = attributes.maximum ?: this.maximum,
-            exclusiveMinimum = attributes.exclusiveMinimum ?: this.exclusiveMinimum,
-            exclusiveMaximum = attributes.exclusiveMaximum ?: this.exclusiveMaximum,
-            multipleOf = attributes.multipleOf ?: this.multipleOf
-        )
-
-        is ElementSchema.Enum -> this.copy(
-            description = attributes.description ?: this.description,
-            minLength = attributes.minLength ?: this.minLength,
-            maxLength = attributes.maxLength ?: this.maxLength,
-            minimum = attributes.minimum ?: this.minimum,
-            maximum = attributes.maximum ?: this.maximum,
-            exclusiveMinimum = attributes.exclusiveMinimum ?: this.exclusiveMinimum,
-            exclusiveMaximum = attributes.exclusiveMaximum ?: this.exclusiveMaximum,
-            multipleOf = attributes.multipleOf ?: this.multipleOf
-        )
-
-        is ElementSchema.Primitive -> this.copy(
-            description = attributes.description ?: this.description,
-            minLength = attributes.minLength ?: this.minLength,
-            maxLength = attributes.maxLength ?: this.maxLength,
-            minimum = attributes.minimum ?: this.minimum,
-            maximum = attributes.maximum ?: this.maximum,
-            exclusiveMinimum = attributes.exclusiveMinimum ?: this.exclusiveMinimum,
-            exclusiveMaximum = attributes.exclusiveMaximum ?: this.exclusiveMaximum,
-            multipleOf = attributes.multipleOf ?: this.multipleOf
-        )
-
-        is ElementSchema.Reference -> this.copy(
-            description = attributes.description ?: this.description,
-            minLength = attributes.minLength ?: this.minLength,
-            maxLength = attributes.maxLength ?: this.maxLength,
-            minimum = attributes.minimum ?: this.minimum,
-            maximum = attributes.maximum ?: this.maximum,
-            exclusiveMinimum = attributes.exclusiveMinimum ?: this.exclusiveMinimum,
-            exclusiveMaximum = attributes.exclusiveMaximum ?: this.exclusiveMaximum,
-            multipleOf = attributes.multipleOf ?: this.multipleOf
-        )
-
-        else -> this
     }
 }

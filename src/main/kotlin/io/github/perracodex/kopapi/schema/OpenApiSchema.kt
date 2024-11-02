@@ -13,7 +13,6 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
 import io.github.perracodex.kopapi.system.KopapiException
 import io.ktor.http.*
@@ -121,7 +120,7 @@ internal data class OpenApiSchema(
      */
     @JsonTypeName("components")
     data class Components(
-        @JsonProperty("schemas") val componentSchemas: Map<String, ElementSchema>?,
+        @JsonProperty("schemas") val componentSchemas: Map<String, ISchemaFacet>?,
         @JsonProperty("securitySchemes") val securitySchemes: Map<String, ApiSecurityScheme>?
     ) {
         /**

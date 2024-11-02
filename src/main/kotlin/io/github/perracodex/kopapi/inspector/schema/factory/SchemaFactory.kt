@@ -19,17 +19,17 @@ import io.github.perracodex.kopapi.types.ApiType
 internal object SchemaFactory {
     /** Creates a specification entry for an `object` type. */
     fun ofObject(): ElementSchema.Object {
-        return ElementSchema.Object()
+        return ElementSchema.Object(objectProperties = mutableMapOf())
     }
 
     /** Creates a specification entry for a `string` primitive type. */
     fun ofString(): ElementSchema.Primitive {
-        return ElementSchema.Primitive(schemaType = ApiType.STRING)
+        return ElementSchema.Primitive(schemaType = ApiType.STRING, format = null)
     }
 
     /** Creates a specification entry for a `char` primitive type. */
     fun ofChar(): ElementSchema.Primitive {
-        return ElementSchema.Primitive(schemaType = ApiType.STRING, minLength = 1, maxLength = 1)
+        return ElementSchema.Primitive(schemaType = ApiType.STRING, format = null, minLength = 1, maxLength = 1)
     }
 
     /** Creates a specification entry for an `integer` primitive type. */
@@ -84,7 +84,7 @@ internal object SchemaFactory {
 
     /** Creates a specification entry for a `boolean` primitive type. */
     fun ofBoolean(): ElementSchema.Primitive {
-        return ElementSchema.Primitive(schemaType = ApiType.BOOLEAN)
+        return ElementSchema.Primitive(schemaType = ApiType.BOOLEAN, format = null)
     }
 
     /**

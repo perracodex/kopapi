@@ -9,6 +9,8 @@ import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
 import io.github.perracodex.kopapi.schema.facets.NullableSchema
+import io.github.perracodex.kopapi.schema.facets.ObjectFacet
+import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
  * Composes the `Components` section of the OpenAPI schema.
@@ -22,12 +24,12 @@ internal object ComponentComposer {
      * @param typeSchemas The set of type schemas to compose.
      * @return The `Components` section of the OpenAPI schema.
      */
-    fun compose(typeSchemas: Set<TypeSchema>): Map<String, ElementSchema>? {
-        val components: LinkedHashMap<String, ElementSchema> = linkedMapOf()
+    fun compose(typeSchemas: Set<TypeSchema>): Map<String, ISchemaFacet>? {
+        val components: LinkedHashMap<String, ISchemaFacet> = linkedMapOf()
 
         typeSchemas.sortedBy { it.name }.forEach { typeSchema ->
-            val elementSchema: ElementSchema = transform(typeSchema = typeSchema)
-            components[typeSchema.name] = elementSchema
+            val schemaFacet: ISchemaFacet = transform(typeSchema = typeSchema)
+            components[typeSchema.name] = schemaFacet
         }
 
         return components.takeIf { it.isNotEmpty() }
@@ -39,7 +41,7 @@ internal object ComponentComposer {
      * @param typeSchema The `TypeSchema` to transform.
      * @return The rebuilt transformed schema component.
      */
-    private fun transform(typeSchema: TypeSchema): ElementSchema {
+    private fun transform(typeSchema: TypeSchema): ISchemaFacet {
         return when (val schema: ElementSchema = typeSchema.schema) {
             is ElementSchema.Object -> {
                 val properties: MutableMap<String, ISchemaFacet> = mutableMapOf()
@@ -63,8 +65,8 @@ internal object ComponentComposer {
                 }
 
                 // Return a new transformed object schema.
-                schema.copy(
-                    objectProperties = mutableMapOf(),
+                ObjectFacet(
+                    description = schema.description.trimOrNull(),
                     properties = properties.takeIf { it.isNotEmpty() },
                     required = required.takeIf { it.isNotEmpty() }
                 )

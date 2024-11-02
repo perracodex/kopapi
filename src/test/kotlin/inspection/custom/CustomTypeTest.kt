@@ -34,8 +34,15 @@ class CustomTypeTest {
             // Install Kopapi plugin.
             install(Kopapi) {
                 addType<Data>(type = ApiType.STRING) {
+                    description = "Custom type for Data class"
                     minLength = 1
                     maxLength = 100
+                    pattern = "^[a-zA-Z0-9]*$"
+                    minimum = 0
+                    maximum = 100
+                    exclusiveMinimum = 0
+                    exclusiveMaximum = 100
+                    multipleOf = 1
                 }
             }
 
@@ -78,6 +85,30 @@ class CustomTypeTest {
                 assertTrue(
                     actual = customTypeSchema.schema.maxLength == 100,
                     message = "Expected maximum to be 100 for $typeName"
+                )
+                assertTrue(
+                    actual = customTypeSchema.schema.pattern == "^[a-zA-Z0-9]*$",
+                    message = "Expected pattern to be ^[a-zA-Z0-9]*$ for $typeName"
+                )
+                assertTrue(
+                    actual = customTypeSchema.schema.minimum == 0,
+                    message = "Expected minimum to be 0 for $typeName"
+                )
+                assertTrue(
+                    actual = customTypeSchema.schema.maximum == 100,
+                    message = "Expected maximum to be 100 for $typeName"
+                )
+                assertTrue(
+                    actual = customTypeSchema.schema.exclusiveMinimum == 0,
+                    message = "Expected exclusiveMinimum to be 0 for $typeName"
+                )
+                assertTrue(
+                    actual = customTypeSchema.schema.exclusiveMaximum == 100,
+                    message = "Expected exclusiveMaximum to be 100 for $typeName"
+                )
+                assertTrue(
+                    actual = customTypeSchema.schema.multipleOf == 1,
+                    message = "Expected multipleOf to be 1 for $typeName"
                 )
             }
         }

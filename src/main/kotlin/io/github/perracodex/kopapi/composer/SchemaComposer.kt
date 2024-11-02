@@ -76,7 +76,7 @@ internal class SchemaComposer(
         )
 
         // Component schemas.
-        val componentSchemas: Map<String, ElementSchema>? = ComponentComposer.compose(
+        val componentSchemas: Map<String, ISchemaFacet>? = ComponentComposer.compose(
             typeSchemas = SchemaRegistry.getSchemaTypes()
         )
 

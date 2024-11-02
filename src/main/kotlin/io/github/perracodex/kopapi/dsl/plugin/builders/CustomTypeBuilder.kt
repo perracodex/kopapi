@@ -35,8 +35,10 @@ import kotlin.reflect.KType
  * }
  * ```
  *
+ * @property description Description of the custom type.
  * @property minLength Minimum length for string values.
  * @property maxLength Maximum length for string values.
+ * @property pattern Regular expression pattern for string values.
  * @property minimum Minimum value for numeric types. Defines the inclusive lower bound.
  * @property maximum Maximum value for numeric types. Defines the inclusive upper bound.
  * @property exclusiveMinimum Exclusive lower bound for numeric types. The value is strictly greater.
@@ -47,8 +49,10 @@ import kotlin.reflect.KType
  */
 @ConfigurationDsl
 public class CustomTypeBuilder {
+    public var description: String? = null
     public var minLength: Int? = null
     public var maxLength: Int? = null
+    public var pattern: String? = null
     public var minimum: Number? = null
     public var maximum: Number? = null
     public var exclusiveMinimum: Number? = null
@@ -94,8 +98,10 @@ public class CustomTypeBuilder {
             type = type,
             apiType = apiType,
             apiFormat = apiFormat.trimOrNull(),
+            description = description.trimOrNull(),
             minLength = minLength,
             maxLength = maxLength,
+            pattern = pattern.trimOrNull(),
             minimum = minimum,
             maximum = maximum,
             exclusiveMinimum = exclusiveMinimum,

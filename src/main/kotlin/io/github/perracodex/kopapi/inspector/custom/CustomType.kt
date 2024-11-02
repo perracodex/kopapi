@@ -13,20 +13,16 @@ import kotlin.reflect.KType
  * Represents a user defined `custom type` to be used when generating the OpenAPI schema,
  * allowing to inject new non-handled types, or define custom specifications for existing standard types.
  *
- * #### Constraint Fields
- * The constraints defined in this class (such as `minLength`, `maximum`, etc.)
- * are only applicable to specific `apiType` values:
- * - For `STRING` types: `minLength` and `maxLength` are applicable.
- * - For `NUMBER` and `INTEGER` types: `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, and `multipleOf` are applicable.
- *
- * Any attempt to apply constraints not relevant to the specified `apiType`
- * will result in a validation error during object construction.
+ * No restrictions or checks are enforced on the combination of properties,
+ * allowing for flexible custom definitions.
  *
  * @property type The [KType] of the parameter, specifying the Kotlin type.
  * @property apiType The type map to be used in the OpenAPI schema. For example, `string` or `integer`.
  * @property apiFormat Used for defining expected api format (e.g., "date", "email").
+ * @property description A brief description of the type, or `null` if not specified.
  * @property minLength Minimum length for string types.
  * @property maxLength Maximum length for string types.
+ * @property pattern A regular expression pattern that string types must match, or `null` if not specified.
  * @property minimum Minimum value for numeric types. Defines the inclusive lower bound.
  * @property maximum Maximum value for numeric types. Defines the inclusive upper bound.
  * @property exclusiveMinimum Exclusive lower bound for numeric types. The value is strictly greater.
@@ -40,12 +36,14 @@ import kotlin.reflect.KType
 internal data class CustomType internal constructor(
     val type: KType,
     val apiType: ApiType,
-    val apiFormat: String? = null,
-    val minLength: Int? = null,
-    val maxLength: Int? = null,
-    val minimum: Number? = null,
-    val maximum: Number? = null,
-    val exclusiveMinimum: Number? = null,
-    val exclusiveMaximum: Number? = null,
-    val multipleOf: Number? = null
+    val apiFormat: String?,
+    val description: String?,
+    val minLength: Int?,
+    val maxLength: Int?,
+    val pattern: String?,
+    val minimum: Number?,
+    val maximum: Number?,
+    val exclusiveMinimum: Number?,
+    val exclusiveMaximum: Number?,
+    val multipleOf: Number?
 )

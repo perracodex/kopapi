@@ -65,13 +65,15 @@ internal class CustomTypeResolver(private val typeInspector: TypeInspector) {
             val primitiveSchema: ElementSchema.Primitive = ElementSchema.Primitive(
                 schemaType = customType.apiType,
                 format = customType.apiFormat.trimOrNull(),
+                description = customType.description.trimOrNull(),
                 minLength = customType.minLength,
                 maxLength = customType.maxLength,
+                pattern = customType.pattern.trimOrNull(),
                 minimum = customType.minimum,
                 maximum = customType.maximum,
                 exclusiveMinimum = customType.exclusiveMinimum,
                 exclusiveMaximum = customType.exclusiveMaximum,
-                multipleOf = customType.multipleOf,
+                multipleOf = customType.multipleOf
             )
 
             val schemaType: TypeSchema = TypeSchema.of(
