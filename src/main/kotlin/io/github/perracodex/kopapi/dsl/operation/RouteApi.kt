@@ -4,7 +4,6 @@
 
 package io.github.perracodex.kopapi.dsl.operation
 
-import io.github.perracodex.kopapi.dsl.markers.OperationDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.schema.SchemaRegistry
@@ -50,7 +49,6 @@ import io.ktor.server.routing.*
  *
  * @see [ApiOperationBuilder]
  */
-@OperationDsl
 public infix fun Route.api(configure: ApiOperationBuilder.() -> Unit): Route {
     if (this !is RoutingNode) {
         throw KopapiException(message = buildApiErrorMessage(route = this))
@@ -62,10 +60,11 @@ public infix fun Route.api(configure: ApiOperationBuilder.() -> Unit): Route {
 
     val endpointPath: String = this.extractRoutePath()
 
+    // Apply the configuration within the ApiOperationBuilder's scope.
+    val builder = ApiOperationBuilder(endpoint = "[$method] $endpointPath")
+    with(builder) { configure() }
+
     // Build the operation using the provided configuration.
-    val builder: ApiOperationBuilder = ApiOperationBuilder(
-        endpoint = "[$method] $endpointPath"
-    ).apply(configure)
     val apiOperation: ApiOperation = builder.build(
         method = method,
         endpointPath = endpointPath
