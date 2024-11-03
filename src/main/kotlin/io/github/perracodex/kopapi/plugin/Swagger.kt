@@ -150,9 +150,8 @@ internal object Swagger {
     ): String {
         if (!this::swaggerJs.isInitialized) {
             val sorter: String = when (operationsSorter) {
-                SwaggerOperationsSorter.METHOD -> "operationsSorter: \"method\","
-                SwaggerOperationsSorter.ALPHA -> "operationsSorter: \"alpha\","
-                else -> ""
+                SwaggerOperationsSorter.UNSORTED -> ""
+                else -> "operationsSorter: \"${operationsSorter.order}\","
             }
             val syntaxThemeSetting: String = when (syntaxTheme) {
                 SwaggerSyntaxTheme.NONE -> "syntaxHighlight: false,"
