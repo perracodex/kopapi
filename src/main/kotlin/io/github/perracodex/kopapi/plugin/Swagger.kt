@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.plugin
 
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -135,9 +136,13 @@ internal object Swagger {
      * Returns the JavaScript code needed to initialize Swagger UI with the provided OpenAPI URL.
      *
      * @param openapiYamlUrl The URL to access the OpenAPI schema in YAML format.
+     * @param theme The theme to use for syntax highlighting.
      * @return The JavaScript code to initialize Swagger UI.
      */
-    fun getSwaggerInitializer(openapiYamlUrl: String): String {
+    fun getSwaggerInitializer(
+        openapiYamlUrl: String,
+        theme: SwaggerSyntaxTheme = SwaggerSyntaxTheme.AGATE
+    ): String {
         if (!this::swaggerJs.isInitialized) {
             swaggerJs = """
                 window.onload = function() {
@@ -152,7 +157,9 @@ internal object Swagger {
                         plugins: [
                             SwaggerUIBundle.plugins.DownloadUrl
                         ],
-                        layout: "StandaloneLayout"
+                        layout: "StandaloneLayout",
+                        filter: true,
+                        syntaxHighlight: { theme: "${theme.themeName}" }
                     });
                 };
             """.trimIndent()

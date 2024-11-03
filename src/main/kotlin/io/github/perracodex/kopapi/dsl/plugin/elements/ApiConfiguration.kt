@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.dsl.plugin.elements
 
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 
 /**
  * Represents the final immutable configuration for the Kopapi plugin.
@@ -17,6 +18,7 @@ internal data class ApiConfiguration(
     val openapiYamlUrl: String,
     val redocUrl: String,
     val swaggerUrl: String,
+    val swaggerSyntaxTheme: SwaggerSyntaxTheme,
     val apiInfo: ApiInfo?,
     val apiServers: Set<ApiServerConfig>?,
     val apiTags: Set<ApiTag>?,

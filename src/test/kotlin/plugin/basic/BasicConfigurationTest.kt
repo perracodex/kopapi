@@ -6,6 +6,7 @@ package plugin.basic
 
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
+import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import org.junit.jupiter.api.BeforeEach
@@ -31,6 +32,7 @@ class BasicConfigurationTest {
                 swaggerUrl = "swagger3"
                 debugUrl = "openapi/debug4"
                 redocUrl = "openapi/redoc5"
+                swaggerSyntaxTheme = SwaggerSyntaxTheme.IDEA
             }
 
             val plugin: PluginInstance = plugin(Kopapi)

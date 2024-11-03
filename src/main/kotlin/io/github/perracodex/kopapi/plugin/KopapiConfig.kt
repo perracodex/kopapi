@@ -13,6 +13,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
+import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 import io.github.perracodex.kopapi.utils.trimOrDefault
 
 /**
@@ -61,6 +62,13 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
      * - Default: `/swagger-ui`.
      */
     public var swaggerUrl: String = DEFAULT_SWAGGER_URL
+
+    /**
+     * The syntax highlighting theme to use for the Swagger UI.
+     *
+     * - Default: [SwaggerSyntaxTheme.AGATE].
+     */
+    public var swaggerSyntaxTheme: SwaggerSyntaxTheme = SwaggerSyntaxTheme.AGATE
 
     /**
      * The URL to provide the raw pre-processed API Operations metadata, for debugging purposes.
@@ -196,6 +204,7 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
             openapiJsonUrl = normalizeUrl(url = openapiJsonUrl, defaultValue = DEFAULT_OPENAPI_JSON_URL),
             openapiYamlUrl = normalizeUrl(url = openapiYamlUrl, defaultValue = DEFAULT_OPENAPI_YAML_URL),
             swaggerUrl = normalizeUrl(url = swaggerUrl, defaultValue = DEFAULT_SWAGGER_URL),
+            swaggerSyntaxTheme = swaggerSyntaxTheme,
             apiInfo = apiInfo,
             apiServers = servers.takeIf { it.isNotEmpty() } ?: setOf(ServerBuilder.defaultServer()),
             apiTags = tags.takeIf { it.isNotEmpty() },

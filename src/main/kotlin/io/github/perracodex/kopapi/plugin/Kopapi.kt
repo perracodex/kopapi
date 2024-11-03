@@ -57,7 +57,8 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
         )
         swaggerRoute(
             openapiYamlUrl = apiConfiguration.openapiYamlUrl,
-            swaggerUrl = apiConfiguration.swaggerUrl
+            swaggerUrl = apiConfiguration.swaggerUrl,
+            swaggerSyntaxTheme = apiConfiguration.swaggerSyntaxTheme
         )
     }
 

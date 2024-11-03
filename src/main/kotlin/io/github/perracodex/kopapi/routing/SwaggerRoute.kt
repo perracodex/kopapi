@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.routing
 
 import io.github.perracodex.kopapi.plugin.Swagger
+import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.response.*
@@ -15,8 +16,13 @@ import io.ktor.server.routing.*
  *
  * @param openapiYamlUrl The URL to access the OpenAPI schema in YAML format.
  * @param swaggerUrl The base URL to access the Swagger UI interface.
+ * @param swaggerSyntaxTheme The syntax highlighting theme to use for Swagger UI.
  */
-internal fun Routing.swaggerRoute(openapiYamlUrl: String, swaggerUrl: String) {
+internal fun Routing.swaggerRoute(
+    openapiYamlUrl: String,
+    swaggerUrl: String,
+    swaggerSyntaxTheme: SwaggerSyntaxTheme
+) {
     /**
      * Redirect to the main Swagger UI HTML page.
      */
@@ -42,7 +48,10 @@ internal fun Routing.swaggerRoute(openapiYamlUrl: String, swaggerUrl: String) {
      * Serve the JavaScript code that initializes Swagger UI with the provided OpenAPI URL.
      */
     get("$swaggerUrl/swagger-initializer.js") {
-        val response: String = Swagger.getSwaggerInitializer(openapiYamlUrl = openapiYamlUrl)
+        val response: String = Swagger.getSwaggerInitializer(
+            openapiYamlUrl = openapiYamlUrl,
+            theme = swaggerSyntaxTheme
+        )
         call.respondText(text = response, contentType = ContentType.Application.JavaScript)
     }
 }
