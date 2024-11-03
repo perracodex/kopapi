@@ -31,13 +31,7 @@ class PathParameterTest {
     @Test
     fun `path parameter with simple types`() = testApplication {
         application {
-            // Set some non-default configuration values.
-            install(Kopapi) {
-                openapiJsonUrl = "openapi/json1"
-                openapiYamlUrl = "openapi/yaml2"
-                swaggerUrl = "swagger3"
-                debugUrl = "openapi/debug4"
-            }
+            install(Kopapi)
 
             routing {
                 get("/path/{id}") {

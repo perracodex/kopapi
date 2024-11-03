@@ -27,12 +27,17 @@ class BasicConfigurationTest {
         application {
             // Set some non-default configuration values.
             install(Kopapi) {
-                openapiJsonUrl = "openapi/json1"
-                openapiYamlUrl = "openapi/yaml2"
-                swaggerUrl = "swagger3"
                 debugUrl = "openapi/debug4"
-                redocUrl = "openapi/redoc5"
-                swaggerSyntaxTheme = SwaggerSyntaxTheme.IDEA
+                enableLogging = false
+
+                apiDocs {
+                    openapiYamlUrl = "openapi/yaml2"
+                    openapiJsonUrl = "openapi/json1"
+                    redocUrl = "openapi/redoc5"
+                    swaggerUrl = "swagger3"
+                    withCredentials = true
+                    swaggerSyntaxTheme = SwaggerSyntaxTheme.IDEA
+                }
             }
 
             val plugin: PluginInstance = plugin(Kopapi)
@@ -43,17 +48,17 @@ class BasicConfigurationTest {
 
             assertEquals(
                 expected = "openapi/json1",
-                actual = SchemaRegistry.apiConfiguration?.openapiJsonUrl,
+                actual = SchemaRegistry.apiConfiguration?.apiDocs?.openapiJsonUrl,
                 message = "Expected JSON URL to match."
             )
             assertEquals(
                 expected = "openapi/yaml2",
-                actual = SchemaRegistry.apiConfiguration?.openapiYamlUrl,
+                actual = SchemaRegistry.apiConfiguration?.apiDocs?.openapiYamlUrl,
                 message = "Expected YAML URL to match."
             )
             assertEquals(
                 expected = "swagger3",
-                actual = SchemaRegistry.apiConfiguration?.swaggerUrl,
+                actual = SchemaRegistry.apiConfiguration?.apiDocs?.swaggerUrl,
                 message = "Expected Swagger URL to match."
             )
             assertEquals(
@@ -63,7 +68,7 @@ class BasicConfigurationTest {
             )
             assertEquals(
                 expected = "openapi/redoc5",
-                actual = SchemaRegistry.apiConfiguration?.redocUrl,
+                actual = SchemaRegistry.apiConfiguration?.apiDocs?.redocUrl,
                 message = "Expected Redoc URL to match."
             )
         }
@@ -75,11 +80,17 @@ class BasicConfigurationTest {
             // Set some non-default configuration values.
             install(Kopapi) {
                 enabled = false
-                openapiJsonUrl = "openapi/json1"
-                openapiYamlUrl = "openapi/yaml2"
-                swaggerUrl = "swagger3"
                 debugUrl = "openapi/debug4"
-                redocUrl = "openapi/redoc5"
+                enableLogging = false
+
+                apiDocs {
+                    openapiYamlUrl = "openapi/yaml2"
+                    openapiJsonUrl = "openapi/json1"
+                    redocUrl = "openapi/redoc5"
+                    swaggerUrl = "swagger3"
+                    withCredentials = true
+                    swaggerSyntaxTheme = SwaggerSyntaxTheme.IDEA
+                }
             }
 
             val plugin: PluginInstance = plugin(Kopapi)

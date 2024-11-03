@@ -44,22 +44,10 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
 
     // Configure the plugin endpoints using the extracted function.
     application.routing {
-        debugRoute(
-            debugUrl = apiConfiguration.debugUrl
-        )
-        openApiRoutes(
-            openapiJsonUrl = apiConfiguration.openapiJsonUrl,
-            openapiYamlUrl = apiConfiguration.openapiYamlUrl
-        )
-        redocRoute(
-            openapiYamlUrl = apiConfiguration.openapiYamlUrl,
-            redocUrl = apiConfiguration.redocUrl
-        )
-        swaggerRoute(
-            openapiYamlUrl = apiConfiguration.openapiYamlUrl,
-            swaggerUrl = apiConfiguration.swaggerUrl,
-            swaggerSyntaxTheme = apiConfiguration.swaggerSyntaxTheme
-        )
+        debugRoute(debugUrl = apiConfiguration.debugUrl)
+        openApiRoutes(apiDocs = apiConfiguration.apiDocs)
+        redocRoute(apiDocs = apiConfiguration.apiDocs)
+        swaggerRoute(apiDocs = apiConfiguration.apiDocs)
     }
 
     // Dump the configured endpoints to the log.
@@ -67,10 +55,10 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     Tracer<KopapiConfig>().info(
         """
         |Kopapi plugin enabled.
-        |  OpenAPI YAML: $server${apiConfiguration.openapiYamlUrl}
-        |  OpenAPI JSON: $server${apiConfiguration.openapiJsonUrl}
-        |  Swagger UI: $server${apiConfiguration.swaggerUrl}
-        |  ReDoc: $server${apiConfiguration.redocUrl}
+        |  OpenAPI YAML: $server${apiConfiguration.apiDocs.openapiYamlUrl}
+        |  OpenAPI JSON: $server${apiConfiguration.apiDocs.openapiJsonUrl}
+        |  Swagger UI: $server${apiConfiguration.apiDocs.swaggerUrl}
+        |  ReDoc: $server${apiConfiguration.apiDocs.redocUrl}
         |  Debug: $server${apiConfiguration.debugUrl}
         """.trimMargin()
     )

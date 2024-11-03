@@ -33,27 +33,6 @@ import io.github.perracodex.kopapi.utils.string.MultilineString
  *      }
  * }
  *```
- * Note that the description can be declared multiple times to support multi-line descriptions,
- * without the need for manual line breaks. Each of the descriptions will be concatenated into
- * a single description divided by a new line.
- *
- * ```
- * {
- *     ...
- *     description = "Api Description."
- *     description = "This is a multi-line description."
- *     description = "Each description will be concatenated into one."
- *     ...
- * }
- * ```
- *
- * Will result in the following description:
- *
- * ```text
- * Api Description.
- * This is a multi-line description.
- * Each description will be concatenated into a single description.
- * ```
  *
  * @property title The title of the API.
  * @property description The description of the API.

@@ -6,15 +6,12 @@ package io.github.perracodex.kopapi.plugin
 
 import io.github.perracodex.kopapi.dsl.common.SecuritySchemeConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
+import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.TagBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.server.ServerBuilder
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
-import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
-import io.github.perracodex.kopapi.utils.trimOrDefault
+import io.github.perracodex.kopapi.dsl.plugin.elements.*
+import io.github.perracodex.kopapi.utils.NetworkUtils
 
 /**
  * Configuration for the [Kopapi] plugin.
@@ -30,45 +27,6 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
      * - This is useful when you want to disable the plugin in certain environments, such as production.
      */
     public var enabled: Boolean = true
-
-    /**
-     * The URL to provide the OpenAPI schema in `JSON` format.
-     *
-     * - Relative to the server root URL.
-     * - Default: `/openapi.json`.
-     */
-    public var openapiJsonUrl: String = DEFAULT_OPENAPI_JSON_URL
-
-    /**
-     * The URL to provide the OpenAPI schema in `YAML` format.
-     *
-     * - Relative to the server root URL.
-     * - Default: `/openapi.yaml`.
-     */
-    public var openapiYamlUrl: String = DEFAULT_OPENAPI_YAML_URL
-
-    /**
-     * The URL to provide the OpenAPI `Redoc` documentation.
-     *
-     * - Relative to the server root URL.
-     * - Default: `/redoc`.
-     */
-    public var redocUrl: String = DEFAULT_REDOC_URL
-
-    /**
-     * The URL to provide the `Swagger UI`.
-     *
-     * - Relative to the server root URL.
-     * - Default: `/swagger-ui`.
-     */
-    public var swaggerUrl: String = DEFAULT_SWAGGER_URL
-
-    /**
-     * The syntax highlighting theme to use for the Swagger UI.
-     *
-     * - Default: [SwaggerSyntaxTheme.AGATE].
-     */
-    public var swaggerSyntaxTheme: SwaggerSyntaxTheme = SwaggerSyntaxTheme.AGATE
 
     /**
      * The URL to provide the raw pre-processed API Operations metadata, for debugging purposes.
@@ -91,6 +49,11 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
     public var enableLogging: Boolean = false
 
     /**
+     * The [ApiDocs] configuration settings.
+     */
+    private var apiDocs: ApiDocs? = null
+
+    /**
      * The [ApiInfo] metadata for the OpenAPI schema.
      */
     private var apiInfo: ApiInfo? = null
@@ -104,6 +67,25 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
      * The list of tags to include in the OpenAPI schema.
      */
     private val tags: MutableSet<ApiTag> = mutableSetOf()
+
+    /**
+     * Constructs the information for the API documentation.
+     *
+     * #### Sample usage
+     * ```
+     * apiDocs {
+     *      openapiYamlUrl = "/openapi.yaml"
+     *      openapiJsonUrl = "/openapi.json"
+     *      redocUrl = "/redoc"
+     *      swaggerUrl = "/swagger"
+     *      withCredentials = true
+     *      syntaxTheme = SwaggerSyntaxTheme.NORD
+     * }
+     */
+    public fun apiDocs(init: ApiDocsBuilder.() -> Unit) {
+        val builder: ApiDocsBuilder = ApiDocsBuilder().apply(init)
+        apiDocs = builder.build()
+    }
 
     /**
      * Sets up the OpenAPI metadata.
@@ -199,12 +181,8 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
     internal fun build(): ApiConfiguration {
         return ApiConfiguration(
             isEnabled = enabled,
-            debugUrl = normalizeUrl(url = debugUrl, defaultValue = DEFAULT_DEBUG_URL),
-            redocUrl = normalizeUrl(url = redocUrl, defaultValue = DEFAULT_REDOC_URL),
-            openapiJsonUrl = normalizeUrl(url = openapiJsonUrl, defaultValue = DEFAULT_OPENAPI_JSON_URL),
-            openapiYamlUrl = normalizeUrl(url = openapiYamlUrl, defaultValue = DEFAULT_OPENAPI_YAML_URL),
-            swaggerUrl = normalizeUrl(url = swaggerUrl, defaultValue = DEFAULT_SWAGGER_URL),
-            swaggerSyntaxTheme = swaggerSyntaxTheme,
+            apiDocs = apiDocs ?: ApiDocsBuilder().build(),
+            debugUrl = NetworkUtils.normalizeUrl(url = debugUrl, defaultValue = DEFAULT_DEBUG_URL),
             apiInfo = apiInfo,
             apiServers = servers.takeIf { it.isNotEmpty() } ?: setOf(ServerBuilder.defaultServer()),
             apiTags = tags.takeIf { it.isNotEmpty() },
@@ -212,25 +190,7 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
         )
     }
 
-    /**
-     * Normalizes the URL by ensuring it starts with a `/`.
-     *
-     * @param url The URL to normalize.
-     * @param defaultValue The default value to use if the URL is empty.
-     */
-    private fun normalizeUrl(url: String?, defaultValue: String): String {
-        val cleanUrl: String = url.trimOrDefault(defaultValue = defaultValue)
-        return when (cleanUrl.startsWith(prefix = "/")) {
-            true -> cleanUrl
-            false -> "/$cleanUrl"
-        }
-    }
-
-    internal companion object {
-        const val DEFAULT_OPENAPI_JSON_URL: String = "/openapi.json"
-        const val DEFAULT_OPENAPI_YAML_URL: String = "/openapi.yaml"
-        const val DEFAULT_REDOC_URL: String = "/redoc"
-        const val DEFAULT_SWAGGER_URL: String = "/swagger-ui"
+    private companion object {
         const val DEFAULT_DEBUG_URL: String = "/openapi/debug"
     }
 }

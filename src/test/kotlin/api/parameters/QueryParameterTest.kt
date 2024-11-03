@@ -31,13 +31,7 @@ class QueryParameterTest {
     @Test
     fun `query parameter`() = testApplication {
         application {
-            // Install Kopapi plugin.
-            install(Kopapi) {
-                openapiJsonUrl = "openapi/json1"
-                openapiYamlUrl = "openapi/yaml2"
-                swaggerUrl = "swagger3"
-                debugUrl = "openapi/debug4"
-            }
+            install(Kopapi)
 
             routing {
                 get("/path") {

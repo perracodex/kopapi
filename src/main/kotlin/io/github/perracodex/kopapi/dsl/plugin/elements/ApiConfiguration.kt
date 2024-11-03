@@ -6,26 +6,27 @@ package io.github.perracodex.kopapi.dsl.plugin.elements
 
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.system.KopapiException
-import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 
 /**
  * Represents the final immutable configuration for the Kopapi plugin.
  */
 internal data class ApiConfiguration(
     val isEnabled: Boolean,
+    val apiDocs: ApiDocs,
     val debugUrl: String,
-    val openapiJsonUrl: String,
-    val openapiYamlUrl: String,
-    val redocUrl: String,
-    val swaggerUrl: String,
-    val swaggerSyntaxTheme: SwaggerSyntaxTheme,
     val apiInfo: ApiInfo?,
     val apiServers: Set<ApiServerConfig>?,
     val apiTags: Set<ApiTag>?,
     val apiSecuritySchemes: Set<ApiSecurityScheme>?
 ) {
     init {
-        val urls: List<String> = listOf(debugUrl, openapiJsonUrl, openapiYamlUrl, swaggerUrl)
+        val urls: List<String> = listOf(
+            debugUrl,
+            apiDocs.openapiYamlUrl,
+            apiDocs.openapiJsonUrl,
+            apiDocs.redocUrl,
+            apiDocs.swaggerUrl
+        )
         val duplicates: Map<String, Int> = urls.groupingBy { it }.eachCount().filter { it.value > 1 }
         if (duplicates.isNotEmpty()) {
             throw KopapiException("Duplicate URLs found: ${duplicates.keys}")

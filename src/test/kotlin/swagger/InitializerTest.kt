@@ -4,10 +4,11 @@
 
 package swagger
 
+import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
 import io.github.perracodex.kopapi.plugin.Kopapi
-import io.github.perracodex.kopapi.plugin.KopapiConfig
 import io.github.perracodex.kopapi.plugin.Swagger
 import io.github.perracodex.kopapi.schema.SchemaRegistry
+import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -27,10 +28,14 @@ class InitializerTest {
     fun `verify initializer`() = testApplication {
         installPlugin()
 
-        val response: HttpResponse = client.get(urlString = "${KopapiConfig.DEFAULT_SWAGGER_URL}/swagger-initializer.js")
+        val response: HttpResponse = client.get(urlString = "${ApiDocsBuilder.DEFAULT_SWAGGER_URL}/swagger-initializer.js")
         assertEquals(actual = HttpStatusCode.OK, expected = response.status)
 
-        val expected: String = Swagger.getSwaggerInitializer(KopapiConfig.DEFAULT_SWAGGER_URL)
+        val expected: String = Swagger.getSwaggerInitializer(
+            openapiYamlUrl = ApiDocsBuilder.DEFAULT_OPENAPI_YAML_URL,
+            syntaxTheme = SwaggerSyntaxTheme.AGATE,
+            withCredentials = false
+        )
         val content: String = response.bodyAsText()
         assertEquals(expected = expected, actual = content)
     }

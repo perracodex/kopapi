@@ -56,4 +56,18 @@ internal object NetworkUtils {
             tracer.error(message = "Failed to get the server URL.", cause = error)
         }.getOrElse { "" }
     }
+
+    /**
+     * Normalizes the URL by ensuring it starts with a `/`.
+     *
+     * @param url The URL to normalize.
+     * @param defaultValue The default value to use if the URL is empty.
+     */
+    fun normalizeUrl(url: String?, defaultValue: String): String {
+        val cleanUrl: String = url.trimOrDefault(defaultValue = defaultValue)
+        return when (cleanUrl.startsWith(prefix = "/")) {
+            true -> cleanUrl
+            false -> "/$cleanUrl"
+        }
+    }
 }

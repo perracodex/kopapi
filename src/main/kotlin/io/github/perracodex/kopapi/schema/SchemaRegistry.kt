@@ -359,10 +359,10 @@ internal object SchemaRegistry {
     fun getResourceUrl(url: ResourceUrl): String {
         return apiConfiguration?.let { configuration ->
             when (url) {
-                ResourceUrl.OPENAPI_JSON -> configuration.openapiJsonUrl
-                ResourceUrl.OPENAPI_YAML -> configuration.openapiYamlUrl
-                ResourceUrl.REDOC -> configuration.redocUrl
-                ResourceUrl.SWAGGER_UI -> configuration.swaggerUrl
+                ResourceUrl.OPENAPI_JSON -> configuration.apiDocs.openapiJsonUrl
+                ResourceUrl.OPENAPI_YAML -> configuration.apiDocs.openapiYamlUrl
+                ResourceUrl.REDOC -> configuration.apiDocs.redocUrl
+                ResourceUrl.SWAGGER_UI -> configuration.apiDocs.swaggerUrl
             }
         } ?: ""
     }

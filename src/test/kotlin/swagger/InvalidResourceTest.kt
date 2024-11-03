@@ -4,8 +4,8 @@
 
 package swagger
 
+import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
 import io.github.perracodex.kopapi.plugin.Kopapi
-import io.github.perracodex.kopapi.plugin.KopapiConfig
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -26,7 +26,7 @@ class InvalidResourceTest {
     fun `access invalid resource`() = testApplication {
         installPlugin()
 
-        val response: HttpResponse = client.get(urlString = "${KopapiConfig.DEFAULT_SWAGGER_URL}/hello-world")
+        val response: HttpResponse = client.get(urlString = "${ApiDocsBuilder.DEFAULT_SWAGGER_URL}/hello-world")
         assertEquals(actual = HttpStatusCode.NotFound, expected = response.status)
     }
 

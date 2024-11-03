@@ -136,12 +136,14 @@ internal object Swagger {
      * Returns the JavaScript code needed to initialize Swagger UI with the provided OpenAPI URL.
      *
      * @param openapiYamlUrl The URL to access the OpenAPI schema in YAML format.
-     * @param theme The theme to use for syntax highlighting.
+     * @property withCredentials Whether to include cookies or other credentials in cross-origin (CORS) requests from Swagger UI.
+     * @property syntaxTheme The syntax highlighting theme for Swagger UI.
      * @return The JavaScript code to initialize Swagger UI.
      */
     fun getSwaggerInitializer(
         openapiYamlUrl: String,
-        theme: SwaggerSyntaxTheme = SwaggerSyntaxTheme.AGATE
+        withCredentials: Boolean,
+        syntaxTheme: SwaggerSyntaxTheme
     ): String {
         if (!this::swaggerJs.isInitialized) {
             swaggerJs = """
@@ -159,7 +161,8 @@ internal object Swagger {
                         ],
                         layout: "StandaloneLayout",
                         filter: true,
-                        syntaxHighlight: { theme: "${theme.themeName}" }
+                        withCredentials: $withCredentials,
+                        syntaxHighlight: { theme: "${syntaxTheme.themeName}" }
                     });
                 };
             """.trimIndent()
