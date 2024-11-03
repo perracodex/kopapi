@@ -25,6 +25,9 @@ public enum class SwaggerSyntaxTheme(internal val themeName: String) {
     /** Nord theme, featuring soft colors inspired by arctic landscapes. */
     NORD(themeName = "nord"),
 
+    /** None theme, disabling syntax highlighting in Swagger UI. */
+    NONE(themeName = "none"),
+
     /** Obsidian theme, with a dark palette suited for low-light environments. */
     OBSIDIAN(themeName = "obsidian"),
 

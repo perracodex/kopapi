@@ -45,6 +45,7 @@ internal fun Routing.swaggerRoute(apiDocs: ApiDocs) {
         val response: String = Swagger.getSwaggerInitializer(
             openapiYamlUrl = apiDocs.openapiYamlUrl,
             withCredentials = apiDocs.withCredentials,
+            operationsSorter = apiDocs.operationsSorter,
             syntaxTheme = apiDocs.syntaxTheme
         )
         call.respondText(text = response, contentType = ContentType.Application.JavaScript)

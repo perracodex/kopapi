@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.plugin.Swagger
 import io.github.perracodex.kopapi.schema.SchemaRegistry
+import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
 import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -34,6 +35,7 @@ class InitializerTest {
         val expected: String = Swagger.getSwaggerInitializer(
             openapiYamlUrl = ApiDocsBuilder.DEFAULT_OPENAPI_YAML_URL,
             syntaxTheme = SwaggerSyntaxTheme.AGATE,
+            operationsSorter = SwaggerOperationsSorter.METHOD,
             withCredentials = false
         )
         val content: String = response.bodyAsText()

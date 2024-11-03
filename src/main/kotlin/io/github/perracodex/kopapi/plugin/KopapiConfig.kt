@@ -79,6 +79,7 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
      *      redocUrl = "/redoc"
      *      swaggerUrl = "/swagger"
      *      withCredentials = true
+     *      operationsSorter = SwaggerOperationsSorter.METHOD
      *      syntaxTheme = SwaggerSyntaxTheme.NORD
      * }
      */

@@ -6,6 +6,7 @@ package plugin.basic
 
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
+import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
 import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
@@ -36,6 +37,7 @@ class BasicConfigurationTest {
                     redocUrl = "openapi/redoc5"
                     swaggerUrl = "swagger3"
                     withCredentials = true
+                    operationsSorter = SwaggerOperationsSorter.METHOD
                     swaggerSyntaxTheme = SwaggerSyntaxTheme.IDEA
                 }
             }
@@ -89,6 +91,7 @@ class BasicConfigurationTest {
                     redocUrl = "openapi/redoc5"
                     swaggerUrl = "swagger3"
                     withCredentials = true
+                    operationsSorter = SwaggerOperationsSorter.METHOD
                     swaggerSyntaxTheme = SwaggerSyntaxTheme.IDEA
                 }
             }

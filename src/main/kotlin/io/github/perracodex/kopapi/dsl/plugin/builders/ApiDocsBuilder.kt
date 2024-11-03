@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.dsl.plugin.builders
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
+import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
 import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 import io.github.perracodex.kopapi.utils.NetworkUtils
 
@@ -21,6 +22,7 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  *      redocUrl = "/redoc"
  *      swaggerUrl = "/swagger"
  *      withCredentials = true
+ *      operationsSorter = SwaggerOperationsSorter.METHOD
  *      syntaxTheme = SwaggerSyntaxTheme.NORD
  * }
  */
@@ -67,6 +69,13 @@ public class ApiDocsBuilder {
     public var withCredentials: Boolean = false
 
     /**
+     * The sorter to use for the operations in the Swagger UI.
+     *
+     * - Default: [SwaggerOperationsSorter.UNSORTED].
+     */
+    public var operationsSorter: SwaggerOperationsSorter = SwaggerOperationsSorter.UNSORTED
+
+    /**
      * The syntax highlighting theme to use for the Swagger UI.
      *
      * - Default: [SwaggerSyntaxTheme.AGATE].
@@ -82,6 +91,7 @@ public class ApiDocsBuilder {
         redocUrl = NetworkUtils.normalizeUrl(url = redocUrl, defaultValue = DEFAULT_REDOC_URL),
         swaggerUrl = NetworkUtils.normalizeUrl(url = swaggerUrl, defaultValue = DEFAULT_SWAGGER_URL),
         withCredentials = withCredentials,
+        operationsSorter = operationsSorter,
         syntaxTheme = swaggerSyntaxTheme
     )
 

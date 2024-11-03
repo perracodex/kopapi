@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.plugin
 
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
 import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -137,15 +138,27 @@ internal object Swagger {
      *
      * @param openapiYamlUrl The URL to access the OpenAPI schema in YAML format.
      * @property withCredentials Whether to include cookies or other credentials in cross-origin (CORS) requests from Swagger UI.
+     * @property operationsSorter The sorting method for the operations in Swagger UI.
      * @property syntaxTheme The syntax highlighting theme for Swagger UI.
      * @return The JavaScript code to initialize Swagger UI.
      */
     fun getSwaggerInitializer(
         openapiYamlUrl: String,
         withCredentials: Boolean,
+        operationsSorter: SwaggerOperationsSorter,
         syntaxTheme: SwaggerSyntaxTheme
     ): String {
         if (!this::swaggerJs.isInitialized) {
+            val sorter: String = when (operationsSorter) {
+                SwaggerOperationsSorter.METHOD -> "operationsSorter: \"method\","
+                SwaggerOperationsSorter.ALPHA -> "operationsSorter: \"alpha\","
+                else -> ""
+            }
+            val syntaxThemeSetting: String = when (syntaxTheme) {
+                SwaggerSyntaxTheme.NONE -> "syntaxHighlight: false,"
+                else -> "syntaxHighlight: { theme: \"${syntaxTheme.themeName}\" },"
+            }
+
             swaggerJs = """
                 window.onload = function() {
                     window.ui = SwaggerUIBundle({
@@ -162,7 +175,8 @@ internal object Swagger {
                         layout: "StandaloneLayout",
                         filter: true,
                         withCredentials: $withCredentials,
-                        syntaxHighlight: { theme: "${syntaxTheme.themeName}" }
+                        $sorter
+                        $syntaxThemeSetting
                     });
                 };
             """.trimIndent()
