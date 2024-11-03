@@ -38,20 +38,20 @@ internal sealed class ApiSecurityScheme(
     /**
      * Represents an API Key security scheme.
      *
-     * @property apiKeyName The name of the header, query, or cookie parameter where the API key is passed.
+     * @property key The name of the header, query, or cookie parameter where the API key is passed.
      * @property location The location where the API key is passed (header, query, or cookie).
      */
     data class ApiKey(
         override val schemeName: String,
         override val description: String?,
-        @JsonProperty("name") val apiKeyName: String,
+        @JsonProperty("name") val key: String,
         @JsonProperty("in") val location: SecurityLocation
     ) : ApiSecurityScheme(schemeName = schemeName, description = description) {
         init {
             if (schemeName.isBlank()) {
                 throw KopapiException("Security scheme name must not be empty.")
             }
-            if (apiKeyName.isBlank()) {
+            if (key.isBlank()) {
                 throw KopapiException("API key name must not be empty.")
             }
         }

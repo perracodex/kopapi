@@ -17,7 +17,9 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  *
  * @property description A description of the security scheme.
  *
- * @see [ApiOperationBuilder.httpSecurity]
+ * @see [ApiOperationBuilder.basicSecurity]
+ * @see [ApiOperationBuilder.bearerSecurity]
+ * @see [ApiOperationBuilder.digestSecurity]
  * @see [ApiKeySecurityBuilder]
  * @see [OAuth2SecurityBuilder]
  * @see [OpenIdConnectSecurityBuilder]

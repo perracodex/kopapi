@@ -17,7 +17,9 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  *
  * @property description A description of the security scheme.
  *
- * @see [ApiOperationBuilder.apiKeySecurity]
+ * @see [ApiOperationBuilder.headerApiKeySecurity]
+ * @see [ApiOperationBuilder.queryApiKeySecurity]
+ * @see [ApiOperationBuilder.cookieApiKeySecurity]
  * @see [HttpSecurityBuilder]
  * @see [OAuth2SecurityBuilder]
  * @see [OpenIdConnectSecurityBuilder]
@@ -31,15 +33,15 @@ public class ApiKeySecurityBuilder {
      * Builds an [ApiSecurityScheme] instance from the current builder state.
      *
      * @param name The name of the security scheme.
-     * @param apiKeyName The name of the header, query parameter, or cookie parameter where the API key is passed.
+     * @param key The name of the header, query parameter, or cookie parameter where the API key is passed.
      * @param location The [SecurityLocation] where the API key is passed.
      * @return The constructed [ApiSecurityScheme] instance.
      */
     @PublishedApi
-    internal fun build(name: String, apiKeyName: String, location: SecurityLocation): ApiSecurityScheme {
+    internal fun build(name: String, key: String, location: SecurityLocation): ApiSecurityScheme {
         return ApiSecurityScheme.ApiKey(
             schemeName = name.sanitize(),
-            apiKeyName = apiKeyName.trim(),
+            key = key.trim(),
             description = description.trimOrNull(),
             location = location
         )

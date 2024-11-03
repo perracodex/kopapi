@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonValue
  *
  * @property value The string value of the location.
  */
-public enum class SecurityLocation(@JsonValue internal val value: String) {
+internal enum class SecurityLocation(@JsonValue internal val value: String) {
     /** The payload is set in a cookie. */
     COOKIE(value = "cookie"),
 

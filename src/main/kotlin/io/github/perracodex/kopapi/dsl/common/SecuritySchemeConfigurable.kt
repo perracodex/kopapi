@@ -21,66 +21,170 @@ public abstract class SecuritySchemeConfigurable {
     internal val _securityConfig: Config = Config()
 
     /**
-     * Adds an HTTP security scheme to the API metadata (e.g., Basic, Bearer).
+     * Adds a `Basic` HTTP security scheme to the API metadata.
      *
      * #### Sample Usage
      * ```
-     * httpSecurity(name = "BasicAuth", method = AuthMethod.BASIC) {
+     * basicSecurity(name = "MyBasicAuth") {
      *     description = "Basic Authentication"
      * }
      * ```
      *
      * @param name The unique name of the security scheme.
-     * @param method The [AuthMethod] of the security scheme.
      * @param configure A lambda receiver for configuring the [HttpSecurityBuilder].
      *
-     * @see [apiKeySecurity]
-     * @see [mutualTLSSecurity]
-     * @see [oauth2Security]
-     * @see [openIdConnectSecurity]
+     * @see [bearerSecurity]
+     * @see [digestSecurity]
      */
-    public fun httpSecurity(
+    public fun basicSecurity(
         name: String,
-        method: AuthMethod,
         configure: HttpSecurityBuilder.() -> Unit = {}
     ) {
         val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name, method = method)
+        val scheme: ApiSecurityScheme = builder.build(name = name, method = AuthMethod.BASIC)
         _securityConfig.addSecurityScheme(scheme = scheme)
     }
 
     /**
-     * Adds an API key security scheme to the API metadata.
+     * Adds an `Bearer` HTTP security scheme to the API metadata.
      *
      * #### Sample Usage
      * ```
-     * apiKeySecurity(
-     *      name = "API Key",
-     *      apiKeyName = "X-API-Key",
-     *      location = APIKeyLocation.HEADER
-     * ) {
+     * bearerSecurity(name = "MyBearerAuth") {
+     *     description = "Bearer Authentication"
+     * }
+     * ```
+     *
+     * @param name The unique name of the security scheme.
+     * @param configure A lambda receiver for configuring the [HttpSecurityBuilder].
+     *
+     * @see [basicSecurity]
+     * @see [digestSecurity]
+     */
+    public fun SecuritySchemeConfigurable.bearerSecurity(
+        name: String,
+        configure: HttpSecurityBuilder.() -> Unit = {}
+    ) {
+        val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
+        val scheme: ApiSecurityScheme = builder.build(name = name, method = AuthMethod.BEARER)
+        _securityConfig.addSecurityScheme(scheme = scheme)
+    }
+
+    /**
+     * Adds an `Digest` HTTP security scheme to the API metadata.
+     *
+     * #### Sample Usage
+     * ```
+     * digestSecurity(name = "MyDigestAuth") {
+     *     description = "Digest Authentication"
+     * }
+     * ```
+     *
+     * @param name The unique name of the security scheme.
+     * @param configure A lambda receiver for configuring the [HttpSecurityBuilder].
+     *
+     * @see [basicSecurity]
+     * @see [bearerSecurity]
+     */
+    public fun digestSecurity(
+        name: String,
+        configure: HttpSecurityBuilder.() -> Unit = {}
+    ) {
+        val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
+        val scheme: ApiSecurityScheme = builder.build(name = name, method = AuthMethod.DIGEST)
+        _securityConfig.addSecurityScheme(scheme = scheme)
+    }
+
+    /**
+     * Adds an API key security scheme passed via header to the API metadata.
+     *
+     * #### Sample Usage
+     * ```
+     * headerApiKeySecurity(name = "Header API Key", key = "X-API-Key") {
      *     description = "API Key Authentication via header."
      * }
      * ```
      *
      * @param name The unique name of the security scheme.
-     * @param apiKeyName The name of the header, query parameter, or cookie parameter where the API key is passed.
-     * @param location The [SecurityLocation] where the API key is passed.
+     * @param key The name of the header parameter where the API key is passed.
      * @param configure A lambda receiver for configuring the [ApiKeySecurityBuilder].
      *
-     * @see [httpSecurity]
-     * @see [mutualTLSSecurity]
-     * @see [oauth2Security]
-     * @see [openIdConnectSecurity]
+     * @see [queryApiKeySecurity]
+     * @see [cookieApiKeySecurity]
      */
-    public fun apiKeySecurity(
+    public fun headerApiKeySecurity(
         name: String,
-        apiKeyName: String,
-        location: SecurityLocation,
+        key: String,
         configure: ApiKeySecurityBuilder.() -> Unit = {}
     ) {
         val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name, apiKeyName = apiKeyName, location = location)
+        val scheme: ApiSecurityScheme = builder.build(
+            name = name,
+            key = key,
+            location = SecurityLocation.HEADER
+        )
+        _securityConfig.addSecurityScheme(scheme = scheme)
+    }
+
+    /**
+     * Adds an API key security scheme passed via query to the API metadata.
+     *
+     * #### Sample Usage
+     * ```
+     * queryApiKeySecurity(name = "Query API Key", key = "X-API-Key") {
+     *     description = "API Key Authentication via query."
+     * }
+     * ```
+     *
+     * @param name The unique name of the security scheme.
+     * @param key The name of the query parameter where the API key is passed.
+     * @param configure A lambda receiver for configuring the [ApiKeySecurityBuilder].
+     *
+     * @see [headerApiKeySecurity]
+     * @see [cookieApiKeySecurity]
+     */
+    public fun queryApiKeySecurity(
+        name: String,
+        key: String,
+        configure: ApiKeySecurityBuilder.() -> Unit = {}
+    ) {
+        val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
+        val scheme: ApiSecurityScheme = builder.build(
+            name = name,
+            key = key,
+            location = SecurityLocation.QUERY
+        )
+        _securityConfig.addSecurityScheme(scheme = scheme)
+    }
+
+    /**
+     * Adds an API key security scheme passed via cookie to the API metadata.
+     *
+     * #### Sample Usage
+     * ```
+     * cookieApiKeySecurity(name = "Cookie API Key", key = "X-API-Key") {
+     *     description = "API Key Authentication via cookie."
+     * }
+     * ```
+     *
+     * @param name The unique name of the security scheme.
+     * @param key The name of the cookie parameter where the API key is passed.
+     * @param configure A lambda receiver for configuring the [ApiKeySecurityBuilder].
+     *
+     * @see [headerApiKeySecurity]
+     * @see [queryApiKeySecurity]
+     */
+    public fun cookieApiKeySecurity(
+        name: String,
+        key: String,
+        configure: ApiKeySecurityBuilder.() -> Unit = {}
+    ) {
+        val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
+        val scheme: ApiSecurityScheme = builder.build(
+            name = name,
+            key = key,
+            location = SecurityLocation.COOKIE
+        )
         _securityConfig.addSecurityScheme(scheme = scheme)
     }
 
@@ -122,8 +226,12 @@ public abstract class SecuritySchemeConfigurable {
      *
      * @see [OAuth2SecurityBuilder]
      * @see [OAuthFlowBuilder]
-     * @see [apiKeySecurity]
-     * @see [httpSecurity]
+     * @see [basicSecurity]
+     * @see [bearerSecurity]
+     * @see [digestSecurity]
+     * @see [headerApiKeySecurity]
+     * @see [cookieApiKeySecurity]
+     * @see [queryApiKeySecurity]
      * @see [mutualTLSSecurity]
      * @see [openIdConnectSecurity]
      */
@@ -151,8 +259,12 @@ public abstract class SecuritySchemeConfigurable {
      * @param url The [Url] for the OpenID Connect configuration.
      * @param configure A lambda receiver for configuring the [OpenIdConnectSecurityBuilder].
      *
-     * @see [apiKeySecurity]
-     * @see [httpSecurity]
+     * @see [basicSecurity]
+     * @see [bearerSecurity]
+     * @see [digestSecurity]
+     * @see [headerApiKeySecurity]
+     * @see [cookieApiKeySecurity]
+     * @see [queryApiKeySecurity]
      * @see [mutualTLSSecurity]
      * @see [oauth2Security]
      */
@@ -179,8 +291,12 @@ public abstract class SecuritySchemeConfigurable {
      * @param name The unique name of the security scheme.
      * @param configure A lambda receiver for configuring the [MutualTLSSecurityBuilder].
      *
-     * @see [apiKeySecurity]
-     * @see [httpSecurity]
+     * @see [basicSecurity]
+     * @see [bearerSecurity]
+     * @see [digestSecurity]
+     * @see [headerApiKeySecurity]
+     * @see [cookieApiKeySecurity]
+     * @see [queryApiKeySecurity]
      * @see [oauth2Security]
      * @see [openIdConnectSecurity]
      */

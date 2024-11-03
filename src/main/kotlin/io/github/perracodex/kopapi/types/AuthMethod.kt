@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonValue
  *
  * @property value The string value of the HTTP authentication method.
  */
-public enum class AuthMethod(@JsonValue internal val value: String) {
+internal enum class AuthMethod(@JsonValue internal val value: String) {
     /** HTTP Basic authentication method. */
     BASIC(value = "basic"),
 

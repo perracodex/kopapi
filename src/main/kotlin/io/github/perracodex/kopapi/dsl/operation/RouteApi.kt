@@ -38,10 +38,7 @@ import io.ktor.server.routing.*
  *
  *     response(HttpStatusCode.NotFound) { description = "Data not found." }
  *
- *     httpSecurity(
- *          name = "Authentication",
- *          method = AuthMethod.BEARER
- *     ) {
+ *     bearerSecurity(name = "Authentication") {
  *          description = "Access to data."
  *     }
  * }

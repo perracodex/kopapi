@@ -52,8 +52,12 @@ import kotlin.reflect.typeOf
  *  With no response type, the response is assumed to be only a [HttpStatusCode] with no associated type.
  *
  * #### Security Schemes
- * - [apiKeySecurity]: Adds an API key security scheme to the API metadata.
- * - [httpSecurity]: Adds an HTTP security scheme to the API metadata.
+ * - [basicSecurity]: Adds a Basic security scheme to the API metadata.
+ * - [bearerSecurity]: Adds a Bearer security scheme to the API metadata.
+ * - [digestSecurity]: Adds a Digest security scheme to the API metadata.
+ * - [headerApiKeySecurity]: Adds a Header API key security scheme to the API metadata.
+ * - [queryApiKeySecurity]: Adds a Query API key security scheme to the API metadata.
+ * - [cookieApiKeySecurity]: Adds a Cookie API key security scheme to the API metadata.
  * - [mutualTLSSecurity]: Adds a mutual TLS security scheme to the API metadata.
  * - [oauth2Security]: Adds an OAuth 2.0 security scheme to the API metadata.
  * - [openIdConnectSecurity]: Adds an OpenID Connect security scheme to the API metadata.
@@ -149,8 +153,9 @@ public class ApiOperationBuilder internal constructor(
      * Disables the security schemes for the API operation.
      * Both top-level global and local security schemes will not be applied to this API Operation.
      *
-     * @see [apiKeySecurity]
-     * @see [httpSecurity]
+     * @see [basicSecurity]
+     * @see [bearerSecurity]
+     * @see [digestSecurity]
      * @see [mutualTLSSecurity]
      * @see [oauth2Security]
      * @see [openIdConnectSecurity]
@@ -182,7 +187,7 @@ public class ApiOperationBuilder internal constructor(
      * @see [queryParameter]
      * @see [requestBody]
      */
-    public inline fun <reified T : Any> ApiOperationBuilder.pathParameter(
+    public inline fun <reified T : Any> pathParameter(
         name: String,
         configure: PathParameterBuilder.() -> Unit = {}
     ) {
@@ -217,7 +222,7 @@ public class ApiOperationBuilder internal constructor(
      * @see [pathParameter]
      * @see [requestBody]
      */
-    public inline fun <reified T : Any> ApiOperationBuilder.queryParameter(
+    public inline fun <reified T : Any> queryParameter(
         name: String,
         configure: QueryParameterBuilder.() -> Unit = {}
     ) {
@@ -250,7 +255,7 @@ public class ApiOperationBuilder internal constructor(
      * @see [queryParameter]
      * @see [requestBody]
      */
-    public inline fun <reified T : Any> ApiOperationBuilder.headerParameter(
+    public inline fun <reified T : Any> headerParameter(
         name: String,
         configure: HeaderParameterBuilder.() -> Unit = {}
     ) {
@@ -284,7 +289,7 @@ public class ApiOperationBuilder internal constructor(
      * @see [queryParameter]
      * @see [requestBody]
      */
-    public inline fun <reified T : Any> ApiOperationBuilder.cookieParameter(
+    public inline fun <reified T : Any> cookieParameter(
         name: String,
         configure: CookieParameterBuilder.() -> Unit = {}
     ) {
@@ -355,7 +360,7 @@ public class ApiOperationBuilder internal constructor(
      * @see [queryParameter]
      * @see [response]
      */
-    public inline fun <reified T : Any> ApiOperationBuilder.requestBody(
+    public inline fun <reified T : Any> requestBody(
         contentType: Set<ContentType>? = null,
         configure: RequestBodyBuilder.() -> Unit = {}
     ) {
@@ -419,7 +424,7 @@ public class ApiOperationBuilder internal constructor(
      * @see [LinkBuilder]
      */
     @JvmName(name = "responseWithoutType")
-    public fun ApiOperationBuilder.response(
+    public fun response(
         status: HttpStatusCode,
         configure: ResponseBuilder.() -> Unit = {}
     ) {
@@ -470,7 +475,7 @@ public class ApiOperationBuilder internal constructor(
      * @see [LinkBuilder]
      */
     @JvmName(name = "responseWithSingleContentType")
-    public inline fun <reified T : Any> ApiOperationBuilder.response(
+    public inline fun <reified T : Any> response(
         status: HttpStatusCode,
         contentType: ContentType,
         configure: ResponseBuilder.() -> Unit = {}
@@ -526,7 +531,7 @@ public class ApiOperationBuilder internal constructor(
      * @see [LinkBuilder]
      */
     @JvmName(name = "responseWithType")
-    public inline fun <reified T : Any> ApiOperationBuilder.response(
+    public inline fun <reified T : Any> response(
         status: HttpStatusCode,
         contentType: Set<ContentType>? = null,
         configure: ResponseBuilder.() -> Unit = {}
