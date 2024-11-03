@@ -92,13 +92,12 @@ private fun buildApiErrorMessage(route: Route): String {
         Possible causes:
             - You might have applied 'api' to a route that is not directly tied to a specific HTTP method,
         To resolve:
-            - Make sure 'api' is applied to a route either by infix or chained:
+            - Make sure 'api' is applied to a route:
                 ```
                 post { ... } api { ... } // Infix example
-                post { ... }.api { ... } // Chained '.' example
                 ```
 
-        Example of proper usage (infix notation):
+        Example of proper usage:
             ```
             get("/items/{data_id}/{item_id?}") {
                 // Handle GET request
