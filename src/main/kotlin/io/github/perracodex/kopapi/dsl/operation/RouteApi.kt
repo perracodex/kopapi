@@ -94,7 +94,7 @@ private fun buildApiErrorMessage(route: Route): String {
         To resolve:
             - Make sure 'api' is applied to a route:
                 ```
-                post { ... } api { ... } // Infix example
+                post { ... } api { ... }
                 ```
 
         Example of proper usage:
