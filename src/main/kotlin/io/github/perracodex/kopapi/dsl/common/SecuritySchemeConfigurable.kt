@@ -61,7 +61,7 @@ public abstract class SecuritySchemeConfigurable {
      * @see [basicSecurity]
      * @see [digestSecurity]
      */
-    public fun SecuritySchemeConfigurable.bearerSecurity(
+    public fun bearerSecurity(
         name: String,
         configure: HttpSecurityBuilder.() -> Unit = {}
     ) {
