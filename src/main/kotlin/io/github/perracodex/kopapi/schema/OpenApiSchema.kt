@@ -55,6 +55,7 @@ internal data class OpenApiSchema(
      * @property options The OPTIONS operation for the path, if defined.
      * @property head The HEAD operation for the path, if defined.
      * @property patch The PATCH operation for the path, if defined.
+     * @property trace The TRACE operation for the path, if defined.
      */
     data class PathItemObject(
         var get: OperationObject? = null,
@@ -64,6 +65,7 @@ internal data class OpenApiSchema(
         var options: OperationObject? = null,
         var head: OperationObject? = null,
         var patch: OperationObject? = null,
+        var trace: OperationObject? = null,
     ) {
         /**
          * Adds an API Operation to the [OperationObject] based on the specified HTTP method,
@@ -82,7 +84,11 @@ internal data class OpenApiSchema(
                 HttpMethod.Options -> options = operationObject
                 HttpMethod.Head -> head = operationObject
                 HttpMethod.Patch -> patch = operationObject
-                else -> throw KopapiException("Unsupported HTTP method: $method")
+                else -> {
+                    trace = operationObject.takeIf {
+                        method.value.equals(other = "TRACE", ignoreCase = true)
+                    } ?: throw KopapiException("Unsupported HTTP method: $method")
+                }
             }
         }
 
@@ -106,7 +112,11 @@ internal data class OpenApiSchema(
                 HttpMethod.Options -> options?.security = securityMaps
                 HttpMethod.Head -> head?.security = securityMaps
                 HttpMethod.Patch -> patch?.security = securityMaps
-                else -> throw KopapiException("Unsupported HTTP method: $method")
+                else -> {
+                    trace?.security = securityMaps.takeIf {
+                        method.value.equals(other = "TRACE", ignoreCase = true)
+                    } ?: throw KopapiException("Unsupported HTTP method: $method")
+                }
             }
         }
     }
