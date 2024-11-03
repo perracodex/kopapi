@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
-import io.github.perracodex.kopapi.dsl.markers.OperationDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -20,7 +20,7 @@ import kotlin.reflect.typeOf
  *
  * @property description An optional description of the multipart request.
  */
-@OperationDsl
+@KopapiDsl
 public class MultipartBuilder {
     public var description: String by MultilineString()
 

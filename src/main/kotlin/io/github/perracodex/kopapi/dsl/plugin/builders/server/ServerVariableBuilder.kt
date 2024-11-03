@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.builders.server
 
-import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -29,7 +29,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [ServerConfigBuilder]
  * @see [ServerBuilder]
  */
-@ConfigurationDsl
+@KopapiDsl
 public class ServerVariableBuilder(
     public val defaultValue: String
 ) {

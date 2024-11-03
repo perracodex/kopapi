@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.builders.server
 
-import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.system.Tracer
 
@@ -14,7 +14,7 @@ import io.github.perracodex.kopapi.system.Tracer
  * @see [ServerConfigBuilder]
  * @see [ServerVariableBuilder]
  */
-@ConfigurationDsl
+@KopapiDsl
 public class ServerBuilder {
     private val tracer = Tracer<ServerBuilder>()
 

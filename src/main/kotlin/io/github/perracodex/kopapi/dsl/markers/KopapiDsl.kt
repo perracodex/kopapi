@@ -5,8 +5,8 @@
 package io.github.perracodex.kopapi.dsl.markers
 
 /**
- * Marks the scope of security-related DSL builders to avoid accidental
- * invocations between different DSL builders scopes.
+ * Marks the scope of plugin DSLs for the plugin.
  */
 @DslMarker
-internal annotation class SecurityDsl
+@Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
+internal annotation class KopapiDsl

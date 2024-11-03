@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.dsl.common
 
 import io.github.perracodex.kopapi.dsl.common.security.*
-import io.github.perracodex.kopapi.dsl.markers.SecurityDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.AuthMethod
@@ -15,7 +15,7 @@ import io.ktor.http.*
 /**
  * Abstract base class to handle security scheme configurations.
  */
-@SecurityDsl
+@KopapiDsl
 public abstract class SecuritySchemeConfigurable {
     @Suppress("PropertyName")
     internal val _securityConfig: Config = Config()

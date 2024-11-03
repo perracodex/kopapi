@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
-import io.github.perracodex.kopapi.dsl.markers.OperationDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
@@ -27,7 +27,7 @@ import kotlin.reflect.typeOf
  *
  * @see [ApiOperationBuilder.requestBody]
  */
-@OperationDsl
+@KopapiDsl
 public class RequestBodyBuilder(
     public var required: Boolean = true,
     public var composition: Composition? = null

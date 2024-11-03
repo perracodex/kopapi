@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.builders
 
-import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense
 import io.github.perracodex.kopapi.utils.trimOrNull
 
@@ -22,7 +22,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @property name The name of the license.
  * @property url The URL of the license.
  */
-@ConfigurationDsl
+@KopapiDsl
 public class LicenseBuilder {
     public var name: String? = null
     public var url: String? = null

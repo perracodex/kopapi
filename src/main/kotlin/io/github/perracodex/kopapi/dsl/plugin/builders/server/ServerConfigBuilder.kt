@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.builders.server
 
-import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.system.KopapiException
@@ -21,7 +21,7 @@ import kotlin.collections.set
  * @see [ServerVariableBuilder]
  * @see [ServerBuilder]
  */
-@ConfigurationDsl
+@KopapiDsl
 public class ServerConfigBuilder(
     private val urlString: String
 ) {

@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.common.security
 
-import io.github.perracodex.kopapi.dsl.markers.SecurityDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.types.AuthMethod
@@ -25,7 +25,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [OpenIdConnectSecurityBuilder]
  * @see [MutualTLSSecurityBuilder]
  */
-@SecurityDsl
+@KopapiDsl
 public class HttpSecurityBuilder {
     public var description: String by MultilineString()
 

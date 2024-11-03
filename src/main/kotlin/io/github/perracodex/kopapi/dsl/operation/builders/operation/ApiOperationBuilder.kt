@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.builders.operation
 
 import io.github.perracodex.kopapi.dsl.common.SecuritySchemeConfigurable
-import io.github.perracodex.kopapi.dsl.markers.OperationDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.parameter.CookieParameterBuilder
@@ -80,7 +80,7 @@ import kotlin.reflect.typeOf
  *
  * @see [ApiOperation]
  */
-@OperationDsl
+@KopapiDsl
 public class ApiOperationBuilder internal constructor(
     @PublishedApi internal val endpoint: String
 ) : SecuritySchemeConfigurable() {

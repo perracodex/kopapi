@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.plugin
 
 import io.github.perracodex.kopapi.dsl.common.SecuritySchemeConfigurable
-import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.TagBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.server.ServerBuilder
@@ -18,7 +18,7 @@ import io.github.perracodex.kopapi.utils.trimOrDefault
 /**
  * Configuration for the [Kopapi] plugin.
  */
-@ConfigurationDsl
+@KopapiDsl
 public class KopapiConfig : SecuritySchemeConfigurable() {
     /**
      * Whether the plugin should be enabled (Default is `true`).

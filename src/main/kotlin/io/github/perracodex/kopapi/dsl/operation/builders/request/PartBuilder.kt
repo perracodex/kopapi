@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
-import io.github.perracodex.kopapi.dsl.markers.OperationDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -18,7 +18,7 @@ import io.github.perracodex.kopapi.utils.string.MultilineString
  * @property schemaType Optional schema type for the part. Default: `string`.
  * @property schemaFormat Optional schema format for the part.
  */
-@OperationDsl
+@KopapiDsl
 public class PartBuilder(
     public val name: String,
     public var required: Boolean = true,

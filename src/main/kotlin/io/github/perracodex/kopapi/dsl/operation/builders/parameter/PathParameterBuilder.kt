@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.parameter
 
-import io.github.perracodex.kopapi.dsl.markers.OperationDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.types.ParameterStyle
@@ -24,7 +24,7 @@ import kotlin.reflect.KType
  * @see [HeaderParameterBuilder]
  * @see [QueryParameterBuilder]
  */
-@OperationDsl
+@KopapiDsl
 public class PathParameterBuilder(
     public var style: ParameterStyle = ParameterStyle.SIMPLE,
     public var deprecated: Boolean = false

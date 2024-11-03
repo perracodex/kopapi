@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.response
 
-import io.github.perracodex.kopapi.dsl.markers.OperationDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
@@ -27,7 +27,7 @@ import kotlin.reflect.typeOf
  *
  * @see [ApiOperationBuilder.response]
  */
-@OperationDsl
+@KopapiDsl
 public class ResponseBuilder {
     public var description: String by MultilineString()
     public var composition: Composition? = null

@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.builders
 
-import io.github.perracodex.kopapi.dsl.markers.ConfigurationDsl
+import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiContact
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense
@@ -62,7 +62,7 @@ import io.github.perracodex.kopapi.utils.string.MultilineString
  * @property contact The contact information for the API.
  * @property license The license information for the API.
  */
-@ConfigurationDsl
+@KopapiDsl
 public class InfoBuilder {
     public var title: String = "API Title"
     public var description: String by MultilineString()
