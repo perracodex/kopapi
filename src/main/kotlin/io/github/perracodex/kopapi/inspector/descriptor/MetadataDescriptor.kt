@@ -13,6 +13,7 @@ import io.github.perracodex.kopapi.inspector.annotation.TypeInspectorApi
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.cleanName
 import io.github.perracodex.kopapi.utils.safeName
+import io.github.perracodex.kopapi.utils.trimOrNull
 import kotlinx.serialization.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -25,7 +26,7 @@ import kotlin.reflect.full.primaryConstructor
  * Represents metadata for an element basic properties.
  *
  * @property name The current name of the element. If renamed, this reflects the updated name.
- * @property attributes The parsed annotation `Attributes` for the element, if present.
+ * @property attributes The parsed annotation `@Schema` for the element, if present.
  * @property renamedFrom The original name of the element before renaming. It is `null` if the name was not changed.
  * @property isRequired Indicates whether the element is required. Default: `true`.
  * @property isNullable Indicates whether the element is nullable. Default: `false`.
@@ -54,6 +55,17 @@ internal data class MetadataDescriptor(
         }
 
         /**
+         * Resolves the description for the given [kClass], considering serializer annotations if present.
+         *
+         * @param kClass The [KClass] to process, which may contain a `@Schema` annotation.
+         * @return The resolved class description, if present.
+         */
+        fun getClassDescription(kClass: KClass<*>): String? {
+            val attributes: SchemaAnnotationAttributes? = SchemaAnnotationParser.parse(element = kClass)
+            return attributes?.description.trimOrNull()
+        }
+
+        /**
          * Creates an [MetadataDescriptor] by inspecting the annotations from the given [property].
          *
          * @param classKType The [KType] of the class declaring the property.
@@ -66,7 +78,7 @@ internal data class MetadataDescriptor(
         ): MetadataDescriptor {
             val elementName: ElementName = geElementName(target = property)
 
-            val attributes: SchemaAnnotationAttributes? = SchemaAnnotationParser.parse(property = property)
+            val attributes: SchemaAnnotationAttributes? = SchemaAnnotationParser.parse(element = property)
 
             val isTransient: Boolean = property.isTransient()
             val isNullable: Boolean = property.isNullable()

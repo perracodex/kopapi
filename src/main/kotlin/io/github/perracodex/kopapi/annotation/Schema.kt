@@ -9,7 +9,9 @@ package io.github.perracodex.kopapi.annotation
  *
  * #### Sample Usage
  * ```kotlin
+ * @Schema(description = "Represents a person.")
  * data class Person(
+ *
  *    @Schema(description = "The first name of the person.", minLength = 3, maxLength = 50)
  *    val firstName: String,
  *
@@ -37,14 +39,15 @@ package io.github.perracodex.kopapi.annotation
  *
  * #### Attribute Applicability
  *
- * Depending on the type of the field being annotated, only the relevant attributes are applicable:
- * - **String Fields**: `minLength`, `maxLength`, `pattern`
- * - **Numeric Fields**: `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, `multipleOf`
- * - **Array Fields**: `minItems`, `maxItems`, `uniqueItems`
+ * - Depending on the type of the field being annotated, only the relevant attributes are applicable:
+ *      - **String Fields**: `minLength`, `maxLength`, `pattern`
+ *      - **Numeric Fields**: `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, `multipleOf`
+ *      - **Array Fields**: `minItems`, `maxItems`, `uniqueItems`
  *
- * Non-relevant attributes to a type are ignored.
+ * - Non-relevant attributes to a type are ignored.
+ * - The class itself can also be annotated, but only the `description` attribute is applicable.
  *
- * @property description A brief description of the field.
+ * @property description A brief description of the field. (Can be used also with the class)
  * @property defaultValue A default value for the field.
  * @property format Overrides the default format for the field allowing for custom formats.
  * @property minLength Specifies the minimum character length for string types.

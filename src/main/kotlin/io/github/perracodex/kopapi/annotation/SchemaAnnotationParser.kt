@@ -7,27 +7,34 @@ package io.github.perracodex.kopapi.annotation
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.trimOrNull
 import java.math.BigDecimal
+import kotlin.reflect.KAnnotatedElement
+import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.findAnnotation
 
 /**
- * Utility class to parse the [Schema] annotation from a property and return a [SchemaAnnotationAttributes] object.
+ * Utility class to parse the [Schema] annotation from an annotated element (property or class).
  */
 internal object SchemaAnnotationParser {
     private val tracer = Tracer<SchemaAnnotationParser>()
 
     /**
-     * Parses the [Schema] annotation from the given property and returns a [SchemaAnnotationAttributes] object.
+     * Parses the [Schema] annotation from the given annotated [element].
      *
-     * @param property The [KProperty] to parse, which may contain an `Attributes` annotation.
-     * @return A `SchemaAnnotationAttributes` instance with the parsed constraints,
-     * or `null` if the property is not annotated with `Attributes`.
+     * @param element The [KAnnotatedElement] to parse, which may contain an `@Schema` annotation.
+     * @return A [SchemaAnnotationAttributes] instance with the parsed constraints,
+     * or `null` if the element is not annotated with `@Schema`.
      */
-    fun parse(property: KProperty<*>): SchemaAnnotationAttributes? {
+    fun parse(element: KAnnotatedElement): SchemaAnnotationAttributes? {
         return runCatching {
-            // Retrieve the Attributes annotation from the property.
-            val attributes: Schema = property.findAnnotation<Schema>()
+            val classifier: KClassifier = getClassifier(element = element) ?: run {
+                tracer.warning("Failed to retrieve classifier for element: ${element::class}")
+                return null
+            }
+
+            // Retrieve the Attributes annotation from the element.
+            val attributes: Schema = element.findAnnotation<Schema>()
                 ?: return null
 
             // Common attributes.
@@ -41,19 +48,18 @@ internal object SchemaAnnotationParser {
             val pattern: String? = attributes.pattern.trimOrNull()
 
             // Numeric-specific constraints.
-            val minimum: Number? = parseNumber(value = attributes.minimum, classifier = property.returnType.classifier)
-            val maximum: Number? = parseNumber(value = attributes.maximum, classifier = property.returnType.classifier)
-            val exclusiveMinimum: Number? = parseNumber(value = attributes.exclusiveMinimum, classifier = property.returnType.classifier)
-            val exclusiveMaximum: Number? = parseNumber(value = attributes.exclusiveMaximum, classifier = property.returnType.classifier)
-            val multipleOf: Number? = parseNumber(value = attributes.multipleOf, classifier = property.returnType.classifier)
+            val minimum: Number? = parseNumber(value = attributes.minimum, classifier = classifier)
+            val maximum: Number? = parseNumber(value = attributes.maximum, classifier = classifier)
+            val exclusiveMinimum: Number? = parseNumber(value = attributes.exclusiveMinimum, classifier = classifier)
+            val exclusiveMaximum: Number? = parseNumber(value = attributes.exclusiveMaximum, classifier = classifier)
+            val multipleOf: Number? = parseNumber(value = attributes.multipleOf, classifier = classifier)
 
             // Array-specific constraints.
             val minItems: Int? = attributes.minItems.takeIf { it >= 0 }
             val maxItems: Int? = attributes.maxItems.takeIf { it >= 0 }
             val uniqueItems: Boolean? = attributes.uniqueItems.takeIf { it }
 
-
-            // If all parsed values are null, return null.
+            // Check if any attributes have been assigned.
             val hasAssignedAttributes: Boolean = listOfNotNull(
                 // Common attributes.
                 description, defaultValue, format,
@@ -68,7 +74,7 @@ internal object SchemaAnnotationParser {
                 return null
             }
 
-            // Return the parsed attributes for this property.
+            // Return the parsed attributes.
             return SchemaAnnotationAttributes(
                 description = description,
                 defaultValue = defaultValue,
@@ -86,8 +92,25 @@ internal object SchemaAnnotationParser {
                 uniqueItems = uniqueItems
             )
         }.onFailure {
-            tracer.error("Failed to parse `@Schema` annotation for property ${property.name}: ${it.message}")
+            tracer.error("Failed to parse `@Schema` annotation for element ${element::class}: ${it.message}")
         }.getOrNull()
+    }
+
+    /**
+     * Retrieves the classifier from the given [KAnnotatedElement].
+     *
+     * @param element The [KAnnotatedElement] to retrieve the classifier from.
+     * @return The [KClassifier] of the element, or `null` if the classifier could not be retrieved.
+     */
+    private fun getClassifier(element: KAnnotatedElement): KClassifier? {
+        return when (element) {
+            is KProperty<*> -> element.returnType.classifier
+            is KClass<*> -> element
+            else -> {
+                tracer.warning("Unsupported KAnnotatedElement type: ${element::class}")
+                return null
+            }
+        }
     }
 
     /**
@@ -95,7 +118,7 @@ internal object SchemaAnnotationParser {
      * then falling back to generic parsing.
      *
      * @param value The string representation of the number to parse.
-     * @param classifier The expected type of the property (e.g., Int::class, Double::class).
+     * @param classifier The expected type (e.g., Int::class, Double::class).
      * @return A `Number` in the specified or inferred type, or `null` if the value is empty or cannot be parsed.
      */
     private fun parseNumber(value: String, classifier: KClassifier?): Number? {

@@ -13,7 +13,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  */
 internal object SchemaAttributeBinder {
     /**
-     * Creates a new [ElementSchema] instance applying the given `attributes`.
+     * Creates a new [ElementSchema] instance applying the given [attributes].
      *
      * @param attributes The [SchemaAnnotationAttributes] to copy into the schema.
      * @return A new [ElementSchema] with the attributes copied, if applicable, or the original schema.

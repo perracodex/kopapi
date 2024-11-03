@@ -118,12 +118,14 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
         }
         semaphore.add(kType.nativeName())
 
-        // Add a schema placeholder early to avoid circular references.
+        // Resolve the description if the object was annotated.
+        val description: String? = MetadataDescriptor.getClassDescription(kClass = kClass)
+
         // Add a schema placeholder early to avoid circular references.
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
             name = className,
             kType = kType,
-            schema = SchemaFactory.ofObject()
+            schema = SchemaFactory.ofObject(description = description)
         )
         typeInspector.addToCache(schema = schemaPlaceholder)
 
