@@ -125,7 +125,7 @@ public class ApiOperationBuilder internal constructor(
     /**
      * Optional set of descriptive tags for categorizing the endpoint in API documentation.
      *
-     * Declaring multiple `tags` will append all the of them to the existing list.
+     * Declaring multiple `tags` will append all of them to the existing list.
      * Repeated tags are discarded in a case-insensitive manner.
      *
      * #### Sample Usage
