@@ -116,4 +116,4 @@ install(Kopapi) {
 
 --- 
 
-### [Servers 🡲](01.1.plugin-servers.md)
+### [Servers 🡲](02-servers.md)

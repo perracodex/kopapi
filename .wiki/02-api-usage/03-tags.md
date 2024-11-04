@@ -15,6 +15,6 @@ api {
 
 ---
 
-### [Parameters 🡲](02.3.api-usage-parameters.md)
+### [Parameters 🡲](04-parameters.md)
 
-#### [🡰 Summary and Description](02.1.api-usage-summary-description.md)
+#### [🡰 Summary and Description](02-summary-description.md)

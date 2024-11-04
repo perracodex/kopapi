@@ -5,7 +5,7 @@ it is also possible to define security schemes at the individual API Operation l
 allowing for more specific security configurations.
 
 - For detailed information on the security schemes supported at the API Operation level,
-  see the plugin [Security](01.2.plugin-security.md) section, as the syntax is the same.
+  see the plugin [Security](../01-plugin/03-security.md) section, as the syntax is the same.
 
 ---
 
@@ -71,6 +71,6 @@ as partial redefinition is not supported.
 
 ---
 
-### [Schema Annotation 🡲](02.7.api-usage-schema-annotation.md)
+### [Schema Annotation 🡲](08-schema-annotation.md)
 
-#### [🡰 Responses](02.5.api-usage-responses.md)
+#### [🡰 Responses](06-responses.md)

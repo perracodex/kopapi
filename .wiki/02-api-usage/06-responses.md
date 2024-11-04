@@ -205,6 +205,6 @@ api {
 }
 ```
 
-### [Endpoints Security 🡲](02.6.api-usage-security.md)
+### [Endpoints Security 🡲](07-security.md)
 
-#### [🡰 Request Body](02.4.api-usage-request-body.md)
+#### [🡰 Request Body](05-request-body.md)

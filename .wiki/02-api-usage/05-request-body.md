@@ -192,6 +192,6 @@ requestBody:
 
 ---
 
-### [Responses 🡲](02.5.api-usage-responses.md)
+### [Responses 🡲](06-responses.md)
 
-#### [🡰 Parameters](02.3.api-usage-parameters.md)
+#### [🡰 Parameters](04-parameters.md)

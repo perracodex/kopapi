@@ -84,6 +84,6 @@ This results in a conflict, as the OpenAPI specification contains two schemas wi
 
 ---
 
-### [Internals - Type Introspection 🡲](03.2.internals-type-introspection.md)
+### [Internals - Type Introspection 🡲](03-type-introspection.md)
 
-#### [🡰 Internals - Debug Panel](03.0.internals-debug-panel.md)
+#### [🡰 Internals - Debug Panel](01-debug-panel.md)

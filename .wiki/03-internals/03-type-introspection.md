@@ -378,4 +378,4 @@ traverseType:
 
 ---
 
-### [🡰 Internals - Type Conflicts](03.1.internals-type-conflicts.md)
+### [🡰 Internals - Type Conflicts](02-type-conflicts.md)

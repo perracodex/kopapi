@@ -148,6 +148,6 @@ install(Kopapi) {
 
 ---
 
-### [Top Level Tags 🡲](01.3.plugin-tags.md)
+### [Top Level Tags 🡲](04-tags.md)
 
-#### [🡰 Servers](01.1.plugin-servers.md)
+#### [🡰 Servers](02-servers.md)

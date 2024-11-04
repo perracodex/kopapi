@@ -18,6 +18,6 @@ api {
 
 --- 
 
-### [Path Operation Tags 🡲](02.2.api-usage-tags.md)
+### [Path Operation Tags 🡲](03-tags.md)
 
-#### [🡰 API Usage](02.0.api-usage.md)
+#### [🡰 API Usage](01-route-api.md)

@@ -92,6 +92,6 @@ api {
 
 ---
 
-### [Request Body 🡲](02.4.api-usage-request-body.md)
+### [Request Body 🡲](05-request-body.md)
 
-#### [🡰 Path Operation Tags](02.2.api-usage-tags.md)
+#### [🡰 Path Operation Tags](03-tags.md)

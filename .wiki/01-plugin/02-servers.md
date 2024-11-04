@@ -49,6 +49,6 @@ install(Kopapi) {
 
 ---
 
-### [Security 🡲](01.2.plugin-security.md)
+### [Security 🡲](03-security.md)
 
-#### [🡰 Plugin Configuration](01.0.plugin-configuration.md) 
+#### [🡰 Plugin Configuration](01-configuration.md) 

@@ -57,24 +57,24 @@ dependencies {
 
 ### Wiki
 
-* ### [Plugin Configuration](./.wiki/01.0.plugin-configuration.md)
-  - #### [Servers](./.wiki/01.1.plugin-servers.md)
-  - #### [Security](./.wiki/01.2.plugin-security.md)
-  - #### [Top Level Tags](./.wiki/01.3.plugin-tags.md)
+* ### [Plugin Configuration](.wiki/01-plugin/01-configuration.md)
+  - #### [Servers](.wiki/01-plugin/02-servers.md)
+  - #### [Security](.wiki/01-plugin/03-security.md)
+  - #### [Top Level Tags](.wiki/01-plugin/04-tags.md)
 
-* ### [API Usage](./.wiki/02.0.api-usage.md)
-  - #### [Summary and Description](./.wiki/02.1.api-usage-summary-description.md)
-  - #### [Path Operation Tags](./.wiki/02.2.api-usage-tags.md)
-  - #### [Parameters](./.wiki/02.3.api-usage-parameters.md)
-  - #### [Request Bodies](./.wiki/02.4.api-usage-request-body.md)
-  - #### [Responses](./.wiki/02.5.api-usage-responses.md)
-  - #### [Security](./.wiki/02.6.api-usage-security.md)
-  - #### [Schema Annotation](./.wiki/02.7.api-usage-schema-annotation.md)
+* ### [API Usage](.wiki/02-api-usage/01-route-api.md)
+  - #### [Summary and Description](.wiki/02-api-usage/02-summary-description.md)
+  - #### [Path Operation Tags](.wiki/02-api-usage/03-tags.md)
+  - #### [Parameters](.wiki/02-api-usage/04-parameters.md)
+  - #### [Request Bodies](.wiki/02-api-usage/05-request-body.md)
+  - #### [Responses](.wiki/02-api-usage/06-responses.md)
+  - #### [Security](.wiki/02-api-usage/07-security.md)
+  - #### [Schema Annotation](.wiki/02-api-usage/08-schema-annotation.md)
 
 * ### Internals
-  - #### [Debug Panel](./.wiki/03.0.internals-debug-panel.md)
-  - #### [Type Conflicts](./.wiki/03.1.internals-type-conflicts.md)
-  - #### [Type Introspection](./.wiki/03.2.internals-type-introspection.md)
+  - #### [Debug Panel](.wiki/03-internals/01-debug-panel.md)
+  - #### [Type Conflicts](.wiki/03-internals/02-type-conflicts.md)
+  - #### [Type Introspection](.wiki/03-internals/03-type-introspection.md)
 
 ---
 

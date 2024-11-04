@@ -32,6 +32,6 @@ install(Kopapi) {
 
 ---
 
-### [API Usage 🡲](02.0.api-usage.md)
+### [API Usage 🡲](../02-api-usage/01-route-api.md)
 
-#### [🡰 Security](01.2.plugin-security.md)
+#### [🡰 Security](03-security.md)

@@ -71,6 +71,6 @@ data class Person(
 
 ---
 
-### [Internals - Debug Panel 🡲](03.0.internals-debug-panel.md)
+### [Internals - Debug Panel 🡲](../03-internals/01-debug-panel.md)
 
-#### [🡰 Security](02.6.api-usage-security.md)
+#### [🡰 Security](07-security.md)

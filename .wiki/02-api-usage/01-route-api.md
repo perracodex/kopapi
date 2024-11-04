@@ -97,6 +97,6 @@ get("/items/{id}") {
 
 ---
 
-### [Summary and Description 🡲](02.1.api-usage-summary-description.md)
+### [Summary and Description 🡲](02-summary-description.md)
 
-#### [🡰 Tags](01.3.plugin-tags.md)
+#### [🡰 Tags](../01-plugin/04-tags.md)
