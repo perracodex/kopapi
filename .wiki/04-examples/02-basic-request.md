@@ -48,3 +48,28 @@ fun Route.schedulerDashboardRoute() {
     }
 }
 ```
+
+---
+
+- Query parameter with default value
+
+```kotlin
+fun Route.findAllEmployeesRoute() {
+    get("v1/employees/{page?}") {
+        // Implement as usual
+    } api {
+        tags = setOf("Employee")
+        summary = "Find all employees."
+        description = "Retrieve all employees in the system."
+        operationId = "findAllEmployees"
+        queryParameter<Int>(name = "page") {
+            description = "The page number to retrieve."
+            required = false
+            defaultValue = DefaultValue.ofInt(value = 1)
+        }
+        response<Page<Employee>>(status = HttpStatusCode.OK) {
+            description = "Employees found."
+        }
+    }
+}
+```
