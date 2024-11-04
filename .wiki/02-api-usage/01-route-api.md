@@ -1,4 +1,4 @@
-## Using the api DSL in Ktor Routes for OpenAPI Documentation
+## Defining OpenAPI Documentation
 
 This guide provides an overview of how to use the api `DSL` to define OpenAPI-compatible metadata in Ktor routes.
 
