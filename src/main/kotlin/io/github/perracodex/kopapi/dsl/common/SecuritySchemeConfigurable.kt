@@ -337,8 +337,7 @@ public abstract class SecuritySchemeConfigurable {
             if (securitySchemes.any { it.schemeName.equals(other = scheme.schemeName, ignoreCase = true) }) {
                 throw KopapiException(
                     "Attempting to register security scheme with name '${scheme.schemeName}' more than once.\n" +
-                            "Names must be unique across all the Security Schemes, " +
-                            "both globally and for all Routes."
+                            "The OpenAPI specification requires every Security Scheme name to be unique throughout the entire API."
                 )
             }
 
