@@ -30,10 +30,10 @@ public data class Employee(
     @Schema(description = "The age of the employee, computed from [dob].", minimum = "1", maximum = "120")
     val age: Int,
 
-    @Schema(description = "The [MaritalStatus] of the employee.", defaultValue = "Single")
+    @Schema(description = "The [MaritalStatus] of the employee.", defaultValue = "SINGLE")
     val maritalStatus: MaritalStatus,
 
-    @Schema(description = "The [Honorific] or title of the employee.", defaultValue = "Mr.")
+    @Schema(description = "The [Honorific] or title of the employee.", defaultValue = "UNKNOWN")
     val honorific: Honorific,
 
     @Schema(description = "Optional [Contact] details of the employee.")
