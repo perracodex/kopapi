@@ -42,7 +42,9 @@ internal object OperationVerifier {
                 val endpoints: String = operations.joinToString("\n") { op ->
                     "   - [${op.method.value}] → '${op.path}'"
                 }
-                "API Operation ID '$operationId' is not unique. Duplicates found in:\n$endpoints\n"
+                "API operationId '$operationId' is not unique. " +
+                        "The OpenAPI specification requires every operationId to be unique throughout the entire API. " +
+                        "Duplicate found in:\n$endpoints\n"
             }.joinToString(separator = "\n\n")
 
             throw KopapiException(message)
