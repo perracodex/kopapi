@@ -55,7 +55,7 @@ fun Route.schedulerDashboardRoute() {
 
 ```kotlin
 fun Route.findAllEmployeesRoute() {
-    get("v1/employees/{page?}") {
+    get("v1/employees/{page?}/{size?}") {
         // Implement as usual
     } api {
         tags = setOf("Employee")
@@ -66,6 +66,11 @@ fun Route.findAllEmployeesRoute() {
             description = "The page number to retrieve."
             required = false
             defaultValue = DefaultValue.ofInt(value = 1)
+        }
+        queryParameter<Int>(name = "size") {
+            description = "The number of items per page."
+            required = false
+            defaultValue = DefaultValue.ofInt(value = 10)
         }
         response<Page<Employee>>(status = HttpStatusCode.OK) {
             description = "Employees found."
