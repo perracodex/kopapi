@@ -54,7 +54,7 @@ internal fun String.sanitize(): String {
         trimmed.replace(regex = "\\s+".toRegex(), replacement = "_")
     } else {
         // Split the string into words based on whitespace.
-        val words: List<String> = trimmed.split("\\s+".toRegex())
+        val words: List<String> = trimmed.split(regex = "\\s+".toRegex())
 
         // Check the case of the first character of the first word.
         if (words.first().firstOrNull()?.isLowerCase() == true) {
@@ -74,7 +74,7 @@ internal fun String.sanitize(): String {
 
     // Replace any character not matching the allowed pattern with an underscore.
     val allowedPattern = Regex(pattern = "[a-zA-Z0-9._-]")
-    return processed.map {
-        if (allowedPattern.matches(it.toString())) it else '_'
+    return processed.map { char ->
+        if (allowedPattern.matches(char.toString())) char else '_'
     }.joinToString(separator = "")
 }
