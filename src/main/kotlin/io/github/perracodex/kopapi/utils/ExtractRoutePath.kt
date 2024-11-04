@@ -36,8 +36,8 @@ internal fun Route.extractRoutePath(): String {
             is PathSegmentOptionalParameterRouteSelector -> ""
             else -> ""
         }.let { segment ->
-            if (segment.isNotEmpty()) {
-                segments.add(segment)
+            if (segment.isNotBlank()) {
+                segments.add(segment.trim())
             }
         }
 
