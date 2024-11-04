@@ -19,7 +19,6 @@ import kotlinx.serialization.json.*
  */
 @DebugViewApi
 internal class DebugPanelView(private val debugInfo: DebugInfo) {
-    // Keep existing SchemaRegistry usages for conflicts and top action buttons
     private val schemaConflictsJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.SCHEMA_CONFLICTS)
     private val configurationJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.API_CONFIGURATION)
     private val openApiYaml: String = SchemaRegistry.getOpenApiSchema(format = SchemaRegistry.Format.YAML)
@@ -32,11 +31,11 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
      * @param html The [HTML] DSL builder used to create the view.
      */
     fun build(html: HTML) {
-        // Use DebugInfo for API Operations and Type Schemas panels
+        // Use DebugInfo for API Operations and Type Schemas panels.
         val apiOperationSections: Map<String, DebugInfo.Section> = debugInfo.apiOperationSections
         val typeSchemaSections: Map<String, DebugInfo.Section> = debugInfo.typeSchemaSections
 
-        // Parse JSON strings into JsonObject lists for conflicts panel
+        // Parse JSON strings into JsonObject lists for conflicts panel.
         val schemaConflictsList: List<JsonObject> = schemaConflictsJson.map { Json.parseToJsonElement(it).jsonObject }
 
         with(html) {
