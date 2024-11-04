@@ -37,17 +37,11 @@ internal fun Routing.swaggerRoute(apiDocs: ApiDocs) {
         result?.let { call.respond(it) }
             ?: call.respond(HttpStatusCode.NotFound)
     }
-
     /**
      * Serve the JavaScript code that initializes Swagger UI with the provided OpenAPI URL.
      */
     get("${apiDocs.swagger.url}/swagger-initializer.js") {
-        val response: String = Swagger.getSwaggerInitializer(
-            openapiYamlUrl = apiDocs.openapiYamlUrl,
-            withCredentials = apiDocs.swagger.withCredentials,
-            operationsSorter = apiDocs.swagger.operationsSorter,
-            syntaxTheme = apiDocs.swagger.syntaxTheme
-        )
+        val response: String = Swagger.getSwaggerInitializer(apiDocs = apiDocs)
         call.respondText(text = response, contentType = ContentType.Application.JavaScript)
     }
 }

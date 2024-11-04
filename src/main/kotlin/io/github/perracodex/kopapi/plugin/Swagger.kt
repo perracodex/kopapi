@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.plugin
 
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
 import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
@@ -136,32 +137,24 @@ internal object Swagger {
     /**
      * Returns the JavaScript code needed to initialize Swagger UI with the provided OpenAPI URL.
      *
-     * @param openapiYamlUrl The URL to access the OpenAPI schema in YAML format.
-     * @property withCredentials Whether to include cookies or other credentials in cross-origin (CORS) requests from Swagger UI.
-     * @property operationsSorter The sorting method for the operations in Swagger UI.
-     * @property syntaxTheme The syntax highlighting theme for Swagger UI.
+     * @param apiDocs The API documentation configuration.
      * @return The JavaScript code to initialize Swagger UI.
      */
-    fun getSwaggerInitializer(
-        openapiYamlUrl: String,
-        withCredentials: Boolean,
-        operationsSorter: SwaggerOperationsSorter,
-        syntaxTheme: SwaggerSyntaxTheme
-    ): String {
+    fun getSwaggerInitializer(apiDocs: ApiDocs): String {
         if (!this::swaggerJs.isInitialized) {
-            val sorter: String = when (operationsSorter) {
+            val sorterSetting: String = when (apiDocs.swagger.operationsSorter) {
                 SwaggerOperationsSorter.UNSORTED -> ""
-                else -> "operationsSorter: \"${operationsSorter.order}\","
+                else -> "operationsSorter: \"${apiDocs.swagger.operationsSorter.order}\","
             }
-            val syntaxThemeSetting: String = when (syntaxTheme) {
+            val syntaxThemeSetting: String = when (apiDocs.swagger.syntaxTheme) {
                 SwaggerSyntaxTheme.NONE -> "syntaxHighlight: false,"
-                else -> "syntaxHighlight: { theme: \"${syntaxTheme.themeName}\" },"
+                else -> "syntaxHighlight: { theme: \"${apiDocs.swagger.syntaxTheme.themeName}\" },"
             }
 
             swaggerJs = """
                 window.onload = function() {
                     window.ui = SwaggerUIBundle({
-                        url: "$openapiYamlUrl",
+                        url: "${apiDocs.openapiYamlUrl}",
                         dom_id: '#swagger-ui',
                         deepLinking: true,
                         presets: [
@@ -173,8 +166,8 @@ internal object Swagger {
                         ],
                         layout: "StandaloneLayout",
                         filter: true,
-                        withCredentials: $withCredentials,
-                        $sorter
+                        withCredentials: ${apiDocs.swagger.withCredentials},
+                        $sorterSetting
                         $syntaxThemeSetting
                     });
                 };
