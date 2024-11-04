@@ -57,12 +57,14 @@ dependencies {
 
 ### Wiki
 
-* ### [Plugin Configuration](.wiki/01-plugin/01-configuration.md)
+* ### Plugin
+  - #### [Plugin Configuration](.wiki/01-plugin/01-configuration.md)
   - #### [Servers](.wiki/01-plugin/02-servers.md)
   - #### [Security](.wiki/01-plugin/03-security.md)
   - #### [Top Level Tags](.wiki/01-plugin/04-tags.md)
 
-* ### [API Usage](.wiki/02-api-usage/01-route-api.md)
+* ### API
+  - #### [API Usage](.wiki/02-api-usage/01-route-api.md)
   - #### [Summary and Description](.wiki/02-api-usage/02-summary-description.md)
   - #### [Path Operation Tags](.wiki/02-api-usage/03-tags.md)
   - #### [Parameters](.wiki/02-api-usage/04-parameters.md)
@@ -75,6 +77,10 @@ dependencies {
   - #### [Debug Panel](.wiki/03-internals/01-debug-panel.md)
   - #### [Type Conflicts](.wiki/03-internals/02-type-conflicts.md)
   - #### [Type Introspection](.wiki/03-internals/03-type-introspection.md)
+
+* ### Examples
+  - #### [Plugin Setup](.wiki/04-examples/01-plugin-setup.md)
+  - #### [API Definitions](.wiki/04-examples/02-api-definitions.md)
 
 ---
 
