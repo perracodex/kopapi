@@ -150,7 +150,7 @@ internal class DebugViewUtils {
                 val jsonObject: JsonNode = serializationUtils.openApiJsonMapper.readTree(rawSection)
                 val path: String = jsonObject["path"]?.asText() ?: ""
                 val method: String = jsonObject["method"]?.asText()?.lowercase() ?: ""
-                val operationId: String = jsonObject["operationId"]?.asText() ?: ""
+                val operationId: String = jsonObject["operationId"]?.asText(null) ?: ""
 
                 val yamlSectionDeferred: Deferred<String> = async {
                     extractSection(
