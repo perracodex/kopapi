@@ -66,7 +66,7 @@ import kotlin.reflect.typeOf
  * #### Sample Usage
  * ```
  * get("/items/{data_id}/{item_id?}") {
- *     // Handle GET request
+ *     // Implement as usual
  * } api {
  *     tags = setOf("Items", "Data")
  *     summary = "Retrieve data items."

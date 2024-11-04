@@ -10,7 +10,7 @@
 
 ```kotlin
 get("/items/{data_id}/{item_id?}") {
-  // Handle GET request
+  // Implement as usual
 } api {
   tags = setOf("Items", "Data")
   summary = "Retrieve data items."
@@ -80,7 +80,12 @@ dependencies {
 
 * ### Examples
   - #### [Plugin Setup](.wiki/04-examples/01-plugin-setup.md)
-  - #### [API Definitions](.wiki/04-examples/02-api-definitions.md)
+  - #### [Basic Request](.wiki/04-examples/02-basic-request.md)
+  - #### [Multiple Responses](.wiki/04-examples/03-multiple-responses.md)
+  - #### [RequestBody](.wiki/04-examples/04-request-body.md)
+  - #### [Multipart](.wiki/04-examples/05-multipart.md)
+  - #### [Security](.wiki/04-examples/06-security.md)
+  - #### [Schema Annotation](.wiki/04-examples/07-schema-annotation.md)
 
 ---
 

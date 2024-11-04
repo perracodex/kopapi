@@ -11,7 +11,7 @@ Set the `api` DSL to a route that defines an HTTP method (e.g., `get`, `post`, `
 ```kotlin
 routing {
     get("/items") {
-        // Handle GET request.
+        // Implement as usual
     } api {
         // Define API Operation metadata here.
     }
@@ -31,7 +31,7 @@ Here's a complete example that combines the various elements:
 
 ```kotlin
 get("/items/{id}") {
-    // Handle GET request
+    // Implement as usual
 } api {
     tags = setOf("Items", "Inventory")
     summary = "Retrieve an item by ID."

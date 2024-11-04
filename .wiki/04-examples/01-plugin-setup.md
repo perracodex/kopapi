@@ -1,4 +1,4 @@
-## Example: Configuring the Plugin
+## Example: Plugin Setup
 
 ```kotlin
 fun Application.configureApiSchema() {
@@ -50,7 +50,8 @@ fun Application.configureApiSchema() {
             }
         }
 
-        // Top level security schemes
+        // Global top-level security schemes. Will apply to all routes unless overridden.
+        // Alternatively, can also define security schemes to individual routes instead of globally.
         bearerSecurity(name = "BearerAuth") {
             description = "HTTP bearer Authentication is required."
         }

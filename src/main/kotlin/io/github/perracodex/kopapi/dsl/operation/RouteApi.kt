@@ -19,7 +19,7 @@ import io.ktor.server.routing.*
  * #### Sample Usage
  * ```
  * get("/items/{data_id}/{item_id?}") {
- *     // Handle GET request
+ *     // Implement as usual
  * } api {
  *     tags = setOf("Items", "Data")
  *
@@ -100,7 +100,7 @@ private fun buildApiErrorMessage(route: Route): String {
         Example of proper usage:
             ```
             get("/items/{data_id}/{item_id?}") {
-                // Handle GET request
+                // Implement as usual
             } api {
                 tags = setOf("Items", "Data")
                 summary = "Retrieve data items."
