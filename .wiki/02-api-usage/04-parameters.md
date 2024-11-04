@@ -29,11 +29,13 @@ Define query parameters:
 api {
     queryParameter<Int>(name = "page") {
         description = "The page number to retrieve."
+      required = false
+      defaultValue = DefaultValue.ofInt(value = 1)
     }
     queryParameter<Int>(name = "size") {
         description = "The number of items per page."
         required = false
-        defaultValue = 1
+      defaultValue = DefaultValue.ofInt(value = 10)
     }
 }
 ```
