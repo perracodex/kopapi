@@ -68,7 +68,7 @@ internal class MapResolver(private val typeInspector: TypeInspector) {
         } ?: TypeSchema.of(
             name = ElementName(name = "MapOf${kType}"),
             kType = kType,
-            schema = SchemaFactory.ofObject()
+            schema = SchemaFactory.ofObjectDescriptor()
         )
 
         return TypeSchema.of(

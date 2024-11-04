@@ -60,7 +60,7 @@ internal data class NullableSchema private constructor(
          */
         private fun decomposeSchema(schema: ElementSchema): DecomposedSchema {
             val strippedSchema: ElementSchema = when (schema) {
-                is ElementSchema.Object ->
+                is ElementSchema.ObjectDescriptor ->
                     schema.copy(description = null)
 
                 is ElementSchema.AdditionalProperties ->
@@ -80,7 +80,7 @@ internal data class NullableSchema private constructor(
             }
 
             val defaultValue: Any? = when (schema) {
-                is ElementSchema.Object -> null
+                is ElementSchema.ObjectDescriptor -> null
                 is ElementSchema.AdditionalProperties -> schema.defaultValue
                 is ElementSchema.Array -> schema.defaultValue
                 is ElementSchema.Enum -> schema.defaultValue

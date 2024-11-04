@@ -61,8 +61,8 @@ class TypedArrayTest {
         val boxArraySchema: TypeSchema = schemasSet.find { it.name == typeSchema.name }
             ?: fail("BoxArray schema not found")
         assertTrue(
-            actual = boxArraySchema.schema is ElementSchema.Object,
-            message = "BoxArray schema should be a Schema.Object"
+            actual = boxArraySchema.schema is ElementSchema.ObjectDescriptor,
+            message = "BoxArray schema should be an ObjectDescriptor"
         )
 
         // Validate the 'data' property.
@@ -98,8 +98,8 @@ class TypedArrayTest {
         val boxSchema: TypeSchema = schemasSet.find { it.name == "Box" }
             ?: fail("Box schema not found")
         assertTrue(
-            actual = boxSchema.schema is ElementSchema.Object,
-            message = "Box schema should be a Schema.Object"
+            actual = boxSchema.schema is ElementSchema.ObjectDescriptor,
+            message = "Box schema should be an"
         )
 
         // Validate Box properties.

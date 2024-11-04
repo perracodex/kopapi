@@ -60,7 +60,7 @@ internal class CollectionResolver(private val typeInspector: TypeInspector) {
             return TypeSchema.of(
                 name = className,
                 kType = kType,
-                schema = SchemaFactory.ofObject()
+                schema = SchemaFactory.ofObjectDescriptor()
             )
         }
 

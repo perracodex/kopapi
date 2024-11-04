@@ -61,8 +61,8 @@ class NestedTypedArrayTest {
         val nestedBoxArraySchema: TypeSchema = schemasSet.find { it.name == typeSchema.name }
             ?: fail("NestedBoxArray schema not found")
         assertTrue(
-            actual = nestedBoxArraySchema.schema is ElementSchema.Object,
-            message = "NestedBoxArray schema should be a Schema.Object"
+            actual = nestedBoxArraySchema.schema is ElementSchema.ObjectDescriptor,
+            message = "NestedBoxArray schema should be an ObjectDescriptor"
         )
 
         // Validate the 'data' property.
@@ -105,8 +105,8 @@ class NestedTypedArrayTest {
         val boxSchema: TypeSchema = schemasSet.find { it.name == "Box" }
             ?: fail("Box schema not found")
         assertTrue(
-            actual = boxSchema.schema is ElementSchema.Object,
-            message = "Box schema should be a Schema.Object"
+            actual = boxSchema.schema is ElementSchema.ObjectDescriptor,
+            message = "Box schema should be an ObjectDescriptor"
         )
 
         // Validate Box properties.

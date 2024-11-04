@@ -74,7 +74,7 @@ internal class PropertyResolver(private val typeInspector: TypeInspector) {
         // If attribute metadata is present, apply it to the schema.
         val schema: ElementSchema = metadata.attributes?.let { attributes ->
             when (typeSchema.schema) {
-                is ElementSchema.Object ->
+                is ElementSchema.ObjectDescriptor ->
                     typeSchema.schema
 
                 else ->

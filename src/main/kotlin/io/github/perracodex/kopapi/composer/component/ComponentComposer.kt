@@ -9,7 +9,7 @@ import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
 import io.github.perracodex.kopapi.schema.facets.NullableSchema
-import io.github.perracodex.kopapi.schema.facets.ObjectFacet
+import io.github.perracodex.kopapi.schema.facets.ObjectSchema
 import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
@@ -43,7 +43,7 @@ internal object ComponentComposer {
      */
     private fun transform(typeSchema: TypeSchema): ISchemaFacet {
         return when (val schema: ElementSchema = typeSchema.schema) {
-            is ElementSchema.Object -> {
+            is ElementSchema.ObjectDescriptor -> {
                 val properties: MutableMap<String, ISchemaFacet> = mutableMapOf()
                 val required: MutableSet<String> = mutableSetOf()
 
@@ -65,7 +65,7 @@ internal object ComponentComposer {
                 }
 
                 // Return a new transformed object schema.
-                ObjectFacet(
+                ObjectSchema(
                     description = schema.description.trimOrNull(),
                     properties = properties.takeIf { it.isNotEmpty() },
                     required = required.takeIf { it.isNotEmpty() }

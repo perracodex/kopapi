@@ -60,7 +60,7 @@ internal class ArrayResolver(private val typeInspector: TypeInspector) {
             return TypeSchema.of(
                 name = className,
                 kType = kType,
-                schema = schema ?: SchemaFactory.ofObject()
+                schema = schema ?: SchemaFactory.ofObjectDescriptor()
             )
         }
 
@@ -70,7 +70,7 @@ internal class ArrayResolver(private val typeInspector: TypeInspector) {
             return TypeSchema.of(
                 name = className,
                 kType = kType,
-                schema = SchemaFactory.ofObject()
+                schema = SchemaFactory.ofObjectDescriptor()
             )
         }
 

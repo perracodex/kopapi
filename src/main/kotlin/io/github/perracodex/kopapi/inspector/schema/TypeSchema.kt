@@ -68,7 +68,7 @@ internal data class TypeSchema(
             return of(
                 name = ElementName(name = "Unknown_$kType"),
                 kType = kType,
-                schema = SchemaFactory.ofObject()
+                schema = SchemaFactory.ofObjectDescriptor()
             )
         }
     }

@@ -87,7 +87,7 @@ internal class SchemaComposer(
         ).takeIf { it.hasContent() }
 
         // Create the OpenAPI schema.
-        tracer.info("Composing the OpenAPI schema object.")
+        tracer.info("Composing the final OpenAPI schema.")
         val openApiSchema = OpenApiSchema(
             openapi = OPEN_API_VERSION,
             info = infoSection,

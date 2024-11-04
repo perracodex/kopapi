@@ -125,12 +125,12 @@ internal class ObjectResolver(private val typeInspector: TypeInspector) {
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
             name = className,
             kType = kType,
-            schema = SchemaFactory.ofObject(description = description)
+            schema = SchemaFactory.ofObjectDescriptor(description = description)
         )
         typeInspector.addToCache(schema = schemaPlaceholder)
 
         // Get the placeholder schema to place each property.
-        val propertiesSchemas: ElementSchema.Object = schemaPlaceholder.schema as ElementSchema.Object
+        val propertiesSchemas: ElementSchema.ObjectDescriptor = schemaPlaceholder.schema as ElementSchema.ObjectDescriptor
 
         // Retrieve all relevant properties of the generic class.
         val classProperties: List<KProperty1<out Any, *>> = typeInspector.getClassProperties(kClass = kClass)

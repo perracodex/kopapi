@@ -236,7 +236,7 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
             name = ElementName(name = genericsTypeName),
             kType = kType,
-            schema = SchemaFactory.ofObject()
+            schema = SchemaFactory.ofObjectDescriptor()
         )
         typeInspector.addToCache(schema = schemaPlaceholder)
 
@@ -262,7 +262,7 @@ internal class GenericsResolver(private val typeInspector: TypeInspector) {
         val mergedTypeArgumentBindings: Map<KClassifier, KType> = inheritedTypeArgumentBindings + localTypeArgumentBindings
 
         // Get the placeholder schema to place each property.
-        val propertiesSchemas: ElementSchema.Object = schemaPlaceholder.schema as ElementSchema.Object
+        val propertiesSchemas: ElementSchema.ObjectDescriptor = schemaPlaceholder.schema as ElementSchema.ObjectDescriptor
 
         // Retrieve all relevant properties of the generic class.
         val classProperties: List<KProperty1<out Any, *>> = typeInspector.getClassProperties(kClass = kClass)

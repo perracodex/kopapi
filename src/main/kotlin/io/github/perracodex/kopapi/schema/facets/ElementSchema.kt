@@ -29,12 +29,14 @@ internal sealed class ElementSchema(
      *
      * This element is not meant to be serialized as part of the OpenAPI schema,
      * as it holds unprocessed raw schemas and metadata.
-     * Instead, when composing the OpenAPI schema, must be transformed into an [ObjectFacet] schema.
+     * Instead, when composing the final OpenAPI schema, it must be transformed into an [ObjectSchema] instance.
      *
      * @property schemaType The API type of the schema as defined in the OpenAPI specification.
      * @property objectProperties A map of property names to their corresponding unprocessed raw schemas and metadata.
+     *
+     * @see [ObjectSchema]
      */
-    data class Object(
+    data class ObjectDescriptor(
         override val definition: String = Object::class.safeName(),
         val objectProperties: MutableMap<String, SchemaProperty>,
         override val description: String? = null,

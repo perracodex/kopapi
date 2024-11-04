@@ -53,8 +53,8 @@ class SimpleObjectTest {
         assertEquals(expected = Box::class.simpleName, actual = schema.name, message = "Retrieved schema name should match")
         assertEquals(expected = Box::class.java.name, actual = schema.type, message = "Retrieved schema type should match")
 
-        // Assert that schema.schema is a ElementSchema.Object
-        assertTrue(actual = schema.schema is ElementSchema.Object, message = "Expected schema to be a Schema.Object")
+        // Assert that schema.schema is a ElementSchema.ObjectDescriptor
+        assertTrue(actual = schema.schema is ElementSchema.ObjectDescriptor, message = "Expected schema to be an ObjectDescriptor")
 
         // Validate schema properties.
         val properties: MutableMap<String, SchemaProperty> = schema.schema.objectProperties

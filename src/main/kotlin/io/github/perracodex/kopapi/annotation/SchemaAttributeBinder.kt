@@ -56,7 +56,7 @@ internal object SchemaAttributeBinder {
                 } ?: schema.defaultValue
             )
 
-            is ElementSchema.Object -> schema.copy(
+            is ElementSchema.ObjectDescriptor -> schema.copy(
                 description = attributes.description.trimOrNull(),
             )
 

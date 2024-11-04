@@ -65,7 +65,7 @@ class ComplexObjectTest {
         // Find the User schema.
         val userSchema: TypeSchema = schemasSet.find { it.name == "User" }
             ?: fail("User schema not found")
-        assertTrue(actual = userSchema.schema is ElementSchema.Object, message = "User schema should be a Schema.Object")
+        assertTrue(actual = userSchema.schema is ElementSchema.ObjectDescriptor, message = "User schema should be an ObjectDescriptor")
 
         // Validate User properties.
         assertEquals(expected = 6, actual = userSchema.schema.objectProperties.size, message = "User should have six properties")
@@ -119,7 +119,10 @@ class ComplexObjectTest {
         // Validate the Address schema.
         val addressSchema: TypeSchema = schemasSet.find { it.name == "Address" }
             ?: fail("Address schema not found")
-        assertTrue(actual = addressSchema.schema is ElementSchema.Object, message = "Address schema should be a Schema.Object")
+        assertTrue(
+            actual = addressSchema.schema is ElementSchema.ObjectDescriptor,
+            message = "Address schema should be an ObjectDescriptor"
+        )
 
         val addressProperties: MutableMap<String, SchemaProperty> = addressSchema.schema.objectProperties
         assertEquals(expected = 3, actual = addressProperties.size, message = "Address should have three properties")

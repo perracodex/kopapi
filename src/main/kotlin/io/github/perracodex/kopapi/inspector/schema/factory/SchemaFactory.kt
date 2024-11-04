@@ -18,9 +18,9 @@ import kotlin.reflect.KType
  */
 @TypeInspectorApi
 internal object SchemaFactory {
-    /** Creates a specification entry for an `object` type. */
-    fun ofObject(description: String? = null): ElementSchema.Object {
-        return ElementSchema.Object(description = description, objectProperties = mutableMapOf())
+    /** Creates a specification entry for an `object` descriptor type. */
+    fun ofObjectDescriptor(description: String? = null): ElementSchema.ObjectDescriptor {
+        return ElementSchema.ObjectDescriptor(description = description, objectProperties = mutableMapOf())
     }
 
     /** Creates a specification entry for a `string` primitive type. */
