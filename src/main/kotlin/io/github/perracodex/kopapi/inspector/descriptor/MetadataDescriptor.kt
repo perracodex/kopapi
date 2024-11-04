@@ -231,17 +231,16 @@ internal data class MetadataDescriptor(
             kClass: KClass<*>,
             property: KProperty1<out Any, *>,
         ): Boolean {
-            return try {
+            return runCatching {
                 kClass.primaryConstructor?.parameters?.find { argument ->
                     argument.name == property.name
                 }?.let { !it.isOptional } ?: true // Assuming true if the parameter is not found.
-            } catch (e: Exception) {
+            }.onFailure {
                 tracer.error(
                     message = "Unable to determine if property is required by constructor. Field: $property",
-                    cause = e
+                    cause = it
                 )
-                true // Assuming true as a fallback.
-            }
+            }.getOrDefault(defaultValue = true)  // Assuming true as a fallback.
         }
     }
 }
