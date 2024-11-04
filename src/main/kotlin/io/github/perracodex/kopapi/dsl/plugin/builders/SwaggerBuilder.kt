@@ -22,6 +22,7 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  *
  *      swagger {
  *          url = "/swagger"
+ *          persistAuthorization = true
  *          withCredentials = true
  *          operationsSorter = SwaggerOperationsSorter.METHOD
  *          syntaxTheme = SwaggerSyntaxTheme.NORD
@@ -37,6 +38,16 @@ public class SwaggerBuilder {
      * - Default: `/swagger-ui`.
      */
     public var url: String = DEFAULT_SWAGGER_URL
+
+    /**
+     * Whether to persist entered authorizations in `Swagger UI` so they are retained on page refresh.
+     *
+     * When enabled, any entered authorization is stored in the browser's local storage
+     * so that it is not lost when the `Swagger UI` page is refreshed.
+     *
+     * - Default: `false`.
+     */
+    public var persistAuthorization: Boolean = false
 
     /**
      * Whether to include cookies or other credentials in cross-origin (CORS) requests from Swagger UI.
@@ -65,6 +76,7 @@ public class SwaggerBuilder {
      */
     internal fun build(): ApiDocs.Swagger = ApiDocs.Swagger(
         url = NetworkUtils.normalizeUrl(url = url, defaultValue = DEFAULT_SWAGGER_URL),
+        persistAuthorization = persistAuthorization,
         withCredentials = withCredentials,
         operationsSorter = operationsSorter,
         syntaxTheme = syntaxTheme

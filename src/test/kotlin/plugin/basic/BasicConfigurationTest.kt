@@ -38,6 +38,7 @@ class BasicConfigurationTest {
 
                     swagger {
                         url = "swagger3"
+                        persistAuthorization = true
                         withCredentials = true
                         operationsSorter = SwaggerOperationsSorter.METHOD
                         syntaxTheme = SwaggerSyntaxTheme.IDEA
@@ -95,6 +96,7 @@ class BasicConfigurationTest {
 
                     swagger {
                         url = "swagger3"
+                        persistAuthorization = true
                         withCredentials = true
                         operationsSorter = SwaggerOperationsSorter.METHOD
                         syntaxTheme = SwaggerSyntaxTheme.IDEA

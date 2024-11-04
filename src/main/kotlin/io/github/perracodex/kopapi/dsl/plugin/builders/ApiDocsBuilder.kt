@@ -21,6 +21,7 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  *
  *      swagger {
  *          url = "/swagger"
+ *          persistAuthorization = true
  *          withCredentials = true
  *          operationsSorter = SwaggerOperationsSorter.METHOD
  *          syntaxTheme = SwaggerSyntaxTheme.NORD
@@ -70,6 +71,7 @@ public class ApiDocsBuilder {
      *
      *      swagger {
      *          url = "/swagger"
+     *          persistAuthorization = true
      *          withCredentials = true
      *          operationsSorter = SwaggerOperationsSorter.METHOD
      *          syntaxTheme = SwaggerSyntaxTheme.NORD

@@ -166,6 +166,7 @@ internal object Swagger {
                         ],
                         layout: "StandaloneLayout",
                         filter: true,
+                        persistAuthorization: ${apiDocs.swagger.persistAuthorization},
                         withCredentials: ${apiDocs.swagger.withCredentials},
                         $sorterSetting
                         $syntaxThemeSetting
