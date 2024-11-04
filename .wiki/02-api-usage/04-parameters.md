@@ -7,17 +7,17 @@ Define parameters that are part of the URL path:
 ```kotlin
 api {
   pathParameter<Uuid>(name = "id") {
-        description = "The unique identifier of the item."
-    }
+    description = "The unique identifier of the item."
+  }
 }
 ```
 
 - **Properties:**
-    - `description`: A description of the parameter's purpose and usage.
-    - `required`: Indicates whether the parameter is mandatory for the API call.
-    - `defaultValue`: The default value for the parameter if one is not provided.
-    - `style`: The style in which the parameter is serialized in the URL.
-    - `deprecated`: Indicates if the parameter is deprecated and should be avoided.
+  - `description`: A description of the parameter's purpose and usage.
+  - `required`: Indicates whether the parameter is mandatory for the API call.
+  - `defaultValue`: The default value for the parameter if one is not provided.
+  - `style`: The style in which the parameter is serialized in the URL.
+  - `deprecated`: Indicates if the parameter is deprecated and should be avoided.
 
 ---
 
@@ -27,26 +27,26 @@ Define query parameters:
 
 ```kotlin
 api {
-    queryParameter<Int>(name = "page") {
-        description = "The page number to retrieve."
+  queryParameter<Int>(name = "page") {
+    description = "The page number to retrieve."
       required = false
       defaultValue = DefaultValue.ofInt(value = 1)
     }
     queryParameter<Int>(name = "size") {
-        description = "The number of items per page."
-        required = false
+      description = "The number of items per page."
+      required = false
       defaultValue = DefaultValue.ofInt(value = 10)
     }
 }
 ```
 
 - **Properties:**
-    - `description`: A description of the parameter's purpose and usage.
-    - `required`: Indicates whether the parameter is mandatory for the API call.
-    - `defaultValue`: The default value for the parameter if one is not provided.
-    - `style`: The style in which the parameter is serialized in the URL.
+  - `description`: A description of the parameter's purpose and usage.
+  - `required`: Indicates whether the parameter is mandatory for the API call.
+  - `defaultValue`: The default value for the parameter if one is not provided.
+  - `style`: The style in which the parameter is serialized in the URL.
   - `explode`: Whether to send arrays and objects as separate parameters.
-    - `deprecated`: Indicates if the parameter is deprecated and should be avoided.
+  - `deprecated`: Indicates if the parameter is deprecated and should be avoided.
 
 ---
 
@@ -56,19 +56,19 @@ Define header parameters:
 
 ```kotlin
 api {
-    headerParameter<String>(name = "X-Custom-Header") {
-        description = "A custom header for special purposes."
-        required = true
-    }
+  headerParameter<String>(name = "X-Custom-Header") {
+    description = "A custom header for special purposes."
+    required = true
+  }
 }
 ```
 
 - **Properties:**
-    - `description`: A description of the parameter's purpose and usage.
-    - `required`: Indicates whether the parameter is mandatory for the API call.
-    - `defaultValue`: The default value for the parameter if one is not provided.
-    - `style`: The style in which the parameter is serialized in the URL.
-    - `deprecated`: Indicates if the parameter is deprecated and should be avoided.
+  - `description`: A description of the parameter's purpose and usage.
+  - `required`: Indicates whether the parameter is mandatory for the API call.
+  - `defaultValue`: The default value for the parameter if one is not provided.
+  - `style`: The style in which the parameter is serialized in the URL.
+  - `deprecated`: Indicates if the parameter is deprecated and should be avoided.
 
 ---
 
@@ -85,12 +85,12 @@ api {
 ```
 
 - **Properties:**
-    - `description`: A description of the parameter's purpose and usage.
-    - `required`: Indicates whether the parameter is mandatory for the API call.
-    - `defaultValue`: The default value for the parameter if one is not provided.
-    - `style`: The style in which the parameter is serialized in the URL.
+  - `description`: A description of the parameter's purpose and usage.
+  - `required`: Indicates whether the parameter is mandatory for the API call.
+  - `defaultValue`: The default value for the parameter if one is not provided.
+  - `style`: The style in which the parameter is serialized in the URL.
   - `explode`: Whether to send arrays and objects as separate parameters.
-    - `deprecated`: Indicates if the parameter is deprecated and should be avoided.
+  - `deprecated`: Indicates if the parameter is deprecated and should be avoided.
 
 ---
 
