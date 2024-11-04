@@ -22,6 +22,31 @@ internal data class ApiInfo @JsonCreator constructor(
     @JsonProperty("description") val description: String = "",
     @JsonProperty("version") val version: String = "",
     @JsonProperty("termsOfService") val termsOfService: String? = null,
-    @JsonProperty("contact") val contact: ApiContact? = null,
-    @JsonProperty("license") val license: ApiLicense? = null
-)
+    @JsonProperty("contact") val contact: Contact? = null,
+    @JsonProperty("license") val license: License? = null
+) {
+    /**
+     * The `Contact` information in the OpenAPI schema.
+     *
+     * @property name The name of the contact person/organization.
+     * @property url The URL of the contact person/organization.
+     * @property email The email of the contact person/organization.
+     */
+    internal data class Contact(
+        val name: String? = null,
+        val url: String? = null,
+        val email: String? = null
+    )
+
+    /**
+     * Holds the license information for the API.
+     *
+     * @param name The name of the license.
+     * @param url The URL of the license.
+     *
+     */
+    internal data class License(
+        val name: String? = null,
+        val url: String? = null
+    )
+}

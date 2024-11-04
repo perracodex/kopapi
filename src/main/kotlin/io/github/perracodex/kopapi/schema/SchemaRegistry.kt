@@ -362,7 +362,7 @@ internal object SchemaRegistry {
                 ResourceUrl.OPENAPI_JSON -> configuration.apiDocs.openapiJsonUrl
                 ResourceUrl.OPENAPI_YAML -> configuration.apiDocs.openapiYamlUrl
                 ResourceUrl.REDOC -> configuration.apiDocs.redocUrl
-                ResourceUrl.SWAGGER_UI -> configuration.apiDocs.swaggerUrl
+                ResourceUrl.SWAGGER_UI -> configuration.apiDocs.swagger.url
             }
         } ?: ""
     }

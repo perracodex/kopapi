@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.dsl.plugin.builders.server
 
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -37,9 +37,9 @@ public class ServerVariableBuilder(
     public var description: String by MultilineString()
 
     /**
-     * Builds the final immutable [ApiServerVariable].
+     * Builds the final immutable [ApiServerConfig.Variable].
      */
-    internal fun build(): ApiServerVariable {
+    internal fun build(): ApiServerConfig.Variable {
         if (defaultValue.isEmpty()) {
             throw KopapiException("The server variable default value must be defined.")
         }
@@ -49,7 +49,7 @@ public class ServerVariableBuilder(
             )
         }
 
-        return ApiServerVariable(
+        return ApiServerConfig.Variable(
             defaultValue = defaultValue.trim(),
             choices = choices.map { it.trim() }
                 .filter { it.isNotEmpty() }

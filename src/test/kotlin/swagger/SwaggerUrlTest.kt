@@ -37,7 +37,9 @@ class SwaggerUrlTest {
     private fun ApplicationTestBuilder.installPlugin(urlString: String) {
         install(plugin = Kopapi) {
             apiDocs {
-                swaggerUrl = urlString
+                swagger {
+                    url = urlString
+                }
             }
         }
     }

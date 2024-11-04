@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.dsl.plugin.builders
 
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiContact
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 
 /**
  * Builder for the `Contact` information.
@@ -30,9 +30,9 @@ public class ContactBuilder {
     public var email: String? = null
 
     /**
-     * Produces an immutable [ApiContact] instance from the builder.
+     * Produces an immutable [ApiInfo.Contact] instance from the builder.
      */
-    internal fun build(): ApiContact = ApiContact(
+    internal fun build(): ApiInfo.Contact = ApiInfo.Contact(
         name = name,
         url = url,
         email = email

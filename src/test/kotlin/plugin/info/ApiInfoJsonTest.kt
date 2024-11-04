@@ -4,9 +4,7 @@
 
 package plugin.info
 
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiContact
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.serialization.SerializationUtils
@@ -124,7 +122,7 @@ class ApiInfoJsonTest {
      * Helper method to validate the contact information.
      */
     private fun validateContactInfo(
-        contact: ApiContact?,
+        contact: ApiInfo.Contact?,
         expectedName: String?,
         expectedUrl: String?,
         expectedEmail: String?
@@ -154,7 +152,7 @@ class ApiInfoJsonTest {
      * Helper method to validate the license information.
      */
     private fun validateLicenseInfo(
-        license: ApiLicense?,
+        license: ApiInfo.License?,
         expectedName: String?,
         expectedUrl: String?
     ) {

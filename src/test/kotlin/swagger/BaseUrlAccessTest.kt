@@ -4,7 +4,7 @@
 
 package swagger
 
-import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
+import io.github.perracodex.kopapi.dsl.plugin.builders.SwaggerBuilder
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.ktor.client.*
@@ -28,10 +28,10 @@ class BaseUrlAccessTest {
         installPlugin()
 
         val client: HttpClient = createClient { followRedirects = false }
-        val response: HttpResponse = client.get(urlString = ApiDocsBuilder.DEFAULT_SWAGGER_URL)
+        val response: HttpResponse = client.get(urlString = SwaggerBuilder.DEFAULT_SWAGGER_URL)
 
         assertEquals(expected = HttpStatusCode.Found, actual = response.status)
-        assertEquals(expected = "${ApiDocsBuilder.DEFAULT_SWAGGER_URL}/index.html", actual = response.headers["Location"])
+        assertEquals(expected = "${SwaggerBuilder.DEFAULT_SWAGGER_URL}/index.html", actual = response.headers["Location"])
     }
 
     private fun ApplicationTestBuilder.installPlugin() {

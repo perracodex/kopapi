@@ -57,7 +57,7 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
         |Kopapi plugin enabled.
         |  OpenAPI YAML: $server${apiConfiguration.apiDocs.openapiYamlUrl}
         |  OpenAPI JSON: $server${apiConfiguration.apiDocs.openapiJsonUrl}
-        |  Swagger UI: $server${apiConfiguration.apiDocs.swaggerUrl}
+        |  Swagger UI: $server${apiConfiguration.apiDocs.swagger.url}
         |  ReDoc: $server${apiConfiguration.apiDocs.redocUrl}
         |  Debug: $server${apiConfiguration.debugUrl}
         """.trimMargin()

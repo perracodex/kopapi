@@ -77,10 +77,13 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
      *      openapiYamlUrl = "/openapi.yaml"
      *      openapiJsonUrl = "/openapi.json"
      *      redocUrl = "/redoc"
-     *      swaggerUrl = "/swagger"
-     *      withCredentials = true
-     *      operationsSorter = SwaggerOperationsSorter.METHOD
-     *      syntaxTheme = SwaggerSyntaxTheme.NORD
+     *
+     *      swagger {
+     *          url = "/swagger"
+     *          withCredentials = true
+     *          operationsSorter = SwaggerOperationsSorter.METHOD
+     *          syntaxTheme = SwaggerSyntaxTheme.NORD
+     *      }
      * }
      */
     public fun apiDocs(init: ApiDocsBuilder.() -> Unit) {

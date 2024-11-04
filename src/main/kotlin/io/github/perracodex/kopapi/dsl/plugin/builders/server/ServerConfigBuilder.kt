@@ -6,7 +6,6 @@ package io.github.perracodex.kopapi.dsl.plugin.builders.server
 
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -28,7 +27,7 @@ public class ServerConfigBuilder(
     public var description: String by MultilineString()
 
     /** Holds constructed server variables. */
-    private val variables: MutableMap<String, ApiServerVariable> = mutableMapOf()
+    private val variables: MutableMap<String, ApiServerConfig.Variable> = mutableMapOf()
 
     /**
      * Adds a server variable.

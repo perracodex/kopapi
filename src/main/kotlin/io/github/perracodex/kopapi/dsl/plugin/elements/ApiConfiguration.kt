@@ -25,7 +25,7 @@ internal data class ApiConfiguration(
             apiDocs.openapiYamlUrl,
             apiDocs.openapiJsonUrl,
             apiDocs.redocUrl,
-            apiDocs.swaggerUrl
+            apiDocs.swagger.url
         )
         val duplicates: Map<String, Int> = urls.groupingBy { it }.eachCount().filter { it.value > 1 }
         if (duplicates.isNotEmpty()) {

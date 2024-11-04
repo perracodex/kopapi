@@ -12,10 +12,14 @@ fun Application.configureApiSchema() {
             openapiYamlUrl = "/api/openapi.yaml"
             openapiJsonUrl = "/api/openapi.json"
             redocUrl = "/api/redoc"
-            swaggerUrl = "/api/swagger"
-            withCredentials = true
-            operationsSorter = SwaggerOperationsSorter.METHOD
-            swaggerSyntaxTheme = SwaggerSyntaxTheme.NORD
+
+            // Swagger UI settings
+            swagger {
+                url = "api/swagger"
+                withCredentials = true
+                operationsSorter = SwaggerOperationsSorter.METHOD
+                syntaxTheme = SwaggerSyntaxTheme.AGATE
+            }
         }
 
         // Register API info

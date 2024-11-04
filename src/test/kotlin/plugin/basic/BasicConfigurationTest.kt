@@ -35,10 +35,13 @@ class BasicConfigurationTest {
                     openapiYamlUrl = "openapi/yaml2"
                     openapiJsonUrl = "openapi/json1"
                     redocUrl = "openapi/redoc5"
-                    swaggerUrl = "swagger3"
-                    withCredentials = true
-                    operationsSorter = SwaggerOperationsSorter.METHOD
-                    swaggerSyntaxTheme = SwaggerSyntaxTheme.IDEA
+
+                    swagger {
+                        url = "swagger3"
+                        withCredentials = true
+                        operationsSorter = SwaggerOperationsSorter.METHOD
+                        syntaxTheme = SwaggerSyntaxTheme.IDEA
+                    }
                 }
             }
 
@@ -60,7 +63,7 @@ class BasicConfigurationTest {
             )
             assertEquals(
                 expected = "swagger3",
-                actual = SchemaRegistry.apiConfiguration?.apiDocs?.swaggerUrl,
+                actual = SchemaRegistry.apiConfiguration?.apiDocs?.swagger?.url,
                 message = "Expected Swagger URL to match."
             )
             assertEquals(
@@ -89,10 +92,13 @@ class BasicConfigurationTest {
                     openapiYamlUrl = "openapi/yaml2"
                     openapiJsonUrl = "openapi/json1"
                     redocUrl = "openapi/redoc5"
-                    swaggerUrl = "swagger3"
-                    withCredentials = true
-                    operationsSorter = SwaggerOperationsSorter.METHOD
-                    swaggerSyntaxTheme = SwaggerSyntaxTheme.IDEA
+
+                    swagger {
+                        url = "swagger3"
+                        withCredentials = true
+                        operationsSorter = SwaggerOperationsSorter.METHOD
+                        syntaxTheme = SwaggerSyntaxTheme.IDEA
+                    }
                 }
             }
 

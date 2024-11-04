@@ -20,14 +20,14 @@ internal fun Routing.swaggerRoute(apiDocs: ApiDocs) {
     /**
      * Redirect to the main Swagger UI HTML page.
      */
-    get(apiDocs.swaggerUrl) {
-        call.respondRedirect(url = "${apiDocs.swaggerUrl}/index.html")
+    get(apiDocs.swagger.url) {
+        call.respondRedirect(url = "${apiDocs.swagger.url}/index.html")
     }
 
     /**
      * Handle optional file names to serve various Swagger UI assets.
      */
-    get("${apiDocs.swaggerUrl}/{fileName?}") {
+    get("${apiDocs.swagger.url}/{fileName?}") {
         val filename: String = call.parameters["fileName"] ?: "index.html"
         val result: OutgoingContent? = Swagger.getContentFor(
             environment = application.environment,
@@ -41,12 +41,12 @@ internal fun Routing.swaggerRoute(apiDocs: ApiDocs) {
     /**
      * Serve the JavaScript code that initializes Swagger UI with the provided OpenAPI URL.
      */
-    get("${apiDocs.swaggerUrl}/swagger-initializer.js") {
+    get("${apiDocs.swagger.url}/swagger-initializer.js") {
         val response: String = Swagger.getSwaggerInitializer(
             openapiYamlUrl = apiDocs.openapiYamlUrl,
-            withCredentials = apiDocs.withCredentials,
-            operationsSorter = apiDocs.operationsSorter,
-            syntaxTheme = apiDocs.syntaxTheme
+            withCredentials = apiDocs.swagger.withCredentials,
+            operationsSorter = apiDocs.swagger.operationsSorter,
+            syntaxTheme = apiDocs.swagger.syntaxTheme
         )
         call.respondText(text = response, contentType = ContentType.Application.JavaScript)
     }

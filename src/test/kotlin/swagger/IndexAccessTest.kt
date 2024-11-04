@@ -4,7 +4,7 @@
 
 package swagger
 
-import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
+import io.github.perracodex.kopapi.dsl.plugin.builders.SwaggerBuilder
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.ktor.client.request.*
@@ -27,7 +27,7 @@ class IndexAccessTest {
     fun `direct access to index endpoint`() = testApplication {
         installPlugin()
 
-        val response: HttpResponse = client.get(urlString = "${ApiDocsBuilder.DEFAULT_SWAGGER_URL}/index.html")
+        val response: HttpResponse = client.get(urlString = "${SwaggerBuilder.DEFAULT_SWAGGER_URL}/index.html")
         assertEquals(expected = HttpStatusCode.OK, actual = response.status)
 
         val content: String = response.bodyAsText()

@@ -5,9 +5,7 @@
 package io.github.perracodex.kopapi.dsl.plugin.builders
 
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiContact
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiLicense
 import io.github.perracodex.kopapi.utils.string.MultilineString
 
 /**
@@ -49,10 +47,10 @@ public class InfoBuilder {
     public var termsOfService: String? = null
 
     /** Holds a constructed contact object. */
-    private var contact: ApiContact? = null
+    private var contact: ApiInfo.Contact? = null
 
     /** Holds a constructed license object. */
-    private var license: ApiLicense? = null
+    private var license: ApiInfo.License? = null
 
     /**
      * Builds the contact information for the API.

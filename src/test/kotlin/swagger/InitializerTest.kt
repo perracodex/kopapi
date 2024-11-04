@@ -5,6 +5,7 @@
 package swagger
 
 import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
+import io.github.perracodex.kopapi.dsl.plugin.builders.SwaggerBuilder
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.plugin.Swagger
 import io.github.perracodex.kopapi.schema.SchemaRegistry
@@ -29,7 +30,7 @@ class InitializerTest {
     fun `verify initializer`() = testApplication {
         installPlugin()
 
-        val response: HttpResponse = client.get(urlString = "${ApiDocsBuilder.DEFAULT_SWAGGER_URL}/swagger-initializer.js")
+        val response: HttpResponse = client.get(urlString = "${SwaggerBuilder.DEFAULT_SWAGGER_URL}/swagger-initializer.js")
         assertEquals(actual = HttpStatusCode.OK, expected = response.status)
 
         val expected: String = Swagger.getSwaggerInitializer(

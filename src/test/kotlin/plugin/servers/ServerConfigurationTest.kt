@@ -5,7 +5,6 @@
 package plugin.servers
 
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerVariable
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.ktor.server.application.*
@@ -135,7 +134,7 @@ class ServerConfigurationTest {
         )
 
         expectedVariables?.forEach { (variableName, expectation) ->
-            val variable: ApiServerVariable? = server.variables?.get(variableName)
+            val variable: ApiServerConfig.Variable? = server.variables?.get(variableName)
             assertNotNull(
                 actual = variable,
                 message = "Expected '$variableName' variable to be present."

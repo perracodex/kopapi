@@ -7,8 +7,6 @@ package io.github.perracodex.kopapi.dsl.plugin.builders
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
-import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
-import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 import io.github.perracodex.kopapi.utils.NetworkUtils
 
 /**
@@ -20,10 +18,13 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  *      openapiYamlUrl = "/openapi.yaml"
  *      openapiJsonUrl = "/openapi.json"
  *      redocUrl = "/redoc"
- *      swaggerUrl = "/swagger"
- *      withCredentials = true
- *      operationsSorter = SwaggerOperationsSorter.METHOD
- *      syntaxTheme = SwaggerSyntaxTheme.NORD
+ *
+ *      swagger {
+ *          url = "/swagger"
+ *          withCredentials = true
+ *          operationsSorter = SwaggerOperationsSorter.METHOD
+ *          syntaxTheme = SwaggerSyntaxTheme.NORD
+ *      }
  * }
  */
 @KopapiDsl
@@ -53,34 +54,33 @@ public class ApiDocsBuilder {
     public var redocUrl: String = DEFAULT_REDOC_URL
 
     /**
-     * The URL to provide the `Swagger UI`.
-     *
-     * - Relative to the server root URL.
-     * - Default: `/swagger-ui`.
+     * Holds the Swagger configuration.
      */
-    public var swaggerUrl: String = DEFAULT_SWAGGER_URL
+    private var swagger: ApiDocs.Swagger? = null
 
     /**
-     * Whether to include cookies or other credentials in cross-origin (CORS) requests from Swagger UI.
+     * Constructs the Swagger configuration.
      *
-     * - Needed for APIs using session cookies in a cross-origin setup.
-     * - Default: `false`.
-     */
-    public var withCredentials: Boolean = false
-
-    /**
-     * The sorter to use for the operations in the Swagger UI.
+     * #### Sample usage
+     * ```
+     * apiDocs {
+     *      openapiYamlUrl = "/openapi.yaml"
+     *      openapiJsonUrl = "/openapi.json"
+     *      redocUrl = "/redoc"
      *
-     * - Default: [SwaggerOperationsSorter.UNSORTED].
-     */
-    public var operationsSorter: SwaggerOperationsSorter = SwaggerOperationsSorter.UNSORTED
-
-    /**
-     * The syntax highlighting theme to use for the Swagger UI.
+     *      swagger {
+     *          url = "/swagger"
+     *          withCredentials = true
+     *          operationsSorter = SwaggerOperationsSorter.METHOD
+     *          syntaxTheme = SwaggerSyntaxTheme.NORD
+     *      }
+     * }
      *
-     * - Default: [SwaggerSyntaxTheme.AGATE].
+     * @param block The configuration for the Swagger UI.
      */
-    public var swaggerSyntaxTheme: SwaggerSyntaxTheme = SwaggerSyntaxTheme.AGATE
+    public fun swagger(block: SwaggerBuilder.() -> Unit) {
+        swagger = SwaggerBuilder().apply(block).build()
+    }
 
     /**
      * Produces an immutable [ApiInfo] instance from the builder.
@@ -89,16 +89,12 @@ public class ApiDocsBuilder {
         openapiYamlUrl = NetworkUtils.normalizeUrl(url = openapiYamlUrl, defaultValue = DEFAULT_OPENAPI_YAML_URL),
         openapiJsonUrl = NetworkUtils.normalizeUrl(url = openapiJsonUrl, defaultValue = DEFAULT_OPENAPI_JSON_URL),
         redocUrl = NetworkUtils.normalizeUrl(url = redocUrl, defaultValue = DEFAULT_REDOC_URL),
-        swaggerUrl = NetworkUtils.normalizeUrl(url = swaggerUrl, defaultValue = DEFAULT_SWAGGER_URL),
-        withCredentials = withCredentials,
-        operationsSorter = operationsSorter,
-        syntaxTheme = swaggerSyntaxTheme
+        swagger = swagger ?: SwaggerBuilder().build()
     )
 
     internal companion object {
         const val DEFAULT_OPENAPI_JSON_URL: String = "/openapi.json"
         const val DEFAULT_OPENAPI_YAML_URL: String = "/openapi.yaml"
         const val DEFAULT_REDOC_URL: String = "/redoc"
-        const val DEFAULT_SWAGGER_URL: String = "/swagger-ui"
     }
 }
