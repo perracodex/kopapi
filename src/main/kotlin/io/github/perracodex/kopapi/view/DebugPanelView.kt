@@ -69,7 +69,7 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                         title = "Operations",
                         panelId = "api-operation",
                         sections = apiOperationSections,
-                        allRawData = apiOperationSections.values.joinToString("\n") { it.rawSection },
+                        allRawData = apiOperationSections.values.joinToString(separator = "\n") { it.rawSection },
                         allYamlData = debugInfo.allApiOperationsYamlSection,
                         allJsonData = debugInfo.allApiOperationsJsonSection
                     )
@@ -79,7 +79,7 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                             title = "Schemas",
                             panelId = "type-schemas",
                             sections = typeSchemaSections,
-                            allRawData = typeSchemaSections.values.joinToString("\n") { it.rawSection },
+                            allRawData = typeSchemaSections.values.joinToString(separator = "\n") { it.rawSection },
                             allYamlData = debugInfo.allTypeSchemasYamlSection,
                             allJsonData = debugInfo.allTypeSchemasJsonSection
                         )
@@ -253,7 +253,7 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
     ) {
         val title = "Schema Conflicts"
         val panelId = "type-schema-conflicts"
-        val jsonData: String = jsonParser.encodeToString(jsonDataList)
+        val jsonData: String = jsonParser.encodeToString(value = jsonDataList)
         val filterId = "$panelId-data-filter"
 
         with(htmlTag) {
@@ -289,8 +289,8 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                         }.joinToString(separator = " → ")
 
                         option {
-                            value = jsonParser.encodeToString(jsonObject)
-                            attributes["data-json"] = jsonParser.encodeToString(jsonObject)
+                            value = jsonParser.encodeToString(value = jsonObject)
+                            attributes["data-json"] = jsonParser.encodeToString(value = jsonObject)
                             +compositeKey
                         }
                     }
