@@ -37,6 +37,7 @@ internal fun Routing.swaggerRoute(apiDocs: ApiDocs) {
         result?.let { call.respond(it) }
             ?: call.respond(HttpStatusCode.NotFound)
     }
+
     /**
      * Serve the JavaScript code that initializes Swagger UI with the provided OpenAPI URL.
      */
