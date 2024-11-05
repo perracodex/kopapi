@@ -9,6 +9,7 @@
 @import url('forms.css');
 @import url('popup.css');
 @import url('notification.css');
+@import url('errors.css');
 
 /* Responsive Design */
 @media screen and (max-width: 800px) {

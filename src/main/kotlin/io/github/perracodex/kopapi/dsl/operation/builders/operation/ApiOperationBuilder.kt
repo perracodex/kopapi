@@ -375,10 +375,12 @@ public class ApiOperationBuilder internal constructor(
             _config.requestBody = builder.build()
 
         } else {
-            throw KopapiException(
-                "Only one RequestBody can be defined per API endpoint. " +
-                        "Attempted to define multiple RequestBodies within '${this.endpoint}'"
-            )
+            val message: String = """
+                |Only one RequestBody can be defined per API endpoint.
+                |Attempted to define multiple RequestBodies within:
+                |   '$endpoint'.
+                """.trimMargin()
+            throw KopapiException(message)
         }
     }
 
@@ -609,11 +611,12 @@ public class ApiOperationBuilder internal constructor(
          */
         fun addApiParameter(apiParameter: ApiParameter) {
             if (parameters.any { it.name.equals(other = apiParameter.name, ignoreCase = true) }) {
-                throw KopapiException(
-                    "Attempting to register parameter with name '${apiParameter.name}' more than once " +
-                            "within the same API Operation: '$endpoint'.\n" +
-                            "The OpenAPI specification requires parameter names to be unique within each API Operation."
-                )
+                val message: String = """
+                    |Attempting to register multiple times parameter with name '${apiParameter.name}' within the same API Operation:
+                    |   '$endpoint'.
+                    |The OpenAPI specification requires parameter names to be unique within each API Operation.
+                    """.trimMargin()
+                throw KopapiException(message)
             }
 
             parameters.add(apiParameter)

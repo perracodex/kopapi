@@ -9,7 +9,8 @@ kotlinx-datetime = "0.6.1"              # https://github.com/Kotlin/kotlinx-date
 kotlinx-serialization = "1.7.3"         # https://github.com/Kotlin/kotlinx.serialization/releases
 ktor = "3.0.1"                          # https://ktor.io/docs/releases.html#release-details
 mockk = "1.13.13"                       # https://github.com/mockk/mockk/releases
-swaggerUi = "5.17.14"                   # https://github.com/swagger-api/swagger-ui/releases
+swagger-parser = "2.1.23"               # https://github.com/swagger-api/swagger-parser/releases
+swagger-ui = "5.17.14"                  # https://github.com/swagger-api/swagger-ui/releases
 vanniktech = "0.29.0"                   # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
 
 
@@ -47,10 +48,15 @@ ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-html-builder = { module = "io.ktor:ktor-server-html-builder", version.ref = "ktor" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 
-# Swagger.
+# Swagger Parser.
+# https://github.com/swagger-api/swagger-parser
+# https://github.com/swagger-api/swagger-parser/releases
+swagger-parser = { module = "io.swagger.parser.v3:swagger-parser", version.ref = "swagger-parser" }
+
+# Swagger-UI.
 # https://github.com/swagger-api/swagger-ui
 # https://github.com/swagger-api/swagger-ui/releases
-swaggerUi = { module = "org.webjars:swagger-ui", version.ref = "swaggerUi" }
+swagger-ui = { module = "org.webjars:swagger-ui", version.ref = "swagger-ui" }
 
 # Testing.
 # https://github.com/mockk/mockk

@@ -46,7 +46,8 @@ dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.html.builder)
 
-    implementation(libs.swaggerUi)
+    implementation(libs.swagger.parser)
+    implementation(libs.swagger.ui)
 
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.test.mockk)

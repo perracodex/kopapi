@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.composer.info
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
+import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.system.Tracer
 
 /**
@@ -22,13 +23,18 @@ internal object InfoSectionComposer {
 
     /**
      * Composes the `Info` section of the OpenAPI schema for serialization,
-     * appending any errors to the description if schema conflicts are detected.
+     * appending any errors to the description if errors were detected.
      *
      * @param apiInfo The initial [ApiInfo] object from the configuration.
+     * @param registrationErrors A set of errors detected during API registration, if any.
      * @param schemaConflicts A set of schema conflicts detected during inspection, if any.
      * @return The updated [ApiInfo] object ready for serialization.
      */
-    fun compose(apiInfo: ApiInfo?, schemaConflicts: Set<SchemaConflicts.Conflict>): ApiInfo {
+    fun compose(
+        apiInfo: ApiInfo?,
+        registrationErrors: Set<String>,
+        schemaConflicts: Set<SchemaConflicts.Conflict>
+    ): ApiInfo {
         tracer.info("Composing the 'Info' section of the OpenAPI schema.")
 
         val baseApiInfo: ApiInfo = apiInfo ?: ApiInfo(
@@ -40,28 +46,32 @@ internal object InfoSectionComposer {
             license = null
         )
 
-        // If no schema conflicts are detected, return the result immediately.
-        if (schemaConflicts.isEmpty()) {
-            tracer.info("No schema conflicts detected. Returning the base 'Info' section.")
+        // If no errors were detected, return the result immediately.
+        if (registrationErrors.isEmpty() && schemaConflicts.isEmpty()) {
             return baseApiInfo
         }
-
-        tracer.info("Detected ${schemaConflicts.size} schema conflicts. Updating the 'Info' section with error messages.")
-
-        // Build the error messages for each conflict.
-        val errors: Set<String> = schemaConflicts.map { conflict ->
-            "'${conflict.name}': ${conflict.conflictingTypes.joinToString(separator = ", ") { "[$it]" }}"
-        }.toSortedSet()
 
         // Build the updated description with errors and multiline formatting.
         val updatedDescription: String = buildString {
             append(baseApiInfo.description)
-            if (errors.isNotEmpty()) {
-                append("\n\nErrors:\n")
-                errors.forEach { error ->
+
+            // Append registration errors.
+            if (registrationErrors.isNotEmpty()) {
+                append("\n\n### Detected Errors:\n")
+                registrationErrors.forEach { error ->
                     append("- $error\n")
                 }
             }
+
+            // Append schema conflicts.
+            val conflicts: Set<String> = SchemaRegistry.getFormattedTypeConflicts(schemaConflicts = schemaConflicts)
+            if (conflicts.isNotEmpty()) {
+                append("\n\n### Detected Schema Conflicts:\n")
+                conflicts.forEach { conflict ->
+                    append("- $conflict\n")
+                }
+            }
+
         }.trim()
 
         return baseApiInfo.copy(description = updatedDescription)
