@@ -19,10 +19,12 @@ import kotlin.reflect.typeOf
  * Allows defining individual parts with names and types, along with their descriptions.
  *
  * @property description An optional description of the multipart request.
+ * @property contentType The content type of the multipart request. Default: `FormData`.
  */
 @KopapiDsl
 public class MultipartBuilder {
     public var description: String by MultilineString()
+    public var contentType: ContentType = ContentType.MultiPart.FormData
 
     @Suppress("PropertyName")
     @PublishedApi
@@ -44,7 +46,9 @@ public class MultipartBuilder {
      * }
      *
      * // Explicit ContentType.MultiPart.Encrypted.
-     * multipart(contentType = ContentType.MultiPart.Encrypted) {
+     * multipart {
+     *      contentType = ContentType.MultiPart.Encrypted
+     *
      *      part<PartData.FileItem>("secureFile") {
      *          description = "A securely uploaded file."
      *      }
@@ -56,12 +60,10 @@ public class MultipartBuilder {
      *
      * @param T The type of the part, typically a subclass of [PartData].
      * @param name The name of the part.
-     * @param contentType Optional content type for the part.
      * @param configure A lambda receiver for configuring the part's metadata.
      */
     public inline fun <reified T : PartData> part(
         name: String,
-        contentType: ContentType? = null,
         configure: PartBuilder.() -> Unit = {}
     ) {
         val partName: String = name.trim()
@@ -74,7 +76,7 @@ public class MultipartBuilder {
         val part = ApiMultipart.Part(
             type = typeOf<T>(),
             name = partName,
-            contentType = contentType,
+            contentType = partBuilder.contentType,
             schemaType = partBuilder.schemaType,
             schemaFormat = partBuilder.schemaFormat,
             description = partBuilder.description.trimOrNull(),

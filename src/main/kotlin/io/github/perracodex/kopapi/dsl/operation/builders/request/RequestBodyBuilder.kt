@@ -103,7 +103,9 @@ public class RequestBodyBuilder(
      * }
      *
      * // Explicit ContentType.MultiPart.Encrypted.
-     * multipart(contentType = ContentType.MultiPart.Encrypted) {
+     * multipart {
+     *      contentType = ContentType.MultiPart.Encrypted
+     *
      *      part<PartData.FileItem>("secureFile") {
      *          description = "A securely uploaded file."
      *      }
@@ -113,18 +115,15 @@ public class RequestBodyBuilder(
      * }
      * ```
      */
-    public fun multipart(
-        contentType: ContentType = ContentType.MultiPart.FormData,
-        configure: MultipartBuilder.() -> Unit
-    ) {
+    public fun multipart(configure: MultipartBuilder.() -> Unit) {
         val multipartBuilder: MultipartBuilder = MultipartBuilder().apply(configure)
         val apiMultipart = ApiMultipart(
-            contentType = contentType,
+            contentType = multipartBuilder.contentType,
             description = multipartBuilder.description.trimOrNull(),
             parts = multipartBuilder._config.parts
         )
 
-        _config.multipartParts[contentType] = apiMultipart
+        _config.multipartParts[multipartBuilder.contentType] = apiMultipart
     }
 
     /**

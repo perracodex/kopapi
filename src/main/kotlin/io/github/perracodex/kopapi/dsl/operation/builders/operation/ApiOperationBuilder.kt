@@ -343,7 +343,9 @@ public class ApiOperationBuilder internal constructor(
      *      }
      *
      *      // Explicit ContentType.MultiPart.Encrypted
-     *      multipart(contentType = ContentType.MultiPart.Encrypted) {
+     *      multipart {
+     *          contentType = ContentType.MultiPart.Encrypted
+     *
      *          part<PartData.FileItem>("secureFile") {
      *              description = "A securely uploaded file."
      *          }

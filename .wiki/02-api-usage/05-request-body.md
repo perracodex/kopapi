@@ -64,7 +64,7 @@ requestBody:
 
 To define a request body as `multipart` use the `multipart` function.
 
-- **`contentType`**: Specify the `ContentType.MultiPart` by passing it as a parameter. Default: `ContentType.MultiPart.FormData`.
+- **`contentType`**: Specify the `ContentType.MultiPart`. Default: `ContentType.MultiPart.FormData`.
 - Use Ktor's `PartData` subclasses to specify the part type.
 
 ```kotlin
@@ -78,7 +78,9 @@ multipart {
 Or specify the content details explicitly:
 
 ```kotlin
-multipart(contentType = ContentType.MultiPart.Encrypted) {
+multipart {
+  contentType = ContentType.MultiPart.Encrypted
+
   part<PartData.FormItem>("myFormPart") {
     description = "The form data."
   }
@@ -101,18 +103,21 @@ multipart(contentType = ContentType.MultiPart.Encrypted) {
 ```kotlin
 requestBody<Unit> {
   // Upload product details, including product images and metadata.
-  multipart(contentType = ContentType.MultiPart.FormData) {
+  multipart {
+    contentType = ContentType.MultiPart.FormData
 
     // Upload the primary product image (JPEG)
-    part<PartData.FileItem>("primaryImage", contentType = ContentType.Image.JPEG) {
+    part<PartData.FileItem>("primaryImage") {
       description = "The primary image of the product."
+      contentType = ContentType.Image.JPEG
       schemaType = ApiType.STRING
       schemaFormat = ApiFormat.BINARY
     }
 
     // Upload the secondary product image (optional)
-    part<PartData.FileItem>("secondaryImage", contentType = ContentType.Image.JPEG) {
+    part<PartData.FileItem>("secondaryImage") {
       description = "An optional secondary image of the product."
+      contentType = ContentType.Image.JPEG
       schemaType = ApiType.STRING
       schemaFormat = ApiFormat.BINARY
       required = false
@@ -132,8 +137,9 @@ requestBody<Unit> {
     }
 
     // Upload a JSON object for product metadata (optional)
-    part<PartData.FormItem>("metadata", contentType = ContentType.Application.Json) {
+    part<PartData.FormItem>("metadata") {
       description = "Additional metadata about the product."
+      contentType = ContentType.Application.Json
       schemaType = ApiType.OBJECT
       required = false
     }
