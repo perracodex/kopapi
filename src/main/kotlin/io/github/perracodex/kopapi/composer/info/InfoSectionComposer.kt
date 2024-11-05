@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.composer.info
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.schema.SchemaRegistry
@@ -25,19 +26,19 @@ internal object InfoSectionComposer {
      * Composes the `Info` section of the OpenAPI schema for serialization,
      * appending any errors to the description if errors were detected.
      *
-     * @param apiInfo The initial [ApiInfo] object from the configuration.
+     * @param apiConfiguration The API configuration object holding the `info` section data.
      * @param registrationErrors A set of errors detected during API registration, if any.
      * @param schemaConflicts A set of schema conflicts detected during inspection, if any.
      * @return The updated [ApiInfo] object ready for serialization.
      */
     fun compose(
-        apiInfo: ApiInfo?,
+        apiConfiguration: ApiConfiguration,
         registrationErrors: Set<String>,
         schemaConflicts: Set<SchemaConflicts.Conflict>
     ): ApiInfo {
         tracer.info("Composing the 'Info' section of the OpenAPI schema.")
 
-        val baseApiInfo: ApiInfo = apiInfo ?: ApiInfo(
+        val baseApiInfo: ApiInfo = apiConfiguration.apiInfo ?: ApiInfo(
             title = DEFAULT_TITLE,
             description = DEFAULT_DESCRIPTION,
             version = DEFAULT_VERSION,
@@ -47,7 +48,7 @@ internal object InfoSectionComposer {
         )
 
         // If no errors were detected, return the result immediately.
-        if (registrationErrors.isEmpty() && schemaConflicts.isEmpty()) {
+        if (!apiConfiguration.apiDocs.swagger.includeErrors || (registrationErrors.isEmpty() && schemaConflicts.isEmpty())) {
             return baseApiInfo
         }
 
@@ -71,7 +72,6 @@ internal object InfoSectionComposer {
                     append("- $conflict\n")
                 }
             }
-
         }.trim()
 
         return baseApiInfo.copy(description = updatedDescription)

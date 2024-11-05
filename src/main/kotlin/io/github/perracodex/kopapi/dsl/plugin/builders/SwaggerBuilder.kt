@@ -28,6 +28,7 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  *          displayOperationId = true
  *          operationsSorter = SwaggerOperationsSorter.METHOD
  *          syntaxTheme = SwaggerSyntaxTheme.NORD
+ *          includeErrors = true
  *      }
  * }
  */
@@ -88,6 +89,16 @@ public class SwaggerBuilder {
     public var syntaxTheme: SwaggerSyntaxTheme = SwaggerSyntaxTheme.AGATE
 
     /**
+     * Whether to include detected errors during the API documentation generation
+     * into the description of the `info` section of the Swagger UI.
+     *
+     * These are errors that do not adhere to the OpenAPI specification.
+     *
+     * - Default: `false`.
+     */
+    public var includeErrors: Boolean = false
+
+    /**
      * Produces an immutable [ApiDocs.Swagger] instance from the builder.
      */
     internal fun build(): ApiDocs.Swagger = ApiDocs.Swagger(
@@ -97,7 +108,8 @@ public class SwaggerBuilder {
         displayRequestDuration = displayRequestDuration,
         displayOperationId = displayOperationId,
         operationsSorter = operationsSorter,
-        syntaxTheme = syntaxTheme
+        syntaxTheme = syntaxTheme,
+        includeErrors = includeErrors
     )
 
     internal companion object {

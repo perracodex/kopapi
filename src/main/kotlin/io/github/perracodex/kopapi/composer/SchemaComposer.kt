@@ -54,7 +54,7 @@ internal class SchemaComposer(
 
         // Compose the `Info` section.
         val infoSection: ApiInfo = InfoSectionComposer.compose(
-            apiInfo = apiConfiguration.apiInfo,
+            apiConfiguration = apiConfiguration,
             registrationErrors = registrationErrors,
             schemaConflicts = schemaConflicts
         )
@@ -109,7 +109,7 @@ internal class SchemaComposer(
         // If the official swagger parser detects, rebuild the schema with the errors appended to the `info` section.
         // Note that the AppInfo composer already adds some errors, but these are very basic.
         val parserErrors: Set<String> = verify(openApiYaml = openApiYaml)
-        if (parserErrors.isNotEmpty()) {
+        if (apiConfiguration.apiDocs.swagger.includeErrors && parserErrors.isNotEmpty()) {
             return rebuildWithErrors(openApiSchema = openApiSchema, parserErrors = parserErrors)
         }
 

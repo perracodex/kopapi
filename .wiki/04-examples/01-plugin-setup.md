@@ -22,6 +22,7 @@ fun Application.configureApiSchema() {
                 displayOperationId = true
                 operationsSorter = SwaggerOperationsSorter.METHOD
                 syntaxTheme = SwaggerSyntaxTheme.AGATE
+                includeErrors = true
             }
         }
 
@@ -73,10 +74,6 @@ fun Application.configureApiSchema() {
                 refreshUrl = "https://example.com/refresh"
                 scope(name = "read:employees", description = "Read Data")
                 scope(name = "write:employees", description = "Modify Data")
-            }
-            clientCredentials {
-                tokenUrl = "https://example.com/token"
-                scope(name = "admin:tools", description = "Administrate Tools")
             }
         }
 

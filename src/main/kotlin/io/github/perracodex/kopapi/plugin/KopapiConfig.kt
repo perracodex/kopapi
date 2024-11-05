@@ -86,6 +86,7 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
      *          displayOperationId = true
      *          operationsSorter = SwaggerOperationsSorter.METHOD
      *          syntaxTheme = SwaggerSyntaxTheme.NORD
+     *          includeErrors = true
      *      }
      * }
      */

@@ -40,15 +40,16 @@ install(Kopapi) {
 
 ### Swagger Section
 
-| Property               | Description                                                                               | Default  |
-|------------------------|-------------------------------------------------------------------------------------------|----------|
-| url                    | The URL to provide access to the `Swagger UI`.                                            | /swagger |
-| persistAuthorization   | Whether to persist entered authorizations in `Swagger UI` to retain them on page refresh. | False    |
-| withCredentials        | Whether to include cookies or other credentials in CORS requests from `Swagger UI`.       | False    |
-| displayRequestDuration | Whether to display the request duration in `Swagger UI`.                                  | False    |
-| displayOperationId     | Whether to display the endpoint `operationId` in `Swagger UI`.                            | False    |
-| operationsSorter       | The sorter to use for the operations in the `Swagger UI`.                                 | UNSORTED |
-| syntaxTheme            | The syntax highlighting theme to use for the `Swagger UI`.                                | AGATE    |
+| Property               | Description                                                                                       | Default  |
+|------------------------|---------------------------------------------------------------------------------------------------|----------|
+| url                    | The URL to provide access to the `Swagger UI`.                                                    | /swagger |
+| persistAuthorization   | Whether to persist entered authorizations in `Swagger UI` to retain them on page refresh.         | False    |
+| withCredentials        | Whether to include cookies or other credentials in CORS requests from `Swagger UI`.               | False    |
+| displayRequestDuration | Whether to display the request duration in `Swagger UI`.                                          | False    |
+| displayOperationId     | Whether to display the endpoint `operationId` in `Swagger UI`.                                    | False    |
+| operationsSorter       | The sorter to use for the operations in the `Swagger UI`.                                         | UNSORTED |
+| syntaxTheme            | The syntax highlighting theme to use for the `Swagger UI`.                                        | AGATE    |
+| includeErrors          | When enabled, detected generation errors will be appended into description of the `info` section. | False    |
 
 ```kotlin
 install(Kopapi) {
@@ -64,6 +65,7 @@ install(Kopapi) {
       displayOperationId = true
       operationsSorter = SwaggerOperationsSorter.METHOD
       syntaxTheme = SwaggerSyntaxTheme.AGATE
+      includeErrors = true
     }
   }
 }
@@ -121,6 +123,7 @@ install(Kopapi) {
         displayOperationId = true
         operationsSorter = SwaggerOperationsSorter.METHOD
         syntaxTheme = SwaggerSyntaxTheme.AGATE
+        includeErrors = true
       }
     }
 

@@ -44,6 +44,7 @@ class BasicConfigurationTest {
                         displayOperationId = true
                         operationsSorter = SwaggerOperationsSorter.METHOD
                         syntaxTheme = SwaggerSyntaxTheme.IDEA
+                        includeErrors = true
                     }
                 }
             }
@@ -104,6 +105,7 @@ class BasicConfigurationTest {
                         displayOperationId = true
                         operationsSorter = SwaggerOperationsSorter.METHOD
                         syntaxTheme = SwaggerSyntaxTheme.IDEA
+                        includeErrors = true
                     }
                 }
             }

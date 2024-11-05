@@ -31,6 +31,7 @@ internal data class ApiDocs(
      * @property displayOperationId Whether to display the endpoint `operationId` in Swagger UI.
      * @property operationsSorter The sorting order for the Swagger operations.
      * @property syntaxTheme The syntax highlighting theme for Swagger UI.
+     * @property includeErrors Whether to include API documentation generation errors into description of the `info` section.
      */
     internal data class Swagger(
         val url: String,
@@ -40,5 +41,6 @@ internal data class ApiDocs(
         val displayOperationId: Boolean,
         val operationsSorter: SwaggerOperationsSorter,
         val syntaxTheme: SwaggerSyntaxTheme,
+        val includeErrors: Boolean
     )
 }
