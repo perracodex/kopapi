@@ -32,9 +32,10 @@ fun Route.createEmployeeRoute() {
         summary = "Create an employee."
         description = "Create a new employee in the system."
         operationId = "createEmployee"
-        requestBody<EmployeeRequest>(contentType = setOf(ContentType.Application.Xml, ContentType.Application.Json)) {
+        requestBody<EmployeeRequest> {
             description = "The employee to create."
             required = true
+            contentType = setOf(ContentType.Application.Json, ContentType.Application.Xml)
             composition = Composition.AnyOf
             addType<ExtendedEmployeeRequest>()
         }

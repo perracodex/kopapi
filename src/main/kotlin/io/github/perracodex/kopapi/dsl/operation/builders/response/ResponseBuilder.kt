@@ -24,7 +24,7 @@ import kotlin.reflect.typeOf
  * A builder for constructing a response in an API endpoint's metadata.
  *
  * @property description A description of the response content and what it represents.
- * @property contentType A set of [ContentType]s for the response. Defaults to `JSON`.
+ * @property contentType A set of [ContentType]s for the response. Default: `JSON`.
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
  *
  * @see [ApiOperationBuilder.response]
@@ -45,22 +45,26 @@ public class ResponseBuilder {
      * #### Sample Usage
      * ```
      * // Register a type defaulting to JSON.
-     * addType<AnotherType>()
+     * addType<SomeType>()
      *
      * // Register another type to a specific content type.
-     * addType<YetAnotherType> {
+     * addType<SomeType> {
      *      contentType = setOf(ContentType.Application.Xml)
      * }
      *
      * // Register a type with multiple content types.
-     * addType<YetAnotherType> {
-     *     contentType = setOf(ContentType.Application.Json, ContentType.Application.Xml)
+     * addType<SomeType> {
+     *      contentType = setOf(
+     *          ContentType.Application.Json,
+     *          ContentType.Application.Xml
+     *      )
      * }
      * ```
      *
      * @param T The type of the response.
-     * @param configure An optional lambda for configuring the type. Defaults to `JSON`.
+     * @param configure An optional lambda for configuring the type. Default: `JSON`.
      */
+    @Suppress("DuplicatedCode")
     public inline fun <reified T : Any> addType(configure: TypeConfig.() -> Unit = {}) {
         if (T::class == Unit::class || T::class == Nothing::class || T::class == Any::class) {
             return
@@ -74,8 +78,8 @@ public class ResponseBuilder {
         // Determine the effective content types for new type being added.
         val typeConfig: TypeConfig = TypeConfig().apply(configure)
         val effectiveContentTypes: Set<ContentType> = when {
-            typeConfig.contentType.isEmpty() -> contentType
-            else -> typeConfig.contentType
+            typeConfig.contentType.isNullOrEmpty() -> contentType
+            else -> typeConfig.contentType ?: contentType
         }
 
         // Register the new type with the effective content types.

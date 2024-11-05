@@ -355,7 +355,6 @@ public class ApiOperationBuilder internal constructor(
      * ```
      *
      * @param T The body primary type of the request.
-     * @param contentType Optional set of [ContentType]s to associate with the type. Default: `JSON`.
      * @param configure A lambda receiver for configuring the [RequestBodyBuilder].
      *
      * @see [RequestBodyBuilder]
@@ -366,15 +365,12 @@ public class ApiOperationBuilder internal constructor(
      * @see [response]
      */
     public inline fun <reified T : Any> requestBody(
-        contentType: Set<ContentType>? = null,
         configure: RequestBodyBuilder.() -> Unit = {}
     ) {
         if (_config.requestBody == null) {
             val builder: RequestBodyBuilder = RequestBodyBuilder().apply {
-                // Associate the primary type T with the builder's contentTypes.
-                addType<T>(contentType = contentType)
-                // Apply additional configurations, which can include more types.
                 apply(configure)
+                addType<T>()
             }
 
             _config.requestBody = builder.build()

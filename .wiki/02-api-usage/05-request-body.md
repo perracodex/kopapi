@@ -22,18 +22,20 @@ requestBody<MyRequestBodyType> {
 Besides the primary request body type, you can also register additional types, including multiple `ContentTypes`.
 
 ```kotlin
-requestBody<MyRequestBodyType>(
+requestBody<MyRequestBodyType> {
+  // Override the default content type.
   contentType = setOf(
     ContentType.Application.Json,
     ContentType.Application.Xml
   )
-) {
-    // Register an additional type.
+
+  // Register an additional type.
   addType<AdditionalType>()
 
-    // Register another type to the PDF ContentType
-    // instead of the default.
-  addType<YetAnotherTpe>(contentType = ContentType.Application.Pdf)
+  // Register another type but to XML only.
+  addType<YetAnotherTpe> {
+    contentType = setOf(ContentType.Application.Xml)
+  }
 }
 ```
 
@@ -53,9 +55,7 @@ requestBody:
         anyOf:
           - $ref: "#/components/schemas/MyRequestBodyType"
           - $ref: "#/components/schemas/AdditionalType"
-    application/pdf:
-      schema:
-        $ref: "#/components/schemas/YetAnotherTpe"
+          - $ref: "#/components/schemas/YetAnotherTpe"
 ```
 
 ---

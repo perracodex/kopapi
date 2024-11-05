@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.dsl.operation.builders.request
 
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.operation.builders.type.TypeConfig
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.system.KopapiException
@@ -24,6 +25,7 @@ import kotlin.reflect.typeOf
  * @property description A description of the request body's content and what it represents.
  * @property required Indicates whether the request body is mandatory for the API call.
  * @property composition The composition of the request body. Only meaningful if multiple types are provided.
+ * @property contentType A set of [ContentType]s for the request body. Default: `JSON`.
  *
  * @see [ApiOperationBuilder.requestBody]
  */
@@ -33,6 +35,7 @@ public class RequestBodyBuilder(
     public var composition: Composition? = null
 ) {
     public var description: String by MultilineString()
+    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
 
     @Suppress("PropertyName")
     @PublishedApi
@@ -43,41 +46,44 @@ public class RequestBodyBuilder(
      *
      * #### Sample Usage
      * ```
-     * requestBody<MyRequestBodyType>() {
-     *      // Register an additional type.
-     *      addType<AnotherType>()
+     * // Register a type defaulting to JSON.
+     * addType<SomeType>()
      *
-     *      // Register another type to the Pdf ContentType
-     *      // instead of the default.
-     *      addType<YetAnotherType>(
-     *          contentType = setOf(ContentType.Application.Pdf)
+     * // Register another type to a specific content type.
+     * addType<SomeType> {
+     *      contentType = setOf(ContentType.Application.Xml)
+     * }
+     *
+     * // Register a type with multiple content types.
+     * addType<SomeType> {
+     *      contentType = setOf(
+     *          ContentType.Application.Json,
+     *          ContentType.Application.Xml
      *      )
      * }
      * ```
      *
      * @param T The type of the request body.
-     * @param contentType Optional set of [ContentType]s to associate with the type.
-     *                    Defaults to the primary `ContentType`, or to `JSON` if no primary type is set.
+     * @param configure An optional lambda for configuring the type. Default: `JSON`.
      */
     @Suppress("DuplicatedCode")
-    public inline fun <reified T : Any> addType(contentType: Set<ContentType>? = null) {
-        // Ensure there's at least one ContentType.
+    public inline fun <reified T : Any> addType(configure: TypeConfig.() -> Unit = {}) {
+        // Ensure there is always a default content type.
+        if (contentType.isEmpty()) {
+            contentType = setOf(ContentType.Application.Json)
+        }
+
+        // Determine the effective content types for new type being added.
+        val typeConfig: TypeConfig = TypeConfig().apply(configure)
         val effectiveContentTypes: Set<ContentType> = when {
-            contentType.isNullOrEmpty() -> _config.primaryContentType ?: setOf(ContentType.Application.Json)
-            else -> contentType
+            typeConfig.contentType.isNullOrEmpty() -> contentType
+            else -> typeConfig.contentType ?: contentType
         }
 
-        // When a request is built, the first registered type is always the primary one.
-        // Subsequent types are registered after the primary one.
-        // Therefore, any subtype which does not specify its own ContentType will
-        // share the primary ContentType.
-        if (_config.primaryContentType == null) {
-            _config.primaryContentType = effectiveContentTypes
-        }
-
-        val type: KType = typeOf<T>()
+        // Register the new type with the effective content types.
+        val newType: KType = typeOf<T>()
         effectiveContentTypes.forEach { contentTypeKey ->
-            _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(type)
+            _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(newType)
         }
     }
 
@@ -172,11 +178,5 @@ public class RequestBodyBuilder(
 
         /** Holds the multipart parts schema. */
         val multipartParts: MutableMap<ContentType, ApiMultipart> = mutableMapOf()
-
-        /**
-         * The primary `ContentType` for the request.
-         * Applied to subsequent types if these do not specify their own `ContentType`.
-         */
-        var primaryContentType: Set<ContentType>? = null
     }
 }

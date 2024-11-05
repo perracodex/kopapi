@@ -10,7 +10,7 @@ import io.ktor.http.*
 /**
  * A builder for appending a type.
  *
- * @property contentType The [ContentType] to assign. Defaults to `JSON`.
+ * @property contentType The [ContentType] to assign. Default: `JSON`.
  */
 @KopapiDsl
 public class TypeConfig {
@@ -18,5 +18,5 @@ public class TypeConfig {
      * The content types associated with the type.
      * Defaults to `ContentType.Application.Json` if not specified.
      */
-    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
+    public var contentType: Set<ContentType>? = null
 }
