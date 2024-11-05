@@ -146,13 +146,25 @@ internal object Swagger {
                 SwaggerOperationsSorter.UNSORTED -> ""
                 else -> "operationsSorter: \"${apiDocs.swagger.operationsSorter.order}\","
             }
+
             val syntaxThemeSetting: String = when (apiDocs.swagger.syntaxTheme) {
                 SwaggerSyntaxTheme.NONE -> "syntaxHighlight: false,"
                 else -> "syntaxHighlight: { theme: \"${apiDocs.swagger.syntaxTheme.themeName}\" },"
             }
 
+            val operationIdCss: String = if (apiDocs.swagger.displayOperationId) {
+                """
+                    // Inject custom CSS for operationId styling.
+                    const style = document.createElement('style');
+                    style.innerHTML = `.opblock-summary-operation-id { word-break: normal !important; }`;
+                    document.head.appendChild(style);
+                """.trimIndent()
+            } else ""
+
             swaggerJs = """
                 window.onload = function() {
+                    $operationIdCss
+                    // Initialize Swagger UI.
                     window.ui = SwaggerUIBundle({
                         url: "${apiDocs.openapiYamlUrl}",
                         dom_id: '#swagger-ui',
@@ -169,6 +181,7 @@ internal object Swagger {
                         persistAuthorization: ${apiDocs.swagger.persistAuthorization},
                         withCredentials: ${apiDocs.swagger.withCredentials},
                         displayRequestDuration: ${apiDocs.swagger.displayRequestDuration},
+                        displayOperationId: ${apiDocs.swagger.displayOperationId},
                         $sorterSetting
                         $syntaxThemeSetting
                     });

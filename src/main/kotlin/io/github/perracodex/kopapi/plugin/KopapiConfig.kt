@@ -83,6 +83,7 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
      *          persistAuthorization = true
      *          withCredentials = true
      *          displayRequestDuration = true
+     *          displayOperationId = true
      *          operationsSorter = SwaggerOperationsSorter.METHOD
      *          syntaxTheme = SwaggerSyntaxTheme.NORD
      *      }

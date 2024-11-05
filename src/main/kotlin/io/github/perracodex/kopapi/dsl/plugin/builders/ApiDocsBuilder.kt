@@ -11,23 +11,6 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
 
 /**
  * Constructs the information for the API documentation.
- *
- * #### Sample usage
- * ```
- * apiDocs {
- *      openapiYamlUrl = "/openapi.yaml"
- *      openapiJsonUrl = "/openapi.json"
- *      redocUrl = "/redoc"
- *
- *      swagger {
- *          url = "/swagger"
- *          persistAuthorization = true
- *          withCredentials = true
- *          displayRequestDuration = true
- *          operationsSorter = SwaggerOperationsSorter.METHOD
- *          syntaxTheme = SwaggerSyntaxTheme.NORD
- *      }
- * }
  */
 @KopapiDsl
 public class ApiDocsBuilder {
@@ -75,6 +58,7 @@ public class ApiDocsBuilder {
      *          persistAuthorization = true
      *          withCredentials = true
      *          displayRequestDuration = true
+     *          displayOperationId = true
      *          operationsSorter = SwaggerOperationsSorter.METHOD
      *          syntaxTheme = SwaggerSyntaxTheme.NORD
      *      }

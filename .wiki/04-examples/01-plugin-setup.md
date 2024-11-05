@@ -19,6 +19,7 @@ fun Application.configureApiSchema() {
                 persistAuthorization = true
                 withCredentials = true
                 displayRequestDuration = true
+                displayOperationId = true
                 operationsSorter = SwaggerOperationsSorter.METHOD
                 syntaxTheme = SwaggerSyntaxTheme.AGATE
             }

@@ -25,6 +25,7 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  *          persistAuthorization = true
  *          withCredentials = true
  *          displayRequestDuration = true
+ *          displayOperationId = true
  *          operationsSorter = SwaggerOperationsSorter.METHOD
  *          syntaxTheme = SwaggerSyntaxTheme.NORD
  *      }
@@ -66,6 +67,13 @@ public class SwaggerBuilder {
     public var displayRequestDuration: Boolean = false
 
     /**
+     * Whether to display the endpoint `operationId` in the `Swagger UI`.
+     *
+     * - Default: `false`.
+     */
+    public var displayOperationId: Boolean = false
+
+    /**
      * The sorter to use for the operations in the Swagger UI.
      *
      * - Default: [SwaggerOperationsSorter.UNSORTED].
@@ -87,6 +95,7 @@ public class SwaggerBuilder {
         persistAuthorization = persistAuthorization,
         withCredentials = withCredentials,
         displayRequestDuration = displayRequestDuration,
+        displayOperationId = displayOperationId,
         operationsSorter = operationsSorter,
         syntaxTheme = syntaxTheme
     )

@@ -41,6 +41,7 @@ class BasicConfigurationTest {
                         persistAuthorization = true
                         withCredentials = true
                         displayRequestDuration = true
+                        displayOperationId = true
                         operationsSorter = SwaggerOperationsSorter.METHOD
                         syntaxTheme = SwaggerSyntaxTheme.IDEA
                     }
@@ -100,6 +101,7 @@ class BasicConfigurationTest {
                         persistAuthorization = true
                         withCredentials = true
                         displayRequestDuration = true
+                        displayOperationId = true
                         operationsSorter = SwaggerOperationsSorter.METHOD
                         syntaxTheme = SwaggerSyntaxTheme.IDEA
                     }
