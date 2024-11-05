@@ -23,6 +23,7 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
     private val configurationJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.API_CONFIGURATION)
     private val openApiYaml: String = SchemaRegistry.getOpenApiSchema(format = SchemaRegistry.Format.YAML)
     private val openApiJson: String = SchemaRegistry.getOpenApiSchema(format = SchemaRegistry.Format.JSON)
+    private val registryErrors: Set<String> = SchemaRegistry.getErrors()
     private val jsonParser: Json = Json { prettyPrint = true }
 
     /**
@@ -62,7 +63,6 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                 buildActionButtons(htmlTag = this)
 
                 div(classes = "panel-container") {
-                    // Build individual panels for each JSON section.
                     buildPanel(
                         htmlTag = this,
                         title = "Operations",
@@ -72,6 +72,7 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                         allYamlData = debugInfo.allApiOperationsYamlSection,
                         allJsonData = debugInfo.allApiOperationsJsonSection
                     )
+
                     if (typeSchemaSections.isNotEmpty()) {
                         buildPanel(
                             htmlTag = this,
@@ -83,6 +84,7 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                             allJsonData = debugInfo.allTypeSchemasJsonSection
                         )
                     }
+
                     if (schemaConflictsList.isNotEmpty()) {
                         buildConflictsPanel(
                             htmlTag = this,
@@ -90,6 +92,11 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                             jsonDataList = schemaConflictsList
                         )
                     }
+                }
+
+                // Errors panel.
+                if (registryErrors.isNotEmpty()) {
+                    buildErrorsPanel(htmlTag = this, errors = registryErrors)
                 }
 
                 // Popups.
@@ -374,6 +381,28 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                             +"Close"
                         }
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Constructs the Errors panel.
+     *
+     * @param htmlTag The parent HTML element to append the panel to.
+     * @param errors The set of error strings to display.
+     */
+    private fun buildErrorsPanel(htmlTag: FlowContent, errors: Set<String>) {
+        with(htmlTag) {
+            div(classes = "panel error-panel") {
+                id = "registry-errors-panel"
+
+                h4(classes = "panel-title error-title") {
+                    +"Errors Detected: ${errors.size}"
+                }
+
+                pre(classes = "panel-content error-content") {
+                    +errors.joinToString(separator = "\n")
                 }
             }
         }

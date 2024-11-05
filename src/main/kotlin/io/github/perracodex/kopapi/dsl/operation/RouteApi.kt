@@ -86,33 +86,30 @@ public infix fun Route.api(configure: ApiOperationBuilder.() -> Unit): Route {
  */
 private fun buildApiErrorMessage(route: Route): String {
     return """
-        Error: The 'api' extension function must be attached to a route that has an HTTP method (e.g., GET, POST, PUT, DELETE).
-        The current route "${route.extractRoutePath()}" does not have an HTTP method associated with it.
-
-        Possible causes:
-            - You might have applied 'api' to a route that is not directly tied to a specific HTTP method,
-        To resolve:
-            - Make sure 'api' is applied to a route:
-                ```
-                post { ... } api { ... }
-                ```
-
-        Example of proper usage:
-            ```
-            get("/items/{data_id}/{item_id?}") {
-                // Implement as usual
-            } api {
-                tags = setOf("Items", "Data")
-                summary = "Retrieve data items."
-                description = "Fetches all items for a data set."
-                operationId = "getDataItems"
-                pathParameter<Uuid>("data_id") { description = "The data Id." }
-                queryParameter<String>("item_id") { description = "Optional item Id to locate." }
-                response<List<Item>>(status = HttpStatusCode.OK) { description = "Successful fetch." }
-                response(status = HttpStatusCode.NotFound) { description = "Data not found." }
-            }
-            ```
-
-            Error
-    """.trimIndent()
+        |Error: The 'api' extension function must be attached to a route that has an HTTP method (e.g., GET, POST, PUT, DELETE).
+        |The current route "${route.extractRoutePath()}" does not have an HTTP method associated with it.
+        |Possible causes:
+        |   - You might have applied 'api' to a route that is not directly tied to a specific HTTP method,
+        |To resolve:
+        |   - Make sure 'api' is applied to a route:
+        |       ```
+        |       post { ... } api { ... }
+        |       ```
+        |Usage Example:
+        |   ```
+        |   get("/items/{data_id}/{item_id?}") {
+        |       // Implement as usual
+        |   } api {
+        |       tags = setOf("Items", "Data")
+        |       summary = "Retrieve data items."
+        |       description = "Fetches all items for a data set."
+        |       operationId = "getDataItems"
+        |       pathParameter<Uuid>("data_id") { description = "The data Id." }
+        |       queryParameter<String>("item_id") { description = "Optional item Id to locate." }
+        |       response<List<Item>>(status = HttpStatusCode.OK) { description = "Successful fetch." }
+        |       response(status = HttpStatusCode.NotFound) { description = "Data not found." }
+        |   }
+        |   ```
+        |Error
+        """.trimMargin()
 }

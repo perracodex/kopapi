@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
+ */
+
+/* Errors Panel Styling */
+.error-panel {
+    margin-top: 20px;
+
+    /* Panel Appearance */
+    display: flex;
+    flex-direction: column;
+    background-color: #282c34;
+    border: 1px solid #3c3f4a;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+
+    /* Height and Overflow */
+    max-height: 256px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    color: #d5d6db;
+    font-family: Arial, sans-serif;
+}
+
+/* Title Styling for Errors Panel */
+.error-title {
+    color: #f15f56;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+}
+
+/* Content Styling for Errors Panel */
+.error-content {
+    background-color: #1c1e26;
+    border: 1px solid #3c3f4a;
+    border-radius: 4px;
+    padding: 8px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 216px;
+    overflow-y: auto;
+    font-size: 1.0em;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 800px) {
+    .error-panel {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+    }
+}

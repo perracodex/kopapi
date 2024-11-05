@@ -9,7 +9,6 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.operation.OperationVerifier
 import io.github.perracodex.kopapi.composer.request.RequestBodyComposer
 import io.github.perracodex.kopapi.composer.response.ResponseComposer
-import io.github.perracodex.kopapi.composer.security.SecuritySchemeVerifier
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
@@ -18,6 +17,8 @@ import io.github.perracodex.kopapi.inspector.schema.TypeSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
+import java.util.*
+
 import kotlin.collections.set
 import kotlin.reflect.KType
 
@@ -78,7 +79,10 @@ internal object SchemaRegistry {
     private val debugJsonCache: MutableMap<Section, Set<String>> = mutableMapOf()
 
     /** Cached OpenAPI schema representations, categorized by format. */
-    private val openApiSchemaCache: MutableMap<Format, String> = mutableMapOf()
+    private var openApiSchemaCache: SchemaComposer.OpenApiSpec? = null
+
+    /** Set of errors detected during the schema generation process. */
+    private val errors: SortedSet<String> = sortedSetOf(String.CASE_INSENSITIVE_ORDER)
 
     /** Information about the API, such as title, version, and description. */
     var apiConfiguration: ApiConfiguration? = null
@@ -102,10 +106,6 @@ internal object SchemaRegistry {
             isEnabled = apiConfiguration.isEnabled
             if (isEnabled) {
                 SchemaRegistry.apiConfiguration = apiConfiguration
-                SecuritySchemeVerifier.assert(
-                    global = apiConfiguration.apiSecuritySchemes,
-                    apiOperations = apiOperation
-                )
             } else {
                 clear()
             }
@@ -120,15 +120,14 @@ internal object SchemaRegistry {
     fun registerApiOperation(operation: ApiOperation) {
         synchronized(apiOperation) {
             if (isEnabled) {
-                apiOperation.add(operation)
+                OperationVerifier.verify(
+                    newApiOperation = operation,
+                    apiOperations = apiOperation
+                )?.let { errors ->
+                    this.errors.addAll(errors)
+                }
 
-                OperationVerifier.assert(
-                    apiOperations = apiOperation
-                )
-                SecuritySchemeVerifier.assert(
-                    global = apiConfiguration?.apiSecuritySchemes,
-                    apiOperations = apiOperation
-                )
+                apiOperation.add(operation)
             }
         }
     }
@@ -146,7 +145,7 @@ internal object SchemaRegistry {
         typeSchemas.clear()
         schemaConflicts.clear()
         debugJsonCache.clear()
-        openApiSchemaCache.clear()
+        openApiSchemaCache = null
         inspector.reset()
         apiConfiguration = null
     }
@@ -324,22 +323,30 @@ internal object SchemaRegistry {
             throw KopapiException("Attempted to generate OpenAPI schema while plugin is disabled.")
         }
 
-        openApiSchemaCache.getOrDefault(key = format, defaultValue = null)?.let { schema ->
-            return schema
+        openApiSchemaCache?.let { cache ->
+            return when (format) {
+                Format.JSON -> cache.json
+                Format.YAML -> cache.yaml
+            }
         }
 
-        apiConfiguration?.let { configuration ->
+        return apiConfiguration?.let { configuration ->
             processTypeSchemas()
 
-            val schema: String = SchemaComposer(
+            val specificBootstrap: SchemaComposer.OpenApiSpec = SchemaComposer(
                 apiConfiguration = configuration,
                 apiOperations = apiOperation,
+                registrationErrors = errors,
                 schemaConflicts = schemaConflicts
-            ).compose(format = format)
+            ).compose()
+            openApiSchemaCache = specificBootstrap
+            errors.addAll(specificBootstrap.errors)
 
-            openApiSchemaCache[format] = schema
-            return schema
-        } ?: throw KopapiException("API Configuration not found.")
+            when (format) {
+                Format.JSON -> specificBootstrap.json
+                Format.YAML -> specificBootstrap.yaml
+            }
+        } ?: throw KopapiException("Failed to generate OpenAPI schema.")
     }
 
     /**
@@ -365,5 +372,24 @@ internal object SchemaRegistry {
                 ResourceUrl.SWAGGER_UI -> configuration.apiDocs.swagger.url
             }
         } ?: ""
+    }
+
+    /**
+     * Retrieves the set of errors detected during the schema generation process.
+     */
+    fun getErrors(): Set<String> {
+        if (errors.isNotEmpty() || schemaConflicts.isNotEmpty()) {
+            return errors + getFormattedTypeConflicts(schemaConflicts = schemaConflicts)
+        }
+        return emptySet()
+    }
+
+    /**
+     * Gets the formatted type conflicts for presentation.
+     */
+    fun getFormattedTypeConflicts(schemaConflicts: Set<SchemaConflicts.Conflict>): Set<String> {
+        return schemaConflicts.map { conflict ->
+            "'${conflict.name}': ${conflict.conflictingTypes.joinToString(separator = ", ") { "[$it]" }}"
+        }.toSortedSet()
     }
 }
