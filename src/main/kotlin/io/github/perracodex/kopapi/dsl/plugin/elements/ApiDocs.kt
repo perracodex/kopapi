@@ -27,6 +27,7 @@ internal data class ApiDocs(
      * @property url The URL to the Swagger documentation.
      * @property persistAuthorization Whether to persist entered authorizations in Swagger UI.
      * @property withCredentials Whether to include cookies or other credentials in cross-origin (CORS) requests from Swagger UI.
+     * @property displayRequestDuration Whether to display the request duration in Swagger UI.
      * @property operationsSorter The sorting order for the Swagger operations.
      * @property syntaxTheme The syntax highlighting theme for Swagger UI.
      */
@@ -34,6 +35,7 @@ internal data class ApiDocs(
         val url: String,
         val persistAuthorization: Boolean,
         val withCredentials: Boolean,
+        val displayRequestDuration: Boolean,
         val operationsSorter: SwaggerOperationsSorter,
         val syntaxTheme: SwaggerSyntaxTheme,
     )

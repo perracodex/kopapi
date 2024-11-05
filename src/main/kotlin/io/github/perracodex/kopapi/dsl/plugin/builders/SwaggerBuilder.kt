@@ -24,6 +24,7 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  *          url = "/swagger"
  *          persistAuthorization = true
  *          withCredentials = true
+ *          displayRequestDuration = true
  *          operationsSorter = SwaggerOperationsSorter.METHOD
  *          syntaxTheme = SwaggerSyntaxTheme.NORD
  *      }
@@ -58,6 +59,13 @@ public class SwaggerBuilder {
     public var withCredentials: Boolean = false
 
     /**
+     * Whether to display the request duration in the `Swagger UI`.
+     *
+     * - Default: `false`.
+     */
+    public var displayRequestDuration: Boolean = false
+
+    /**
      * The sorter to use for the operations in the Swagger UI.
      *
      * - Default: [SwaggerOperationsSorter.UNSORTED].
@@ -78,6 +86,7 @@ public class SwaggerBuilder {
         url = NetworkUtils.normalizeUrl(url = url, defaultValue = DEFAULT_SWAGGER_URL),
         persistAuthorization = persistAuthorization,
         withCredentials = withCredentials,
+        displayRequestDuration = displayRequestDuration,
         operationsSorter = operationsSorter,
         syntaxTheme = syntaxTheme
     )

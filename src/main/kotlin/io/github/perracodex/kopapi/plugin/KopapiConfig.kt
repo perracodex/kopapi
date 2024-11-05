@@ -82,6 +82,7 @@ public class KopapiConfig : SecuritySchemeConfigurable() {
      *          url = "/swagger"
      *          persistAuthorization = true
      *          withCredentials = true
+     *          displayRequestDuration = true
      *          operationsSorter = SwaggerOperationsSorter.METHOD
      *          syntaxTheme = SwaggerSyntaxTheme.NORD
      *      }

@@ -168,6 +168,7 @@ internal object Swagger {
                         filter: true,
                         persistAuthorization: ${apiDocs.swagger.persistAuthorization},
                         withCredentials: ${apiDocs.swagger.withCredentials},
+                        displayRequestDuration: ${apiDocs.swagger.displayRequestDuration},
                         $sorterSetting
                         $syntaxThemeSetting
                     });

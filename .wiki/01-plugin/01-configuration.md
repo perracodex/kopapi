@@ -40,13 +40,14 @@ install(Kopapi) {
 
 ### Swagger Section
 
-| Property             | Description                                                                                        | Default  |
-|----------------------|----------------------------------------------------------------------------------------------------|----------|
-| url                  | The URL to provide access to the `Swagger UI`.                                                     | /swagger |
-| persistAuthorization | Whether to persist entered authorizations in `Swagger UI` so they are retained on page refresh.    | False    |
-| withCredentials      | Whether to include cookies or other credentials in cross-origin (CORS) requests from `Swagger UI`. | False    |
-| operationsSorter     | The sorter to use for the operations in the Swagger UI.                                            | UNSORTED |
-| syntaxTheme          | The syntax highlighting theme to use for the `Swagger UI`.                                         | AGATE    |
+| Property               | Description                                                                                        | Default  |
+|------------------------|----------------------------------------------------------------------------------------------------|----------|
+| url                    | The URL to provide access to the `Swagger UI`.                                                     | /swagger |
+| persistAuthorization   | Whether to persist entered authorizations in `Swagger UI` so they are retained on page refresh.    | False    |
+| withCredentials        | Whether to include cookies or other credentials in cross-origin (CORS) requests from `Swagger UI`. | False    |
+| displayRequestDuration | Whether to display the request duration in `Swagger UI`.                                           | False    |
+| operationsSorter       | The sorter to use for the operations in the Swagger UI.                                            | UNSORTED |
+| syntaxTheme            | The syntax highlighting theme to use for the `Swagger UI`.                                         | AGATE    |
 
 ```kotlin
 install(Kopapi) {
@@ -58,6 +59,7 @@ install(Kopapi) {
       url = "api/swagger"
       persistAuthorization = true
       withCredentials = true
+      displayRequestDuration = true
       operationsSorter = SwaggerOperationsSorter.METHOD
       syntaxTheme = SwaggerSyntaxTheme.AGATE
     }
@@ -113,6 +115,7 @@ install(Kopapi) {
         url = "api/swagger"
         persistAuthorization = true
         withCredentials = true
+        displayRequestDuration = true
         operationsSorter = SwaggerOperationsSorter.METHOD
         syntaxTheme = SwaggerSyntaxTheme.AGATE
       }
