@@ -223,7 +223,6 @@ internal class SchemaComposer(
          * @param schemas The list of [ElementSchema] objects to be combined. Assumes the list is non-empty and preprocessed.
          * @return An [OpenApiSchema.ContentSchema] representing the combined schema.
          */
-        @OptIn(ComposerApi::class)
         fun determineSchema(composition: Composition?, schemas: List<ElementSchema>): OpenApiSchema.ContentSchema {
             val combinedSchema: ISchemaFacet = when {
                 schemas.size == 1 -> schemas.first()
