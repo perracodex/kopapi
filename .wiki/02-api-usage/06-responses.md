@@ -15,14 +15,12 @@ response(status = HttpStatusCode.OK) { }
 Can add multiple content types to a response, if omitted, the default content type is `application/json`.
 
 ```kotlin
-response<MyResponseType>(
-  status = HttpStatusCode.OK,
+response<MyResponseType>(status = HttpStatusCode.OK) {
+  description = "Successfully retrieved the item."
   contentType = setOf(
     ContentType.Application.Json,
     ContentType.Application.Xml
   )
-) {
-    description = "Successfully retrieved the item."
 }
 ```
 
@@ -35,10 +33,9 @@ response<MyResponseType>(status = HttpStatusCode.OK) {
   // Register an additional type.
   addType<AnotherType>()
 
-  // Register another type to the PDF ContentType
-  // instead of the default.
+  // Register another type to XML only instead of the default JSON.
   addType<YetAnotherType>(
-    contentType = setOf(ContentType.Application.Pdf)
+    contentType = setOf(ContentType.Application.Xml)
   )
 }
 ```
@@ -103,16 +100,13 @@ response<MyResponseType>(status = HttpStatusCode.OK) {
   desription = "Example 1."
 }
 
-// Again status code 200 OK, but with a body of AnotherResponseType
-// and more content-types.
-response<AnotherResponseType>(
-  status = HttpStatusCode.OK,
+// Again status code 200 OK, but with a body of AnotherResponseType and more content-types.
+response<AnotherResponseType>(status = HttpStatusCode.OK) {
+  description = "Example 2."
   contentType = setOf(
     ContentType.Application.Json,
     ContentType.Application.Xml
   )
-) {
-  description = "Example 2."
 }
 
 // Status code 404 Not Found.
@@ -169,15 +163,15 @@ response<MyResponseType>(status = HttpStatusCode.OK) {
 
 ```kotlin
 api {
-  response<MyResponseType>(
-    status = HttpStatusCode.OK,
+  response<MyResponseType>(status = HttpStatusCode.OK) {
+    // Optional description.
+    description = "Successfully retrieved the item."
+
+    // Override the default content type.
     contentType = setOf(
       ContentType.Application.Json,
       ContentType.Application.Xml
     )
-  ) {
-    // Optional description.
-    description = "Successfully retrieved the item."
 
     // Optional Headers and Links.
     header(name = "X-Rate-Limit") {
@@ -196,11 +190,10 @@ api {
     // Register an additional type.
     addType<AnotherType>()
 
-    // Register another type to the PDF ContentType
-    // instead of the default.
-    addType<YetAnotherType>(
-      contentType = setOf(ContentType.Application.Pdf)
-    )
+    // Register another type but to XML only.
+    addType<YetAnotherType> {
+      contentType = setOf(ContentType.Application.Xml)
+    }
   }
 }
 ```

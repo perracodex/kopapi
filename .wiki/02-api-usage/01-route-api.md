@@ -66,7 +66,7 @@ get("/items/{id}") {
     // Responses
     response<ItemResponse>(status = HttpStatusCode.OK) {
         description = "Item retrieved successfully."
-        contentType = ContentType.Application.Json
+        contentType = setOf(ContentType.Application.Json, ContentType.Application.Xml)
 
         // Response headers
         header(name = "X-Rate-Limit") {

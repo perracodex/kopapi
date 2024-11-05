@@ -74,9 +74,12 @@ fun Route.publicRoute() {
         summary = "Public endpoint."
         description = "A public endpoint that does not require authentication."
         operationId = "publicEndpoint"
-        response<String>(status = HttpStatusCode.OK, contentType = ContentType.Text.Plain) {
+        response<String>(status = HttpStatusCode.OK) {
             description = "Public endpoint response."
+            contentType = setOf(ContentType.Text.Plain)
         }
+
+        // Skip global security.
         skipSecurity()
     }
 }

@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.operation.builders.type.TypeConfig
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
@@ -23,6 +24,7 @@ import kotlin.reflect.typeOf
  * A builder for constructing a response in an API endpoint's metadata.
  *
  * @property description A description of the response content and what it represents.
+ * @property contentType A set of [ContentType]s for the response. Defaults to `JSON`.
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
  *
  * @see [ApiOperationBuilder.response]
@@ -30,6 +32,7 @@ import kotlin.reflect.typeOf
 @KopapiDsl
 public class ResponseBuilder {
     public var description: String by MultilineString()
+    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
     public var composition: Composition? = null
 
     @Suppress("PropertyName")
@@ -37,56 +40,48 @@ public class ResponseBuilder {
     internal val _config: Config = Config()
 
     /**
-     * Registers a new type for the response.
+     * Registers a new type.
      *
      * #### Sample Usage
      * ```
-     * response<MyResponseType>(status = HttpStatusCode.OK) {
-     *      // Optional additional type.
-     *      // All content types will be associated with this type.
-     *      addType<AnotherType>()
+     * // Register a type defaulting to JSON.
+     * addType<AnotherType>()
      *
-     *      // Register another type to a specific content type.
-     *      addType<YetAnotherType>(
-     *          setOf(ContentType.Application.Pdf)
-     *      )
+     * // Register another type to a specific content type.
+     * addType<YetAnotherType> {
+     *      contentType = setOf(ContentType.Application.Xml)
+     * }
+     *
+     * // Register a type with multiple content types.
+     * addType<YetAnotherType> {
+     *     contentType = setOf(ContentType.Application.Json, ContentType.Application.Xml)
      * }
      * ```
      *
      * @param T The type of the response.
-     * @param contentType Optional set of [ContentType]s to associate with the type.
-     *                    Defaults to the primary `ContentType`, or to `JSON` if no primary type is set.
+     * @param configure An optional lambda for configuring the type. Defaults to `JSON`.
      */
-    @Suppress("DuplicatedCode")
-    public inline fun <reified T : Any> addType(contentType: Set<ContentType>? = null) {
-        // When a response is built, the first registered type is always the primary one.
-        // Subsequent types are registered after the primary one.
-        // Therefore, any subtype which does not specify its own ContentType will
-        // share the primary ContentType.
+    public inline fun <reified T : Any> addType(configure: TypeConfig.() -> Unit = {}) {
         if (T::class == Unit::class || T::class == Nothing::class || T::class == Any::class) {
-            if (_config.primaryContentType == null) {
-                _config.primaryContentType = contentType ?: setOf(ContentType.Application.Json)
-            }
             return
         }
 
-        // Ensure there's at least one ContentType.
+        // Ensure there is always a default content type.
+        if (contentType.isEmpty()) {
+            contentType = setOf(ContentType.Application.Json)
+        }
+
+        // Determine the effective content types for new type being added.
+        val typeConfig: TypeConfig = TypeConfig().apply(configure)
         val effectiveContentTypes: Set<ContentType> = when {
-            contentType.isNullOrEmpty() -> _config.primaryContentType ?: setOf(ContentType.Application.Json)
-            else -> contentType
+            typeConfig.contentType.isEmpty() -> contentType
+            else -> typeConfig.contentType
         }
 
-        // When a response is build, the first registered type is always the primary one.
-        // Subsequent types are registered after the primary one.
-        // Therefore, any subtype which does not specify its own ContentType will
-        // default to the primary ContentType.
-        if (_config.primaryContentType == null) {
-            _config.primaryContentType = effectiveContentTypes
-        }
-
-        val type: KType = typeOf<T>()
+        // Register the new type with the effective content types.
+        val newType: KType = typeOf<T>()
         effectiveContentTypes.forEach { contentTypeKey ->
-            _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(type)
+            _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(newType)
         }
     }
 
@@ -155,12 +150,6 @@ public class ResponseBuilder {
     internal class Config {
         /** Holds the types associated with the response. */
         val allTypes: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
-
-        /**
-         * The primary `ContentType` for the response.
-         * Applied to subsequent types if these do not specify their own `ContentType`.
-         */
-        var primaryContentType: Set<ContentType>? = null
 
         /** Holds the headers associated with the response. */
         val headers: MutableSet<ApiHeader> = mutableSetOf()

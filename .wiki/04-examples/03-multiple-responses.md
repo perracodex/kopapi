@@ -9,8 +9,9 @@ fun Route.createTokenRoute() {
         summary = "Create a new JWT token."
         description = "Generates a new JWT token using Basic Authentication."
         operationId = "createToken"
-        response<String>(status = HttpStatusCode.OK, contentType = ContentType.Text.Plain) {
+        response<String>(status = HttpStatusCode.OK) {
             description = "The generated JWT token."
+            contentType = seyOfType(ContentType.Text.Plain)
         }
         response(status = HttpStatusCode.Unauthorized) {
             description = "No valid credentials provided."

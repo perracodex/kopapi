@@ -308,6 +308,12 @@ public class ApiOperationBuilder internal constructor(
      *      description = "The data required to create a new item."
      *      required = true
      *
+     *      // Override the default JSON ContentType.
+     *      contentType = setOf(
+     *          ContentType.Application.Json,
+     *          ContentType.Application.Xml
+     *      )
+     *
      *      // Optional composition.
      *      // Only meaningful if multiple types are provided.
      *      // If omitted, defaults to `AnyOf`.
@@ -316,10 +322,9 @@ public class ApiOperationBuilder internal constructor(
      *      // Register an additional type.
      *      addType<AnotherType>()
      *
-     *      // Register another type to the PDF ContentType
-     *      // instead of the default.
+     *      // Register another type but only set it to Xml.
      *      addType<YetAnotherType>(
-     *          setOf(ContentType.Application.Pdf)
+     *          setOf(ContentType.Application.Xml)
      *      )
      * }
      * ```
@@ -398,6 +403,12 @@ public class ApiOperationBuilder internal constructor(
      * response<String>(status = HttpStatusCode.OK) {
      *      description = "Successfully retrieved the item."
      *
+     *      // Override the default JSON ContentType.
+     *      contentType = setOf(
+     *          ContentType.Application.Json,
+     *          ContentType.Application.Xml
+     *      )
+     *
      *      header(name = "X-Rate-Limit") {
      *          description = "Number of allowed requests per period."
      *          required = true
@@ -410,10 +421,9 @@ public class ApiOperationBuilder internal constructor(
      *      // If omitted, defaults to `AnyOf`.
      *      composition = Composition.AnyOf
      *
-     *      // Register additional type,
-     *      // and also set it to the PDF ContentType.
+     *      // Register additional type, but only set it to Xml.
      *      addType<YetAnotherType>(
-     *          setOf(ContentType.Application.Pdf)
+     *          setOf(ContentType.Application.Xml)
      *      )
      * }
      *```
@@ -447,61 +457,11 @@ public class ApiOperationBuilder internal constructor(
      * response<String>(status = HttpStatusCode.OK) {
      *      description = "Successfully retrieved the item."
      *
-     *      header(name = "X-Rate-Limit") {
-     *          description = "Number of allowed requests per period."
-     *          required = true
-     *      }
-     *      link(operationId = "getNextItem") {
-     *          description = "Link to the next item."
-     *      }
-     *
-     *      // Only meaningful if multiple types are provided.
-     *      // If omitted, defaults to `AnyOf`.
-     *      composition = Composition.AnyOf
-     *
-     *      // Register additional type,
-     *      // and also set it to the PDF ContentType.
-     *      addType<YetAnotherType>(
-     *          setOf(ContentType.Application.Pdf)
+     *      // Override the default JSON ContentType.
+     *      contentType = setOf(
+     *          ContentType.Application.Json,
+     *          ContentType.Application.Xml
      *      )
-     * }
-     *```
-     *
-     * @param T The body primary type of the response.
-     * @param status The [HttpStatusCode] code associated with this response.
-     * @param contentType One or more [ContentType]s to associate with the response. Default: `JSON`.
-     * @param configure A lambda receiver for configuring the [ResponseBuilder].
-     *
-     * @see [ResponseBuilder]
-     * @see [HeaderBuilder]
-     * @see [LinkBuilder]
-     */
-    @JvmName(name = "responseWithSingleContentType")
-    public inline fun <reified T : Any> response(
-        status: HttpStatusCode,
-        contentType: ContentType,
-        configure: ResponseBuilder.() -> Unit = {}
-    ) {
-        response<T>(
-            status = status,
-            contentType = setOf(contentType),
-            configure = configure
-        )
-    }
-
-    /**
-     * Registers a response.
-     *
-     * Responses can be registered with or without a response body type:
-     * ```
-     * response<ResponseType>(HttpStatusCode) { ... }
-     * response(HttpStatusCode) { ... }
-     * ```
-     *
-     * #### Sample Usage
-     *```
-     * response<String>(status = HttpStatusCode.OK) {
-     *      description = "Successfully retrieved the item."
      *
      *      header(name = "X-Rate-Limit") {
      *          description = "Number of allowed requests per period."
@@ -515,17 +475,15 @@ public class ApiOperationBuilder internal constructor(
      *      // If omitted, defaults to `AnyOf`.
      *      composition = Composition.AnyOf
      *
-     *      // Register additional type,
-     *      // and also set it to the PDF ContentType.
-     *      addType<YetAnotherType>(
-     *          setOf(ContentType.Application.Pdf)
-     *      )
+     *      // Register additional type, but only set it to Xml.
+     *      addType<YetAnotherType> {
+     *          contentType = setOf(ContentType.Application.Xml)
+     *      }
      * }
      *```
      *
      * @param T The body primary type of the response.
      * @param status The [HttpStatusCode] code associated with this response.
-     * @param contentType One or more [ContentType]s to associate with the response. Default: `JSON`.
      * @param configure A lambda receiver for configuring the [ResponseBuilder].
      *
      * @see [ResponseBuilder]
@@ -535,14 +493,11 @@ public class ApiOperationBuilder internal constructor(
     @JvmName(name = "responseWithType")
     public inline fun <reified T : Any> response(
         status: HttpStatusCode,
-        contentType: Set<ContentType>? = null,
         configure: ResponseBuilder.() -> Unit = {}
     ) {
         val builder: ResponseBuilder = ResponseBuilder().apply {
-            // Associate the primary type and ContentType.
-            addType<T>(contentType = contentType)
-            // Apply additional configurations, which can include more types.
             apply(configure)
+            addType<T>()
         }
 
         val apiResponse: ApiResponse = builder.build(status = status)
