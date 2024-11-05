@@ -24,7 +24,7 @@ import kotlin.reflect.typeOf
 @KopapiDsl
 public class MultipartBuilder {
     public var description: String by MultilineString()
-    public var contentType: ContentType = ContentType.MultiPart.FormData
+    public var contentType: ContentType? = null
 
     @Suppress("PropertyName")
     @PublishedApi

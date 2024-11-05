@@ -117,13 +117,14 @@ public class RequestBodyBuilder(
      */
     public fun multipart(configure: MultipartBuilder.() -> Unit) {
         val multipartBuilder: MultipartBuilder = MultipartBuilder().apply(configure)
+        val multipartContentType: ContentType = multipartBuilder.contentType ?: ContentType.MultiPart.FormData
         val apiMultipart = ApiMultipart(
-            contentType = multipartBuilder.contentType,
+            contentType = multipartContentType,
             description = multipartBuilder.description.trimOrNull(),
             parts = multipartBuilder._config.parts
         )
 
-        _config.multipartParts[multipartBuilder.contentType] = apiMultipart
+        _config.multipartParts[multipartContentType] = apiMultipart
     }
 
     /**
