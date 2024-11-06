@@ -4,20 +4,22 @@
 
 package io.github.perracodex.kopapi.dsl.path
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 
 /**
  * Represents a path item in the OpenAPI schema.
  *
  * @property path The relative path to the endpoint, starting with a forward slash (/).
- * @property summary An optional short summary of the path's purpose.
- * @property description An optional detailed explanation of the path.
- * @property servers An optional list of server configurations specific to this path.
+ * @property summary Optional short summary of the path's purpose.
+ * @property description Optional detailed explanation of the path.
+ * @property servers Optional set of server configurations specific to this path.
+ * @property parameters Optional set of parameters applicable to all API Operations within this path.
  */
 internal data class ApiPath(
-    @JsonProperty("path") val path: String,
-    @JsonProperty("summary") val summary: String?,
-    @JsonProperty("description") val description: String?,
-    @JsonProperty("servers") val servers: Set<ApiServerConfig>?
+    val path: String,
+    val summary: String?,
+    val description: String?,
+    val servers: Set<ApiServerConfig>?,
+    val parameters: Set<ApiParameter>?
 )

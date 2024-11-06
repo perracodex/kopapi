@@ -2,10 +2,9 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl.operation.builders.parameter
+package io.github.perracodex.kopapi.dsl.common.parameter
 
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
-import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.types.DefaultValue
 import io.github.perracodex.kopapi.types.ParameterStyle
@@ -23,7 +22,6 @@ import kotlin.reflect.KType
  * @property explode Whether to send arrays and objects as separate parameters.
  * @property deprecated Indicates if the parameter is deprecated and should be avoided.
  *
- * @see [ApiOperationBuilder.cookieParameter]
  * @see [HeaderParameterBuilder]
  * @see [PathParameterBuilder]
  * @see [QueryParameterBuilder]

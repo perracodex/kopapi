@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.operation.OperationObject
+import io.github.perracodex.kopapi.composer.parameter.ParameterObject
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
@@ -49,7 +50,8 @@ internal data class OpenApiSchema(
      *
      * @property summary A brief summary of the path item.
      * @property description A detailed description of the path item.
-     * @property servers A list of server configurations specific to this path.
+     * @property servers A set of server configurations specific to this path.
+     * @property parameters A set of parameters that are applicable to all operations within this path.
      * @property get The GET operation for the path, if defined.
      * @property put The PUT operation for the path, if defined.
      * @property post The POST operation for the path, if defined.
@@ -63,6 +65,7 @@ internal data class OpenApiSchema(
         val summary: String? = null,
         val description: String? = null,
         val servers: Set<ApiServerConfig>? = null,
+        val parameters: Set<ParameterObject>? = null,
         var get: OperationObject? = null,
         var put: OperationObject? = null,
         var post: OperationObject? = null,
@@ -70,7 +73,7 @@ internal data class OpenApiSchema(
         var options: OperationObject? = null,
         var head: OperationObject? = null,
         var patch: OperationObject? = null,
-        var trace: OperationObject? = null,
+        var trace: OperationObject? = null
     ) {
         /**
          * Adds an API Operation to the [OperationObject] based on the specified HTTP method,

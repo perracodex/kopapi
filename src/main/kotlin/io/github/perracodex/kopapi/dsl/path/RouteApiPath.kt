@@ -29,6 +29,9 @@ import io.ktor.server.routing.*
  *             description = "Some server description"
  *         }
  *     }
+ *     pathParameter<Uuid>(name = "id") {
+ *         description = "The unique identifier of the item."
+ *    }
  * }
  * ```
  * - Define for a `route` block:
@@ -43,6 +46,9 @@ import io.ktor.server.routing.*
  *             add(urlString = "https://api.example.com") {
  *                 description = "Some server description"
  *             }
+ *         }
+ *         pathParameter<Uuid>(name = "id") {
+ *             description = "The unique identifier of the item."
  *         }
  *     }
  * }

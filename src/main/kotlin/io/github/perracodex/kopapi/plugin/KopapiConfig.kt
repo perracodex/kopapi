@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.plugin
 
-import io.github.perracodex.kopapi.dsl.common.SecurityConfigurable
+import io.github.perracodex.kopapi.dsl.common.security.SecurityConfigurable
 import io.github.perracodex.kopapi.dsl.common.server.ServerBuilder
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder

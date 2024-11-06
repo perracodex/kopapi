@@ -6,9 +6,9 @@ Define parameters that are part of the URL path:
 
 ```kotlin
 api {
-  pathParameter<Uuid>(name = "id") {
-    description = "The unique identifier of the item."
-  }
+    pathParameter<Uuid>(name = "id") {
+        description = "The unique identifier of the item."
+    }
 }
 ```
 
@@ -27,15 +27,15 @@ Define query parameters:
 
 ```kotlin
 api {
-  queryParameter<Int>(name = "page") {
-    description = "The page number to retrieve."
-      required = false
-      defaultValue = DefaultValue.ofInt(value = 1)
+    queryParameter<Int>(name = "page") {
+        description = "The page number to retrieve."
+        required = false
+        defaultValue = DefaultValue.ofInt(value = 1)
     }
     queryParameter<Int>(name = "size") {
-      description = "The number of items per page."
-      required = false
-      defaultValue = DefaultValue.ofInt(value = 10)
+        description = "The number of items per page."
+        required = false
+        defaultValue = DefaultValue.ofInt(value = 10)
     }
 }
 ```

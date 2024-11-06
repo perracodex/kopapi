@@ -5,7 +5,8 @@ Currently, can be set the following metadata:
 
 - **summary**: A brief summary of the path.
 - **description**: A human-readable description of the path.
-- **servers**: An array of server objects to be used by the path. Syntax is the same as the root level `servers` object.
+- **servers**: A set of server configurations used at path-level, overriding the top-level defined servers (if present).
+- **parameters**: A set of parameters applicable to all operations in this path.
 
 ---
 
@@ -24,6 +25,9 @@ routing {
             description = "Some server description"
         }
     }
+    pathParameter<Uuid>(name = "id") {
+        description = "The unique identifier of the item."
+    }
 }
 ```
 
@@ -40,6 +44,9 @@ routing {
             add(urlString = "https://api.example.com") {
                 description = "Some server description"
             }
+        }
+        pathParameter<Uuid>(name = "id") {
+            description = "The unique identifier of the item."
         }
     }
 }

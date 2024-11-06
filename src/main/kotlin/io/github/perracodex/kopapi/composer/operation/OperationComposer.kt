@@ -118,6 +118,11 @@ internal object OperationComposer {
         pathItemObject: OpenApiSchema.PathItemObject,
         apiPath: ApiPath
     ): OpenApiSchema.PathItemObject {
+        // Retrieve the path-level parameters.
+        val parameters: Set<ParameterObject>? = apiPath.parameters?.let {
+            ParameterComposer.compose(apiParameters = apiPath.parameters)
+        }
+
         // Merge the servers.
         val mergedServers: Set<ApiServerConfig>? = when {
             pathItemObject.servers.isNullOrEmpty() && apiPath.servers.isNullOrEmpty() -> null
@@ -128,11 +133,22 @@ internal object OperationComposer {
                 .toSet()
         }
 
+        // Merge the parameters.
+        val mergedParameters: Set<ParameterObject>? = when {
+            pathItemObject.parameters.isNullOrEmpty() && parameters.isNullOrEmpty() -> null
+            pathItemObject.parameters.isNullOrEmpty() -> parameters
+            parameters.isNullOrEmpty() -> pathItemObject.parameters
+            else -> (pathItemObject.parameters + parameters)
+                .distinctBy { it.name }
+                .toSet()
+        }
+
         // Create a new PathItemObject with merged properties.
         return pathItemObject.copy(
             summary = apiPath.summary.trimOrNull() ?: pathItemObject.summary,
             description = apiPath.description.trimOrNull() ?: pathItemObject.description,
-            servers = mergedServers
+            servers = mergedServers,
+            parameters = mergedParameters
         )
     }
 

@@ -2,9 +2,8 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl.common
+package io.github.perracodex.kopapi.dsl.common.security
 
-import io.github.perracodex.kopapi.dsl.common.security.*
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.system.KopapiException

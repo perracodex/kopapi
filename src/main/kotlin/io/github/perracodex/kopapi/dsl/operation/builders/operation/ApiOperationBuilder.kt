@@ -4,15 +4,15 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.operation
 
-import io.github.perracodex.kopapi.dsl.common.SecurityConfigurable
+import io.github.perracodex.kopapi.dsl.common.parameter.CookieParameterBuilder
+import io.github.perracodex.kopapi.dsl.common.parameter.HeaderParameterBuilder
+import io.github.perracodex.kopapi.dsl.common.parameter.PathParameterBuilder
+import io.github.perracodex.kopapi.dsl.common.parameter.QueryParameterBuilder
+import io.github.perracodex.kopapi.dsl.common.security.SecurityConfigurable
 import io.github.perracodex.kopapi.dsl.common.server.ServerBuilder
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
-import io.github.perracodex.kopapi.dsl.operation.builders.parameter.CookieParameterBuilder
-import io.github.perracodex.kopapi.dsl.operation.builders.parameter.HeaderParameterBuilder
-import io.github.perracodex.kopapi.dsl.operation.builders.parameter.PathParameterBuilder
-import io.github.perracodex.kopapi.dsl.operation.builders.parameter.QueryParameterBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.request.RequestBodyBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
@@ -168,7 +168,7 @@ public class ApiOperationBuilder internal constructor(
     }
 
     /**
-     * Registers a path parameter.
+     * Registers a `path` parameter.
      *
      * #### Sample Usage
      * ```
@@ -199,7 +199,7 @@ public class ApiOperationBuilder internal constructor(
     }
 
     /**
-     * Registers a query parameter.
+     * Registers a `query` parameter.
      *
      * #### Sample Usage
      * ```
@@ -234,7 +234,7 @@ public class ApiOperationBuilder internal constructor(
     }
 
     /**
-     * Registers a header parameter.
+     * Registers a `header` parameter.
      *
      * #### Sample Usage
      * ```
@@ -267,7 +267,7 @@ public class ApiOperationBuilder internal constructor(
     }
 
     /**
-     * Registers a cookie parameter.
+     * Registers a `cookie` parameter.
      *
      * #### Sample Usage
      * ```
@@ -600,14 +600,11 @@ public class ApiOperationBuilder internal constructor(
         /** Optional set of possible responses, outlining expected status codes and content types. */
         var responses: MutableMap<HttpStatusCode, ApiResponse> = mutableMapOf()
 
-        /**
-         * The list of servers at operation level.
-         */
+        /** The list of servers at operation level. */
         val servers: MutableSet<ApiServerConfig> = mutableSetOf()
 
         /**
-         * Adds a new path parameter to the API operation,
-         * ensuring that the parameter name is unique.
+         * Cache a new [ApiParameter] instance for the API Operation.
          *
          * @param apiParameter The [ApiParameter] instance to add to the cache.
          * @throws KopapiException If an [ApiParameter] with the same name already exists.
@@ -615,7 +612,7 @@ public class ApiOperationBuilder internal constructor(
         fun addApiParameter(apiParameter: ApiParameter) {
             if (parameters.any { it.name.equals(other = apiParameter.name, ignoreCase = true) }) {
                 val message: String = """
-                    |Attempting to register multiple times parameter with name '${apiParameter.name}' within the same API Operation:
+                    |Attempting to register more than once parameter with name '${apiParameter.name}' within the same API Operation:
                     |   '$endpoint'.
                     |The OpenAPI specification requires parameter names to be unique within each API Operation.
                     """.trimMargin()
