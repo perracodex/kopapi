@@ -71,6 +71,6 @@ as partial redefinition is not supported.
 
 ---
 
-### [Schema Annotation 🡲](08-schema-annotation.md)
+### [Schema Annotation 🡲](08-servers.md)
 
 #### [🡰 Responses](06-responses.md)

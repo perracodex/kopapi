@@ -73,4 +73,4 @@ data class Person(
 
 ### [Internals - Debug Panel 🡲](../03-internals/01-debug-panel.md)
 
-#### [🡰 Security](07-security.md)
+#### [🡰 Servers](08-servers.md)

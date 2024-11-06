@@ -6,6 +6,9 @@ Optionally the configuration can include variables to define server URLs with pl
 
 ```kotlin
 install(Kopapi) {
+
+    //...
+
     servers {
         // Simple example with no variables.
         add(urlString = "http://localhost:8080") {

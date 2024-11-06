@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.operation.OperationObject
-import io.github.perracodex.kopapi.composer.security.SecurityRequirement
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
@@ -86,34 +85,6 @@ internal data class OpenApiSchema(
                 HttpMethod.Patch -> patch = operationObject
                 else -> {
                     trace = operationObject.takeIf {
-                        method.value.equals(other = "TRACE", ignoreCase = true)
-                    } ?: throw KopapiException("Unsupported HTTP method: $method")
-                }
-            }
-        }
-
-        /**
-         * Assigns security configurations to a specific operation within the [PathItemObject] based on the HTTP method.
-         *
-         * It updates the security requirements for the specified HTTP method by mapping
-         * each [SecurityRequirement] to its corresponding map structure as defined by the OpenAPI Specification.
-         *
-         * @param method The HTTP method of the operation (e.g., "GET", "POST").
-         * @param security A list of [SecurityRequirement] objects representing the security configurations.
-         *                 An empty list (`security: []`) indicates that the operation does not require security.
-         */
-        fun setSecurity(method: HttpMethod, security: List<SecurityRequirement>?) {
-            val securityMaps: List<Map<String, List<String>>>? = security?.map { it.toOpenApiSpec() }
-            when (method) {
-                HttpMethod.Get -> get?.security = securityMaps
-                HttpMethod.Put -> put?.security = securityMaps
-                HttpMethod.Post -> post?.security = securityMaps
-                HttpMethod.Delete -> delete?.security = securityMaps
-                HttpMethod.Options -> options?.security = securityMaps
-                HttpMethod.Head -> head?.security = securityMaps
-                HttpMethod.Patch -> patch?.security = securityMaps
-                else -> {
-                    trace?.security = securityMaps.takeIf {
                         method.value.equals(other = "TRACE", ignoreCase = true)
                     } ?: throw KopapiException("Unsupported HTTP method: $method")
                 }

@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.elements
 
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.system.KopapiException
 import io.ktor.http.*
 
@@ -26,6 +27,7 @@ import io.ktor.http.*
  * @property responses Optional map of `status codes` to [ApiResponse] objects.
  * @property securitySchemes Optional set of [ApiSecurityScheme] objects for defining endpoint security schemes.
  * @property skipSecurity Whether no security is required and should ignore top level security schemes.
+ * @property servers Optional set of server configurations for the operation.
  *
  * @see [ApiOperationBuilder]
  */
@@ -40,7 +42,8 @@ internal data class ApiOperation(
     val requestBody: ApiRequestBody?,
     val responses: Map<HttpStatusCode, ApiResponse>?,
     val securitySchemes: Set<ApiSecurityScheme>?,
-    val skipSecurity: Boolean
+    val skipSecurity: Boolean,
+    val servers: Set<ApiServerConfig>?
 ) {
     init {
         if (path.isBlank()) {

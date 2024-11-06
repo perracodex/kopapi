@@ -4,7 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.operation
 
-import io.github.perracodex.kopapi.dsl.common.SecuritySchemeConfigurable
+import io.github.perracodex.kopapi.dsl.common.SecurityConfigurable
+import io.github.perracodex.kopapi.dsl.common.server.ServerBuilder
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
@@ -18,6 +19,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -83,7 +85,7 @@ import kotlin.reflect.typeOf
 @KopapiDsl
 public class ApiOperationBuilder internal constructor(
     @PublishedApi internal val endpoint: String
-) : SecuritySchemeConfigurable() {
+) : SecurityConfigurable() {
 
     @Suppress("PropertyName")
     @PublishedApi
@@ -509,6 +511,48 @@ public class ApiOperationBuilder internal constructor(
     }
 
     /**
+     * Sets up servers, with optional support for variables.
+     *
+     * #### Sample Usage
+     * ```
+     * servers {
+     *      // Simple example with no variables.
+     *      add(urlString = "http://localhost:8080") {
+     *         description = "Local server for development."
+     *      }
+     *
+     *      // Example with variable placeholders.
+     *      add(urlString = "{protocol}://{environment}.example.com:{port}") {
+     *          description = "The server with environment variable."
+     *
+     *          // Environment.
+     *          variable(name = "environment", defaultValue = "production") {
+     *              choices = setOf("production", "staging", "development")
+     *              description = "Specifies the environment (production, etc)"
+     *          }
+     *
+     *          // Port.
+     *          variable(name = "port", defaultValue = "8080") {
+     *              choices = setOf("8080", "8443")
+     *              description = "The port for the server."
+     *          }
+     *
+     *          // Protocol.
+     *          variable(name = "protocol", defaultValue = "http") {
+     *              choices = setOf("http", "https")
+     *          }
+     *      }
+     * }
+     * ```
+     *
+     * @see [ServerBuilder]
+     */
+    public fun servers(init: ServerBuilder.() -> Unit) {
+        val builder: ServerBuilder = ServerBuilder().apply(init)
+        _config.servers.addAll(builder.build())
+    }
+
+    /**
      * Constructs the API operation metadata for the route endpoint.
      *
      * @param method The [HttpMethod] associated with the route.
@@ -537,7 +581,8 @@ public class ApiOperationBuilder internal constructor(
             requestBody = _config.requestBody,
             responses = responses,
             securitySchemes = _securityConfig.securitySchemes.takeIf { it.isNotEmpty() },
-            skipSecurity = _securityConfig.skipSecurity
+            skipSecurity = _securityConfig.skipSecurity,
+            servers = _config.servers.takeIf { it.isNotEmpty() }
         )
     }
 
@@ -554,6 +599,11 @@ public class ApiOperationBuilder internal constructor(
 
         /** Optional set of possible responses, outlining expected status codes and content types. */
         var responses: MutableMap<HttpStatusCode, ApiResponse> = mutableMapOf()
+
+        /**
+         * The list of servers at operation level.
+         */
+        val servers: MutableSet<ApiServerConfig> = mutableSetOf()
 
         /**
          * Adds a new path parameter to the API operation,

@@ -59,24 +59,19 @@ internal object OperationComposer {
                 OpenApiSchema.PathItemObject()
             }
 
-            // Transform the ApiOperation.
-            val operationObject: OperationObject = fromApiOperation(apiOperation = operation)
-            pathItemObject.addOperation(
-                method = operation.method,
-                operationObject = operationObject
-            )
-
             // Locate the corresponding security configuration for the operation, if any.
             val securityConfig: List<SecurityRequirement>? = securityObject
                 ?.find { operationSecurity ->
                     operationSecurity.method.equals(operation.method.value, ignoreCase = true) &&
                             operationSecurity.path.equals(operation.path, ignoreCase = true)
                 }?.security
+            val securityMaps: List<Map<String, List<String>>>? = securityConfig?.map { it.toOpenApiSpec() }
 
-            // Assign the security configuration.
-            pathItemObject.setSecurity(
+            // Transform the ApiOperation.
+            val operationObject: OperationObject = fromApiOperation(apiOperation = operation, security = securityMaps)
+            pathItemObject.addOperation(
                 method = operation.method,
-                security = securityConfig
+                operationObject = operationObject
             )
         }
 
@@ -92,9 +87,14 @@ internal object OperationComposer {
      * an [OperationObject] suitable for inclusion in the OpenAPI schema.
      *
      * @param apiOperation The [ApiOperation] object containing the operation's metadata.
+     * @param security A list of [SecurityRequirement] objects representing the security configurations.
+     *                 An empty list (`security: []`) indicates that the operation does not require security.
      * @return An [OperationObject] instance populated with data from [apiOperation].
      */
-    private fun fromApiOperation(apiOperation: ApiOperation): OperationObject {
+    private fun fromApiOperation(
+        apiOperation: ApiOperation,
+        security: List<Map<String, List<String>>>?
+    ): OperationObject {
         val parameters: Set<ParameterObject>? = apiOperation.parameters?.let {
             ParameterComposer.compose(apiParameters = apiOperation.parameters)
         }
@@ -112,7 +112,8 @@ internal object OperationComposer {
             parameters = parameters.takeIf { !it.isNullOrEmpty() },
             requestBody = requestBody,
             responses = responses.takeIf { !it.isNullOrEmpty() },
-            security = null
+            security = security,
+            servers = apiOperation.servers.takeIf { !it.isNullOrEmpty() }
         )
     }
 }

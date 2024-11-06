@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.parameter.ParameterObject
 import io.github.perracodex.kopapi.composer.request.RequestBodyObject
 import io.github.perracodex.kopapi.composer.response.ResponseObject
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 
 /**
  * Represents an individual API Operation (HTTP method) within a path item.
@@ -25,6 +26,7 @@ import io.github.perracodex.kopapi.composer.response.ResponseObject
  * @property responses A map of `status codes` to [ResponseObject] instances.
  * @property security A list of security requirement maps, each specifying a security scheme and its scopes.
  *                    An empty list (`security: []`) signifies that the operation is publicly accessible.
+ * @property servers A list of server configurations at the operation level.
  */
 @ComposerApi
 internal data class OperationObject(
@@ -35,5 +37,6 @@ internal data class OperationObject(
     @JsonProperty("parameters") val parameters: Set<ParameterObject>?,
     @JsonProperty("requestBody") val requestBody: RequestBodyObject?,
     @JsonProperty("responses") val responses: Map<String, ResponseObject>?,
-    @JsonProperty("security") var security: List<Map<String, List<String>>>?
+    @JsonProperty("security") val security: List<Map<String, List<String>>>?,
+    @JsonProperty("servers") val servers: Set<ApiServerConfig>?
 )

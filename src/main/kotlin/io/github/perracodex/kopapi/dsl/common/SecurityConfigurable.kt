@@ -16,7 +16,7 @@ import io.ktor.http.*
  * Abstract base class to handle security scheme configurations.
  */
 @KopapiDsl
-public abstract class SecuritySchemeConfigurable {
+public abstract class SecurityConfigurable {
     @Suppress("PropertyName")
     internal val _securityConfig: Config = Config()
 
