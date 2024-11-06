@@ -8,12 +8,13 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.component.ComponentComposer
 import io.github.perracodex.kopapi.composer.info.InfoSectionComposer
 import io.github.perracodex.kopapi.composer.operation.OperationComposer
-import io.github.perracodex.kopapi.composer.security.TopLevelSecurityRequirement
 import io.github.perracodex.kopapi.composer.security.SecurityComposer
 import io.github.perracodex.kopapi.composer.security.SecurityObject
+import io.github.perracodex.kopapi.composer.security.TopLevelSecurityRequirement
 import io.github.perracodex.kopapi.composer.tags.TagsComposer
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.path.ApiPath
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
@@ -38,6 +39,7 @@ import io.swagger.v3.parser.core.models.SwaggerParseResult
 @ComposerApi
 internal class SchemaComposer(
     private val apiConfiguration: ApiConfiguration,
+    private val apiPaths: Set<ApiPath>,
     private val apiOperations: Set<ApiOperation>,
     private val registrationErrors: Set<String>,
     private val schemaConflicts: Set<SchemaConflicts.Conflict>,
@@ -76,6 +78,7 @@ internal class SchemaComposer(
 
         // Compose the `Path Items` section.
         val pathItems: Map<String, OpenApiSchema.PathItemObject> = OperationComposer.compose(
+            apiPaths = apiPaths,
             apiOperations = apiOperations,
             securityObject = securityObject
         )

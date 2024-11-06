@@ -10,29 +10,29 @@ aligned with OpenAPI 3.1 schema specification.
 ```kotlin
 @Schema(description = "Represents a person.")
 data class Person(
-  
-  @Schema(description = "The first name of the person.", minLength = 3, maxLength = 50)
-  val firstName: String,
 
-  @Schema(description = "The age of the person.", minimum = "1", maximum = "120")
-  val age: Int,
+    @Schema(description = "The first name of the person.", minLength = 3, maxLength = 50)
+    val firstName: String,
 
-  @Schema(description = "The list of hobbies.", minItems = 1, maxItems = 5, uniqueItems = true)
-  val hobbies: List<String>,
+    @Schema(description = "The age of the person.", minimum = "1", maximum = "120")
+    val age: Int,
 
-  @Schema(description = "Choice of colors.", defaultValue = "RED")
-  val color: Color,
+    @Schema(description = "The list of hobbies.", minItems = 1, maxItems = 5, uniqueItems = true)
+    val hobbies: List<String>,
 
-  @Schema(description = "The user's email address.", pattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")
-  val email: String,
+    @Schema(description = "Choice of colors.", defaultValue = "RED")
+    val color: Color,
 
-  @Schema(description = "The person's rating.", exclusiveMinimum = "0", exclusiveMaximum = "5", multipleOf = "0.5")
-  val rating: Double,
+    @Schema(description = "The user's email address.", pattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")
+    val email: String,
 
-  @Schema(description = "The total amount due, in whole dollars.", multipleOf = "5")
-  val amountDue: Int
+    @Schema(description = "The person's rating.", exclusiveMinimum = "0", exclusiveMaximum = "5", multipleOf = "0.5")
+    val rating: Double,
 
-  // ...
+    @Schema(description = "The total amount due, in whole dollars.", multipleOf = "5")
+    val amountDue: Int
+
+    // ...
 )
 ```
 
@@ -71,6 +71,6 @@ data class Person(
 
 ---
 
-### [Internals - Debug Panel 🡲](../03-internals/01-debug-panel.md)
+### [Path-Level Metadata 🡲](./10-path-level-metadata.md)
 
 #### [🡰 Servers](08-servers.md)

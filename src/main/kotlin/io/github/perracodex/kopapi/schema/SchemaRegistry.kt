@@ -10,6 +10,7 @@ import io.github.perracodex.kopapi.composer.operation.OperationVerifier
 import io.github.perracodex.kopapi.composer.request.RequestBodyComposer
 import io.github.perracodex.kopapi.composer.response.ResponseComposer
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
+import io.github.perracodex.kopapi.dsl.path.ApiPath
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
@@ -68,6 +69,9 @@ internal object SchemaRegistry {
 
     /** Set of registered API Operations metadata. */
     private val apiOperation: MutableSet<ApiOperation> = mutableSetOf()
+
+    /** Set of registered API Path metadata. */
+    private val apiPath: MutableSet<ApiPath> = mutableSetOf()
 
     /** Set of generated type schemas derived from registered API metadata. */
     private val typeSchemas: MutableSet<TypeSchema> = mutableSetOf()
@@ -133,6 +137,19 @@ internal object SchemaRegistry {
     }
 
     /**
+     * Registers the [ApiPath] for a concrete API endpoint.
+     *
+     * @param path The [ApiPath] object representing the metadata of the API endpoint.
+     */
+    fun registerApiPath(path: ApiPath) {
+        synchronized(apiPath) {
+            if (isEnabled) {
+                apiPath.add(path)
+            }
+        }
+    }
+
+    /**
      * Clears all cached data.
      * This method should be called if the plugin is disabled.
      *
@@ -142,6 +159,7 @@ internal object SchemaRegistry {
      */
     fun clear() {
         apiOperation.clear()
+        apiPath.clear()
         typeSchemas.clear()
         schemaConflicts.clear()
         debugJsonCache.clear()
@@ -335,6 +353,7 @@ internal object SchemaRegistry {
 
             val specificBootstrap: SchemaComposer.OpenApiSpec = SchemaComposer(
                 apiConfiguration = configuration,
+                apiPaths = apiPath,
                 apiOperations = apiOperation,
                 registrationErrors = errors,
                 schemaConflicts = schemaConflicts

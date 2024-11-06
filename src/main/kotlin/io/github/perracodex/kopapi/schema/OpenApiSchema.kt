@@ -47,6 +47,9 @@ internal data class OpenApiSchema(
      * Each path item corresponds to a specific API endpoint and contains operations (HTTP methods)
      * such as GET, POST, PUT, DELETE, etc., along with their configurations.
      *
+     * @property summary A brief summary of the path item.
+     * @property description A detailed description of the path item.
+     * @property servers A list of server configurations specific to this path.
      * @property get The GET operation for the path, if defined.
      * @property put The PUT operation for the path, if defined.
      * @property post The POST operation for the path, if defined.
@@ -57,6 +60,9 @@ internal data class OpenApiSchema(
      * @property trace The TRACE operation for the path, if defined.
      */
     data class PathItemObject(
+        val summary: String? = null,
+        val description: String? = null,
+        val servers: Set<ApiServerConfig>? = null,
         var get: OperationObject? = null,
         var put: OperationObject? = null,
         var post: OperationObject? = null,

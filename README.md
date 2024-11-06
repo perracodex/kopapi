@@ -73,6 +73,7 @@ dependencies {
   - #### [Security](.wiki/02-api-usage/07-security.md)
   - #### [Servers](.wiki/02-api-usage/08-servers.md)
   - #### [Schema Annotation](.wiki/02-api-usage/09-schema-annotation.md)
+  - #### [Path-Level Metadata](.wiki/02-api-usage/10-path-level-metadata.md)
 
 * ### Internals
   - #### [Debug Panel](.wiki/03-internals/01-debug-panel.md)

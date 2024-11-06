@@ -18,4 +18,4 @@ to help you identify potential issues.
 
 ### [Internals - Type Conflicts 🡲](02-type-conflicts.md)
 
-#### [🡰 Schema Annotation](../02-api-usage/09-schema-annotation.md)
+#### [🡰 Path-Level Metadata](../02-api-usage/10-path-level-metadata.md)
