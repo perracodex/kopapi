@@ -1,6 +1,6 @@
-### Top Level Tags
+### Top-Level Tags
 
-The tags array at the top level of the OpenAPI specification serves as a global declaration
+The tags array at the top level of the OpenAPI specification serves as a top-level declaration
 of all tags used within the API.
 
 ```kotlin

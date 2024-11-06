@@ -11,7 +11,7 @@ The `KopapiConfig` provides several properties to define the URLs for your OpenA
 | apiDocs  | The OpenAPI related URLs and settings, including swagger-ui and redoc.                | N/A            |
 | info     | Metadata about your API (title, description, version, contact, license, etc.).        | N/A            |
 | servers  | List of servers to include in the OpenAPI schema, with optional URL variables.        | N/A            |
-| security | List of global security schemes, overriding per endpoint schemes.                     | N/A            |
+| security | List of top-level security schemes, overriding per endpoint schemes.                  | N/A            |
 
 - The `debugUrl` endpoint provides access to vital diagnostic information that assists in troubleshooting the plugin behavior.
   If the schema is not generated as expected, you can use this endpoint to inspect and identify potential issues.
@@ -53,21 +53,21 @@ install(Kopapi) {
 
 ```kotlin
 install(Kopapi) {
-  apiDocs {
-    // ...
+    apiDocs {
+        // ...
 
-    // Swagger UI settings.
-    swagger {
-      url = "api/swagger"
-      persistAuthorization = true
-      withCredentials = true
-      displayRequestDuration = true
-      displayOperationId = true
-      operationsSorter = SwaggerOperationsSorter.METHOD
-      syntaxTheme = SwaggerSyntaxTheme.AGATE
-      includeErrors = true
+        // Swagger UI settings.
+        swagger {
+            url = "api/swagger"
+            persistAuthorization = true
+            withCredentials = true
+            displayRequestDuration = true
+            displayOperationId = true
+            operationsSorter = SwaggerOperationsSorter.METHOD
+            syntaxTheme = SwaggerSyntaxTheme.AGATE
+            includeErrors = true
+        }
     }
-  }
 }
 ```
 
@@ -114,17 +114,17 @@ install(Kopapi) {
         openapiJsonUrl = "api/openapi.json"
         redocUrl = "api/redoc"
 
-      // Swagger UI settings.
-      swagger {
-        url = "api/swagger"
-        persistAuthorization = true
-        withCredentials = true
-        displayRequestDuration = true
-        displayOperationId = true
-        operationsSorter = SwaggerOperationsSorter.METHOD
-        syntaxTheme = SwaggerSyntaxTheme.AGATE
-        includeErrors = true
-      }
+        // Swagger UI settings.
+        swagger {
+            url = "api/swagger"
+            persistAuthorization = true
+            withCredentials = true
+            displayRequestDuration = true
+            displayOperationId = true
+            operationsSorter = SwaggerOperationsSorter.METHOD
+            syntaxTheme = SwaggerSyntaxTheme.AGATE
+            includeErrors = true
+        }
     }
 
     // API Info section.

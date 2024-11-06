@@ -7,15 +7,15 @@ package io.github.perracodex.kopapi.composer.security
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 
 /**
- * Represents the global security requirements in the OpenAPI schema.
+ * Represents the top-level security requirements in the OpenAPI schema.
  *
- * Global security requirements apply to all API operations by default unless overridden
+ * Top-level security requirements apply to all API operations by default unless overridden
  * by operation-level security configurations.
  *
- * @property requirements A list of [SecurityRequirement] objects representing each global security requirement.
+ * @property requirements A list of [SecurityRequirement] objects representing each top-level security requirement.
  */
 @ComposerApi
-internal data class GlobalSecurityRequirement(
+internal data class TopLevelSecurityRequirement(
     val requirements: List<SecurityRequirement>
 ) {
     fun toOpenApiSpec(): List<Map<String, List<String>>?> {

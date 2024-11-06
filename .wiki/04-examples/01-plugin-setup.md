@@ -58,8 +58,8 @@ fun Application.configureApiSchema() {
             }
         }
 
-        // Global top-level security schemes. Will apply to all routes unless overridden.
-        // Alternatively, can also define security schemes to individual routes instead of globally.
+        // Top-level security schemes. Will apply to all routes unless overridden.
+        // Alternatively, can also define security schemes to individual routes instead of at top-level.
         bearerSecurity(name = "BearerAuth") {
             description = "HTTP bearer Authentication is required."
         }

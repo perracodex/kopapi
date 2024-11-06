@@ -13,10 +13,10 @@ import io.github.perracodex.kopapi.system.Tracer
 /**
  * Responsible for composing the security-related sections of the OpenAPI schema.
  *
- * Aggregates global security requirements, security schemes, and associates
+ * Aggregates top-level security requirements, security schemes, and associates
  * security configurations with individual API Operations based on their metadata.
  *
- * @property apiConfiguration The plugin [ApiConfiguration] containing global security schemes.
+ * @property apiConfiguration The plugin [ApiConfiguration] containing top-level security schemes.
  * @property apiOperations A set of [ApiOperation] objects representing each API endpoint's metadata.
  */
 @ComposerApi
@@ -27,53 +27,53 @@ internal class SecurityComposer(
     private val tracer = Tracer<SecurityComposer>()
 
     /**
-     * Determines and composes the global security requirements for the OpenAPI schema.
+     * Determines and composes the top-level security requirements for the OpenAPI schema.
      *
-     * Global security requirements apply to all API operations by default, unless overridden
+     * Top-level security requirements apply to all API operations by default, unless overridden
      * by operation-level security configurations. This method includes OAuth2 schemes
      * only if they have scopes defined within their flows.
      *
-     * @return A [GlobalSecurityRequirement] object containing all global security requirements.
-     *         Returns `null` if no operations require global security.
+     * @return A [TopLevelSecurityRequirement] object containing all top-level security requirements.
+     *         Returns `null` if no operations require top-level security.
      */
-    fun composeGlobalSecurityRequirements(): GlobalSecurityRequirement? {
-        tracer.info("Composing the global security requirements.")
+    fun composeTopLevelSecurityRequirements(): TopLevelSecurityRequirement? {
+        tracer.info("Composing the top-level security requirements.")
 
         // Determine if any API Operation requires security.
-        val requiresGlobalSecurity: Boolean = apiOperations.any { !it.skipSecurity }
-        if (!requiresGlobalSecurity) {
-            // All API Operated are marked as skipSecurity; no global security required.
-            tracer.debug("No operations require global security.")
+        val requiresTopLevelSecurity: Boolean = apiOperations.any { !it.skipSecurity }
+        if (!requiresTopLevelSecurity) {
+            // All API Operated are marked as skipSecurity; no top-level security required.
+            tracer.debug("No operations require top-level security.")
             return null
         }
 
-        // Aggregate global security schemes.
+        // Aggregate top-level security schemes.
         val requirements: List<SecurityRequirement> = apiConfiguration
             .apiSecuritySchemes?.map(this::mapSchemeToRequirement) ?: emptyList()
 
         // Only return if there are security schemes defined
         return if (requirements.isNotEmpty()) {
-            tracer.info("Global security schemes defined: ${requirements.size}")
-            GlobalSecurityRequirement(requirements = requirements)
+            tracer.info("Top-level security schemes defined: ${requirements.size}")
+            TopLevelSecurityRequirement(requirements = requirements)
         } else {
-            tracer.info("No global security schemes defined.")
+            tracer.info("No top-level security schemes defined.")
             null
         }
     }
 
     /**
-     * Aggregates both top-level global and operation-level security schemes for inclusion
+     * Aggregates both top-level and operation-level security schemes for inclusion
      * in the OpenAPI components section.
      *
-     * Collects top-level global security schemes and adds them to the components section.
+     * Collects top-level security schemes and adds them to the components section.
      * Additionally, operation-level security schemes are included if they are not already part
-     * of the global schemes, ensuring that all available security mechanisms are represented
+     * of the top-level schemes, ensuring that all available security mechanisms are represented
      * in the components section.
      *
      * @return A map where each key is the security scheme name and the value is the corresponding
      *         [ApiSecurityScheme] definition. Returns `null` if no security schemes are defined.
      *
-     * @see [composeGlobalSecurityRequirements]
+     * @see [composeTopLevelSecurityRequirements]
      */
     fun composeSecuritySchemes(): Map<String, ApiSecurityScheme>? {
         tracer.info("Composing the security schemes for the OpenAPI schema.")
@@ -81,8 +81,8 @@ internal class SecurityComposer(
         val schemes: MutableMap<String, ApiSecurityScheme> = mutableMapOf()
         val schemeNames: MutableSet<String> = mutableSetOf()
 
-        // Include global security schemes only if global security is applied.
-        composeGlobalSecurityRequirements()?.let {
+        // Include top-level security schemes only if top-level security is applied.
+        composeTopLevelSecurityRequirements()?.let {
             apiConfiguration.apiSecuritySchemes?.forEach { scheme ->
                 val schemeName: String = scheme.schemeName.lowercase()
                 if (schemeName !in schemeNames) {

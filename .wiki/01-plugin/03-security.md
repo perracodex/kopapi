@@ -1,10 +1,10 @@
 ## Adding Security Schemes
 
-Top-level global security schemes can be defined in the plugin main configuration.
+Top-level security schemes can be defined in the plugin main configuration.
 
 - These schemes are applied to all endpoints by default.
 - These can be overridden per endpoint if needed.
-- Scheme names must be unique across the global and endpoint security schemes.
+- Scheme names must be unique across the top-level and endpoint security schemes.
 
 ---
 

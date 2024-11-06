@@ -63,7 +63,7 @@ fun Route.createEmployeeRoute() {
 
 ---
 
-- Skipping global top-level security.
+- Skipping top-level security.
 
 ```kotlin
 fun Route.publicRoute() {
@@ -79,7 +79,7 @@ fun Route.publicRoute() {
             contentType = setOf(ContentType.Text.Plain)
         }
 
-        // Skip global security.
+        // Skip top-level security.
         skipSecurity()
     }
 }

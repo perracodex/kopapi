@@ -19,7 +19,7 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerApi
  *                For example, "/users/{userId}".
  * @property security Optional list of security requirements for the operation. Each entry specifies
  *                    a security scheme and its associated scopes. An empty list denotes that
- *                    the API Operation does not require any security, overriding any global security settings.
+ *                    the API Operation does not require any security, overriding any top-level security settings.
  */
 @ComposerApi
 internal data class SecurityObject(

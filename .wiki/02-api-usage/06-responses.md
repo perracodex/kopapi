@@ -150,7 +150,7 @@ The `composition` property allows to specify how multiple types associated with 
 
 ```kotlin
 response<MyResponseType>(status = HttpStatusCode.OK) {
-  // Apply a global composition across all content types.
+  // Apply the common composition across all content types.
   composition = Composition.OneOf
 
   addType<AnotherType>()

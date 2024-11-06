@@ -151,7 +151,7 @@ public class ApiOperationBuilder internal constructor(
 
     /**
      * Disables the security schemes for the API operation.
-     * Both top-level global and local security schemes will not be applied to this API Operation.
+     * Both top-level and local-level security schemes will not be applied to this API Operation.
      *
      * @see [basicSecurity]
      * @see [bearerSecurity]

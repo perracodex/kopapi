@@ -30,7 +30,7 @@ import io.ktor.http.*
  * @property tags A list of tags used to group API operations together for documentation purposes.
  * @property paths An object that holds the relative paths to the individual endpoints and their operations.
  * @property components An object to hold various reusable components such as security schemes, responses, parameters, etc.
- * @property security The global security requirements that apply to all operations unless overridden.
+ * @property security The top-level security requirements that apply to all operations unless overridden.
  */
 @ComposerApi
 internal data class OpenApiSchema(

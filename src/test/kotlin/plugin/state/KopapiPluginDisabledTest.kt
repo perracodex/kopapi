@@ -65,7 +65,7 @@ class KopapiPluginDisabledTest {
                 message = "Expected servers to be null when plugin is disabled."
             )
 
-            // Ensure that global security schemes are not set (should be null)
+            // Ensure that top-level security schemes are not set (should be null)
             val securitySchemes: Set<ApiSecurityScheme>? = SchemaRegistry.apiConfiguration?.apiSecuritySchemes
             assertNull(
                 actual = securitySchemes,
