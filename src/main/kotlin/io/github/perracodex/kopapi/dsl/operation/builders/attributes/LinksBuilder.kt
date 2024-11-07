@@ -58,7 +58,7 @@ public class LinksBuilder @PublishedApi internal constructor() {
      */
     public fun add(name: String, configure: LinkBuilder.() -> Unit) {
         val linkName: String = name.sanitize()
-        if (name.isBlank()) {
+        if (linkName.isBlank()) {
             throw KopapiException("Link name must not be blank.")
         }
         val link: ApiLink = LinkBuilder().apply(configure).build()
