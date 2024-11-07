@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
 import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
+import io.github.perracodex.kopapi.types.SwaggerUiTheme
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -161,9 +162,23 @@ internal object Swagger {
                 """.trimIndent()
             } else ""
 
+            // Dark theme CSS.
+            val swaggerDarkCssUrl: String = if (apiDocs.swagger.uiTheme == SwaggerUiTheme.DARK) {
+                """
+                    // Inject the dark theme CSS.
+                    const darkThemeLink = document.createElement('link');
+                    darkThemeLink.rel = 'stylesheet';
+                    darkThemeLink.type = 'text/css';
+                    darkThemeLink.href = '/static-kopapi/dark-theme.css';
+                    document.head.appendChild(darkThemeLink);
+                """.trimIndent()
+            } else ""
+
             swaggerJs = """
                 window.onload = function() {
                     $operationIdCss
+                    $swaggerDarkCssUrl
+    
                     // Initialize Swagger UI.
                     window.ui = SwaggerUIBundle({
                         url: "${apiDocs.openapiYamlUrl}",

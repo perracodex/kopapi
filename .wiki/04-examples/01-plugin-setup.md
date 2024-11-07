@@ -21,6 +21,7 @@ fun Application.configureApiSchema() {
                 displayRequestDuration = true
                 displayOperationId = true
                 operationsSorter = SwaggerOperationsSorter.METHOD
+                uiTheme = SwaggerUITheme.DARK
                 syntaxTheme = SwaggerSyntaxTheme.AGATE
                 includeErrors = true
             }

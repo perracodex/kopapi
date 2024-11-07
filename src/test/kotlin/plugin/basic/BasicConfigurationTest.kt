@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
 import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
+import io.github.perracodex.kopapi.types.SwaggerUiTheme
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import org.junit.jupiter.api.BeforeEach
@@ -43,6 +44,7 @@ class BasicConfigurationTest {
                         displayRequestDuration = true
                         displayOperationId = true
                         operationsSorter = SwaggerOperationsSorter.METHOD
+                        uiTheme = SwaggerUiTheme.DARK
                         syntaxTheme = SwaggerSyntaxTheme.IDEA
                         includeErrors = true
                     }
@@ -104,6 +106,7 @@ class BasicConfigurationTest {
                         displayRequestDuration = true
                         displayOperationId = true
                         operationsSorter = SwaggerOperationsSorter.METHOD
+                        uiTheme = SwaggerUiTheme.DARK
                         syntaxTheme = SwaggerSyntaxTheme.IDEA
                         includeErrors = true
                     }

@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
 import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
 import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
+import io.github.perracodex.kopapi.types.SwaggerUiTheme
 import io.github.perracodex.kopapi.utils.NetworkUtils
 
 /**
@@ -27,6 +28,7 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  *          displayRequestDuration = true
  *          displayOperationId = true
  *          operationsSorter = SwaggerOperationsSorter.METHOD
+ *          uiTheme = SwaggerUITheme.DARK
  *          syntaxTheme = SwaggerSyntaxTheme.NORD
  *          includeErrors = true
  *      }
@@ -82,6 +84,13 @@ public class SwaggerBuilder internal constructor() {
     public var operationsSorter: SwaggerOperationsSorter = SwaggerOperationsSorter.UNSORTED
 
     /**
+     * The theme to use for the overall Swagger UI.
+     *
+     * - Default: [SwaggerUiTheme.LIGHT].
+     */
+    public var uiTheme: SwaggerUiTheme = SwaggerUiTheme.LIGHT
+
+    /**
      * The syntax highlighting theme to use for the Swagger UI.
      *
      * - Default: [SwaggerSyntaxTheme.AGATE].
@@ -108,6 +117,7 @@ public class SwaggerBuilder internal constructor() {
         displayRequestDuration = displayRequestDuration,
         displayOperationId = displayOperationId,
         operationsSorter = operationsSorter,
+        uiTheme = uiTheme,
         syntaxTheme = syntaxTheme,
         includeErrors = includeErrors
     )

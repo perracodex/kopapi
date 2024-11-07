@@ -48,6 +48,7 @@ install(Kopapi) {
 | displayRequestDuration | Whether to display the request duration in `Swagger UI`.                                          | False    |
 | displayOperationId     | Whether to display the endpoint `operationId` in `Swagger UI`.                                    | False    |
 | operationsSorter       | The sorter to use for the operations in the `Swagger UI`.                                         | UNSORTED |
+| uiTheme                | The theme to use for the overall Swagger UI.                                                      | LIGHT    |
 | syntaxTheme            | The syntax highlighting theme to use for the `Swagger UI`.                                        | AGATE    |
 | includeErrors          | When enabled, detected generation errors will be appended into description of the `info` section. | False    |
 
@@ -64,6 +65,7 @@ install(Kopapi) {
             displayRequestDuration = true
             displayOperationId = true
             operationsSorter = SwaggerOperationsSorter.METHOD
+            uiTheme = SwaggerUITheme.DARK
             syntaxTheme = SwaggerSyntaxTheme.AGATE
             includeErrors = true
         }
@@ -122,6 +124,7 @@ install(Kopapi) {
             displayRequestDuration = true
             displayOperationId = true
             operationsSorter = SwaggerOperationsSorter.METHOD
+            uiTheme = SwaggerUITheme.DARK
             syntaxTheme = SwaggerSyntaxTheme.AGATE
             includeErrors = true
         }

@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
 import io.github.perracodex.kopapi.plugin.Swagger
 import io.ktor.http.*
 import io.ktor.http.content.*
+import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -17,6 +18,8 @@ import io.ktor.server.routing.*
  * @param apiDocs The [ApiDocs] instance containing the API documentation URLs.
  */
 internal fun Routing.swaggerRoute(apiDocs: ApiDocs) {
+    staticResources(remotePath = "/static-kopapi", basePackage = "swagger")
+
     /**
      * Redirect to the main Swagger UI HTML page.
      */

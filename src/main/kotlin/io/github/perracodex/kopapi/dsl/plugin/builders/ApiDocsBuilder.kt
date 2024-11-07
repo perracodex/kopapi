@@ -60,6 +60,7 @@ public class ApiDocsBuilder internal constructor() {
      *          displayRequestDuration = true
      *          displayOperationId = true
      *          operationsSorter = SwaggerOperationsSorter.METHOD
+     *          uiTheme = SwaggerUITheme.DARK
      *          syntaxTheme = SwaggerSyntaxTheme.NORD
      *          includeErrors = true
      *      }

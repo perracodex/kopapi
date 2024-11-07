@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.dsl.plugin.elements
 
 import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
 import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
+import io.github.perracodex.kopapi.types.SwaggerUiTheme
 
 /**
  * Represents the API documentation configuration.
@@ -30,6 +31,7 @@ internal data class ApiDocs(
      * @property displayRequestDuration Whether to display the request duration in Swagger UI.
      * @property displayOperationId Whether to display the endpoint `operationId` in Swagger UI.
      * @property operationsSorter The sorting order for the Swagger operations.
+     * @property uiTheme The theme for Swagger UI.
      * @property syntaxTheme The syntax highlighting theme for Swagger UI.
      * @property includeErrors Whether to include API documentation generation errors into description of the `info` section.
      */
@@ -40,6 +42,7 @@ internal data class ApiDocs(
         val displayRequestDuration: Boolean,
         val displayOperationId: Boolean,
         val operationsSorter: SwaggerOperationsSorter,
+        val uiTheme: SwaggerUiTheme,
         val syntaxTheme: SwaggerSyntaxTheme,
         val includeErrors: Boolean
     )
