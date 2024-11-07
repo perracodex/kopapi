@@ -13,7 +13,10 @@ import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.TagBuilder
-import io.github.perracodex.kopapi.dsl.plugin.elements.*
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.utils.NetworkUtils
 
 /**
@@ -64,11 +67,6 @@ public class KopapiConfig internal constructor(
      * The [ApiInfo] metadata for the OpenAPI schema.
      */
     private var apiInfo: ApiInfo? = null
-
-    /**
-     * The list of servers to include in the OpenAPI schema.
-     */
-    private val servers: MutableSet<ApiServerConfig> = mutableSetOf()
 
     /**
      * The list of tags to include in the OpenAPI schema.
@@ -158,7 +156,7 @@ public class KopapiConfig internal constructor(
             apiDocs = apiDocs ?: ApiDocsBuilder().build(),
             debugUrl = NetworkUtils.normalizeUrl(url = debugUrl, defaultValue = DEFAULT_DEBUG_URL),
             apiInfo = apiInfo,
-            apiServers = servers.takeIf { it.isNotEmpty() } ?: setOf(ServerBuilder.defaultServer()),
+            apiServers = serverConfigurable.servers.takeIf { it.isNotEmpty() } ?: setOf(ServerBuilder.defaultServer()),
             apiTags = tags.takeIf { it.isNotEmpty() },
             apiSecuritySchemes = securityConfigurable.securitySchemes.takeIf { it.isNotEmpty() }
         )
