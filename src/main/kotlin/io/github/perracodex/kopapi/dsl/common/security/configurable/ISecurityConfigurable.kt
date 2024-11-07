@@ -2,23 +2,17 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl.common.security
+package io.github.perracodex.kopapi.dsl.common.security.configurable
 
+import io.github.perracodex.kopapi.dsl.common.security.*
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.system.KopapiException
-import io.github.perracodex.kopapi.types.AuthMethod
-import io.github.perracodex.kopapi.types.SecurityLocation
 import io.ktor.http.*
 
 /**
- * Abstract base class to handle security scheme configurations.
+ * Handles the registration of security schemes.
  */
 @KopapiDsl
-public abstract class SecurityConfigurable {
-    @Suppress("PropertyName")
-    internal val _securityConfig: Config = Config()
-
+public interface ISecurityConfigurable {
     /**
      * Adds a `Basic` HTTP security scheme to the API metadata.
      *
@@ -38,11 +32,7 @@ public abstract class SecurityConfigurable {
     public fun basicSecurity(
         name: String,
         configure: HttpSecurityBuilder.() -> Unit = {}
-    ) {
-        val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name, method = AuthMethod.BASIC)
-        _securityConfig.addSecurityScheme(scheme = scheme)
-    }
+    )
 
     /**
      * Adds an `Bearer` HTTP security scheme to the API metadata.
@@ -63,11 +53,7 @@ public abstract class SecurityConfigurable {
     public fun bearerSecurity(
         name: String,
         configure: HttpSecurityBuilder.() -> Unit = {}
-    ) {
-        val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name, method = AuthMethod.BEARER)
-        _securityConfig.addSecurityScheme(scheme = scheme)
-    }
+    )
 
     /**
      * Adds an `Digest` HTTP security scheme to the API metadata.
@@ -88,11 +74,7 @@ public abstract class SecurityConfigurable {
     public fun digestSecurity(
         name: String,
         configure: HttpSecurityBuilder.() -> Unit = {}
-    ) {
-        val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name, method = AuthMethod.DIGEST)
-        _securityConfig.addSecurityScheme(scheme = scheme)
-    }
+    )
 
     /**
      * Adds an API key security scheme passed via header to the API metadata.
@@ -115,15 +97,7 @@ public abstract class SecurityConfigurable {
         name: String,
         key: String,
         configure: ApiKeySecurityBuilder.() -> Unit = {}
-    ) {
-        val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(
-            name = name,
-            key = key,
-            location = SecurityLocation.HEADER
-        )
-        _securityConfig.addSecurityScheme(scheme = scheme)
-    }
+    )
 
     /**
      * Adds an API key security scheme passed via query to the API metadata.
@@ -146,15 +120,7 @@ public abstract class SecurityConfigurable {
         name: String,
         key: String,
         configure: ApiKeySecurityBuilder.() -> Unit = {}
-    ) {
-        val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(
-            name = name,
-            key = key,
-            location = SecurityLocation.QUERY
-        )
-        _securityConfig.addSecurityScheme(scheme = scheme)
-    }
+    )
 
     /**
      * Adds an API key security scheme passed via cookie to the API metadata.
@@ -177,15 +143,7 @@ public abstract class SecurityConfigurable {
         name: String,
         key: String,
         configure: ApiKeySecurityBuilder.() -> Unit = {}
-    ) {
-        val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(
-            name = name,
-            key = key,
-            location = SecurityLocation.COOKIE
-        )
-        _securityConfig.addSecurityScheme(scheme = scheme)
-    }
+    )
 
     /**
      * Adds an OAuth2 security scheme to the API metadata.
@@ -237,11 +195,7 @@ public abstract class SecurityConfigurable {
     public fun oauth2Security(
         name: String,
         configure: OAuth2SecurityBuilder.() -> Unit = {}
-    ) {
-        val builder: OAuth2SecurityBuilder = OAuth2SecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name)
-        _securityConfig.addSecurityScheme(scheme = scheme)
-    }
+    )
 
     /**
      * Adds an OpenID Connect security scheme to the API metadata.
@@ -271,11 +225,7 @@ public abstract class SecurityConfigurable {
         name: String,
         url: Url,
         configure: OpenIdConnectSecurityBuilder.() -> Unit = {}
-    ) {
-        val builder: OpenIdConnectSecurityBuilder = OpenIdConnectSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name, url = url)
-        _securityConfig.addSecurityScheme(scheme = scheme)
-    }
+    )
 
     /**
      * Adds a Mutual TLS security scheme to the API metadata.
@@ -302,45 +252,5 @@ public abstract class SecurityConfigurable {
     public fun mutualTLSSecurity(
         name: String,
         configure: MutualTLSSecurityBuilder.() -> Unit = {}
-    ) {
-        val builder: MutualTLSSecurityBuilder = MutualTLSSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name)
-        _securityConfig.addSecurityScheme(scheme = scheme)
-    }
-
-    internal class Config {
-        /**
-         * Set of security schemes detailing with authentication.
-         */
-        val securitySchemes: LinkedHashSet<ApiSecurityScheme> = linkedSetOf()
-
-        /**
-         * Flag to indicate that no security is required for the API operation.
-         * Once set to `true`, all security schemes are ignored.
-         */
-        var skipSecurity: Boolean = false
-
-        /**
-         * Adds a custom security scheme to the cache,
-         * ensuring that the security scheme name is unique.
-         *
-         * @param scheme The [ApiSecurityScheme] instance to add to the cache.
-         * @throws KopapiException If a security scheme with the same name already exists.
-         */
-        fun addSecurityScheme(scheme: ApiSecurityScheme) {
-            if (skipSecurity) {
-                securitySchemes.clear()
-                return
-            }
-
-            if (securitySchemes.any { it.schemeName.equals(other = scheme.schemeName, ignoreCase = true) }) {
-                throw KopapiException(
-                    "Attempting to register security scheme with name '${scheme.schemeName}' more than once.\n" +
-                            "The OpenAPI specification requires every Security Scheme name to be unique throughout the entire API."
-                )
-            }
-
-            securitySchemes.add(scheme)
-        }
-    }
+    )
 }

@@ -65,7 +65,7 @@ public class ResponseBuilder {
      * @param configure An optional lambda for configuring the type. Default: `JSON`.
      */
     @Suppress("DuplicatedCode")
-    public inline fun <reified T : Any> addType(configure: TypeConfig.() -> Unit = {}) {
+    public inline fun <reified T : Any> addType(noinline configure: TypeConfig.() -> Unit = {}) {
         if (T::class == Unit::class || T::class == Nothing::class || T::class == Any::class) {
             return
         }

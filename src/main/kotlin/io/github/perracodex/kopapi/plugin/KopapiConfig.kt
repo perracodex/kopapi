@@ -4,8 +4,11 @@
 
 package io.github.perracodex.kopapi.plugin
 
-import io.github.perracodex.kopapi.dsl.common.security.SecurityConfigurable
+import io.github.perracodex.kopapi.dsl.common.security.configurable.ISecurityConfigurable
+import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityConfigurable
 import io.github.perracodex.kopapi.dsl.common.server.ServerBuilder
+import io.github.perracodex.kopapi.dsl.common.server.configurable.IServerConfigurable
+import io.github.perracodex.kopapi.dsl.common.server.configurable.ServerConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
@@ -17,7 +20,11 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  * Configuration for the [Kopapi] plugin.
  */
 @KopapiDsl
-public class KopapiConfig : SecurityConfigurable() {
+public class KopapiConfig internal constructor(
+    private val serverConfigurable: ServerConfigurable = ServerConfigurable(),
+    private val securityConfigurable: SecurityConfigurable = SecurityConfigurable()
+) : IServerConfigurable by serverConfigurable,
+    ISecurityConfigurable by securityConfigurable {
     /**
      * Whether the plugin should be enabled (Default is `true`).
      *
@@ -124,48 +131,6 @@ public class KopapiConfig : SecurityConfigurable() {
     }
 
     /**
-     * Sets up servers, with optional support for variables.
-     *
-     * #### Sample Usage
-     * ```
-     * servers {
-     *      // Simple example with no variables.
-     *      add(urlString = "http://localhost:8080") {
-     *         description = "Local server for development."
-     *      }
-     *
-     *      // Example with variable placeholders.
-     *      add(urlString = "{protocol}://{environment}.example.com:{port}") {
-     *          description = "The server with environment variable."
-     *
-     *          // Environment.
-     *          variable(name = "environment", defaultValue = "production") {
-     *              choices = setOf("production", "staging", "development")
-     *              description = "Specifies the environment (production, etc)"
-     *          }
-     *
-     *          // Port.
-     *          variable(name = "port", defaultValue = "8080") {
-     *              choices = setOf("8080", "8443")
-     *              description = "The port for the server."
-     *          }
-     *
-     *          // Protocol.
-     *          variable(name = "protocol", defaultValue = "http") {
-     *              choices = setOf("http", "https")
-     *          }
-     *      }
-     * }
-     * ```
-     *
-     * @see [ServerBuilder]
-     */
-    public fun servers(init: ServerBuilder.() -> Unit) {
-        val builder: ServerBuilder = ServerBuilder().apply(init)
-        servers.addAll(builder.build())
-    }
-
-    /**
      * Sets up tags for the API.
      *
      * #### Sample Usage
@@ -194,7 +159,7 @@ public class KopapiConfig : SecurityConfigurable() {
             apiInfo = apiInfo,
             apiServers = servers.takeIf { it.isNotEmpty() } ?: setOf(ServerBuilder.defaultServer()),
             apiTags = tags.takeIf { it.isNotEmpty() },
-            apiSecuritySchemes = _securityConfig.securitySchemes.takeIf { it.isNotEmpty() }
+            apiSecuritySchemes = securityConfigurable.securitySchemes.takeIf { it.isNotEmpty() }
         )
     }
 

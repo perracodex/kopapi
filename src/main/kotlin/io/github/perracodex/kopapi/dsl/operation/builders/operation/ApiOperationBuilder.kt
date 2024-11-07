@@ -4,22 +4,19 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.operation
 
-import io.github.perracodex.kopapi.dsl.common.parameter.CookieParameterBuilder
-import io.github.perracodex.kopapi.dsl.common.parameter.HeaderParameterBuilder
-import io.github.perracodex.kopapi.dsl.common.parameter.PathParameterBuilder
-import io.github.perracodex.kopapi.dsl.common.parameter.QueryParameterBuilder
-import io.github.perracodex.kopapi.dsl.common.security.SecurityConfigurable
-import io.github.perracodex.kopapi.dsl.common.server.ServerBuilder
+import io.github.perracodex.kopapi.dsl.common.parameter.configurable.ParameterConfigurable
+import io.github.perracodex.kopapi.dsl.common.security.configurable.ISecurityConfigurable
+import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityConfigurable
+import io.github.perracodex.kopapi.dsl.common.server.configurable.IServerConfigurable
+import io.github.perracodex.kopapi.dsl.common.server.configurable.ServerConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.request.RequestBodyBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -27,7 +24,6 @@ import io.github.perracodex.kopapi.utils.string.SpacedString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import java.util.*
-import kotlin.reflect.typeOf
 
 /**
  * Builder for constructing API Operations metadata for a route endpoint.
@@ -84,12 +80,16 @@ import kotlin.reflect.typeOf
  */
 @KopapiDsl
 public class ApiOperationBuilder internal constructor(
-    @PublishedApi internal val endpoint: String
-) : SecurityConfigurable() {
+    @PublishedApi internal val endpoint: String,
+    private val serverConfigurable: ServerConfigurable = ServerConfigurable(),
+    private val securityConfigurable: SecurityConfigurable = SecurityConfigurable()
+) : IServerConfigurable by serverConfigurable,
+    ISecurityConfigurable by securityConfigurable,
+    ParameterConfigurable(endpoint = endpoint) {
 
     @Suppress("PropertyName")
     @PublishedApi
-    internal val _config: Config = Config(endpoint = endpoint)
+    internal val _config: Config = Config()
 
     /**
      * Optional short description of the endpoint's purpose.
@@ -163,141 +163,8 @@ public class ApiOperationBuilder internal constructor(
      * @see [openIdConnectSecurity]
      */
     public fun skipSecurity() {
-        _securityConfig.securitySchemes.clear()
-        _securityConfig.skipSecurity = true
-    }
-
-    /**
-     * Registers a `path` parameter.
-     *
-     * #### Sample Usage
-     * ```
-     * pathParameter<Uuid>(name = "id") {
-     *     description = "The unique identifier of the item."
-     *     style = ParameterStyle.SIMPLE
-     *     deprecated = false
-     * }
-     * ```
-     *
-     * @param T The type of the parameter.
-     * @param name The name of the parameter as it appears in the URL path.
-     * @param configure A lambda receiver for configuring the [PathParameterBuilder].
-     *
-     * @see [PathParameterBuilder]
-     * @see [cookieParameter]
-     * @see [headerParameter]
-     * @see [queryParameter]
-     * @see [requestBody]
-     */
-    public inline fun <reified T : Any> pathParameter(
-        name: String,
-        configure: PathParameterBuilder.() -> Unit = {}
-    ) {
-        val builder: PathParameterBuilder = PathParameterBuilder().apply(configure)
-        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
-        _config.addApiParameter(apiParameter = parameter)
-    }
-
-    /**
-     * Registers a `query` parameter.
-     *
-     * #### Sample Usage
-     * ```
-     * queryParameter<Int>(name = "page") {
-     *     description = "The page number to retrieve."
-     *     required = true
-     *     allowReserved = false
-     *     defaultValue = DefaultValue.ofInt(1)
-     *     style = ParameterStyle.FORM
-     *     explode = false
-     *     deprecated = false
-     * }
-     * ```
-     *
-     * @param T The type of the parameter.
-     * @param name The name of the parameter as it appears in the URL path.
-     * @param configure A lambda receiver for configuring the [QueryParameterBuilder].
-     *
-     * @see [QueryParameterBuilder]
-     * @see [cookieParameter]
-     * @see [headerParameter]
-     * @see [pathParameter]
-     * @see [requestBody]
-     */
-    public inline fun <reified T : Any> queryParameter(
-        name: String,
-        configure: QueryParameterBuilder.() -> Unit = {}
-    ) {
-        val builder: QueryParameterBuilder = QueryParameterBuilder().apply(configure)
-        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
-        _config.addApiParameter(apiParameter = parameter)
-    }
-
-    /**
-     * Registers a `header` parameter.
-     *
-     * #### Sample Usage
-     * ```
-     * headerParameter<String>(name = "X-Custom-Header") {
-     *     description = "A custom header for special purposes."
-     *     required = true
-     *     defaultValue = DefaultValue.ofString("default")
-     *     style = ParameterStyle.SIMPLE
-     *     deprecated = false
-     * }
-     * ```
-     *
-     * @param T The type of the parameter.
-     * @param name The header of the parameter as it appears in the URL path.
-     * @param configure A lambda receiver for configuring the [HeaderParameterBuilder].
-     *
-     * @see [HeaderParameterBuilder]
-     * @see [cookieParameter]
-     * @see [pathParameter]
-     * @see [queryParameter]
-     * @see [requestBody]
-     */
-    public inline fun <reified T : Any> headerParameter(
-        name: String,
-        configure: HeaderParameterBuilder.() -> Unit = {}
-    ) {
-        val builder: HeaderParameterBuilder = HeaderParameterBuilder().apply(configure)
-        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
-        _config.addApiParameter(apiParameter = parameter)
-    }
-
-    /**
-     * Registers a `cookie` parameter.
-     *
-     * #### Sample Usage
-     * ```
-     * cookieParameter<String>(name = "session") {
-     *     description = "The session ID for authentication."
-     *     required = true
-     *     defaultValue = DefaultValue.ofString("default")
-     *     style = ParameterStyle.FORM
-     *     explode = false
-     *     deprecated = false
-     * }
-     * ```
-     *
-     * @param T The type of the parameter.
-     * @param name The name of the parameter as it appears in the URL path.
-     * @param configure A lambda receiver for configuring the [CookieParameterBuilder].
-     *
-     * @see [CookieParameterBuilder]
-     * @see [headerParameter]
-     * @see [pathParameter]
-     * @see [queryParameter]
-     * @see [requestBody]
-     */
-    public inline fun <reified T : Any> cookieParameter(
-        name: String,
-        configure: CookieParameterBuilder.() -> Unit = {}
-    ) {
-        val builder: CookieParameterBuilder = CookieParameterBuilder().apply(configure)
-        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
-        _config.addApiParameter(apiParameter = parameter)
+        securityConfigurable.securitySchemes.clear()
+        securityConfigurable.skipSecurity = true
     }
 
     /**
@@ -369,7 +236,7 @@ public class ApiOperationBuilder internal constructor(
      * @see [response]
      */
     public inline fun <reified T : Any> requestBody(
-        configure: RequestBodyBuilder.() -> Unit = {}
+        noinline configure: RequestBodyBuilder.() -> Unit = {}
     ) {
         if (_config.requestBody == null) {
             val builder: RequestBodyBuilder = RequestBodyBuilder().apply {
@@ -493,7 +360,7 @@ public class ApiOperationBuilder internal constructor(
     @JvmName(name = "responseWithType")
     public inline fun <reified T : Any> response(
         status: HttpStatusCode,
-        configure: ResponseBuilder.() -> Unit = {}
+        noinline configure: ResponseBuilder.() -> Unit = {}
     ) {
         val builder: ResponseBuilder = ResponseBuilder().apply {
             apply(configure)
@@ -508,48 +375,6 @@ public class ApiOperationBuilder internal constructor(
         ) { existing, new ->
             existing.mergeWith(other = new)
         }
-    }
-
-    /**
-     * Sets up servers, with optional support for variables.
-     *
-     * #### Sample Usage
-     * ```
-     * servers {
-     *      // Simple example with no variables.
-     *      add(urlString = "http://localhost:8080") {
-     *         description = "Local server for development."
-     *      }
-     *
-     *      // Example with variable placeholders.
-     *      add(urlString = "{protocol}://{environment}.example.com:{port}") {
-     *          description = "The server with environment variable."
-     *
-     *          // Environment.
-     *          variable(name = "environment", defaultValue = "production") {
-     *              choices = setOf("production", "staging", "development")
-     *              description = "Specifies the environment (production, etc)"
-     *          }
-     *
-     *          // Port.
-     *          variable(name = "port", defaultValue = "8080") {
-     *              choices = setOf("8080", "8443")
-     *              description = "The port for the server."
-     *          }
-     *
-     *          // Protocol.
-     *          variable(name = "protocol", defaultValue = "http") {
-     *              choices = setOf("http", "https")
-     *          }
-     *      }
-     * }
-     * ```
-     *
-     * @see [ServerBuilder]
-     */
-    public fun servers(init: ServerBuilder.() -> Unit) {
-        val builder: ServerBuilder = ServerBuilder().apply(init)
-        _config.servers.addAll(builder.build())
     }
 
     /**
@@ -577,49 +402,24 @@ public class ApiOperationBuilder internal constructor(
             summary = summary.trimOrNull(),
             description = description.trimOrNull(),
             operationId = operationId.trimOrNull()?.sanitize(),
-            parameters = _config.parameters.takeIf { it.isNotEmpty() },
+            parameters = _parametersConfig.parameters.takeIf { it.isNotEmpty() },
             requestBody = _config.requestBody,
             responses = responses,
-            securitySchemes = _securityConfig.securitySchemes.takeIf { it.isNotEmpty() },
-            skipSecurity = _securityConfig.skipSecurity,
-            servers = _config.servers.takeIf { it.isNotEmpty() }
+            securitySchemes = securityConfigurable.securitySchemes.takeIf { it.isNotEmpty() },
+            skipSecurity = securityConfigurable.skipSecurity,
+            servers = serverConfigurable.servers.takeIf { it.isNotEmpty() }
         )
     }
 
     @PublishedApi
-    internal class Config(private val endpoint: String) {
+    internal class Config {
         /** Optional set of descriptive tags for categorizing the endpoint in API documentation. */
         val tags: SortedSet<String> = sortedSetOf(comparator = String.CASE_INSENSITIVE_ORDER)
-
-        /**  Optional set of parameters detailing type, necessity, and location in the request. */
-        var parameters: LinkedHashSet<ApiParameter> = linkedSetOf()
 
         /** Optional structure and type of the request body. */
         var requestBody: ApiRequestBody? = null
 
         /** Optional set of possible responses, outlining expected status codes and content types. */
         var responses: MutableMap<HttpStatusCode, ApiResponse> = mutableMapOf()
-
-        /** The list of servers at operation level. */
-        val servers: MutableSet<ApiServerConfig> = mutableSetOf()
-
-        /**
-         * Cache a new [ApiParameter] instance for the API Operation.
-         *
-         * @param apiParameter The [ApiParameter] instance to add to the cache.
-         * @throws KopapiException If an [ApiParameter] with the same name already exists.
-         */
-        fun addApiParameter(apiParameter: ApiParameter) {
-            if (parameters.any { it.name.equals(other = apiParameter.name, ignoreCase = true) }) {
-                val message: String = """
-                    |Attempting to register more than once parameter with name '${apiParameter.name}' within the same API Operation:
-                    |   '$endpoint'.
-                    |The OpenAPI specification requires parameter names to be unique within each API Operation.
-                    """.trimMargin()
-                throw KopapiException(message)
-            }
-
-            parameters.add(apiParameter)
-        }
     }
 }

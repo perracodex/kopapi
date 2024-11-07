@@ -67,7 +67,7 @@ public class RequestBodyBuilder(
      * @param configure An optional lambda for configuring the type. Default: `JSON`.
      */
     @Suppress("DuplicatedCode")
-    public inline fun <reified T : Any> addType(configure: TypeConfig.() -> Unit = {}) {
+    public inline fun <reified T : Any> addType(noinline configure: TypeConfig.() -> Unit = {}) {
         // Ensure there is always a default content type.
         if (contentType.isEmpty()) {
             contentType = setOf(ContentType.Application.Json)

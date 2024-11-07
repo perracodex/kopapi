@@ -64,7 +64,7 @@ public class MultipartBuilder {
      */
     public inline fun <reified T : PartData> part(
         name: String,
-        configure: PartBuilder.() -> Unit = {}
+        noinline configure: PartBuilder.() -> Unit = {}
     ) {
         val partName: String = name.trim()
         if (_config.parts.find { it.name.equals(partName, ignoreCase = true) } != null) {
