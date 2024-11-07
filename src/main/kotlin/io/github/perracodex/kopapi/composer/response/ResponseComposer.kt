@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.composer.response
 
 import io.github.perracodex.kopapi.composer.SchemaComposer
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.schema.SchemaRegistry
@@ -43,11 +44,16 @@ internal object ResponseComposer {
         responses.forEach { (statusCode, apiResponse) ->
             tracer.debug("Composing response: [${statusCode.value}] → ${apiResponse.description}")
 
+            // Process the headers for the response.
+            val finalHeaders: MutableMap<String, HeaderObject>? = processHeaders(
+                headers = apiResponse.headers.orEmpty()
+            )
+
             if (apiResponse.content.isNullOrEmpty()) {
                 // No types associated with the response; create a PathResponse without content.
                 composedResponses[statusCode.value.toString()] = ResponseObject(
                     description = apiResponse.description,
-                    headers = apiResponse.headers,
+                    headers = finalHeaders,
                     content = null,
                     links = apiResponse.links?.toSortedMap()
                 )
@@ -82,7 +88,7 @@ internal object ResponseComposer {
             // Create the PathResponse with the composed content.
             composedResponses[statusCode.value.toString()] = ResponseObject(
                 description = apiResponse.description.trimOrNull() ?: statusCode.description,
-                headers = apiResponse.headers,
+                headers = finalHeaders,
                 content = finalContent,
                 links = apiResponse.links?.toSortedMap()
             )
@@ -91,5 +97,28 @@ internal object ResponseComposer {
         tracer.info("Composed ${composedResponses.size} responses.")
 
         return composedResponses
+    }
+
+    /**
+     * Converts a map of [ApiHeader] instances to a map of OpenAPI header objects.
+     */
+    private fun processHeaders(headers: Map<String, ApiHeader>): MutableMap<String, HeaderObject>? {
+        val headerObjects: MutableMap<String, HeaderObject> = mutableMapOf()
+
+        headers.forEach { (nam: String, header: ApiHeader) ->
+            // Determine the schema for the header, and introspect accordingly.
+            val baseSchema: ElementSchema = SchemaRegistry.introspectType(type = header.type)?.schema
+                ?: throw KopapiException("No schema found for header type: ${header.type}")
+
+            val headerObject = HeaderObject(
+                description = header.description.trimOrNull(),
+                required = header.required,
+                schema = baseSchema,
+                deprecated = header.deprecated.takeIf { it == true }
+            )
+            headerObjects[nam] = headerObject
+        }
+
+        return headerObjects.takeIf { it.isNotEmpty() }
     }
 }

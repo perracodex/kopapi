@@ -15,7 +15,7 @@ import kotlin.reflect.KType
  * Represents the metadata of an API response.
  *
  * @property status The [HttpStatusCode] code associated with this response.
- * @property headers A list of [ApiHeader] objects representing the headers that may be included in the response.
+ * @property headers A map of [ApiHeader] objects representing the headers that may be included in the response.
  * @property description A human-readable description of the response, providing context about what this response signifies.
  * @property descriptionSet A set of descriptions to ensure uniqueness when merging responses.
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
@@ -31,7 +31,7 @@ internal data class ApiResponse(
     val status: HttpStatusCode,
     val description: String?,
     val descriptionSet: MutableSet<String> = LinkedHashSet(),
-    val headers: Set<ApiHeader>?,
+    val headers: Map<String, ApiHeader>?,
     val composition: Composition?,
     val content: Map<ContentType, Set<KType>>?,
     val links: Map<String, ApiLink>?,
@@ -61,7 +61,6 @@ internal data class ApiResponse(
      * @return A new `ApiResponse` instance that represents the merged result.
      */
     fun mergeWith(other: ApiResponse): ApiResponse {
-        val combinedHeaders: Set<ApiHeader>? = headers?.plus(elements = other.headers ?: emptySet()) ?: other.headers
         val combinedContent: Map<ContentType, Set<KType>> = mergeContent(current = content, merging = other.content)
 
         // Combine descriptions and eliminate duplicates.
@@ -69,6 +68,9 @@ internal data class ApiResponse(
             descriptionSet.add(it)
             descriptionSet.joinToString(separator = "\n")
         } ?: description
+
+        // Merge headers, ensuring that each header name is unique.
+        val combinedHeaders: Map<String, ApiHeader>? = mergeHeaders(current = headers, merging = other.headers)
 
         // Merge links, ensuring that each link name is unique.
         val combinedLinks: Map<String, ApiLink>? = mergeLinks(current = links, merging = other.links)
@@ -85,6 +87,35 @@ internal data class ApiResponse(
             content = combinedContent,
             links = combinedLinks.takeIf { it?.isNotEmpty() == true }
         )
+    }
+
+    /**
+     * Merges two header maps, ensuring that each header name is unique.
+     *
+     * @param current The current map of header.
+     * @param merging The other map of header to merge.
+     * @return A new merged map of header.
+     * @throws KopapiException If duplicate header names are detected.
+     */
+    private fun mergeHeaders(
+        current: Map<String, ApiHeader>?,
+        merging: Map<String, ApiHeader>?
+    ): Map<String, ApiHeader>? {
+        return when {
+            current == null && merging == null -> null
+            current == null -> merging
+            merging == null -> current
+            else -> {
+                val merged: MutableMap<String, ApiHeader> = current.toMutableMap()
+                merging.forEach { (name, header) ->
+                    if (merged.containsKey(name)) {
+                        throw KopapiException("Duplicate header name '$name' detected during response merge.")
+                    }
+                    merged[name] = header
+                }
+                merged
+            }
+        }
     }
 
     /**

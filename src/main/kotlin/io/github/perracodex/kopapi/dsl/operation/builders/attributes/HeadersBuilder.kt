@@ -7,6 +7,8 @@ package io.github.perracodex.kopapi.dsl.operation.builders.attributes
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.sanitize
+import kotlin.reflect.typeOf
 
 /**
  * Builds a collection of response headers for an API endpoint.
@@ -14,7 +16,9 @@ import io.github.perracodex.kopapi.system.KopapiException
 @KopapiDsl
 public class HeadersBuilder @PublishedApi internal constructor() {
     /** Cached headers. */
-    private val _headers: MutableSet<ApiHeader> = mutableSetOf()
+    @Suppress("PropertyName")
+    @PublishedApi
+    internal val _headers: MutableMap<String, ApiHeader> = mutableMapOf()
 
     /**
      * Adds a header to the collection.
@@ -22,38 +26,36 @@ public class HeadersBuilder @PublishedApi internal constructor() {
      * #### Sample Usage
      * ```
      * headers {
-     *     add("X-Rate-Limit") {
+     *     add<Int>("X-Rate-Limit") {
      *         description = "Number of allowed requests per period."
-     *         required = true
      *     }
-     *     add("X-Another-Header") {
-     *         description = "Another header description."
+     *     add<Uuid>(name = "X-Request-Id") {
+     *         description = "A unique identifier for the request."
      *         required = false
-     *         deprecated = true
      *     }
      * }
      * ```
      *
+     * @param T The type of the header. Must not be [Unit], [Nothing], or [Any].
      * @param name The name of the header.
      * @param configure A lambda receiver for configuring the [HeaderBuilder].
      * @throws KopapiException If a header with the same name already exists.
      */
-    public fun add(name: String, configure: HeaderBuilder.() -> Unit) {
-        val header: ApiHeader = HeaderBuilder(name = name).apply(configure).build()
-        addHeader(header)
-    }
-
-    /**
-     * Adds a header to the collection, ensuring uniqueness.
-     *
-     * @param header The [ApiHeader] instance to add.
-     * @throws KopapiException If a header with the same name already exists.
-     */
-    private fun addHeader(header: ApiHeader) {
-        if (_headers.any { it.name.equals(header.name, ignoreCase = true) }) {
-            throw KopapiException("Header with name '${header.name}' already exists within the same response.")
+    public inline fun <reified T : Any> add(
+        name: String,
+        noinline configure: HeaderBuilder.() -> Unit = {}
+    ) {
+        if (T::class == Unit::class || T::class == Nothing::class || T::class == Any::class) {
+            throw KopapiException("Header type must not be Unit, Nothing, or Any. Specify an explicit type.")
         }
-        _headers.add(header)
+
+        val headerName: String = name.sanitize()
+        if (headerName.isBlank()) {
+            throw KopapiException("Header name must not be blank.")
+        }
+
+        val header: ApiHeader = HeaderBuilder().apply(configure).build(type = typeOf<T>())
+        _headers[headerName] = header
     }
 
     /**
@@ -61,5 +63,5 @@ public class HeadersBuilder @PublishedApi internal constructor() {
      *
      * @return A set of [ApiHeader] instances.
      */
-    internal fun build(): Set<ApiHeader> = _headers
+    internal fun build(): MutableMap<String, ApiHeader> = _headers
 }

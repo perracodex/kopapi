@@ -297,12 +297,17 @@ public class ApiOperationBuilder internal constructor(
      *          ContentType.Application.Xml
      *      )
      *
-     *      header(name = "X-Rate-Limit") {
+     *      header<Int>(name = "X-Rate-Limit") {
      *          description = "Number of allowed requests per period."
      *          required = true
      *      }
-     *      link(operationId = "getNextItem") {
-     *          description = "Link to the next item."
+     *      link(name = "SomeLinkName") {
+     *          operationId = "someOperationId"
+     *          description = "Some description."
+     *          parameter(
+     *              name = "some_id",
+     *              value = "\$request.path.some_id"
+     *          )
      *      }
      *
      *      // Only meaningful if multiple types are provided.
@@ -351,12 +356,13 @@ public class ApiOperationBuilder internal constructor(
      *          ContentType.Application.Xml
      *      )
      *
-     *      header(name = "X-Rate-Limit") {
+     *      header<Int>(name = "X-Rate-Limit") {
      *          description = "Number of allowed requests per period."
-     *          required = true
      *      }
-     *      link(operationId = "getNextItem") {
-     *          description = "Link to the next item."
+     *      link(name = "SomeLinkName") {
+     *          operationId = "someOperationId"
+     *          description = "Some description."
+     *          parameter(name = "some_id", value = "\$request.path.some_id")
      *      }
      *
      *      // Only meaningful if multiple types are provided.

@@ -97,18 +97,20 @@ public class ResponseBuilder @PublishedApi internal constructor() {
      *
      * #### Sample Usage
      * ```
-     * header("X-Rate-Limit") {
+     * header<Int>("X-Rate-Limit") {
      *     description = "Number of allowed requests per period."
-     *     required = true
      * }
      * ```
      *
+     * @param T The type of the header.
      * @param name The name of the header.
      * @param configure A lambda receiver for configuring the [HeaderBuilder].
      */
-    public fun header(name: String, configure: HeaderBuilder.() -> Unit) {
-        val header: ApiHeader = HeaderBuilder(name = name).apply(configure).build()
-        _config.addHeader(header = header)
+    public inline fun <reified T : Any> header(
+        name: String,
+        noinline configure: HeaderBuilder.() -> Unit
+    ) {
+        headers { add<T>(name = name, configure = configure) }
     }
 
     /**
@@ -120,14 +122,12 @@ public class ResponseBuilder @PublishedApi internal constructor() {
      * #### Sample Usage
      * ```
      * headers {
-     *     add("X-Rate-Limit") {
+     *     add<Int>("X-Rate-Limit") {
      *         description = "Number of allowed requests per period."
-     *         required = true
      *     }
-     *     add("X-Another-Header") {
-     *         description = "Another header description."
+     *     add<Uuid>(name = "X-Request-Id") {
+     *         description = "A unique identifier for the request."
      *         required = false
-     *         deprecated = true
      *     }
      * }
      * ```
@@ -136,7 +136,7 @@ public class ResponseBuilder @PublishedApi internal constructor() {
      */
     public fun headers(configure: HeadersBuilder.() -> Unit) {
         val headersBuilder: HeadersBuilder = HeadersBuilder().apply(configure)
-        headersBuilder.build().forEach { _config.addHeader(header = it) }
+        headersBuilder.build().forEach { _config.addHeader(name = it.key, header = it.value) }
     }
 
     /**
@@ -170,8 +170,7 @@ public class ResponseBuilder @PublishedApi internal constructor() {
      * @param configure A lambda receiver for configuring the [LinkBuilder].
      */
     public fun link(name: String, configure: LinkBuilder.() -> Unit) {
-        val link: ApiLink = LinkBuilder().apply(configure).build()
-        _config.addLink(name = name, link = link)
+        links { add(name = name, configure = configure) }
     }
 
     /**
@@ -248,7 +247,7 @@ public class ResponseBuilder @PublishedApi internal constructor() {
         val allTypes: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
 
         /** Holds the headers associated with the response. */
-        val headers: MutableSet<ApiHeader> = mutableSetOf()
+        val headers: MutableMap<String, ApiHeader> = mutableMapOf()
 
         /** Holds the links associated with the response. */
         val links: MutableMap<String, ApiLink> = mutableMapOf()
@@ -256,14 +255,19 @@ public class ResponseBuilder @PublishedApi internal constructor() {
         /**
          * Adds a new [ApiHeader] instance to the cache, ensuring that the header name is unique
          *
+         * @param name The unique name of the header.
          * @param header The [ApiHeader] instance to add to the cache.
          * @throws KopapiException If an [ApiHeader] with the same name already exists.
          */
-        fun addHeader(header: ApiHeader) {
-            if (headers.any { it.name == header.name }) {
-                throw KopapiException("Header with name '${header.name}' already exists within the same response.")
+        fun addHeader(name: String, header: ApiHeader) {
+            val headerName: String = name.sanitize()
+            if (headerName.isBlank()) {
+                throw KopapiException("Header name must not be blank.")
             }
-            headers.add(header)
+            if (headers.any { it.key.equals(other = headerName, ignoreCase = true) }) {
+                throw KopapiException("Header with name '${headerName}' already exists within the same response.")
+            }
+            headers[headerName] = header
         }
 
         /**

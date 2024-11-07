@@ -69,15 +69,15 @@ get("/items/{id}") {
         contentType = setOf(ContentType.Application.Json, ContentType.Application.Xml)
 
         // Response headers
-        header(name = "X-Rate-Limit") {
+        header<Int>(name = "X-Rate-Limit") {
             description = "The number of allowed requests in the current period."
-            required = true
         }
 
         // Response links
-        link(operationId = "getNextItem") {
-            description = "Link to the next item in the inventory."
-            parameter(name = "id", value = "something")
+        link(name = "SomeLinkName") {
+            operationId = "someOperationId"
+            description = "Some description."
+            parameter(name = "some_id", value = "\$request.path.some_id")
         }
     }
 

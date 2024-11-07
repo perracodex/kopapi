@@ -7,14 +7,13 @@ package io.github.perracodex.kopapi.dsl.operation.builders.attributes
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
-import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
+import kotlin.reflect.KType
 
 /**
  * Builds a response header for an API endpoint.
  *
- * @property name The name of the header.
  * @property description A human-readable description of the header.
  * @property required Indicates whether the header is mandatory.
  * @property deprecated Indicates whether the header is deprecated and should be avoided.
@@ -23,44 +22,22 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [HeaderBuilder]
  */
 @KopapiDsl
-public class HeaderBuilder internal constructor(
-    public val name: String,
+public class HeaderBuilder @PublishedApi internal constructor(
     public var required: Boolean = true,
     public var deprecated: Boolean = false
 ) {
     public var description: String by MultilineString()
 
-    init {
-        if (name.isBlank()) {
-            throw KopapiException("Header name must not be empty.")
-        }
-
-        name.forEachIndexed { index, char ->
-            if (char <= ' ' || isDelimiter(char)) {
-                throw KopapiException(
-                    "Header name '$name' contains illegal character '${name[index]}'" +
-                            " (code ${(name[index].code and 0xff)})"
-                )
-            }
-        }
-    }
-
-    /**
-     * Checks if the given character is a delimiter.
-     *
-     * @param char The character to check.
-     * @return `true` if the character is a delimiter, `false` otherwise.
-     */
-    private fun isDelimiter(char: Char): Boolean = char in "\"(),/:;<=>?@[\\]{}"
-
     /**
      * Builds an [ApiHeader] instance from the current builder state.
      *
+     * @param type The [KType] of the header.
      * @return The constructed [ApiHeader] instance.
      */
-    internal fun build(): ApiHeader {
+    @PublishedApi
+    internal fun build(type: KType): ApiHeader {
         return ApiHeader(
-            name = name.trim(),
+            type = type,
             description = description.trimOrNull(),
             required = required,
             deprecated = deprecated.takeIf { it }

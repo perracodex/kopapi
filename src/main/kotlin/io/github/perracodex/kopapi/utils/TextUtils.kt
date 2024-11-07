@@ -38,6 +38,7 @@ internal fun String?.trimOrDefault(defaultValue: String): String {
  *
  * @return A sanitized string suitable for OpenAPI component keys.
  */
+@PublishedApi
 internal fun String.sanitize(): String {
     val trimmed: String = this.trim()
     if (trimmed.isBlank()) {

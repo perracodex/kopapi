@@ -63,29 +63,32 @@ responses:
 
 ```kotlin
 response<MyResponseType>(status = HttpStatusCode.OK) {
-  // Headers to be included in the response.
-    header(name = "X-Rate-Limit") {
+    // Headers to be included in the response.
+    header<Int>(name = "X-Rate-Limit") {
         description = "The number of allowed requests in the current period."
-        required = true
+    }
+    header<Uuid>(name = "X-Request-Id") {
+        description = "A unique identifier for the request."
+        required = false
     }
 
-  // Links to other operations.
-  link(name = "GetEmployeeDetails") {
-    operationId = "getEmployeeDetails"
-    description = "Retrieve information about this employee."
-    parameter(name = "employee_id", value = "\$request.path.employee_id")
-  }
-  link(name = "UpdateEmployeeStatus") {
-    operationId = "updateEmployeeStatus"
-    description = "Link to update the status of this employee."
-    parameter(name = "employee_id", value = "\$request.path.employee_id")
-    parameter(name = "status", value = "active")
-    requestBody = "{\"status\": \"active\"}"
-  }
-  link(name = "ListEmployeeBenefits") {
-    operationRef = "/api/v1/benefits/list"
-    description = "List all benefits available to the employee."
-    parameter(name = "employee_id", value = "\$request.path.employee_id")
+    // Links to other operations.
+    link(name = "GetEmployeeDetails") {
+        operationId = "getEmployeeDetails"
+        description = "Retrieve information about this employee."
+        parameter(name = "employee_id", value = "\$request.path.employee_id")
+    }
+    link(name = "UpdateEmployeeStatus") {
+        operationId = "updateEmployeeStatus"
+        description = "Link to update the status of this employee."
+        parameter(name = "employee_id", value = "\$request.path.employee_id")
+        parameter(name = "status", value = "active")
+        requestBody = "{\"status\": \"active\"}"
+    }
+    link(name = "ListEmployeeBenefits") {
+        operationRef = "/api/v1/benefits/list"
+        description = "List all benefits available to the employee."
+        parameter(name = "employee_id", value = "\$request.path.employee_id")
     }
 }
 ```
@@ -95,15 +98,15 @@ response<MyResponseType>(status = HttpStatusCode.OK) {
 ```kotlin
 response<MyResponseType>(status = HttpStatusCode.OK) {
     headers {
-      add(name = "X-Rate-Limit") {
+      add<Int>(name = "X-Rate-Limit") {
             description = "The number of allowed requests in the current period."
-            required = true
         }
-      add(name = "X-Request-Id") {
+      add<Uuid>(name = "X-Request-Id") {
             description = "A unique identifier for the request."
             required = false
         }
     }
+
     links {
       add(name = "GetEmployeeDetails") {
         operationId = "getEmployeeDetails"
@@ -222,9 +225,8 @@ api {
     )
 
     // Optional Headers and Links.
-    header(name = "X-Rate-Limit") {
+    header<Int>(name = "X-Rate-Limit") {
       description = "The number of allowed requests in the current period."
-      required = true
     }
     link(name = "GetEmployeeDetails") {
       operationId = "getEmployeeDetails"
