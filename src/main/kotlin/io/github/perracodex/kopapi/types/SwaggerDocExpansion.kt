@@ -12,6 +12,13 @@ package io.github.perracodex.kopapi.types
  */
 public enum class SwaggerDocExpansion(internal val value: String) {
     /**
+     * Collapse all documentation, showing only the headings.
+     *
+     * Useful for large APIs where expanded endpoints can be overwhelming.
+     */
+    NONE(value = "none"),
+
+    /**
      * Show only the list of operations within each resource without expanding details.
      *
      * Provides a middle ground, showing an overview but hiding the full details.
@@ -23,12 +30,5 @@ public enum class SwaggerDocExpansion(internal val value: String) {
      *
      * Suitable for smaller APIs where users want to view all details at once.
      */
-    FULL(value = "full"),
-
-    /**
-     * Collapse all endpoints, showing only the headings.
-     *
-     *Useful for large APIs where expanded endpoints can be overwhelming.
-     */
-    NONE(value = "none");
+    FULL(value = "full");
 }
