@@ -13,7 +13,7 @@ import io.ktor.http.*
  * @property contentType The [ContentType] to assign. Default: `JSON`.
  */
 @KopapiDsl
-public class TypeConfig {
+public class TypeConfig @PublishedApi internal constructor() {
     /**
      * The content types associated with the type.
      * Defaults to `ContentType.Application.Json` if not specified.

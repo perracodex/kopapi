@@ -13,7 +13,7 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  * Constructs the information for the API documentation.
  */
 @KopapiDsl
-public class ApiDocsBuilder {
+public class ApiDocsBuilder internal constructor() {
     /**
      * The URL to provide the OpenAPI schema in `JSON` format.
      *

@@ -23,7 +23,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [OpenIdConnectSecurityBuilder]
  */
 @KopapiDsl
-public class MutualTLSSecurityBuilder {
+public class MutualTLSSecurityBuilder internal constructor() {
     public var description: String by MultilineString()
 
     /**

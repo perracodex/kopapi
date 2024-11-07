@@ -63,13 +63,38 @@ responses:
 
 ```kotlin
 response<MyResponseType>(status = HttpStatusCode.OK) {
-  header(name = "X-Rate-Limit") {
-    description = "The number of allowed requests in the current period."
-    required = true
-  }
-  link(operationId = "getNextItem") {
-    description = "Link to the next item."
-  }
+    header(name = "X-Rate-Limit") {
+        description = "The number of allowed requests in the current period."
+        required = true
+    }
+    link(operationId = "getNextItem") {
+        description = "Link to the next item."
+    }
+}
+```
+
+- For better organization, headers and links can also be grouped, but this will have the same effect as defining them individually.
+
+```kotlin
+response<MyResponseType>(status = HttpStatusCode.OK) {
+    headers {
+        header(name = "X-Rate-Limit") {
+            description = "The number of allowed requests in the current period."
+            required = true
+        }
+        header(name = "X-Request-Id") {
+            description = "A unique identifier for the request."
+            required = false
+        }
+    }
+    links {
+        link(operationId = "getNextItem") {
+            description = "Link to the next item."
+        }
+        link(operationId = "getPreviousItem") {
+            description = "Link to the previous item."
+        }
+    }
 }
 ```
 

@@ -22,7 +22,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [HeaderBuilder]
  */
 @KopapiDsl
-public class LinkBuilder(
+public class LinkBuilder internal constructor(
     public val operationId: String
 ) {
     public var description: String by MultilineString()

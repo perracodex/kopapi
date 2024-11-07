@@ -23,7 +23,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @property url The URL of the license.
  */
 @KopapiDsl
-public class LicenseBuilder {
+public class LicenseBuilder internal constructor() {
     public var name: String? = null
     public var url: String? = null
 

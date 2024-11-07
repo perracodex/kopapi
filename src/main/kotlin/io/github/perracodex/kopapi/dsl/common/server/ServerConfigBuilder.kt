@@ -21,7 +21,7 @@ import kotlin.collections.set
  * @see [ServerBuilder]
  */
 @KopapiDsl
-public class ServerConfigBuilder(
+public class ServerConfigBuilder internal constructor(
     private val urlString: String
 ) {
     public var description: String by MultilineString()

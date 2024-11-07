@@ -23,7 +23,7 @@ import kotlin.reflect.KType
  * @see [QueryParameterBuilder]
  */
 @KopapiDsl
-public class PathParameterBuilder(
+public class PathParameterBuilder @PublishedApi internal constructor(
     public var style: ParameterStyle = ParameterStyle.SIMPLE,
     public var deprecated: Boolean = false
 ) {

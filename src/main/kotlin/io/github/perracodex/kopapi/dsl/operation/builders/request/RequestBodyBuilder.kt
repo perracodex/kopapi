@@ -30,7 +30,7 @@ import kotlin.reflect.typeOf
  * @see [ApiOperationBuilder.requestBody]
  */
 @KopapiDsl
-public class RequestBodyBuilder(
+public class RequestBodyBuilder @PublishedApi internal constructor(
     public var required: Boolean = true,
     public var composition: Composition? = null
 ) {

@@ -30,7 +30,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [ServerBuilder]
  */
 @KopapiDsl
-public class ServerVariableBuilder(
+public class ServerVariableBuilder internal constructor(
     public val defaultValue: String
 ) {
     public var choices: Set<String> = linkedSetOf()

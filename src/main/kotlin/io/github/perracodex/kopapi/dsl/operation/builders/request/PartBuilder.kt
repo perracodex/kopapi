@@ -21,7 +21,7 @@ import io.ktor.http.*
  * @property schemaFormat Optional schema format for the part.
  */
 @KopapiDsl
-public class PartBuilder(
+public class PartBuilder @PublishedApi internal constructor(
     public val name: String,
     public var required: Boolean = true,
     public var contentType: ContentType? = null,

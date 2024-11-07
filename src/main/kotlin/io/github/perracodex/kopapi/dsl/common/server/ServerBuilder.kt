@@ -15,7 +15,7 @@ import io.github.perracodex.kopapi.system.Tracer
  * @see [ServerVariableBuilder]
  */
 @KopapiDsl
-public class ServerBuilder {
+public class ServerBuilder internal constructor() {
     private val tracer = Tracer<ServerBuilder>()
 
     /** The internal set to enforce uniqueness of server configurations. */

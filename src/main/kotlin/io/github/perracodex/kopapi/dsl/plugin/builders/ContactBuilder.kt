@@ -24,7 +24,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
  * @property email The email of the contact person/organization.
  */
 @KopapiDsl
-public class ContactBuilder {
+public class ContactBuilder internal constructor() {
     public var name: String? = null
     public var url: String? = null
     public var email: String? = null

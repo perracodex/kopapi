@@ -23,7 +23,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [HeaderBuilder]
  */
 @KopapiDsl
-public class HeaderBuilder(
+public class HeaderBuilder internal constructor(
     public val name: String,
     public var required: Boolean = true,
     public var deprecated: Boolean = false
@@ -34,7 +34,24 @@ public class HeaderBuilder(
         if (name.isBlank()) {
             throw KopapiException("Header name must not be empty.")
         }
+
+        name.forEachIndexed { index, char ->
+            if (char <= ' ' || isDelimiter(char)) {
+                throw KopapiException(
+                    "Header name '$name' contains illegal character '${name[index]}'" +
+                            " (code ${(name[index].code and 0xff)})"
+                )
+            }
+        }
     }
+
+    /**
+     * Checks if the given character is a delimiter.
+     *
+     * @param char The character to check.
+     * @return `true` if the character is a delimiter, `false` otherwise.
+     */
+    private fun isDelimiter(char: Char): Boolean = char in "\"(),/:;<=>?@[\\]{}"
 
     /**
      * Builds an [ApiHeader] instance from the current builder state.

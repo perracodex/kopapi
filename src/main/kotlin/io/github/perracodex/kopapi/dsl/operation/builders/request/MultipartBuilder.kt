@@ -22,7 +22,7 @@ import kotlin.reflect.typeOf
  * @property contentType The content type of the multipart request. Default: `FormData`.
  */
 @KopapiDsl
-public class MultipartBuilder {
+public class MultipartBuilder internal constructor() {
     public var description: String by MultilineString()
     public var contentType: ContentType? = null
 

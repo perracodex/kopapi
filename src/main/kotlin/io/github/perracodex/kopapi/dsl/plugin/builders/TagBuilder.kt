@@ -12,7 +12,7 @@ import io.github.perracodex.kopapi.system.Tracer
  * Builder constructing top level tags for the API.
  */
 @KopapiDsl
-public class TagBuilder {
+public class TagBuilder internal constructor() {
     private val tracer = Tracer<TagBuilder>()
 
     /** The internal set to enforce uniqueness of tags. */

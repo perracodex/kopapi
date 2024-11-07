@@ -26,7 +26,7 @@ import kotlin.reflect.KType
  * @see [QueryParameterBuilder]
  */
 @KopapiDsl
-public class HeaderParameterBuilder(
+public class HeaderParameterBuilder @PublishedApi internal constructor(
     public var required: Boolean = false,
     public var defaultValue: DefaultValue? = null,
     public var style: ParameterStyle = ParameterStyle.SIMPLE,

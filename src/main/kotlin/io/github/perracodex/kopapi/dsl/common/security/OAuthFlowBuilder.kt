@@ -21,7 +21,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [OAuth2SecurityBuilder.password]
  */
 @KopapiDsl
-public class OAuthFlowBuilder {
+public class OAuthFlowBuilder internal constructor() {
     public var authorizationUrl: String? = null
     public var tokenUrl: String? = null
     public var refreshUrl: String? = null

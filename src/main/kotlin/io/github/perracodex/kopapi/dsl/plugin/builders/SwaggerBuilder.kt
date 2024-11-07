@@ -33,7 +33,7 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  * }
  */
 @KopapiDsl
-public class SwaggerBuilder {
+public class SwaggerBuilder internal constructor() {
     /**
      * The URL to provide the `Swagger UI`.
      *

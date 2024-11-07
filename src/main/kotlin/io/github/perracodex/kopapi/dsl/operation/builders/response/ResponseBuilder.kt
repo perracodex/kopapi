@@ -6,7 +6,9 @@ package io.github.perracodex.kopapi.dsl.operation.builders.response
 
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
+import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeadersBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
+import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinksBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.type.TypeConfig
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
@@ -30,7 +32,7 @@ import kotlin.reflect.typeOf
  * @see [ApiOperationBuilder.response]
  */
 @KopapiDsl
-public class ResponseBuilder {
+public class ResponseBuilder @PublishedApi internal constructor() {
     public var description: String by MultilineString()
     public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
     public var composition: Composition? = null
@@ -133,6 +135,32 @@ public class ResponseBuilder {
     }
 
     /**
+     * Adds multiple headers to the response within a headers block.
+     *
+     * #### Sample Usage
+     * ```
+     * headers {
+     *     header("X-Rate-Limit") {
+     *         description = "Number of allowed requests per period."
+     *         required = true
+     *     }
+     *
+     *     header("X-Another-Header") {
+     *         description = "Another header description."
+     *         required = false
+     *         deprecated = true
+     *     }
+     * }
+     * ```
+     *
+     * @param configure A lambda receiver for configuring the [HeadersBuilder].
+     */
+    public fun headers(configure: HeadersBuilder.() -> Unit) {
+        val headersBuilder: HeadersBuilder = HeadersBuilder().apply(configure)
+        headersBuilder.build().forEach { _config.addHeader(header = it) }
+    }
+
+    /**
      * Adds a link to the response.
      *
      * #### Sample Usage
@@ -148,6 +176,29 @@ public class ResponseBuilder {
     public fun link(operationId: String, configure: LinkBuilder.() -> Unit) {
         val link: ApiLink = LinkBuilder(operationId = operationId).apply(configure).build()
         _config.links.add(link)
+    }
+
+    /**
+     * Adds multiple links to the response within a links block.
+     *
+     * #### Sample Usage
+     * ```
+     * links {
+     *     link("getNextItem") {
+     *         description = "Link to the next item."
+     *     }
+     *
+     *     link("getPreviousItem") {
+     *         description = "Link to the previous item."
+     *     }
+     * }
+     * ```
+     *
+     * @param configure A lambda receiver for configuring the [LinksBuilder].
+     */
+    public fun links(configure: LinksBuilder.() -> Unit) {
+        val linksBuilder: LinksBuilder = LinksBuilder().apply(configure)
+        linksBuilder.build().forEach { _config.links.add(it) }
     }
 
     @PublishedApi

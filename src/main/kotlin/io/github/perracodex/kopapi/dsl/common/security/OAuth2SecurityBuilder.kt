@@ -25,7 +25,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @see [MutualTLSSecurityBuilder]
  */
 @KopapiDsl
-public class OAuth2SecurityBuilder {
+public class OAuth2SecurityBuilder internal constructor() {
     public var description: String by MultilineString()
 
     /**

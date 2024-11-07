@@ -28,7 +28,7 @@ import kotlin.reflect.KType
  * @see [PathParameterBuilder]
  */
 @KopapiDsl
-public class QueryParameterBuilder(
+public class QueryParameterBuilder @PublishedApi internal constructor(
     public var required: Boolean = false,
     public var allowReserved: Boolean = false,
     public var defaultValue: DefaultValue? = null,

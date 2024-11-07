@@ -10,7 +10,7 @@ package io.github.perracodex.kopapi.system
  * @param message The detail message describing the validation failure.
  * @param cause Optional underlying reason for this [KopapiException].
  */
-public class KopapiException(
+public class KopapiException @PublishedApi internal constructor(
     message: String,
     cause: Throwable? = null
 ) : Exception(message, cause)
