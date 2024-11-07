@@ -17,7 +17,7 @@ import kotlin.reflect.typeOf
  * Handles the registration of parameters.
  */
 @KopapiDsl
-public abstract class ParameterConfigurable(endpoint: String) {
+public open class ParametersBuilder internal constructor(endpoint: String) {
     @Suppress("PropertyName")
     @PublishedApi
     internal val _parametersConfig: Config = Config(endpoint = endpoint)

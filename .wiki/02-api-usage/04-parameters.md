@@ -94,6 +94,32 @@ api {
 
 ---
 
+### Parameters Block
+
+- For better organization, parameters can also be grouped, but this will have the same effect as defining them individually.
+
+```kotlin
+api {
+  parameters {
+    pathParameter<Uuid>(name = "id") {
+      description = "The unique identifier of the item."
+    }
+    queryParameter<Int>(name = "page") {
+      description = "The page number to retrieve."
+      required = false
+      defaultValue = DefaultValue.ofInt(value = 1)
+    }
+    queryParameter<Int>(name = "size") {
+      description = "The number of items per page."
+      required = false
+      defaultValue = DefaultValue.ofInt(value = 10)
+    }
+  }
+}
+```
+
+---
+
 ### [Request Body 🡲](05-request-body.md)
 
 #### [🡰 Path Operation Tags](03-tags.md)

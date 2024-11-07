@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.operation
 
-import io.github.perracodex.kopapi.dsl.common.parameter.configurable.ParameterConfigurable
+import io.github.perracodex.kopapi.dsl.common.parameter.configurable.ParametersBuilder
 import io.github.perracodex.kopapi.dsl.common.security.configurable.ISecurityConfigurable
 import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityConfigurable
 import io.github.perracodex.kopapi.dsl.common.server.configurable.IServerConfigurable
@@ -85,7 +85,7 @@ public class ApiOperationBuilder internal constructor(
     private val securityConfigurable: SecurityConfigurable = SecurityConfigurable()
 ) : IServerConfigurable by serverConfigurable,
     ISecurityConfigurable by securityConfigurable,
-    ParameterConfigurable(endpoint = endpoint) {
+    ParametersBuilder(endpoint = endpoint) {
 
     @Suppress("PropertyName")
     @PublishedApi
@@ -150,6 +150,27 @@ public class ApiOperationBuilder internal constructor(
      * Must be unique across all API operations.
      */
     public var operationId: String? = null
+
+    /**
+     * Adds a collection of parameters defined within a `parameters { ... }` block.
+     *
+     * The `parameters { ... }` block serves only as organizational syntactic sugar.
+     * Parameters can be defined directly without needing to use the `parameters { ... }` block.
+     *
+     * #### Sample Usage
+     * ```
+     * parameters {
+     *     pathParameter<Uuid>("data_id") { description = "The data Id." }
+     *     queryParameter<String>("item_id") { description = "Optional item Id." }
+     * }
+     * ```
+     *
+     * @param configure A lambda receiver for configuring the [ParametersBuilder].
+     */
+    public fun parameters(configure: ParametersBuilder.() -> Unit) {
+        val builder: ParametersBuilder = ParametersBuilder(endpoint = endpoint).apply(configure)
+        _parametersConfig.parameters.addAll(builder._parametersConfig.parameters)
+    }
 
     /**
      * Disables the security schemes for the API operation.

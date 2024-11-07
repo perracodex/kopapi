@@ -135,7 +135,10 @@ public class ResponseBuilder @PublishedApi internal constructor() {
     }
 
     /**
-     * Adds multiple headers to the response within a headers block.
+     * Adds a collection of headers defined within a `headers { ... }` block.
+     *
+     * The `headers { ... }` block serves only as organizational syntactic sugar.
+     * Headers can be defined directly without needing to use the `headers { ... }` block.
      *
      * #### Sample Usage
      * ```
@@ -179,7 +182,10 @@ public class ResponseBuilder @PublishedApi internal constructor() {
     }
 
     /**
-     * Adds multiple links to the response within a links block.
+     * Adds a collection of links defined within a `links { ... }` block.
+     *
+     * The `links { ... }` block serves only as organizational syntactic sugar.
+     * Links can be defined directly without needing to use the `links { ... }` block.
      *
      * #### Sample Usage
      * ```
