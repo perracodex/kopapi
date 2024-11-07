@@ -7,9 +7,7 @@ package io.github.perracodex.kopapi.types
 import com.fasterxml.jackson.annotation.JsonValue
 
 /**
- * Enum representing the possible locations where security payload can be passed.
- *
- * @property value The string value of the location.
+ * Represents the possible locations where security scheme payloads can be passed.
  */
 internal enum class SecurityLocation(@JsonValue internal val value: String) {
     /** The payload is set in a cookie. */

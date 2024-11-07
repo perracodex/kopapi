@@ -5,15 +5,9 @@
 package io.github.perracodex.kopapi.types
 
 import com.fasterxml.jackson.annotation.JsonValue
-import io.github.perracodex.kopapi.inspector.schema.factory.SchemaFactory
 
 /**
  * Represents the formats used in OpenAPI specifications for primitive types.
- *
- * @property value The string value of the format as defined by the OpenAPI specification.
- *
- * @see [SchemaFactory]
- * @see [ApiType]
  */
 public enum class ApiFormat(@JsonValue @PublishedApi internal val value: String) {
     /** Represents a schema for a `binary` type, allowing base64-encoded binary data. */

@@ -5,9 +5,7 @@
 package io.github.perracodex.kopapi.types
 
 /**
- * Available syntax highlighting themes for Swagger UI.
- *
- * @property themeName The name of the theme used in Swagger UI configuration.
+ * Represents the syntax highlighting themes for Swagger UI.
  */
 public enum class SwaggerSyntaxTheme(internal val themeName: String) {
     /** Agate theme, often used as the default theme in Swagger UI. */

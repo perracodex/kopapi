@@ -5,14 +5,12 @@
 package io.github.perracodex.kopapi.types
 
 /**
- * Available themes for Swagger UI.
- *
- * @property themeName The name of the theme used in Swagger UI configuration.
+ * Represents the available themes for Swagger UI.
  */
-public enum class SwaggerUiTheme(internal val themeName: String) {
+public enum class SwaggerUiTheme {
     /** Light theme, used as the default theme in Swagger UI. */
-    LIGHT(themeName = "light"),
+    LIGHT,
 
     /** Dark theme, providing a more comfortable experience in low-light environments. */
-    DARK(themeName = "dark"),
+    DARK,
 }

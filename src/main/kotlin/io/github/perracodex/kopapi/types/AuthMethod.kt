@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.types
 import com.fasterxml.jackson.annotation.JsonValue
 
 /**
- * Enum representing the possible HTTP authentication methods, applicable only to HTTP Security schemes.
+ * Represents the possible HTTP authentication methods, applicable only to HTTP Security schemes.
  *
  * @property value The string value of the HTTP authentication method.
  */

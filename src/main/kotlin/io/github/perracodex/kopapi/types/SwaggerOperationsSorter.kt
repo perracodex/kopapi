@@ -5,9 +5,7 @@
 package io.github.perracodex.kopapi.types
 
 /**
- * Specifies the sorting options for Swagger UI operations.
- *
- * @property order The internal string value used by Swagger UI for sorting.
+ * Represents the sorting options for Swagger UI operations.
  */
 public enum class SwaggerOperationsSorter(internal val order: String) {
 

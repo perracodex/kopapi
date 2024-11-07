@@ -7,8 +7,6 @@ package io.github.perracodex.kopapi.types
 
 /**
  * Represents the different expansion states for Swagger UI documentation.
- *
- * @property value The internal string value used by Swagger UI for doc expansion.
  */
 public enum class SwaggerDocExpansion(internal val value: String) {
     /**

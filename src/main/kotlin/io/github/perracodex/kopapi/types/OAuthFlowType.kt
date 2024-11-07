@@ -5,9 +5,9 @@
 package io.github.perracodex.kopapi.types
 
 /**
- * Enum representing the different types of OAuth2 flows.
+ * Represents the different types of `OAuth2` flows.
  */
-internal enum class OAuthFlowType(val value: String) {
+internal enum class OAuthFlowType(internal val value: String) {
     /** The OAuth2 Implicit flow. */
     IMPLICIT(value = "implicit"),
 
