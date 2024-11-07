@@ -63,7 +63,7 @@ install(Kopapi) {
             url = "api/swagger"
             persistAuthorization = true
             withCredentials = true
-          docExpansion = SwaggerDocExpansion.NONE
+            docExpansion = SwaggerDocExpansion.NONE
             displayRequestDuration = true
             displayOperationId = true
             operationsSorter = SwaggerOperationsSorter.METHOD
@@ -123,7 +123,7 @@ install(Kopapi) {
             url = "api/swagger"
             persistAuthorization = true
             withCredentials = true
-          docExpansion = SwaggerDocExpansion.NONE
+            docExpansion = SwaggerDocExpansion.NONE
             displayRequestDuration = true
             displayOperationId = true
             operationsSorter = SwaggerOperationsSorter.METHOD
