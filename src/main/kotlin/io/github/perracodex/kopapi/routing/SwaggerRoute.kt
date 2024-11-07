@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.routing
 
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
-import io.github.perracodex.kopapi.plugin.Swagger
+import io.github.perracodex.kopapi.providers.SwaggerProvider
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.http.content.*
@@ -32,7 +32,7 @@ internal fun Routing.swaggerRoute(apiDocs: ApiDocs) {
      */
     get("${apiDocs.swagger.url}/{fileName?}") {
         val filename: String = call.parameters["fileName"] ?: "index.html"
-        val result: OutgoingContent? = Swagger.getContentFor(
+        val result: OutgoingContent? = SwaggerProvider.getContentFor(
             environment = application.environment,
             filename = filename
         )
@@ -45,7 +45,7 @@ internal fun Routing.swaggerRoute(apiDocs: ApiDocs) {
      * Serve the JavaScript code that initializes Swagger UI with the provided OpenAPI URL.
      */
     get("${apiDocs.swagger.url}/swagger-initializer.js") {
-        val response: String = Swagger.getSwaggerInitializer(apiDocs = apiDocs)
+        val response: String = SwaggerProvider.getSwaggerInitializer(apiDocs = apiDocs)
         call.respondText(text = response, contentType = ContentType.Application.JavaScript)
     }
 }

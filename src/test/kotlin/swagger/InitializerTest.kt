@@ -8,7 +8,7 @@ import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.SwaggerBuilder
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
 import io.github.perracodex.kopapi.plugin.Kopapi
-import io.github.perracodex.kopapi.plugin.Swagger
+import io.github.perracodex.kopapi.providers.SwaggerProvider
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -33,7 +33,7 @@ class InitializerTest {
         assertEquals(actual = HttpStatusCode.OK, expected = response.status)
 
         val apiDocs: ApiDocs = ApiDocsBuilder().build()
-        val expected: String = Swagger.getSwaggerInitializer(apiDocs = apiDocs)
+        val expected: String = SwaggerProvider.getSwaggerInitializer(apiDocs = apiDocs)
         val content: String = response.bodyAsText()
         assertEquals(expected = expected, actual = content)
     }

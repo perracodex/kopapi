@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.routing
 
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
-import io.github.perracodex.kopapi.plugin.Swagger
+import io.github.perracodex.kopapi.providers.RedocProvider
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -17,7 +17,7 @@ import io.ktor.server.routing.*
  */
 internal fun Routing.redocRoute(apiDocs: ApiDocs) {
     get(apiDocs.redocUrl) {
-        val response: String = Swagger.getRedocHtml(openapiYamlUrl = apiDocs.openapiYamlUrl)
+        val response: String = RedocProvider.getRedocHtml(apiDocs = apiDocs)
         call.respondText(text = response, contentType = ContentType.Text.Html)
     }
 }
