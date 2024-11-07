@@ -20,7 +20,7 @@ import kotlin.reflect.KType
  * @property descriptionSet A set of descriptions to ensure uniqueness when merging responses.
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
  * @property content A map of [ContentType] to a set of [KType] that this response may return.
- * @property links A list of [ApiLink] objects representing possible links to other operations.
+ * @property links A map of [ApiLink] objects representing possible links to other operations.
  *
  * @see [ApiOperationBuilder.response]
  * @see [ApiHeader]
@@ -34,7 +34,7 @@ internal data class ApiResponse(
     val headers: Set<ApiHeader>?,
     val composition: Composition?,
     val content: Map<ContentType, Set<KType>>?,
-    val links: Set<ApiLink>?,
+    val links: Map<String, ApiLink>?,
 ) {
     init {
         content?.forEach { (_, types) ->
@@ -63,7 +63,6 @@ internal data class ApiResponse(
     fun mergeWith(other: ApiResponse): ApiResponse {
         val combinedHeaders: Set<ApiHeader>? = headers?.plus(elements = other.headers ?: emptySet()) ?: other.headers
         val combinedContent: Map<ContentType, Set<KType>> = mergeContent(current = content, merging = other.content)
-        val combinedLinks: Set<ApiLink>? = links?.plus(elements = other.links ?: emptySet()) ?: other.links
 
         // Combine descriptions and eliminate duplicates.
         val combinedDescription: String? = other.description.trimOrNull()?.let {
@@ -71,6 +70,8 @@ internal data class ApiResponse(
             descriptionSet.joinToString(separator = "\n")
         } ?: description
 
+        // Merge links, ensuring that each link name is unique.
+        val combinedLinks: Map<String, ApiLink>? = mergeLinks(current = links, merging = other.links)
 
         // The merging composition takes precedence, if it is defined.
         val newComposition: Composition? = other.composition ?: composition
@@ -82,8 +83,37 @@ internal data class ApiResponse(
             headers = combinedHeaders,
             composition = newComposition,
             content = combinedContent,
-            links = combinedLinks
+            links = combinedLinks.takeIf { it?.isNotEmpty() == true }
         )
+    }
+
+    /**
+     * Merges two link maps, ensuring that each link name is unique.
+     *
+     * @param current The current map of links.
+     * @param merging The other map of links to merge.
+     * @return A new merged map of links.
+     * @throws KopapiException If duplicate link names are detected.
+     */
+    private fun mergeLinks(
+        current: Map<String, ApiLink>?,
+        merging: Map<String, ApiLink>?
+    ): Map<String, ApiLink>? {
+        return when {
+            current == null && merging == null -> null
+            current == null -> merging
+            merging == null -> current
+            else -> {
+                val merged: MutableMap<String, ApiLink> = current.toMutableMap()
+                merging.forEach { (name, link) ->
+                    if (merged.containsKey(name)) {
+                        throw KopapiException("Duplicate link name '$name' detected during response merge.")
+                    }
+                    merged[name] = link
+                }
+                merged
+            }
+        }
     }
 
     /**

@@ -63,12 +63,29 @@ responses:
 
 ```kotlin
 response<MyResponseType>(status = HttpStatusCode.OK) {
+  // Headers to be included in the response.
     header(name = "X-Rate-Limit") {
         description = "The number of allowed requests in the current period."
         required = true
     }
-    link(operationId = "getNextItem") {
-        description = "Link to the next item."
+
+  // Links to other operations.
+  link(name = "GetEmployeeDetails") {
+    operationId = "getEmployeeDetails"
+    description = "Retrieve information about this employee."
+    parameter(name = "employee_id", value = "\$request.path.employee_id")
+  }
+  link(name = "UpdateEmployeeStatus") {
+    operationId = "updateEmployeeStatus"
+    description = "Link to update the status of this employee."
+    parameter(name = "employee_id", value = "\$request.path.employee_id")
+    parameter(name = "status", value = "active")
+    requestBody = "{\"status\": \"active\"}"
+  }
+  link(name = "ListEmployeeBenefits") {
+    operationRef = "/api/v1/benefits/list"
+    description = "List all benefits available to the employee."
+    parameter(name = "employee_id", value = "\$request.path.employee_id")
     }
 }
 ```
@@ -78,21 +95,27 @@ response<MyResponseType>(status = HttpStatusCode.OK) {
 ```kotlin
 response<MyResponseType>(status = HttpStatusCode.OK) {
     headers {
-        header(name = "X-Rate-Limit") {
+      add(name = "X-Rate-Limit") {
             description = "The number of allowed requests in the current period."
             required = true
         }
-        header(name = "X-Request-Id") {
+      add(name = "X-Request-Id") {
             description = "A unique identifier for the request."
             required = false
         }
     }
     links {
-        link(operationId = "getNextItem") {
-            description = "Link to the next item."
+      add(name = "GetEmployeeDetails") {
+        operationId = "getEmployeeDetails"
+        description = "Retrieve information about this employee."
+        parameter(name = "employee_id", value = "\$request.path.employee_id")
         }
-        link(operationId = "getPreviousItem") {
-            description = "Link to the previous item."
+      add(name = "UpdateEmployeeStatus") {
+        operationId = "updateEmployeeStatus"
+        description = "Link to update the status of this employee."
+        parameter(name = "employee_id", value = "\$request.path.employee_id")
+        parameter(name = "status", value = "active")
+        requestBody = "{\"status\": \"active\"}"
         }
     }
 }
@@ -141,8 +164,8 @@ response(status = HttpStatusCode.NotFound) {
 ```
 
 - The above example will result in two grouped responses:
-  - One for `200 OK` with a body of `MyResponseType` and `AnotherResponseType`.
-  - Another for `404 Not Found`
+- One for `200 OK` with a body of `MyResponseType` and `AnotherResponseType`.
+- Another for `404 Not Found`
 
 ```yaml
 responses:
@@ -203,8 +226,10 @@ api {
       description = "The number of allowed requests in the current period."
       required = true
     }
-    link(operationId = "getNextItem") {
-      description = "Link to the next item."
+    link(name = "GetEmployeeDetails") {
+      operationId = "getEmployeeDetails"
+      description = "Retrieve information about this employee."
+      parameter(name = "employee_id", value = "\$request.path.employee_id")
     }
 
     // Optional composition.

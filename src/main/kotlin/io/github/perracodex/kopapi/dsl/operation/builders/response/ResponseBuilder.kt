@@ -16,6 +16,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
+import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
@@ -91,30 +92,6 @@ public class ResponseBuilder @PublishedApi internal constructor() {
         }
     }
 
-    @PublishedApi
-    internal fun build(status: HttpStatusCode): ApiResponse {
-        // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to its specific types.
-        val contentMap: Map<ContentType, Set<KType>>? = _config.allTypes.takeIf { it.isNotEmpty() }
-            ?.mapValues { it.value.toSet() }
-            ?.filterValues { it.isNotEmpty() }
-            ?.toSortedMap(
-                compareBy(
-                    { it.contentType },
-                    { it.contentSubtype }
-                )
-            )
-
-        // Return the constructed ApiResponse instance.
-        return ApiResponse(
-            status = status,
-            description = description.trimOrNull(),
-            headers = _config.headers.takeIf { it.isNotEmpty() },
-            composition = composition,
-            content = contentMap,
-            links = _config.links.takeIf { it.isNotEmpty() }
-        )
-    }
-
     /**
      * Adds a header to the response.
      *
@@ -143,12 +120,11 @@ public class ResponseBuilder @PublishedApi internal constructor() {
      * #### Sample Usage
      * ```
      * headers {
-     *     header("X-Rate-Limit") {
+     *     add("X-Rate-Limit") {
      *         description = "Number of allowed requests per period."
      *         required = true
      *     }
-     *
-     *     header("X-Another-Header") {
+     *     add("X-Another-Header") {
      *         description = "Another header description."
      *         required = false
      *         deprecated = true
@@ -168,17 +144,34 @@ public class ResponseBuilder @PublishedApi internal constructor() {
      *
      * #### Sample Usage
      * ```
-     * link("getNextItem") {
-     *     description = "Link to the next item."
+     * link(name = "GetEmployeeDetails") {
+     *      operationId = "getEmployeeDetails"
+     *      description = "Retrieve information about this employee."
+     *      parameter(
+     *          name = "employee_id",
+     *          value = "\$request.path.employee_id"
+     *      )
+     * }
+     * ```
+     * ```
+     * link(name = "UpdateEmployeeStatus") {
+     *      operationId = "updateEmployeeStatus"
+     *      description = "Link to update the status of this employee."
+     *      parameter(
+     *          name = "employee_id",
+     *          value = "\$request.path.employee_id"
+     *      )
+     *      parameter( name = "status", value = "active")
+     *      requestBody = "{\"status\": \"active\"}"
      * }
      * ```
      *
-     * @param operationId The name of an existing, resolvable OAS operation.
+     * @param name The unique name of the link.
      * @param configure A lambda receiver for configuring the [LinkBuilder].
      */
-    public fun link(operationId: String, configure: LinkBuilder.() -> Unit) {
-        val link: ApiLink = LinkBuilder(operationId = operationId).apply(configure).build()
-        _config.links.add(link)
+    public fun link(name: String, configure: LinkBuilder.() -> Unit) {
+        val link: ApiLink = LinkBuilder().apply(configure).build()
+        _config.addLink(name = name, link = link)
     }
 
     /**
@@ -190,21 +183,63 @@ public class ResponseBuilder @PublishedApi internal constructor() {
      * #### Sample Usage
      * ```
      * links {
-     *     link("getNextItem") {
-     *         description = "Link to the next item."
-     *     }
-     *
-     *     link("getPreviousItem") {
-     *         description = "Link to the previous item."
-     *     }
+     *      add(name = "GetEmployeeDetails") {
+     *          operationId = "getEmployeeDetails"
+     *          description = "Retrieve information about this employee."
+     *          parameter(
+     *              name = "employee_id",
+     *              value = "\$request.path.employee_id"
+     *          )
+     *      }
+     *      add(name = "UpdateEmployeeStatus") {
+     *          operationId = "updateEmployeeStatus"
+     *          description = "Link to update the status of this employee."
+     *          parameter(
+     *              name = "employee_id",
+     *              value = "\$request.path.employee_id"
+     *          )
+     *          parameter(name = "status", value = "active")
+     *          requestBody = "{\"status\": \"active\"}"
+     *      }
+     *      add(name = "ListEmployeeBenefits") {
+     *          operationRef = "/api/v1/benefits/list"
+     *          description = "List all benefits available to the employee."
+     *          parameter(
+     *              name = "employee_id",
+     *              value = "\$request.path.employee_id"
+     *          )
+     *      }
      * }
-     * ```
      *
      * @param configure A lambda receiver for configuring the [LinksBuilder].
      */
     public fun links(configure: LinksBuilder.() -> Unit) {
         val linksBuilder: LinksBuilder = LinksBuilder().apply(configure)
-        linksBuilder.build().forEach { _config.links.add(it) }
+        linksBuilder.build().forEach { _config.addLink(name = it.key, link = it.value) }
+    }
+
+    @PublishedApi
+    internal fun build(status: HttpStatusCode): ApiResponse {
+        // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to its specific types.
+        val contentMap: Map<ContentType, Set<KType>>? = _config.allTypes.takeIf { it.isNotEmpty() }
+            ?.mapValues { it.value.toSet() }
+            ?.filterValues { it.isNotEmpty() }
+            ?.toSortedMap(
+                compareBy(
+                    { it.contentType },
+                    { it.contentSubtype }
+                )
+            )
+
+        // Return the constructed ApiResponse instance.
+        return ApiResponse(
+            status = status,
+            description = description.trimOrNull(),
+            headers = _config.headers.takeIf { it.isNotEmpty() },
+            composition = composition,
+            content = contentMap,
+            links = _config.links.takeIf { it.isNotEmpty() }
+        )
     }
 
     @PublishedApi
@@ -216,7 +251,7 @@ public class ResponseBuilder @PublishedApi internal constructor() {
         val headers: MutableSet<ApiHeader> = mutableSetOf()
 
         /** Holds the links associated with the response. */
-        val links: MutableSet<ApiLink> = mutableSetOf()
+        val links: MutableMap<String, ApiLink> = mutableMapOf()
 
         /**
          * Adds a new [ApiHeader] instance to the cache, ensuring that the header name is unique
@@ -229,6 +264,24 @@ public class ResponseBuilder @PublishedApi internal constructor() {
                 throw KopapiException("Header with name '${header.name}' already exists within the same response.")
             }
             headers.add(header)
+        }
+
+        /**
+         * Adds a new [ApiLink] instance to the cache, ensuring that the link name is unique
+         *
+         * @param name The unique name of the link.
+         * @param link The [ApiLink] instance to add to the cache.
+         * @throws KopapiException If an [ApiLink] with the same name already exists.
+         */
+        fun addLink(name: String, link: ApiLink) {
+            val linkName: String = name.sanitize()
+            if (linkName.isBlank()) {
+                throw KopapiException("Link name must not be blank.")
+            }
+            if (links.any { it.key.equals(other = linkName, ignoreCase = true) }) {
+                throw KopapiException("Link with name '${linkName}' already exists within the same response.")
+            }
+            links[linkName] = link
         }
     }
 }

@@ -49,7 +49,7 @@ internal object ResponseComposer {
                     description = apiResponse.description,
                     headers = apiResponse.headers,
                     content = null,
-                    links = apiResponse.links
+                    links = apiResponse.links?.toSortedMap()
                 )
                 return@forEach
             }
@@ -84,7 +84,7 @@ internal object ResponseComposer {
                 description = apiResponse.description.trimOrNull() ?: statusCode.description,
                 headers = apiResponse.headers,
                 content = finalContent,
-                links = apiResponse.links
+                links = apiResponse.links?.toSortedMap()
             )
         }
 
