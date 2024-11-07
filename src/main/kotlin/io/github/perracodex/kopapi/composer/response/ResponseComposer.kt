@@ -57,10 +57,10 @@ internal object ResponseComposer {
             // Map to hold schemas grouped by their content types.
             val schemasByContentType: MutableMap<ContentType, MutableList<ElementSchema>> = mutableMapOf()
 
-            // Inspect each type and associate its schema with the relevant content types.
+            // Introspect each type and associate its schema with the relevant content types.
             apiResponse.content.forEach { (contentType, types) ->
                 types.forEach { type ->
-                    val schema: ElementSchema = SchemaRegistry.inspectType(type = type)?.schema
+                    val schema: ElementSchema = SchemaRegistry.introspectType(type = type)?.schema
                         ?: throw KopapiException("No schema found for type: $type, status code: $statusCode")
 
                     schemasByContentType

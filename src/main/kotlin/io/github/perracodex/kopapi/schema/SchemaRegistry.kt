@@ -12,9 +12,9 @@ import io.github.perracodex.kopapi.composer.response.ResponseComposer
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.path.ApiPath
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
-import io.github.perracodex.kopapi.inspector.TypeSchemaProvider
-import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
-import io.github.perracodex.kopapi.inspector.schema.TypeSchema
+import io.github.perracodex.kopapi.introspector.TypeSchemaProvider
+import io.github.perracodex.kopapi.introspector.schema.SchemaConflicts
+import io.github.perracodex.kopapi.introspector.schema.TypeSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
@@ -92,8 +92,8 @@ internal object SchemaRegistry {
     var apiConfiguration: ApiConfiguration? = null
         private set
 
-    /** The [TypeSchemaProvider] instance used for inspecting types and generating schemas. */
-    private val inspector = TypeSchemaProvider()
+    /** The [TypeSchemaProvider] instance used for introspecting types and generating schemas. */
+    private val introspector = TypeSchemaProvider()
 
     /**
      * Registers the [ApiConfiguration] object for the Kopapi plugin.
@@ -164,7 +164,7 @@ internal object SchemaRegistry {
         schemaConflicts.clear()
         debugJsonCache.clear()
         openApiSchemaCache = null
-        inspector.reset()
+        introspector.reset()
         apiConfiguration = null
     }
 
@@ -177,31 +177,31 @@ internal object SchemaRegistry {
         }
 
         apiOperation.forEach { metadata ->
-            // Inspect each parameter type.
+            // Introspect each parameter type.
             metadata.parameters?.forEach { parameter ->
-                inspectType(type = parameter.type)
+                introspectType(type = parameter.type)
             }
 
-            // Inspect the request body type.
+            // Introspect the request body type.
             metadata.requestBody?.let { requestBody ->
                 RequestBodyComposer.compose(requestBody = requestBody)
             }
 
-            // Inspect each response type.
+            // Introspect each response type.
             metadata.responses?.let { responses ->
                 ResponseComposer.compose(responses = responses)
             }
         }
 
         // Collect and store sorted schemas.
-        inspector.getTypeSchemas().sortedWith(
+        introspector.getTypeSchemas().sortedWith(
             compareBy { it.name }
         ).forEach { schema ->
             typeSchemas.add(schema)
         }
 
         // Collect and store sorted schema conflicts.
-        inspector.getConflicts().sortedWith(
+        introspector.getConflicts().sortedWith(
             compareBy { it.name }
         ).forEach { conflict ->
             schemaConflicts.add(conflict)
@@ -209,15 +209,15 @@ internal object SchemaRegistry {
     }
 
     /**
-     * Inspects a type using the provided [TypeSchemaProvider], excluding the [Unit] type.
+     * Introspects a type using the provided [TypeSchemaProvider], excluding the [Unit] type.
      *
-     * @param type The [KType] to inspect.
-     * @return The [TypeSchema] object representing the inspected type, or `null` if the type is [Unit].
+     * @param type The [KType] to introspect.
+     * @return The [TypeSchema] object representing the introspected type, or `null` if the type is [Unit].
      */
-    fun inspectType(type: KType): TypeSchema? {
+    fun introspectType(type: KType): TypeSchema? {
         return when (type.classifier) {
             Unit::class -> return null
-            else -> inspector.inspect(kType = type)
+            else -> introspector.introspect(kType = type)
         }
     }
 

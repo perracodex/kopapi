@@ -1,11 +1,11 @@
 ## Introspecting Kotlin Types for OpenAPI Schemas
 
-This section explains the internal mechanisms of type inspection used to extract information for generating OpenAPI schemas.
+This section explains the internal mechanisms of type introspection used to extract information for generating OpenAPI schemas.
 It describes the core components, type decisions, and traversals involved in this process.
 
 ### Key Features:
 
-* Recursive Inspection: Capable of handling complex types, including nested and self-referencing objects.
+* Recursive Introspection: Capable of handling complex types, including nested and self-referencing objects.
 * Comprehensive Type Support: Processes primitive types, enums, collections, maps, arrays, and generic types.
 * Annotation Support: Recognizes annotations from kotlinx serialization. Supports a subset of Jackson annotations.
 * Caching Mechanism: Caches resolved schemas to improve performance and avoid redundant processing.
@@ -15,10 +15,10 @@ It describes the core components, type decisions, and traversals involved in thi
 
 ### Core Components
 
-Before diving into the flow, it's essential to understand the primary components involved in the type inspection process:
+Before diving into the flow, it's essential to understand the primary components involved in the type introspection process:
 
-- `TypeSchemaProvider`: The entry point that initiates the inspection process for a given type.
-- `TypeInspector`: The core orchestrator delegating to specific resolvers based on the type characteristics.
+- `TypeSchemaProvider`: The entry point that initiates the introspection process for a given type.
+- `TypeIntrospector`: The core orchestrator delegating to specific resolvers based on the type characteristics.
     - `Resolvers`: Specialized components that handle different kinds of types:
     - `ArrayResolver`: Handles array types.
     - `CollectionResolver`: Handles collection types like `List` and `Set`, including typed arrays `Array<T>`.
@@ -32,31 +32,31 @@ Before diving into the flow, it's essential to understand the primary components
 
 ### High-Level Flow
 
-The inspection process involves initiating the inspection of a given Kotlin type
+The introspection process involves initiating the introspection of a given Kotlin type
 and recursively traversing its structure to build the corresponding schema.
 The flow includes decision-making to determine the appropriate resolver for each type
 and may involve recursion to handle nested types.
 
-### Main Inspection Entry Flow
+### Main Introspection Entry Flow
 
 ```text
 Start
  |
  v
-TypeSchemaProvider initiates inspection of Kotlin type
+TypeSchemaProvider initiates introspection of Kotlin type
  |
  v
-TypeInspector checks the type characteristics and delegates to appropriate resolvers
+TypeIntrospector checks the type characteristics and delegates to appropriate resolvers
 ```
 
-* `TypeSchemaProvider`: Serves as the entry point, starting the inspection for a given type.
-* `TypeInspector`: Analyzes the type and decides which resolver should handle it based on its characteristics.
+* `TypeSchemaProvider`: Serves as the entry point, starting the introspection for a given type.
+* `TypeIntrospector`: Analyzes the type and decides which resolver should handle it based on its characteristics.
 
 ---
 
-### TypeInspector Decision Tree
+### TypeIntrospector Decision Tree
 
-The `TypeInspector` uses a decision tree to determine how to process a given type.
+The `TypeIntrospector` uses a decision tree to determine how to process a given type.
 This tree guides the traversal and ensures that each type is handled by the appropriate resolver.
 
 ```text
@@ -88,7 +88,7 @@ traverseType:
   |    +-> Yes:
   |    |       - `CollectionResolver` processes the type.
   |    |       - Resolve the element type.
-  |    |       - Traverse the element type using `TypeInspector`.
+  |    |       - Traverse the element type using `TypeIntrospector`.
   |    |       - Build collection schema.
   |    |       - Return schema.
   |    |
@@ -100,7 +100,7 @@ traverseType:
   |     |      - `MapResolver` processes the type.
   |     |      - Validate that the key type is String.
   |     |      - Resolve the value type.
-  |     |      - Traverse the value type using `TypeInspector`.
+  |     |      - Traverse the value type using `TypeIntrospector`.
   |     |      - Build map schema with `additionalProperties`.
   |     |      - Return schema.
   |     |
@@ -128,7 +128,7 @@ traverseType:
   |    |           - Merge type argument bindings from outer context.
   |    |           - Traverse properties:
   |    |              - For each property:
-  |    |                - Traverse property type using `TypeInspector`.
+  |    |                - Traverse property type using `TypeIntrospector`.
   |    |           - Build schema.
   |    |           - Add schema to cache.
   |    |       - Return schema or reference to schema.
@@ -145,7 +145,7 @@ traverseType:
       |           - Retrieve properties.
       |           - Traverse properties:
       |              - For each property:
-      |                - Traverse property type using `TypeInspector`.
+      |                - Traverse property type using `TypeIntrospector`.
       |       - Build schema.
       |          - Update cache.
       |       - Return schema or reference to schema.
@@ -155,25 +155,25 @@ traverseType:
           - Return unknown object type schema.
 ```
 
-* Delegation: At each decision point, the `TypeInspector` either delegates to a specific resolver
+* Delegation: At each decision point, the `TypeIntrospector` either delegates to a specific resolver
   or constructs a default schema if the type cannot be processed.
 
 ---
 
 ### Detailed Flow
 
-#### Starting Inspection with TypeSchemaProvider
+#### Starting Introspection with TypeSchemaProvider
 
-- Initiation: The `TypeSchemaProvider` starts the inspection process for the given Kotlin type.
+- Initiation: The `TypeSchemaProvider` starts the introspection process for the given Kotlin type.
 - Conflict Analysis: After the traversal, it analyzes for any conflicts, such as schemas with the same name but different types.
 - Result: The `TypeSchemaProvider` returns the resolved `TypeSchema`.
 
-#### Traversal with TypeInspector
+#### Traversal with TypeIntrospector
 
-- Classifier Determination: The `TypeInspector` examines the type to determine its nature (e.g., array, collection, map).
+- Classifier Determination: The `TypeIntrospector` examines the type to determine its nature (e.g., array, collection, map).
 - Decision-Making: Based on the decision tree, it determines which resolver is appropriate for the type.
 - Delegation: It delegates the processing to the chosen resolver.
-- Recursion: If necessary, the `TypeInspector` uses recursion to handle nested types.
+- Recursion: If necessary, the `TypeIntrospector` uses recursion to handle nested types.
 
 #### Resolvers Interaction and Processing
 
@@ -190,7 +190,7 @@ traverseType:
     - Purpose: Handles collection types like `List` and `Set`.
     - Process:
         - Resolves the element type of the collection.
-      - Traverses the element type using the `TypeInspector`, which may involve recursion.
+      - Traverses the element type using the `TypeIntrospector`, which may involve recursion.
           - Constructs the collection schema using the element schema.
 
 - **MapResolver**
@@ -198,7 +198,7 @@ traverseType:
     - Process:
         - Validates that the map's key type is `String` (as required by OpenAPI).
         - Resolves the value type of the map.
-      - Traverses the value type using the `TypeInspector`.
+      - Traverses the value type using the `TypeIntrospector`.
           - Constructs the map schema with `additionalProperties` representing the value schema.
 
 - **EnumResolver**
@@ -217,7 +217,7 @@ traverseType:
             - Creates a local type argument bindings, mapping generic type parameters to actual types.
             - Merges the local map with any inherited type argument bindings.
             - Traverses each property of the generic type:
-                - Uses the `TypeInspector` to traverse property types, substituting type parameters as necessary.
+                - Uses the `TypeIntrospector` to traverse property types, substituting type parameters as necessary.
             - Constructs the schema for the generic type.
             - Adds the schema to the cache.
         - Returns the schema or a reference to it.
@@ -231,7 +231,7 @@ traverseType:
             - Uses a semaphore to prevent infinite recursion in case of self-referencing types.
             - Adds a placeholder schema to the cache before processing properties.
             - Retrieves the properties of the object using the PropertyResolver.
-          - Traverses each property recursively using the `TypeInspector`.
+          - Traverses each property recursively using the `TypeIntrospector`.
               - Updates the placeholder schema with the resolved properties.
               - Removes the type from the semaphore after processing.
         - Returns the schema or a reference to it.
@@ -245,7 +245,7 @@ traverseType:
         - For each property:
             - Extracts metadata such as name, nullability, and annotations.
             - Resolves the property's type, substituting generics as necessary.
-          - Traverses the property's type using the `TypeInspector`.
+          - Traverses the property's type using the `TypeIntrospector`.
               - Applies metadata to the property's schema.
               - Collects property schemas to be included in the parent object's schema.
 
@@ -260,15 +260,15 @@ traverseType:
         - When traversing a generic type, local bindings are created, mapping type arguments to actual types.
         - Used during traversal to substitute generic arguments with actual types.
     - Flow:
-        - When inspecting `Container<T>`, and `T` is mapped to `SomeType`,
+        - When introspecting `Container<T>`, and `T` is mapped to `SomeType`,
           the map `{ T -> SomeType }` is used to substitute `T` with `SomeType`.
 
-- **Example:** inspecting `Page<Employee>`
+- **Example:** introspecting `Page<Employee>`
     - Scenario:
         - `Page<T>` is a generic class with a type parameter `T`.
-        - We are inspecting `Page<Employee>`, where `T` is `Employee`.
+      - We are introspecting `Page<Employee>`, where `T` is `Employee`.
     - Process:
-        - The `TypeInspector` recognizes `Page` as a generic type with type parameter `T`.
+        - The `TypeIntrospector` recognizes `Page` as a generic type with type parameter `T`.
       - Creates a type argument bindings `{ T -> Employee }`.
           - Traverses properties of `Page<T>`:
               - For the property content: `T`, substitutes `T` with `Employee`.
@@ -301,9 +301,9 @@ traverseType:
 
 ### Example Flows
 
-#### Inspecting a typed Array: `Array<Employee>`
+#### Introspecting a typed Array: `Array<Employee>`
 
-1. `TypeInspector`:
+1. `TypeIntrospector`:
     - Determines the type is an array (either primitive or typed).
     - Delegates to `ArrayResolver`.
 2. `ArrayResolver`:
@@ -314,66 +314,66 @@ traverseType:
         - Delegates to `CollectionResolver`.
 3. `CollectionResolver`:
     - Resolves the Element Type: `Employee`.
-   - Traverses the Element Type using `TypeInspector`.
-4. `TypeInspector` (recursive call):
+   - Traverses the Element Type using `TypeIntrospector`.
+4. `TypeIntrospector` (recursive call):
     - Determines the type is an Object `Employee`.
     - Delegates to `ObjectResolver`.
 5. `ObjectResolver`:
     - Checks if `Employee` is already cached.
         - If not, adds a placeholder to the cache.
     - Retrieves properties of `Employee` using `PropertyResolver`.
-   - Traverses each property, invoking `TypeInspector `recursively.
+   - Traverses each property, invoking `TypeIntrospector `recursively.
     - Updates the `Employee` schema in the cache.
 6. `CollectionResolver`:
     - Constructs the schema for `Array<Employee>` using the `Employee` schema.
 7. `ArrayResolver`:
     - Returns the schema for `Array<Employee>`.
-8. `TypeInspector`:
+8. `TypeIntrospector`:
     - Returns the schema for `Array<Employee>`.
 
-#### Inspecting a Collection: `List<Employee>`
+#### Introspecting a Collection: `List<Employee>`
 
-1. `TypeInspector`:
+1. `TypeIntrospector`:
     - Determines the type is a Collection.
     - Delegates to `CollectionResolver`.
 2. `CollectionResolver`:
     - Resolves the Element Type: `Employee`.
-   - Traverses the Element Type using `TypeInspector`.
-3. `TypeInspector` (recursive call):
+   - Traverses the Element Type using `TypeIntrospector`.
+3. `TypeIntrospector` (recursive call):
     - Determines the type is an Object (`Employee`).
     - Delegates to `ObjectResolver`.
 4. `ObjectResolver`:
     - Checks if `Employee` is already cached.
         - If not, adds a placeholder to the cache.
     - Retrieves properties of `Employee` using `PropertyResolver`.
-   - Traverses each property, invoking `TypeInspector `recursively.
+   - Traverses each property, invoking `TypeIntrospector `recursively.
     - Updates the `Employee` schema in the cache.
 5. `CollectionResolver`:
     - Constructs the schema for `List<Employee>` using the `Employee` schema.
-6. `TypeInspector`:
+6. `TypeIntrospector`:
     - Returns the schema for `List<Employee>`.
 
-#### Inspecting a Map: `Map<String, Employee>`
+#### Introspecting a Map: `Map<String, Employee>`
 
-1. `TypeInspector`:
+1. `TypeIntrospector`:
     - Determines the type is a Map.
     - Delegates to `MapResolver`.
 2. `MapResolver`:
     - Validates the key type is `String`.
     - Resolves the value type: `Employee`.
-   - Traverses the value type using `TypeInspector`.
-3. `TypeInspector` (recursive call):
+   - Traverses the value type using `TypeIntrospector`.
+3. `TypeIntrospector` (recursive call):
     - Determines the type is an Object `Employee`.
     - Delegates to `ObjectResolver`.
 4. `ObjectResolver`:
     - Checks if `Employee` is already cached.
         - If not, adds a placeholder to the cache.
     - Retrieves properties of `Employee` using `PropertyResolver`.
-   - Traverses each property, invoking `TypeInspector` recursively.
+   - Traverses each property, invoking `TypeIntrospector` recursively.
     - Updates the `Employee` schema in the cache.
 5. `MapResolver`:
     - Constructs the schema for `Map<String, Employee>` using the `Employee` schema.
-6. `TypeInspector`:
+6. `TypeIntrospector`:
     - Returns the schema for `Map<String, Employee>`.
 
 ---

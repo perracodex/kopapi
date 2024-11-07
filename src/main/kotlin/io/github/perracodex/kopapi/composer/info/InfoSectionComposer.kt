@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.composer.info
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
-import io.github.perracodex.kopapi.inspector.schema.SchemaConflicts
+import io.github.perracodex.kopapi.introspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.system.Tracer
 
@@ -28,7 +28,7 @@ internal object InfoSectionComposer {
      *
      * @param apiConfiguration The API configuration object holding the `info` section data.
      * @param registrationErrors A set of errors detected during API registration, if any.
-     * @param schemaConflicts A set of schema conflicts detected during inspection, if any.
+     * @param schemaConflicts A set of schema conflicts detected during introspection, if any.
      * @return The updated [ApiInfo] object ready for serialization.
      */
     fun compose(

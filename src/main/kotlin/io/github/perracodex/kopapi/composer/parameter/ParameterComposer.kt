@@ -39,8 +39,8 @@ internal object ParameterComposer {
         apiParameters.forEach { parameter ->
             tracer.debug("Composing parameter: ${parameter.name}")
 
-            // Determine the schema for the parameter (complex or path type), and inspect accordingly.
-            val baseSchema: ElementSchema = SchemaRegistry.inspectType(type = parameter.type)?.schema
+            // Determine the schema for the parameter (complex or path type), and introspect accordingly.
+            val baseSchema: ElementSchema = SchemaRegistry.introspectType(type = parameter.type)?.schema
                 ?: throw KopapiException("No schema found for type: ${parameter.name}")
 
             // If a default value is present, create a copy of the schema with the default value.

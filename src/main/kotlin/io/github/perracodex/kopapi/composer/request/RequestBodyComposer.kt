@@ -86,7 +86,7 @@ internal object RequestBodyComposer {
             tracer.debug("Processing standard content type: $contentType")
 
             types.forEach { type ->
-                val schema: ElementSchema = SchemaRegistry.inspectType(type = type)?.schema
+                val schema: ElementSchema = SchemaRegistry.introspectType(type = type)?.schema
                     ?: throw KopapiException("No schema found for type: $type with content type: $contentType")
                 schemas.getOrPut(contentType) { mutableListOf() }.add(schema)
             }
