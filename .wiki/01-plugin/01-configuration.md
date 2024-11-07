@@ -45,6 +45,7 @@ install(Kopapi) {
 | url                    | The URL to provide access to the `Swagger UI`.                                                    | /swagger |
 | persistAuthorization   | Whether to persist entered authorizations in `Swagger UI` to retain them on page refresh.         | False    |
 | withCredentials        | Whether to include cookies or other credentials in CORS requests from `Swagger UI`.               | False    |
+| docExpansion           | The default expansion for the documentation in the `Swagger UI`.                                  | LIST     |
 | displayRequestDuration | Whether to display the request duration in `Swagger UI`.                                          | False    |
 | displayOperationId     | Whether to display the endpoint `operationId` in `Swagger UI`.                                    | False    |
 | operationsSorter       | The sorter to use for the operations in the `Swagger UI`.                                         | UNSORTED |
@@ -62,6 +63,7 @@ install(Kopapi) {
             url = "api/swagger"
             persistAuthorization = true
             withCredentials = true
+          docExpansion = SwaggerDocExpansion.NONE
             displayRequestDuration = true
             displayOperationId = true
             operationsSorter = SwaggerOperationsSorter.METHOD
@@ -121,6 +123,7 @@ install(Kopapi) {
             url = "api/swagger"
             persistAuthorization = true
             withCredentials = true
+          docExpansion = SwaggerDocExpansion.NONE
             displayRequestDuration = true
             displayOperationId = true
             operationsSorter = SwaggerOperationsSorter.METHOD

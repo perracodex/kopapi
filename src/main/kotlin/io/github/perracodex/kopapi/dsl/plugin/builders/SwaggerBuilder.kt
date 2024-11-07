@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.dsl.plugin.builders
 
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
+import io.github.perracodex.kopapi.types.SwaggerDocExpansion
 import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
 import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 import io.github.perracodex.kopapi.types.SwaggerUiTheme
@@ -25,6 +26,7 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  *          url = "/swagger"
  *          persistAuthorization = true
  *          withCredentials = true
+ *          docExpansion = SwaggerDocExpansion.LIST
  *          displayRequestDuration = true
  *          displayOperationId = true
  *          operationsSorter = SwaggerOperationsSorter.METHOD
@@ -61,6 +63,18 @@ public class SwaggerBuilder internal constructor() {
      * - Default: `false`.
      */
     public var withCredentials: Boolean = false
+
+    /**
+     * The default expansion for the documentation in the `Swagger UI`.
+     *
+     * - Default: [SwaggerDocExpansion.NONE].
+     *
+     * #### Attention
+     * [SwaggerDocExpansion.FULL] is recommended only for very small APIs.
+     * For larger APIs, using `FULL` may cause the page to appear frozen or unresponsive
+     * for a few moments during loading, as it tries to render all endpoints and details simultaneously.
+     */
+    public var docExpansion: SwaggerDocExpansion = SwaggerDocExpansion.LIST
 
     /**
      * Whether to display the request duration in the `Swagger UI`.
@@ -114,6 +128,7 @@ public class SwaggerBuilder internal constructor() {
         url = NetworkUtils.normalizeUrl(url = url, defaultValue = DEFAULT_SWAGGER_URL),
         persistAuthorization = persistAuthorization,
         withCredentials = withCredentials,
+        docExpansion = docExpansion,
         displayRequestDuration = displayRequestDuration,
         displayOperationId = displayOperationId,
         operationsSorter = operationsSorter,

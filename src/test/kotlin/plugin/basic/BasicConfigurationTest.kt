@@ -6,6 +6,7 @@ package plugin.basic
 
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
+import io.github.perracodex.kopapi.types.SwaggerDocExpansion
 import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
 import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
 import io.github.perracodex.kopapi.types.SwaggerUiTheme
@@ -41,6 +42,7 @@ class BasicConfigurationTest {
                         url = "swagger3"
                         persistAuthorization = true
                         withCredentials = true
+                        docExpansion = SwaggerDocExpansion.LIST
                         displayRequestDuration = true
                         displayOperationId = true
                         operationsSorter = SwaggerOperationsSorter.METHOD
@@ -103,6 +105,7 @@ class BasicConfigurationTest {
                         url = "swagger3"
                         persistAuthorization = true
                         withCredentials = true
+                        docExpansion = SwaggerDocExpansion.LIST
                         displayRequestDuration = true
                         displayOperationId = true
                         operationsSorter = SwaggerOperationsSorter.METHOD

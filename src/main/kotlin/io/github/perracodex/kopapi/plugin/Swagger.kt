@@ -199,6 +199,7 @@ internal object Swagger {
                         displayOperationId: ${apiDocs.swagger.displayOperationId},
                         $sorterSetting
                         $syntaxThemeSetting
+                        docExpansion: "${apiDocs.swagger.docExpansion.value}",
                     });
                 };
             """.trimIndent()

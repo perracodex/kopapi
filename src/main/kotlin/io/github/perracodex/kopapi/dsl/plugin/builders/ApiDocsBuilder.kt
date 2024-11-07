@@ -57,6 +57,7 @@ public class ApiDocsBuilder internal constructor() {
      *          url = "/swagger"
      *          persistAuthorization = true
      *          withCredentials = true
+     *          docExpansion = SwaggerDocExpansion.LIST
      *          displayRequestDuration = true
      *          displayOperationId = true
      *          operationsSorter = SwaggerOperationsSorter.METHOD
