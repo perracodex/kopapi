@@ -5,7 +5,6 @@
 package io.github.perracodex.kopapi.dsl.operation.builders.operation
 
 import io.github.perracodex.kopapi.dsl.common.parameter.configurable.ParametersBuilder
-import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
 import io.github.perracodex.kopapi.dsl.common.security.configurable.ISecurityConfigurable
 import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityConfigurable
 import io.github.perracodex.kopapi.dsl.common.server.configurable.IServerConfigurable
@@ -261,19 +260,13 @@ public class ApiOperationBuilder internal constructor(
         noinline configure: RequestBodyBuilder.() -> Unit = {}
     ) {
         if (_config.requestBody == null) {
-            val builder: RequestBodyBuilder = RequestBodyBuilder().apply {
+            _config.requestBody = RequestBodyBuilder().apply {
                 apply(configure)
-
-                val schemaContentType: Set<ContentType> = contentType
-                val schemaAttributes: ApiSchemaAttributes? = _schemaAttributeConfigurable.attributes
                 addType<T> {
-                    contentType = schemaContentType
-                    _schemaAttributeConfigurable.attributes = schemaAttributes
+                    this.contentType = this@apply.contentType
+                    this._schemaAttributeConfigurable.attributes = this@apply._schemaAttributeConfigurable.attributes
                 }
-            }
-
-            _config.requestBody = builder.build()
-
+            }.build()
         } else {
             val message: String = """
                 |Only one RequestBody can be defined per API endpoint.
@@ -396,18 +389,13 @@ public class ApiOperationBuilder internal constructor(
         status: HttpStatusCode,
         noinline configure: ResponseBuilder.() -> Unit = {}
     ) {
-        val builder: ResponseBuilder = ResponseBuilder().apply {
+        val apiResponse: ApiResponse = ResponseBuilder().apply {
             apply(configure)
-
-            val schemaContentType: Set<ContentType> = contentType
-            val schemaAttributes: ApiSchemaAttributes? = _schemaAttributeConfigurable.attributes
             addType<T> {
-                contentType = schemaContentType
-                _schemaAttributeConfigurable.attributes = schemaAttributes
+                this.contentType = this@apply.contentType
+                this._schemaAttributeConfigurable.attributes = this@apply._schemaAttributeConfigurable.attributes
             }
-        }
-
-        val apiResponse: ApiResponse = builder.build(status = status)
+        }.build(status = status)
 
         _config.responses.merge(
             status,
