@@ -28,10 +28,10 @@ requestBody<MyRequestBodyType> {
         ContentType.Application.Json,
         ContentType.Application.Xml
     )
-  
+
     // Register an additional type.
     addType<AdditionalType>()
-  
+
     // Register another type but to XML only.
     addType<YetAnotherTpe> {
         contentType = setOf(ContentType.Application.Xml)
@@ -57,6 +57,53 @@ requestBody:
           - $ref: "#/components/schemas/AdditionalType"
           - $ref: "#/components/schemas/YetAnotherTpe"
 ```
+
+---
+
+### Defining Additional Schema Properties
+
+When the request body defines a primitive type such as strings, numbers, including arrays,
+additional properties can be set using the `schema` block.
+
+```kotlin
+requestBody<String> {
+  schema {
+    minLength = 10
+    maxLength = 50
+  }
+
+  addType<Int> {
+    schema {
+      minimum = 0
+      maximum = 100
+    }
+  }
+}
+```
+
+| Property         | Description                                                                    |
+|------------------|--------------------------------------------------------------------------------|
+| format           | Overrides the default format for the type allowing for custom formats.         |
+| minLength        | Defines the minimum length for string types.                                   |
+| maxLength        | Defines the maximum length for string types.                                   |
+| pattern          | A regular expression pattern that a string type must match.                    |
+| minimum          | Defines the inclusive lower bound for numeric types.                           |
+| maximum          | Defines the inclusive upper bound for numeric types.                           |
+| exclusiveMinimum | Defines a strict lower bound where the value must be greater than this number. |
+| exclusiveMaximum | Defines a strict upper bound where the value must be less than this number.    |
+| multipleOf       | Specifies that the type’s value must be a multiple of this number.             |
+| minItems         | Specifies the minimum number of items in an array type.                        |
+| maxItems         | Specifies the maximum number of items in an array type.                        |
+| uniqueItems      | Specifies that all items in an array type must be unique.                      |
+
+- Depending on the type, only the relevant attributes are applicable:
+  - **String Types**: `minLength`, `maxLength`, `pattern`
+  - **Numeric Types**: `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, `multipleOf`
+  - **Array Types**: `minItems`, `maxItems`, `uniqueItems`
+
+- Non-relevant attributes to a type are ignored.
+
+- For complex object types the `schema` block is ignored. Use instead the `@Schema` annotation directly on the class type.
 
 ---
 

@@ -80,19 +80,32 @@ internal object RequestBodyComposer {
             return null
         }
 
-        val schemas: MutableMap<ContentType, MutableList<ElementSchema>> = mutableMapOf()
+        val schemasByContentType: MutableMap<ContentType, MutableList<ElementSchema>> = mutableMapOf()
 
-        requestBody.content.forEach { (contentType, types) ->
+        requestBody.content.forEach { (contentType, typeDetails) ->
             tracer.debug("Processing standard content type: $contentType")
 
-            types.forEach { type ->
-                val schema: ElementSchema = SchemaRegistry.introspectType(type = type)?.schema
-                    ?: throw KopapiException("No schema found for type: $type with content type: $contentType")
-                schemas.getOrPut(contentType) { mutableListOf() }.add(schema)
+            typeDetails.forEach { details ->
+                var baseSchema: ElementSchema = SchemaRegistry.introspectType(type = details.type)?.schema
+                    ?: throw KopapiException(
+                        "No schema found for type: ${details.type} with content type: $contentType"
+                    )
+
+                // Apply additional parameter attributes.
+                details.schemaAttributes?.let { attributes ->
+                    baseSchema = SchemaComposer.copySchemaAttributes(
+                        schema = baseSchema,
+                        attributes = attributes
+                    )
+                }
+
+                schemasByContentType.getOrPut(contentType) {
+                    mutableListOf()
+                }.add(baseSchema)
             }
         }
 
-        return schemas.mapValues { (_, schemas) ->
+        return schemasByContentType.mapValues { (_, schemas) ->
             SchemaComposer.determineSchema(composition = requestBody.composition, schemas = schemas)
         }
     }

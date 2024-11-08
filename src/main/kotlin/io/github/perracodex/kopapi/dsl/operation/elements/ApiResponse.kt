@@ -22,7 +22,6 @@ import kotlin.reflect.KType
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
  * @property content A map of [ContentType] to a set of [KType] that this response may return.
  * @property links A map of [ApiLink] objects representing possible links to other operations.
- * @property schemaAttributes Optional schema attributes for the header type. Not applicable for complex types.
  *
  * @see [ApiOperationBuilder.response]
  * @see [ApiHeader]
@@ -35,10 +34,15 @@ internal data class ApiResponse(
     val descriptionSet: MutableSet<String> = LinkedHashSet(),
     val headers: Map<String, ApiHeader>?,
     val composition: Composition?,
-    val content: Map<ContentType, Set<KType>>?,
-    val links: Map<String, ApiLink>?,
-    val schemaAttributes: ApiSchemaAttributes?
+    val content: Map<ContentType, Set<TypeDetails>>?,
+    val links: Map<String, ApiLink>?
 ) {
+    @PublishedApi
+    internal data class TypeDetails(
+        val type: KType,
+        val schemaAttributes: ApiSchemaAttributes?
+    )
+
     init {
         content?.forEach { (_, types) ->
             if (types.isEmpty()) {
@@ -64,7 +68,10 @@ internal data class ApiResponse(
      * @return A new `ApiResponse` instance that represents the merged result.
      */
     fun mergeWith(other: ApiResponse): ApiResponse {
-        val combinedContent: Map<ContentType, Set<KType>> = mergeContent(current = content, merging = other.content)
+        val combinedContent: Map<ContentType, Set<TypeDetails>> = mergeContent(
+            current = content,
+            merging = other.content
+        )
 
         // Combine descriptions and eliminate duplicates.
         val combinedDescription: String? = other.description.trimOrNull()?.let {
@@ -158,10 +165,10 @@ internal data class ApiResponse(
      * @return A merged map of KType to sets of content types.
      */
     private fun mergeContent(
-        current: Map<ContentType, Set<KType>>?,
-        merging: Map<ContentType, Set<KType>>?
-    ): Map<ContentType, Set<KType>> {
-        val result: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
+        current: Map<ContentType, Set<TypeDetails>>?,
+        merging: Map<ContentType, Set<TypeDetails>>?
+    ): Map<ContentType, Set<TypeDetails>> {
+        val result: MutableMap<ContentType, MutableSet<TypeDetails>> = mutableMapOf()
 
         current?.forEach { (contentType, types) ->
             result.getOrPut(contentType) { mutableSetOf() }.addAll(types)
@@ -194,8 +201,7 @@ internal data class ApiResponse(
                 headers = null,
                 composition = null,
                 content = null,
-                links = null,
-                schemaAttributes = null
+                links = null
             )
         }
     }

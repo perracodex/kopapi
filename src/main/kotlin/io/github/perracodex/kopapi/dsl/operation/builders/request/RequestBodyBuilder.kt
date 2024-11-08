@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.type.TypeConfig
@@ -15,7 +17,6 @@ import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import kotlin.reflect.KClassifier
-import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 /**
@@ -32,10 +33,14 @@ import kotlin.reflect.typeOf
 @KopapiDsl
 public class RequestBodyBuilder @PublishedApi internal constructor(
     public var required: Boolean = true,
-    public var composition: Composition? = null
-) {
+    public var composition: Composition? = null,
+    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json),
+
+    @Suppress("PropertyName")
+    @PublishedApi
+    internal val _schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
+) : ISchemaAttributeConfigurable by _schemaAttributeConfigurable {
     public var description: String by MultilineString()
-    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
 
     @Suppress("PropertyName")
     @PublishedApi
@@ -81,9 +86,12 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
         }
 
         // Register the new type with the effective content types.
-        val newType: KType = typeOf<T>()
+        val typeDetails: ApiRequestBody.TypeDetails = ApiRequestBody.TypeDetails(
+            type = typeOf<T>(),
+            schemaAttributes = typeConfig._schemaAttributeConfigurable.attributes
+        )
         effectiveContentTypes.forEach { contentTypeKey ->
-            _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(newType)
+            _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(typeDetails)
         }
     }
 
@@ -135,11 +143,11 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
     @PublishedApi
     internal fun build(): ApiRequestBody {
         // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to its specific types.
-        val contentMap: Map<ContentType, Set<KType>> = _config.allTypes
-            .mapValues { (_, types) ->
+        val contentMap: Map<ContentType, Set<ApiRequestBody.TypeDetails>> = _config.allTypes
+            .mapValues { (_, typeDetails) ->
                 // Filter out types that are not explicitly defined.
-                types.filterNot { type ->
-                    val classifier: KClassifier? = type.classifier
+                typeDetails.filterNot { details ->
+                    val classifier: KClassifier? = details.type.classifier
                     (classifier == Unit::class) || (classifier == Any::class) || (classifier == Nothing::class)
                 }.toSet()
             }.filter { (_, types) ->
@@ -174,7 +182,7 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
     @PublishedApi
     internal class Config {
         /** Holds the types associated with the request body (non-multipart). */
-        val allTypes: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
+        val allTypes: MutableMap<ContentType, MutableSet<ApiRequestBody.TypeDetails>> = mutableMapOf()
 
         /** Holds the multipart parts schema. */
         val multipartParts: MutableMap<ContentType, ApiMultipart> = mutableMapOf()

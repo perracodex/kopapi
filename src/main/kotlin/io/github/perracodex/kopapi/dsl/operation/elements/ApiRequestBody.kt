@@ -4,10 +4,10 @@
 
 package io.github.perracodex.kopapi.dsl.operation.elements
 
+import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
-import io.github.perracodex.kopapi.utils.safeName
 import io.ktor.http.*
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
@@ -28,18 +28,24 @@ internal data class ApiRequestBody internal constructor(
     val description: String?,
     val required: Boolean,
     val composition: Composition?,
-    val content: Map<ContentType, Set<KType>>?,
+    val content: Map<ContentType, Set<TypeDetails>>?,
     val multipartContent: Map<ContentType, ApiMultipart>?,
 ) {
+    @PublishedApi
+    internal data class TypeDetails(
+        val type: KType,
+        val schemaAttributes: ApiSchemaAttributes?
+    )
+
     init {
-        content?.forEach { (_, types) ->
-            if (types.isEmpty()) {
+        content?.forEach { (_, typeDetails) ->
+            if (typeDetails.isEmpty()) {
                 throw KopapiException("At least one Type must be associated with each ContentType.")
             }
-            types.forEach { type ->
-                val classifier: KClassifier? = type.classifier
+            typeDetails.forEach { details ->
+                val classifier: KClassifier? = details.type.classifier
                 if (classifier == Any::class || classifier == Unit::class || classifier == Nothing::class) {
-                    throw KopapiException("RequestBody cannot be of type '${type.safeName()}'. Define an explicit type.")
+                    throw KopapiException("RequestBody cannot be of type '${details.type}'. Define an explicit type.")
                 }
             }
         }

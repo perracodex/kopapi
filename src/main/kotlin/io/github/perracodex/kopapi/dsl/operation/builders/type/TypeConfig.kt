@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.type
 
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.ktor.http.*
 
@@ -13,10 +15,10 @@ import io.ktor.http.*
  * @property contentType The [ContentType] to assign. Default: `JSON`.
  */
 @KopapiDsl
-public class TypeConfig @PublishedApi internal constructor() {
-    /**
-     * The content types associated with the type.
-     * Defaults to `ContentType.Application.Json` if not specified.
-     */
-    public var contentType: Set<ContentType>? = null
-}
+public class TypeConfig @PublishedApi internal constructor(
+    public var contentType: Set<ContentType>? = null,
+
+    @Suppress("PropertyName")
+    @PublishedApi
+    internal val _schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
+) : ISchemaAttributeConfigurable by _schemaAttributeConfigurable

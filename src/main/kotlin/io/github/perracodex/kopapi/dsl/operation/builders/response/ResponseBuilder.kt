@@ -22,7 +22,6 @@ import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
-import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 /**
@@ -38,8 +37,11 @@ import kotlin.reflect.typeOf
 public class ResponseBuilder @PublishedApi internal constructor(
     public var contentType: Set<ContentType> = setOf(ContentType.Application.Json),
     public var composition: Composition? = null,
-    private val schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
-) : ISchemaAttributeConfigurable by schemaAttributeConfigurable {
+
+    @Suppress("PropertyName")
+    @PublishedApi
+    internal val _schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
+) : ISchemaAttributeConfigurable by _schemaAttributeConfigurable {
     public var description: String by MultilineString()
 
     @Suppress("PropertyName")
@@ -90,9 +92,12 @@ public class ResponseBuilder @PublishedApi internal constructor(
         }
 
         // Register the new type with the effective content types.
-        val newType: KType = typeOf<T>()
+        val typeDetails: ApiResponse.TypeDetails = ApiResponse.TypeDetails(
+            type = typeOf<T>(),
+            schemaAttributes = typeConfig._schemaAttributeConfigurable.attributes
+        )
         effectiveContentTypes.forEach { contentTypeKey ->
-            _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(newType)
+            _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(typeDetails)
         }
     }
 
@@ -238,7 +243,8 @@ public class ResponseBuilder @PublishedApi internal constructor(
     @PublishedApi
     internal fun build(status: HttpStatusCode): ApiResponse {
         // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to its specific types.
-        val contentMap: Map<ContentType, Set<KType>>? = _config.allTypes.takeIf { it.isNotEmpty() }
+        val contentMap: Map<ContentType, Set<ApiResponse.TypeDetails>>? = _config
+            .allTypes.takeIf { it.isNotEmpty() }
             ?.mapValues { it.value.toSet() }
             ?.filterValues { it.isNotEmpty() }
             ?.toSortedMap(
@@ -255,15 +261,14 @@ public class ResponseBuilder @PublishedApi internal constructor(
             headers = _config.headers.takeIf { it.isNotEmpty() },
             composition = composition,
             content = contentMap,
-            links = _config.links.takeIf { it.isNotEmpty() },
-            schemaAttributes = schemaAttributeConfigurable.attributes
+            links = _config.links.takeIf { it.isNotEmpty() }
         )
     }
 
     @PublishedApi
     internal class Config {
         /** Holds the types associated with the response. */
-        val allTypes: MutableMap<ContentType, MutableSet<KType>> = mutableMapOf()
+        val allTypes: MutableMap<ContentType, MutableSet<ApiResponse.TypeDetails>> = mutableMapOf()
 
         /** Holds the headers associated with the response. */
         val headers: MutableMap<String, ApiHeader> = mutableMapOf()

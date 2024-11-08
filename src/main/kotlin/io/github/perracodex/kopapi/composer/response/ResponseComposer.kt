@@ -64,22 +64,24 @@ internal object ResponseComposer {
             val schemasByContentType: MutableMap<ContentType, MutableList<ElementSchema>> = mutableMapOf()
 
             // Introspect each type and associate its schema with the relevant content types.
-            apiResponse.content.forEach { (contentType, types) ->
-                types.forEach { type ->
-                    var baseSchema: ElementSchema = SchemaRegistry.introspectType(type = type)?.schema
-                        ?: throw KopapiException("No schema found for response type: $type, status code: $statusCode")
+            apiResponse.content.forEach { (contentType, typesDetails) ->
+                typesDetails.forEach { details ->
+                    var baseSchema: ElementSchema = SchemaRegistry.introspectType(type = details.type)?.schema
+                        ?: throw KopapiException(
+                            "No schema found for response type: ${details.type}, status code: $statusCode"
+                        )
 
                     // Apply additional parameter attributes.
-                    apiResponse.schemaAttributes?.let {
+                    details.schemaAttributes?.let { attributes ->
                         baseSchema = SchemaComposer.copySchemaAttributes(
                             schema = baseSchema,
-                            attributes = apiResponse.schemaAttributes
+                            attributes = attributes
                         )
                     }
 
-                    schemasByContentType
-                        .getOrPut(contentType) { mutableListOf() }
-                        .add(baseSchema)
+                    schemasByContentType.getOrPut(contentType) {
+                        mutableListOf()
+                    }.add(baseSchema)
                 }
             }
 

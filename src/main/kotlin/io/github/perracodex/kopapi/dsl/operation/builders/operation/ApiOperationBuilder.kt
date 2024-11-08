@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.builders.operation
 
 import io.github.perracodex.kopapi.dsl.common.parameter.configurable.ParametersBuilder
+import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
 import io.github.perracodex.kopapi.dsl.common.security.configurable.ISecurityConfigurable
 import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityConfigurable
 import io.github.perracodex.kopapi.dsl.common.server.configurable.IServerConfigurable
@@ -262,7 +263,13 @@ public class ApiOperationBuilder internal constructor(
         if (_config.requestBody == null) {
             val builder: RequestBodyBuilder = RequestBodyBuilder().apply {
                 apply(configure)
-                addType<T>()
+
+                val schemaContentType: Set<ContentType> = contentType
+                val schemaAttributes: ApiSchemaAttributes? = _schemaAttributeConfigurable.attributes
+                addType<T> {
+                    contentType = schemaContentType
+                    _schemaAttributeConfigurable.attributes = schemaAttributes
+                }
             }
 
             _config.requestBody = builder.build()
@@ -391,7 +398,13 @@ public class ApiOperationBuilder internal constructor(
     ) {
         val builder: ResponseBuilder = ResponseBuilder().apply {
             apply(configure)
-            addType<T>()
+
+            val schemaContentType: Set<ContentType> = contentType
+            val schemaAttributes: ApiSchemaAttributes? = _schemaAttributeConfigurable.attributes
+            addType<T> {
+                contentType = schemaContentType
+                _schemaAttributeConfigurable.attributes = schemaAttributes
+            }
         }
 
         val apiResponse: ApiResponse = builder.build(status = status)
