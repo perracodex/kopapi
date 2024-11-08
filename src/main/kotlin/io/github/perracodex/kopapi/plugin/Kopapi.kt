@@ -55,11 +55,11 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     Tracer<KopapiConfig>().info(
         """
         |Kopapi plugin enabled.
+        |  Debug: $server${apiConfiguration.debugUrl}
         |  OpenAPI YAML: $server${apiConfiguration.apiDocs.openapiYamlUrl}
         |  OpenAPI JSON: $server${apiConfiguration.apiDocs.openapiJsonUrl}
         |  Swagger UI: $server${apiConfiguration.apiDocs.swagger.url}
         |  ReDoc: $server${apiConfiguration.apiDocs.redocUrl}
-        |  Debug: $server${apiConfiguration.debugUrl}
         """.trimMargin()
     )
 
