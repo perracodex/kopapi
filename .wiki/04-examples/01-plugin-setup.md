@@ -9,13 +9,12 @@ fun Application.configureApiSchema() {
 
         // Define API documentation settings
         apiDocs {
-            openapiYamlUrl = "/api/openapi.yaml"
-            openapiJsonUrl = "/api/openapi.json"
+            openapiUrl = "/api/"
             redocUrl = "/api/redoc"
 
             // Swagger UI settings
             swagger {
-                url = "api/swagger"
+                url = "/swagger-ui/"
                 persistAuthorization = true
                 withCredentials = true
                 docExpansion = SwaggerDocExpansion.LIST

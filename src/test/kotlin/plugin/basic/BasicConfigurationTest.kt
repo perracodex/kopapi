@@ -4,6 +4,7 @@
 
 package plugin.basic
 
+import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.types.SwaggerDocExpansion
@@ -27,8 +28,7 @@ class BasicConfigurationTest {
 
     @Test
     fun `test plugin basic configuration (enabled)`() = testApplication {
-        val openApiYamlUrlValue ="openapi/yaml2"
-        val openApiJsonUrlValue = "openapi/json1"
+        val openApiUrlValue = "api"
         val swaggerUrlValue = "swagger123"
         val redocUrlValue = "openapi/redoc5"
         val debugUrlValue = "openapi/debug4"
@@ -40,8 +40,7 @@ class BasicConfigurationTest {
                 enableLogging = false
 
                 apiDocs {
-                    openapiYamlUrl = openApiYamlUrlValue
-                    openapiJsonUrl = openApiJsonUrlValue
+                    openapiUrl = openApiUrlValue
                     redocUrl = redocUrlValue
 
                     swagger {
@@ -66,14 +65,14 @@ class BasicConfigurationTest {
             )
 
             assertEquals(
-                expected = "/$openApiJsonUrlValue",
-                actual = SchemaRegistry.apiConfiguration?.apiDocs?.openapiJsonUrl,
-                message = "Expected JSON URL to match."
-            )
-            assertEquals(
-                expected = "/$openApiYamlUrlValue",
+                expected = "/$openApiUrlValue/${ApiDocsBuilder.DEFAULT_OPENAPI_FILENAME}${ApiDocsBuilder.YAML_EXTENSION}",
                 actual = SchemaRegistry.apiConfiguration?.apiDocs?.openapiYamlUrl,
                 message = "Expected YAML URL to match."
+            )
+            assertEquals(
+                expected = "/$openApiUrlValue/${ApiDocsBuilder.DEFAULT_OPENAPI_FILENAME}${ApiDocsBuilder.JSON_EXTENSION}",
+                actual = SchemaRegistry.apiConfiguration?.apiDocs?.openapiJsonUrl,
+                message = "Expected JSON URL to match."
             )
             assertEquals(
                 expected = "/$swaggerUrlValue",
@@ -99,27 +98,6 @@ class BasicConfigurationTest {
             // Set some non-default configuration values.
             install(Kopapi) {
                 enabled = false
-                debugUrl = "openapi/debug4"
-                enableLogging = false
-
-                apiDocs {
-                    openapiYamlUrl = "openapi/yaml2"
-                    openapiJsonUrl = "openapi/json1"
-                    redocUrl = "openapi/redoc5"
-
-                    swagger {
-                        url = "swagger3"
-                        persistAuthorization = true
-                        withCredentials = true
-                        docExpansion = SwaggerDocExpansion.LIST
-                        displayRequestDuration = true
-                        displayOperationId = true
-                        operationsSorter = SwaggerOperationsSorter.METHOD
-                        uiTheme = SwaggerUiTheme.DARK
-                        syntaxTheme = SwaggerSyntaxTheme.IDEA
-                        includeErrors = true
-                    }
-                }
             }
 
             val plugin: PluginInstance = plugin(Kopapi)

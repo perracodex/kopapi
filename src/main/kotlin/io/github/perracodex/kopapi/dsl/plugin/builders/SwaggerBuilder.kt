@@ -18,12 +18,11 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  * #### Sample usage
  * ```
  * apiDocs {
- *      openapiYamlUrl = "/openapi.yaml"
- *      openapiJsonUrl = "/openapi.json"
- *      redocUrl = "/redoc"
+ *      openapiUrl = "/api/"
+ *      redocUrl = "/api/redoc"
  *
  *      swagger {
- *          url = "/swagger"
+ *          url = "/swagger-ui/"
  *          persistAuthorization = true
  *          withCredentials = true
  *          docExpansion = SwaggerDocExpansion.LIST
@@ -42,9 +41,9 @@ public class SwaggerBuilder internal constructor() {
      * The URL to provide the `Swagger UI`.
      *
      * - Relative to the server root URL.
-     * - Default: `/swagger-ui`.
+     * - Default: `/swagger-ui/`.
      */
-    public var url: String = DEFAULT_SWAGGER_URL
+    public var url: String = ""
 
     /**
      * Whether to persist entered authorizations in `Swagger UI` so they are retained on page refresh.
@@ -138,6 +137,6 @@ public class SwaggerBuilder internal constructor() {
     )
 
     internal companion object {
-        const val DEFAULT_SWAGGER_URL: String = "/swagger-ui"
+        const val DEFAULT_SWAGGER_URL: String = "/swagger-ui/"
     }
 }

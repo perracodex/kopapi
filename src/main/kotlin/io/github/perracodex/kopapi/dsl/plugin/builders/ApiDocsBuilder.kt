@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.utils.NetworkUtils
+import io.github.perracodex.kopapi.utils.removeSuffixIgnoreCase
 
 /**
  * Constructs the information for the API documentation.
@@ -15,20 +16,23 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
 @KopapiDsl
 public class ApiDocsBuilder internal constructor() {
     /**
-     * The URL to provide the OpenAPI schema in `JSON` format.
+     * Relative URL path for the OpenAPI schema.
      *
-     * - Relative to the server root URL.
-     * - Default: `/openapi.json`.
-     */
-    public var openapiJsonUrl: String = DEFAULT_OPENAPI_JSON_URL
-
-    /**
-     * The URL to provide the OpenAPI schema in `YAML` format.
+     * - Default:
+     *      - `/openapi.yaml`
+     *      - `/openapi.json`
      *
-     * - Relative to the server root URL.
-     * - Default: `/openapi.yaml`.
+     * #### Directory Path
+     * - Will append `openapi.yaml` and `openapi.json`.
+     *      - *Example:* `"/api/"`
+     *      - *Results:* `"/api/openapi.yaml"`, `"/api/openapi.json"`
+     *
+     * #### File Path with Format Extension (`.yaml` or `.json`)
+     * - Retains the provided file and adds the alternate format extension.
+     *      - *Example:* `"/api/spec.yaml"`
+     *      - *Results:* `"/api/spec.yaml"`, `"/api/spec.json"`
      */
-    public var openapiYamlUrl: String = DEFAULT_OPENAPI_YAML_URL
+    public var openapiUrl: String = ""
 
     /**
      * The URL to provide the OpenAPI `Redoc` documentation.
@@ -36,7 +40,7 @@ public class ApiDocsBuilder internal constructor() {
      * - Relative to the server root URL.
      * - Default: `/redoc`.
      */
-    public var redocUrl: String = DEFAULT_REDOC_URL
+    public var redocUrl: String = ""
 
     /**
      * Holds the Swagger configuration.
@@ -49,12 +53,11 @@ public class ApiDocsBuilder internal constructor() {
      * #### Sample usage
      * ```
      * apiDocs {
-     *      openapiYamlUrl = "/openapi.yaml"
-     *      openapiJsonUrl = "/openapi.json"
-     *      redocUrl = "/redoc"
+     *      openapiUrl = "/api/"
+     *      redocUrl = "/api/redoc"
      *
      *      swagger {
-     *          url = "/swagger"
+     *          url = "/swagger-ui/"
      *          persistAuthorization = true
      *          withCredentials = true
      *          docExpansion = SwaggerDocExpansion.LIST
@@ -76,16 +79,49 @@ public class ApiDocsBuilder internal constructor() {
     /**
      * Produces an immutable [ApiInfo] instance from the builder.
      */
-    internal fun build(): ApiDocs = ApiDocs(
-        openapiYamlUrl = NetworkUtils.normalizeUrl(url = openapiYamlUrl, defaultValue = DEFAULT_OPENAPI_YAML_URL),
-        openapiJsonUrl = NetworkUtils.normalizeUrl(url = openapiJsonUrl, defaultValue = DEFAULT_OPENAPI_JSON_URL),
-        redocUrl = NetworkUtils.normalizeUrl(url = redocUrl, defaultValue = DEFAULT_REDOC_URL),
-        swagger = swagger ?: SwaggerBuilder().build()
-    )
+    internal fun build(): ApiDocs {
+        val normalizedOpenapiUrl: String = NetworkUtils.normalizeUrl(
+            url = openapiUrl,
+            defaultValue = DEFAULT_OPENAPI_URL
+        )
+
+        val openapiYamlUrl: String
+        val openapiJsonUrl: String
+
+        when {
+            normalizedOpenapiUrl.endsWith(suffix = JSON_EXTENSION, ignoreCase = true) -> {
+                openapiJsonUrl = normalizedOpenapiUrl
+                openapiYamlUrl = normalizedOpenapiUrl.removeSuffixIgnoreCase(JSON_EXTENSION).trim() + YAML_EXTENSION
+            }
+            normalizedOpenapiUrl.endsWith(suffix = YAML_EXTENSION, ignoreCase = true) -> {
+                openapiYamlUrl = normalizedOpenapiUrl
+                openapiJsonUrl = normalizedOpenapiUrl.removeSuffixIgnoreCase(YAML_EXTENSION).trim() + JSON_EXTENSION
+            }
+            else -> {
+                openapiJsonUrl = "${normalizedOpenapiUrl.removeSuffix(suffix ="/").trim()}/$DEFAULT_OPENAPI_FILENAME$JSON_EXTENSION"
+                openapiYamlUrl = "${normalizedOpenapiUrl.removeSuffix(suffix ="/").trim()}/$DEFAULT_OPENAPI_FILENAME$YAML_EXTENSION"
+            }
+        }
+
+        val normalizedRedocUrl: String = NetworkUtils.normalizeUrl(
+            url = redocUrl,
+            defaultValue = DEFAULT_REDOC_URL
+        )
+
+        return ApiDocs(
+            openapiYamlUrl = openapiYamlUrl,
+            openapiJsonUrl = openapiJsonUrl,
+            redocUrl = normalizedRedocUrl,
+            swagger = swagger ?: SwaggerBuilder().build()
+        )
+    }
 
     internal companion object {
-        const val DEFAULT_OPENAPI_JSON_URL: String = "/openapi.json"
-        const val DEFAULT_OPENAPI_YAML_URL: String = "/openapi.yaml"
-        const val DEFAULT_REDOC_URL: String = "/redoc"
+        const val DEFAULT_OPENAPI_URL: String = "/"
+        const val DEFAULT_REDOC_URL: String = "${DEFAULT_OPENAPI_URL}redoc"
+
+        const val YAML_EXTENSION: String = ".yaml"
+        const val JSON_EXTENSION: String = ".json"
+        const val DEFAULT_OPENAPI_FILENAME: String = "openapi"
     }
 }

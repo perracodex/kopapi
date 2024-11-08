@@ -79,12 +79,11 @@ public class KopapiConfig internal constructor(
      * #### Sample usage
      * ```
      * apiDocs {
-     *      openapiYamlUrl = "/openapi.yaml"
-     *      openapiJsonUrl = "/openapi.json"
-     *      redocUrl = "/redoc"
+     *      openapiUrl = "/api/"
+     *      redocUrl = "/api/redoc"
      *
      *      swagger {
-     *          url = "/swagger"
+     *          url = "/swagger-ui/"
      *          persistAuthorization = true
      *          withCredentials = true
      *          docExpansion = SwaggerDocExpansion.LIST
