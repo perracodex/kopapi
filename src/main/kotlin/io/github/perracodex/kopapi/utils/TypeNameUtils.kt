@@ -19,6 +19,7 @@ internal fun KType.nativeName(): String {
  * Extension function to safely get a type name for a [KType].
  * If the name cannot be determined, it creates a fallback name based on the type structure.
  */
+@Suppress("unused")
 internal fun KType.safeName(): String {
     val kClass: KClass<*>? = this.classifier as? KClass<*>
     return kClass?.safeName()
