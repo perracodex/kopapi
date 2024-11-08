@@ -30,7 +30,17 @@ public open class ParametersBuilder internal constructor(endpoint: String) {
      * pathParameter<Uuid>(name = "id") {
      *     description = "The unique identifier of the item."
      *     style = ParameterStyle.SIMPLE
-     *     deprecated = false
+     * }
+     * ```
+     * ```
+     * pathParameter<String>(name = "productCode") {
+     *     description = "The code representing the product."
+     *     style = ParameterStyle.SIMPLE
+     *     schema {
+     *         pattern = "^[A-Z0-9]{5,10}$"
+     *         minLength = 5
+     *         maxLength = 10
+     *     }
      * }
      * ```
      *
@@ -59,12 +69,22 @@ public open class ParametersBuilder internal constructor(endpoint: String) {
      * ```
      * queryParameter<Int>(name = "page") {
      *     description = "The page number to retrieve."
-     *     required = true
-     *     allowReserved = false
      *     defaultValue = DefaultValue.ofInt(1)
+     * }
+     * ```
+     * ```
+     * queryParameter<String>(name = "search") {
+     *     description = "A search term to filter the results."
+     *     required = false
+     *     allowReserved = false
+     *     defaultValue = DefaultValue.ofString("default")
      *     style = ParameterStyle.FORM
      *     explode = false
-     *     deprecated = false
+     *     schema {
+     *         pattern = "^[a-zA-Z0-9]{3,20}$"
+     *         minLength = 3
+     *         maxLength = 20
+     *     }
      * }
      * ```
      *
@@ -93,10 +113,18 @@ public open class ParametersBuilder internal constructor(endpoint: String) {
      * ```
      * headerParameter<String>(name = "X-Custom-Header") {
      *     description = "A custom header for special purposes."
-     *     required = true
+     *     required = false
      *     defaultValue = DefaultValue.ofString("default")
+     * }
+     * ```
+     * ```
+     * headerParameter<String>(name = "X-Client-Version") {
+     *     description = "The client's version number."
+     *     defaultValue = DefaultValue.ofString("1.0.0")
      *     style = ParameterStyle.SIMPLE
-     *     deprecated = false
+     *     schema {
+     *         pattern = "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+     *     }
      * }
      * ```
      *
@@ -123,13 +151,23 @@ public open class ParametersBuilder internal constructor(endpoint: String) {
      *
      * #### Sample Usage
      * ```
-     * cookieParameter<String>(name = "session") {
-     *     description = "The session ID for authentication."
-     *     required = true
+     * cookieParameter<String>(name = "custom") {
+     *     description = "Some custom cookie for the user."
      *     defaultValue = DefaultValue.ofString("default")
+     * }
+     * ```
+     * ```
+     * cookieParameter<String>(name = "session") {
+     *     description = "The session ID for user authentication."
+     *     required = true
+     *     defaultValue = DefaultValue.ofString("defaultSessionId")
      *     style = ParameterStyle.FORM
      *     explode = false
-     *     deprecated = false
+     *     schema {
+     *         pattern = "^[A-Za-z0-9_-]{20,50}$"
+     *         minLength = 20
+     *         maxLength = 50
+     *     }
      * }
      * ```
      *

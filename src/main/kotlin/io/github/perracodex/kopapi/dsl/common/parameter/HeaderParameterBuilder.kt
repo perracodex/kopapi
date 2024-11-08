@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.common.parameter
 
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.types.DefaultValue
@@ -30,8 +32,9 @@ public class HeaderParameterBuilder @PublishedApi internal constructor(
     public var required: Boolean = false,
     public var defaultValue: DefaultValue? = null,
     public var style: ParameterStyle = ParameterStyle.SIMPLE,
-    public var deprecated: Boolean = false
-) {
+    public var deprecated: Boolean = false,
+    private val schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
+) : ISchemaAttributeConfigurable by schemaAttributeConfigurable {
     public var description: String by MultilineString()
 
     /**
@@ -53,7 +56,8 @@ public class HeaderParameterBuilder @PublishedApi internal constructor(
             defaultValue = defaultValue,
             style = style.takeIf { it != ParameterStyle.SIMPLE },
             explode = null,
-            deprecated = deprecated.takeIf { it }
+            deprecated = deprecated.takeIf { it },
+            schemaAttributes = schemaAttributeConfigurable.attributes
         )
     }
 }

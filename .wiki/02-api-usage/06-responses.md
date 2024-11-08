@@ -97,7 +97,8 @@ response<MyResponseType>(status = HttpStatusCode.OK) {
 }
 ```
 
-- For better organization, headers and links can also be grouped, but this will have the same effect as defining them individually.
+- For better organization, the `headers` and `links` blocks can be used to group multiple headers and links together.
+- Note that this is just syntactic sugar and has the same effect as defining them individually.
 
 ```kotlin
 response<MyResponseType>(status = HttpStatusCode.OK) {

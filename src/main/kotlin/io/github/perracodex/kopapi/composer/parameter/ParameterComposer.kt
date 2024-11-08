@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.parameter
 
+import io.github.perracodex.kopapi.composer.SchemaComposer
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.schema.SchemaRegistry
@@ -40,11 +41,19 @@ internal object ParameterComposer {
             tracer.debug("Composing parameter: ${parameter.name}")
 
             // Determine the schema for the parameter (complex or path type), and introspect accordingly.
-            val baseSchema: ElementSchema = SchemaRegistry.introspectType(type = parameter.type)?.schema
+            var baseSchema: ElementSchema = SchemaRegistry.introspectType(type = parameter.type)?.schema
                 ?: throw KopapiException("No schema found for type: ${parameter.name}")
 
+            // Apply additional parameter attributes.
+            parameter.schemaAttributes?.let {
+                baseSchema = SchemaComposer.copySchemaAttributes(
+                    schema = baseSchema,
+                    attributes = parameter.schemaAttributes
+                )
+            }
+
             // If a default value is present, create a copy of the schema with the default value.
-            val schemaWithDefault: ElementSchema = parameter.defaultValue?.let { defaultValue ->
+            val finalSchema: ElementSchema = parameter.defaultValue?.let { defaultValue ->
                 tracer.debug("Found default value for parameter: ${parameter.name}")
                 applyDefaultValue(baseSchema = baseSchema, defaultValue = defaultValue)
             } ?: baseSchema
@@ -59,7 +68,7 @@ internal object ParameterComposer {
                 style = parameter.style?.value,
                 explode = parameter.explode.takeIf { it == true },
                 deprecated = parameter.deprecated.takeIf { it == true },
-                schema = schemaWithDefault
+                schema = finalSchema
             )
             parameterObjects.add(parameterObject)
         }

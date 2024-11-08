@@ -110,25 +110,12 @@ internal object ResponseComposer {
             var baseSchema: ElementSchema = SchemaRegistry.introspectType(type = header.type)?.schema
                 ?: throw KopapiException("No schema found for header type: ${header.type}")
 
-            // If the header is a primitive type, apply the pattern if specified.
-            // This is only meaningful for string headers, but we don't verify it
-            // as is the responsibility of the developer to provide a valid schema.
-            if (baseSchema is ElementSchema.Primitive) {
-                header.primitiveTypeSchema?.let { attributes ->
-                    baseSchema = (baseSchema as ElementSchema.Primitive).let { instance ->
-                        instance.copy(
-                            format = attributes.format ?: instance.format,
-                            minLength = attributes.minLength ?: instance.minLength,
-                            maxLength = attributes.maxLength ?: instance.maxLength,
-                            pattern = attributes.pattern ?: instance.pattern,
-                            minimum = attributes.minimum ?: instance.minimum,
-                            maximum = attributes.maximum ?: instance.maximum,
-                            exclusiveMinimum = attributes.exclusiveMinimum ?: instance.exclusiveMinimum,
-                            exclusiveMaximum = attributes.exclusiveMaximum ?: instance.exclusiveMaximum,
-                            multipleOf = attributes.multipleOf ?: instance.multipleOf
-                        )
-                    }
-                }
+            // Apply additional parameter attributes.
+            header.schemaAttributes?.let {
+                baseSchema = SchemaComposer.copySchemaAttributes(
+                    schema = baseSchema,
+                    attributes = header.schemaAttributes
+                )
             }
 
             // Determine the content schema if the header requires a specific media format.

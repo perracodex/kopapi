@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.elements
 
 import com.fasterxml.jackson.annotation.JsonValue
+import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter.Location
 import io.github.perracodex.kopapi.system.KopapiException
@@ -26,6 +27,7 @@ import kotlin.reflect.KType
  * @property style Defines the serialization style of the parameter.
  * @property explode Determines how arrays and objects are serialized. Only applicable to query and cookie parameters.
  * @property deprecated Indicates whether the parameter is deprecated and should be avoided.
+ * @property schemaAttributes Optional schema attributes for the header type. Not applicable for complex types.
  *
  * @see [ApiOperationBuilder.headerParameter]
  * @see [ApiOperationBuilder.queryParameter]
@@ -42,7 +44,8 @@ internal data class ApiParameter(
     val defaultValue: DefaultValue?,
     val style: ParameterStyle?,
     val explode: Boolean?,
-    val deprecated: Boolean?
+    val deprecated: Boolean?,
+    val schemaAttributes: ApiSchemaAttributes?,
 ) {
     init {
         if (name.isBlank()) {
@@ -52,7 +55,7 @@ internal data class ApiParameter(
         // Ensure non-supported types are not used.
         val classifier: KClassifier? = type.classifier
         if (classifier == Any::class || classifier == Unit::class || classifier == Nothing::class) {
-            throw KopapiException("Parameter cannot of type '${type.classifier}'. Define an explicit type.")
+            throw KopapiException("Parameter cannot be of type '${type.classifier}'. Define an explicit type.")
         }
     }
 

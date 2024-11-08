@@ -52,7 +52,7 @@ data class Person(
 | maximum          | Defines the inclusive upper bound for numeric types.                           |
 | exclusiveMinimum | Defines a strict lower bound where the value must be greater than this number. |
 | exclusiveMaximum | Defines a strict upper bound where the value must be less than this number.    |
-| multipleOf       | Defines that the value must a multiple of the specified number.                |
+| multipleOf       | Specifies that the field’s value must be a multiple of this number.            |
 | minItems         | Specifies the minimum number of items in an array.                             |
 | maxItems         | Specifies the maximum number of items in an array.                             |
 | uniqueItems      | Specifies that all items in an array must be unique.                           |

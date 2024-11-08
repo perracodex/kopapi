@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.common.parameter
 
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.types.ParameterStyle
@@ -25,8 +27,9 @@ import kotlin.reflect.KType
 @KopapiDsl
 public class PathParameterBuilder @PublishedApi internal constructor(
     public var style: ParameterStyle = ParameterStyle.SIMPLE,
-    public var deprecated: Boolean = false
-) {
+    public var deprecated: Boolean = false,
+    private val schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
+) : ISchemaAttributeConfigurable by schemaAttributeConfigurable {
     public var description: String by MultilineString()
 
     /**
@@ -49,6 +52,7 @@ public class PathParameterBuilder @PublishedApi internal constructor(
             style = style.takeIf { it != ParameterStyle.SIMPLE },
             explode = null,
             deprecated = deprecated.takeIf { it },
+            schemaAttributes = schemaAttributeConfigurable.attributes
         )
     }
 }

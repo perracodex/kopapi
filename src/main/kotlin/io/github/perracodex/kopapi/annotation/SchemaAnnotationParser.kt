@@ -52,7 +52,10 @@ internal object SchemaAnnotationParser {
             val maximum: Number? = parseNumber(value = attributes.maximum, classifier = classifier)
             val exclusiveMinimum: Number? = parseNumber(value = attributes.exclusiveMinimum, classifier = classifier)
             val exclusiveMaximum: Number? = parseNumber(value = attributes.exclusiveMaximum, classifier = classifier)
-            val multipleOf: Number? = parseNumber(value = attributes.multipleOf, classifier = classifier)
+
+            // Multiple of a number. Must be positive.
+            var multipleOf: Number? = parseNumber(value = attributes.multipleOf, classifier = classifier)
+            multipleOf = multipleOf?.takeIf { it.toDouble() > 0 }
 
             // Array-specific constraints.
             val minItems: Int? = attributes.minItems.takeIf { it >= 0 }

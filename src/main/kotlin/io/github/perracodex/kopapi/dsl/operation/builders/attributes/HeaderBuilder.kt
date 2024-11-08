@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.attributes
 
-import io.github.perracodex.kopapi.dsl.common.primitive.ApiPrimitiveTypeSchema
-import io.github.perracodex.kopapi.dsl.common.primitive.PrimitiveTypeSchemaBuilder
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
@@ -31,39 +31,10 @@ public class HeaderBuilder @PublishedApi internal constructor(
     public var required: Boolean = true,
     public var deprecated: Boolean = false,
     public var explode: Boolean = false,
-    public var contentType: ContentType? = null
-) {
+    public var contentType: ContentType? = null,
+    private val schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
+) : ISchemaAttributeConfigurable by schemaAttributeConfigurable {
     public var description: String by MultilineString()
-
-    /** Cached primitive type schema. */
-    private var _primitiveTypeSchema: ApiPrimitiveTypeSchema? = null
-
-    /**
-     * Defines additional properties for a primitive header type.
-     *
-     * Use this function to specify constraints and descriptive attributes (e.g., `format`, `pattern`,
-     * `maxLength`) applicable to primitive types like strings and numbers.
-     *
-     * This configuration does not apply to complex object types.
-     *
-     * #### Sample usage
-     * ```
-     * header<String>(name = "X-Session-Token") {
-     *     description = "The session token for the user."
-     *     schema {
-     *         pattern = "^[A-Za-z0-9_-]{20,50}$"
-     *         minLength = 20
-     *         maxLength = 50
-     *     }
-     * }
-     * ```
-     *
-     * @param configure A lambda for setting properties in [PrimitiveTypeSchemaBuilder]
-     * that refine the primitive type's attributes.
-     */
-    public fun schema(configure: PrimitiveTypeSchemaBuilder.() -> Unit) {
-        _primitiveTypeSchema = PrimitiveTypeSchemaBuilder().apply(configure).build()
-    }
 
     /**
      * Builds an [ApiHeader] instance from the current builder state.
@@ -79,7 +50,7 @@ public class HeaderBuilder @PublishedApi internal constructor(
             required = required,
             explode = explode.takeIf { it },
             contentType = contentType,
-            primitiveTypeSchema = _primitiveTypeSchema,
+            schemaAttributes = schemaAttributeConfigurable.attributes,
             deprecated = deprecated.takeIf { it }
         )
     }
