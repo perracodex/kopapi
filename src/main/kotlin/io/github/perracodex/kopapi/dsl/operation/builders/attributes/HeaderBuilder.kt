@@ -16,6 +16,7 @@ import kotlin.reflect.KType
  *
  * @property description A human-readable description of the header.
  * @property required Indicates whether the header is mandatory.
+ * @property explode Indicates if arrays and objects are serialized as a single comma-separated header. Has no effect on other types.
  * @property deprecated Indicates whether the header is deprecated and should be avoided.
  *
  * @see [ResponseBuilder]
@@ -24,7 +25,8 @@ import kotlin.reflect.KType
 @KopapiDsl
 public class HeaderBuilder @PublishedApi internal constructor(
     public var required: Boolean = true,
-    public var deprecated: Boolean = false
+    public var deprecated: Boolean = false,
+    public var explode: Boolean = false
 ) {
     public var description: String by MultilineString()
 
@@ -40,6 +42,7 @@ public class HeaderBuilder @PublishedApi internal constructor(
             type = type,
             description = description.trimOrNull(),
             required = required,
+            explode = explode.takeIf { it },
             deprecated = deprecated.takeIf { it }
         )
     }

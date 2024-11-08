@@ -113,6 +113,7 @@ internal object ResponseComposer {
             val headerObject = HeaderObject(
                 description = header.description.trimOrNull(),
                 required = header.required,
+                explode = header.explode.takeIf { it == true },
                 schema = baseSchema,
                 deprecated = header.deprecated.takeIf { it == true }
             )
