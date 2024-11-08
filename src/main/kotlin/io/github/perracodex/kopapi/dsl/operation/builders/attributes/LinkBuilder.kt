@@ -4,9 +4,12 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.attributes
 
+import io.github.perracodex.kopapi.dsl.common.server.ServerConfigBuilder
+import io.github.perracodex.kopapi.dsl.common.server.ServerVariableBuilder
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiLink
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -31,6 +34,12 @@ import java.util.*
  */
 @KopapiDsl
 public class LinkBuilder internal constructor() {
+    /** A map representing parameters to pass to the linked operation. */
+    private val _parameters: SortedMap<String, String> = sortedMapOf()
+
+    /** Cached server configuration. */
+    private var _server: ApiServerConfig? = null
+
     /**
      * The unique identifier of an existing operation in the OpenAPI specification.
      *
@@ -56,9 +65,6 @@ public class LinkBuilder internal constructor() {
      */
     public var requestBody: String? = null
 
-    /** A map representing parameters to pass to the linked operation. */
-    private val parameters: SortedMap<String, String> = sortedMapOf()
-
     /**
      * Adds a parameter mapping from the current operation to the linked operation.
      *
@@ -79,7 +85,54 @@ public class LinkBuilder internal constructor() {
         if (parameterName.isBlank()) {
             throw KopapiException("Parameter name must not be blank.")
         }
-        parameters[name] = value.trimOrNull()
+        _parameters[name] = value.trimOrNull()
+    }
+
+    /**
+     * Adds a server configuration with optional variables.
+     *
+     * #### Sample Usage
+     * ```
+     * // Simple example with no variables.
+     * server(urlString = "http://localhost:8080") {
+     *      description = "Local server for development."
+     * }
+     * ```
+     * ```
+     * // Example with variable placeholders.
+     * server(urlString = "{protocol}://{environment}.example.com:{port}") {
+     *      description = "The server with environment variable."
+     *
+     *      // Environment.
+     *      variable(name = "environment", defaultValue = "production") {
+     *          choices = setOf("production", "staging", "development")
+     *          description = "Specifies the environment (production, etc)"
+     *      }
+     *
+     *      // Port.
+     *      variable(name = "port", defaultValue = "8080") {
+     *          choices = setOf("8080", "8443")
+     *          description = "The port for the server."
+     *      }
+     *
+     *      // Protocol.
+     *      variable(name = "protocol", defaultValue = "http") {
+     *          choices = setOf("http", "https")
+     *      }
+     * }
+     * ```
+     *
+     * @param urlString The URL of the server. Expected to be a valid URL. If blank, the server is skipped.
+     * @param configure The configuration block for the server.
+     *
+     * @see [ServerConfigBuilder]
+     * @see [ServerVariableBuilder]
+     */
+    public fun server(urlString: String, configure: ServerConfigBuilder.() -> Unit = {}) {
+        if (urlString.isBlank()) {
+            throw KopapiException("Server URL cannot be blank.")
+        }
+        _server = ServerConfigBuilder(urlString = urlString).apply(configure).build()
     }
 
     /**
@@ -101,8 +154,9 @@ public class LinkBuilder internal constructor() {
             operationId = operationId?.trimOrNull(),
             operationRef = operationRef?.trimOrNull(),
             description = description.trimOrNull(),
-            parameters = parameters.takeIf { it.isNotEmpty() },
-            requestBody = requestBody.trimOrNull()
+            parameters = _parameters.takeIf { it.isNotEmpty() },
+            requestBody = requestBody.trimOrNull(),
+            server = _server
         )
     }
 }

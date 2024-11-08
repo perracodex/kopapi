@@ -54,6 +54,6 @@ public class TagBuilder internal constructor() {
         return tags.toSet()
     }
 
-    /** Clears the internal set of tags. */
+    /** Provides a string representation of the tags. */
     override fun toString(): String = tags.toString()
 }

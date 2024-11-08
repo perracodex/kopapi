@@ -6,7 +6,7 @@ package io.github.perracodex.kopapi.dsl.common.server
 
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
-import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.system.KopapiException
 
 /**
  * Builder constructing server configurations.
@@ -16,10 +16,8 @@ import io.github.perracodex.kopapi.system.Tracer
  */
 @KopapiDsl
 public class ServerBuilder internal constructor() {
-    private val tracer = Tracer<ServerBuilder>()
-
-    /** The internal set to enforce uniqueness of server configurations. */
-    private val serverConfigs: MutableSet<ApiServerConfig> = LinkedHashSet()
+    /** Cached server configurations. */
+    private val _servers: MutableSet<ApiServerConfig> = LinkedHashSet()
 
     /**
      * Adds a new server configuration with optional variables.
@@ -64,11 +62,10 @@ public class ServerBuilder internal constructor() {
      */
     public fun add(urlString: String, configure: ServerConfigBuilder.() -> Unit = {}) {
         if (urlString.isBlank()) {
-            tracer.warning("Provided server URL is blank. Skipping server configuration.")
-            return
+            throw KopapiException("Server URL cannot be blank.")
         }
         val serverConfig: ApiServerConfig = ServerConfigBuilder(urlString = urlString).apply(configure).build()
-        serverConfigs.add(serverConfig)
+        _servers.add(serverConfig)
     }
 
     /**
@@ -77,11 +74,11 @@ public class ServerBuilder internal constructor() {
      * @return A read-only set of server configurations.
      */
     internal fun build(): Set<ApiServerConfig> {
-        return serverConfigs.toSet()
+        return _servers.toSet()
     }
 
-    /** Clears the internal set of server configurations. */
-    override fun toString(): String = serverConfigs.toString()
+    /** Provides a string representation of the server configurations. */
+    override fun toString(): String = _servers.toString()
 
     internal companion object {
         /** The default server URL to be used if no servers are added. */

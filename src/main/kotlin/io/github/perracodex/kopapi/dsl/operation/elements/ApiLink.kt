@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.elements
 
+import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import java.util.*
 
 /**
@@ -14,6 +15,7 @@ import java.util.*
  * @property description A human-readable description of the link.
  * @property parameters A map of parameters to pass to the linked operation.
  * @property requestBody A single expression or literal value to be used as the request body when calling the target operation.
+ * @property server A server object to be used by the target operation.
  *
  * @see [ApiResponse]
  */
@@ -22,5 +24,6 @@ internal data class ApiLink(
     val operationRef: String?,
     val description: String?,
     val parameters: SortedMap<String, String>?,
-    val requestBody: String?
+    val requestBody: String?,
+    val server: ApiServerConfig?
 )
