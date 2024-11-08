@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.elements
 
+import io.github.perracodex.kopapi.dsl.common.primitive.ApiPrimitiveTypeSchema
 import io.ktor.http.*
 import kotlin.reflect.KType
 
@@ -15,7 +16,7 @@ import kotlin.reflect.KType
  * @property required Indicates whether the header is mandatory.
  * @property explode Indicates whether arrays and objects are serialized as a single comma-separated header.
  * @property contentType Optional [ContentType] when a specific media format is required.
- * @property pattern Optional regular expression pattern that the header value must match. Meaningful only for string headers.
+ * @property primitiveTypeSchema Optional primitive schema attributes for the header type. Not applicable for complex types.
  * @property deprecated Indicates whether the header is deprecated and should be avoided.
  *
  * @see [ApiResponse]
@@ -26,6 +27,6 @@ internal data class ApiHeader(
     val required: Boolean,
     val explode: Boolean?,
     val contentType: ContentType?,
-    val pattern: String?,
+    val primitiveTypeSchema: ApiPrimitiveTypeSchema?,
     val deprecated: Boolean?
 )

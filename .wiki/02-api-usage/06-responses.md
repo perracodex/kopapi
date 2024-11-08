@@ -67,9 +67,13 @@ response<MyResponseType>(status = HttpStatusCode.OK) {
     header<Int>(name = "X-Rate-Limit") {
         description = "The number of allowed requests in the current period."
     }
-    header<Uuid>(name = "X-Request-Id") {
-        description = "A unique identifier for the request."
-        required = false
+    header<String>(name = "X-Session-Token")  {
+        description = "The session token for the user."
+        schema {
+            pattern = "^[A-Za-z0-9_-]{20,50}$"
+            minLength = 20
+            maxLength = 50
+        }
     }
 
     // Links to other operations.
@@ -98,27 +102,31 @@ response<MyResponseType>(status = HttpStatusCode.OK) {
 ```kotlin
 response<MyResponseType>(status = HttpStatusCode.OK) {
     headers {
-      add<Int>(name = "X-Rate-Limit") {
+        add<Int>(name = "X-Rate-Limit") {
             description = "The number of allowed requests in the current period."
         }
-      add<Uuid>(name = "X-Request-Id") {
-            description = "A unique identifier for the request."
-            required = false
+        add<String>(name = "X-Session-Token")  {
+            description = "The session token for the user."
+            schema {
+                pattern = "^[A-Za-z0-9_-]{20,50}$"
+                minLength = 20
+                maxLength = 50
+            }
         }
     }
 
     links {
-      add(name = "GetEmployeeDetails") {
-        operationId = "getEmployeeDetails"
-        description = "Retrieve information about this employee."
-        parameter(name = "employee_id", value = "\$request.path.employee_id")
+        add(name = "GetEmployeeDetails") {
+            operationId = "getEmployeeDetails"
+            description = "Retrieve information about this employee."
+            parameter(name = "employee_id", value = "\$request.path.employee_id")
         }
-      add(name = "UpdateEmployeeStatus") {
-        operationId = "updateEmployeeStatus"
-        description = "Link to update the status of this employee."
-        parameter(name = "employee_id", value = "\$request.path.employee_id")
-        parameter(name = "status", value = "active")
-        requestBody = "{\"status\": \"active\"}"
+        add(name = "UpdateEmployeeStatus") {
+            operationId = "updateEmployeeStatus"
+            description = "Link to update the status of this employee."
+            parameter(name = "employee_id", value = "\$request.path.employee_id")
+            parameter(name = "status", value = "active")
+            requestBody = "{\"status\": \"active\"}"
         }
     }
 }

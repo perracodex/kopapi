@@ -114,8 +114,9 @@ internal sealed class ApiSecurityScheme(
                 }
             }
 
-            fun hasAtLeastOneFlow(): Boolean =
-                authorizationCode != null || clientCredentials != null || implicit != null || password != null
+            fun hasAtLeastOneFlow(): Boolean {
+                return listOfNotNull(authorizationCode, clientCredentials, implicit, password).isNotEmpty()
+            }
         }
 
         /**

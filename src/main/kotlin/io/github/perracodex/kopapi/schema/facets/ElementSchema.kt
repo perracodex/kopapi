@@ -115,7 +115,7 @@ internal sealed class ElementSchema(
      *
      * @property schemaType The primitive [ApiType] as defined in the OpenAPI specification.
      * @property schemaType The API type of the schema as defined in the OpenAPI specification.
-     * @property format An optional format to further define the api type (e.g., `date-time`, `uuid`).
+     * @property format Optional format to further define the api type (e.g., `date-time`, `uuid`).
      * @property defaultValue An optional default value for the schema.
      * @property minLength The minimum character length for string fields.
      * @property maxLength The maximum character length for string fields.

@@ -95,12 +95,22 @@ public class ResponseBuilder @PublishedApi internal constructor() {
     /**
      * Adds a header to the response.
      *
-     * #### Sample Usage
+     * #### Sample usage
      * ```
-     * header<Int>("X-Rate-Limit") {
+     * header<Int>(name = "X-Rate-Limit") {
      *     description = "Number of allowed requests per period."
      * }
      * ```
+     * ```
+     * header<String>(name = "X-Session-Token") {
+     *     description = "The session token for the user."
+     *     schema {
+     *         pattern = "^[A-Za-z0-9_-]{20,50}$"
+     *         minLength = 20
+     *         maxLength = 50
+     *     }
+     * }
+     *```
      *
      * @param T The type of the header.
      * @param name The name of the header.
@@ -122,13 +132,17 @@ public class ResponseBuilder @PublishedApi internal constructor() {
      * #### Sample Usage
      * ```
      * headers {
-     *     add<Int>("X-Rate-Limit") {
-     *         description = "Number of allowed requests per period."
-     *     }
-     *     add<Uuid>(name = "X-Request-Id") {
-     *         description = "A unique identifier for the request."
-     *         required = false
-     *     }
+     *      add<Int>("X-Rate-Limit") {
+     *          description = "Number of allowed requests per period."
+     *      }
+     *      add<String>(name = "X-Session-Token") {
+     *          description = "The session token for the user."
+     *          schema {
+     *              pattern = "^[A-Za-z0-9_-]{20,50}$"
+     *              minLength = 20
+     *              maxLength = 50
+     *          }
+     *      }
      * }
      * ```
      *
