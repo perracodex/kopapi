@@ -68,7 +68,7 @@ class CookieParameterTest {
             assertEquals(expected = ApiParameter.Location.COOKIE.value, actual = cookieParameter["in"].asText())
             assertEquals(expected = "A cookie parameter with various properties", actual = cookieParameter["description"].asText())
             assertEquals(expected = true, actual = cookieParameter["required"].asBoolean())
-            assertEquals(expected = "defaultCookieValue", actual = cookieParameter["default"].asText())
+            assertEquals(expected = "defaultCookieValue", actual = cookieParameter["schema"]["default"].asText())
             assertEquals(expected = ParameterStyle.PIPE_DELIMITED.value, actual = cookieParameter["style"].asText())
             assertNull(actual = cookieParameter["explode"], message = "Expected 'explode' to be null.")
             assertNull(actual = cookieParameter["deprecated"], message = "Expected 'deprecated' to be null.")
