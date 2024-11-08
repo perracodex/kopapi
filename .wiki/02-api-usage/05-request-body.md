@@ -23,19 +23,19 @@ Besides the primary request body type, you can also register additional types, i
 
 ```kotlin
 requestBody<MyRequestBodyType> {
-  // Override the default content type.
-  contentType = setOf(
-    ContentType.Application.Json,
-    ContentType.Application.Xml
-  )
-
-  // Register an additional type.
-  addType<AdditionalType>()
-
-  // Register another type but to XML only.
-  addType<YetAnotherTpe> {
-    contentType = setOf(ContentType.Application.Xml)
-  }
+    // Override the default content type.
+    contentType = setOf(
+        ContentType.Application.Json,
+        ContentType.Application.Xml
+    )
+  
+    // Register an additional type.
+    addType<AdditionalType>()
+  
+    // Register another type but to XML only.
+    addType<YetAnotherTpe> {
+        contentType = setOf(ContentType.Application.Xml)
+    }
 }
 ```
 
@@ -69,9 +69,9 @@ To define a request body as `multipart` use the `multipart` function.
 
 ```kotlin
 multipart {
-  part<PartData.FileItem>("myFilePart") {
-    description = "The file to upload."
-  }
+    part<PartData.FileItem>("myFilePart") {
+        description = "The file to upload."
+    }
 }
 ```
 
@@ -79,11 +79,11 @@ Or specify the content details explicitly:
 
 ```kotlin
 multipart {
-  contentType = ContentType.MultiPart.Encrypted
+    contentType = ContentType.MultiPart.Encrypted
 
-  part<PartData.FormItem>("myFormPart") {
-    description = "The form data."
-  }
+    part<PartData.FormItem>("myFormPart") {
+        description = "The form data."
+    }
 }
 ```
 
@@ -102,48 +102,48 @@ multipart {
 
 ```kotlin
 requestBody<Unit> {
-  // Upload product details, including product images and metadata.
-  multipart {
-    contentType = ContentType.MultiPart.FormData
+    // Upload product details, including product images and metadata.
+    multipart {
+        contentType = ContentType.MultiPart.FormData
 
-    // Upload the primary product image (JPEG)
-    part<PartData.FileItem>("primaryImage") {
-      description = "The primary image of the product."
-      contentType = ContentType.Image.JPEG
-      schemaType = ApiType.STRING
-      schemaFormat = ApiFormat.BINARY
-    }
+        // Upload the primary product image (JPEG)
+        part<PartData.FileItem>("primaryImage") {
+            description = "The primary image of the product."
+            contentType = ContentType.Image.JPEG
+            schemaType = ApiType.STRING
+            schemaFormat = ApiFormat.BINARY
+        }
 
-    // Upload the secondary product image (optional)
-    part<PartData.FileItem>("secondaryImage") {
-      description = "An optional secondary image of the product."
-      contentType = ContentType.Image.JPEG
-      schemaType = ApiType.STRING
-      schemaFormat = ApiFormat.BINARY
-      required = false
-    }
+        // Upload the secondary product image (optional)
+        part<PartData.FileItem>("secondaryImage") {
+            description = "An optional secondary image of the product."
+            contentType = ContentType.Image.JPEG
+            schemaType = ApiType.STRING
+            schemaFormat = ApiFormat.BINARY
+            required = false
+        }
 
-    // Add a form field for the product name (plain text)
-    part<PartData.FormItem>("productName") {
-      description = "The name of the product."
-      schemaType = ApiType.STRING
-    }
+        // Add a form field for the product name (plain text)
+        part<PartData.FormItem>("productName") {
+            description = "The name of the product."
+            schemaType = ApiType.STRING
+        }
 
-    // Add a form field for the product price
-    part<PartData.FormItem>("price") {
-      description = "The price of the product in USD."
-      schemaType = ApiType.NUMBER
-      schemaFormat = ApiFormat.FLOAT
-    }
+        // Add a form field for the product price
+        part<PartData.FormItem>("price") {
+            description = "The price of the product in USD."
+            schemaType = ApiType.NUMBER
+            schemaFormat = ApiFormat.FLOAT
+        }
 
-    // Upload a JSON object for product metadata (optional)
-    part<PartData.FormItem>("metadata") {
-      description = "Additional metadata about the product."
-      contentType = ContentType.Application.Json
-      schemaType = ApiType.OBJECT
-      required = false
+        // Upload a JSON object for product metadata (optional)
+        part<PartData.FormItem>("metadata") {
+            description = "Additional metadata about the product."
+            contentType = ContentType.Application.Json
+            schemaType = ApiType.OBJECT
+            required = false
+        }
     }
-  }
 }
 ```
 

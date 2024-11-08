@@ -16,11 +16,11 @@ Can add multiple content types to a response, if omitted, the default content ty
 
 ```kotlin
 response<MyResponseType>(status = HttpStatusCode.OK) {
-  description = "Successfully retrieved the item."
-  contentType = setOf(
-    ContentType.Application.Json,
-    ContentType.Application.Xml
-  )
+    description = "Successfully retrieved the item."
+    contentType = setOf(
+        ContentType.Application.Json,
+        ContentType.Application.Xml
+    )
 }
 ```
 
@@ -30,13 +30,13 @@ response<MyResponseType>(status = HttpStatusCode.OK) {
 
 ```kotlin
 response<MyResponseType>(status = HttpStatusCode.OK) {
-  // Register an additional type.
-  addType<AnotherType>()
+    // Register an additional type.
+    addType<AnotherType>()
 
-  // Register another type to XML only instead of the default JSON.
-  addType<YetAnotherType>(
-    contentType = setOf(ContentType.Application.Xml)
-  )
+    // Register another type to XML only instead of the default JSON.
+    addType<YetAnotherType>(
+        contentType = setOf(ContentType.Application.Xml)
+    )
 }
 ```
 
@@ -67,7 +67,7 @@ response<MyResponseType>(status = HttpStatusCode.OK) {
     header<Int>(name = "X-Rate-Limit") {
         description = "The number of allowed requests in the current period."
     }
-    header<String>(name = "X-Session-Token")  {
+    header<String>(name = "X-Session-Token") {
         description = "The session token for the user."
         schema {
             pattern = "^[A-Za-z0-9_-]{20,50}$"
@@ -106,7 +106,7 @@ response<MyResponseType>(status = HttpStatusCode.OK) {
         add<Int>(name = "X-Rate-Limit") {
             description = "The number of allowed requests in the current period."
         }
-        add<String>(name = "X-Session-Token")  {
+        add<String>(name = "X-Session-Token") {
             description = "The session token for the user."
             schema {
                 pattern = "^[A-Za-z0-9_-]{20,50}$"
@@ -157,21 +157,21 @@ These will be merged and grouped according to their `status code` and `Content-T
 ```kotlin
 // Status code 200 OK with a body of MyResponseType.
 response<MyResponseType>(status = HttpStatusCode.OK) {
-  desription = "Example 1."
+    desription = "Example 1."
 }
 
 // Again status code 200 OK, but with a body of AnotherResponseType and more content-types.
 response<AnotherResponseType>(status = HttpStatusCode.OK) {
-  description = "Example 2."
-  contentType = setOf(
-    ContentType.Application.Json,
-    ContentType.Application.Xml
-  )
+    description = "Example 2."
+    contentType = setOf(
+        ContentType.Application.Json,
+        ContentType.Application.Xml
+    )
 }
 
 // Status code 404 Not Found.
 response(status = HttpStatusCode.NotFound) {
-  description = "Not Found."
+    description = "Not Found."
 }
 ```
 
@@ -210,12 +210,70 @@ The `composition` property allows to specify how multiple types associated with 
 
 ```kotlin
 response<MyResponseType>(status = HttpStatusCode.OK) {
-  // Apply the common composition across all content types.
-  composition = Composition.OneOf
+    // Apply the common composition across all content types.
+    composition = Composition.OneOf
 
-  addType<AnotherType>()
+    addType<AnotherType>()
 }
 ```
+
+---
+
+### Defining Additional Schema Properties
+
+When the response or header type defines a primitive type such as strings, numbers, including arrays,
+additional properties can be set using the `schema` block.
+
+```kotlin
+response<String>(status = HttpStatusCode.OK) {
+    description = "The unique identifier for the newly created resource."
+    schema {
+        minLength = 10
+    }
+
+    headers {
+        add<String>(name = "X-Session-Token") {
+            description = "The session token for the user, required for authenticated requests."
+            schema {
+                pattern = "^[A-Za-z0-9_-]{36}$"
+                minLength = 36
+                maxLength = 36
+            }
+        }
+
+        add<String>(name = "X-RateLimit-Remaining") {
+            description = "The number of requests remaining in the current rate limit window."
+            schema {
+                minimum = 0
+            }
+        }
+    }
+}
+```
+
+| Property         | Description                                                                    |
+|------------------|--------------------------------------------------------------------------------|
+| format           | Overrides the default format for the type allowing for custom formats.         |
+| minLength        | Defines the minimum length for string types.                                   |
+| maxLength        | Defines the maximum length for string types.                                   |
+| pattern          | A regular expression pattern that a string type must match.                    |
+| minimum          | Defines the inclusive lower bound for numeric types.                           |
+| maximum          | Defines the inclusive upper bound for numeric types.                           |
+| exclusiveMinimum | Defines a strict lower bound where the value must be greater than this number. |
+| exclusiveMaximum | Defines a strict upper bound where the value must be less than this number.    |
+| multipleOf       | Specifies that the type’s value must be a multiple of this number.             |
+| minItems         | Specifies the minimum number of items in an array type.                        |
+| maxItems         | Specifies the maximum number of items in an array type.                        |
+| uniqueItems      | Specifies that all items in an array type must be unique.                      |
+
+- Depending on the type, only the relevant attributes are applicable:
+  - **String Types**: `minLength`, `maxLength`, `pattern`
+  - **Numeric Types**: `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, `multipleOf`
+  - **Array Types**: `minItems`, `maxItems`, `uniqueItems`
+
+- Non-relevant attributes to a type are ignored.
+
+- For complex object types the `schema` block is ignored. Use instead the `@Schema` annotation directly on the class type.
 
 --- 
 
@@ -223,39 +281,42 @@ response<MyResponseType>(status = HttpStatusCode.OK) {
 
 ```kotlin
 api {
-  response<MyResponseType>(status = HttpStatusCode.OK) {
-    // Optional description.
-    description = "Successfully retrieved the item."
+    response<MyResponseType>(status = HttpStatusCode.OK) {
+        // Optional description.
+        description = "Successfully retrieved the item."
 
-    // Override the default content type.
-    contentType = setOf(
-      ContentType.Application.Json,
-      ContentType.Application.Xml
-    )
+        // Override the default content type.
+        contentType = setOf(
+            ContentType.Application.Json,
+            ContentType.Application.Xml
+        )
 
-    // Optional Headers and Links.
-    header<Int>(name = "X-Rate-Limit") {
-      description = "The number of allowed requests in the current period."
+        // Optional Headers and Links.
+        header<Int>(name = "X-Rate-Limit") {
+            description = "The number of allowed requests in the current period."
+            schema {
+                minimum = 0
+            }
+        }
+        link(name = "GetEmployeeDetails") {
+            operationId = "getEmployeeDetails"
+            description = "Retrieve information about this employee."
+            parameter(name = "employee_id", value = "\$request.path.employee_id")
+        }
+
+        // Optional composition.
+        // Only meaningful when multiple types are registered.
+        // If omitted, defaults to `AnyOf`.
+        composition = Composition.AnyOf
+
+        // Register an additional type.
+        addType<AnotherType>()
+
+        // Register another type but to XML only.
+        addType<YetAnotherType> {
+            contentType = setOf(ContentType.Application.Xml)
+        }
     }
-    link(name = "GetEmployeeDetails") {
-      operationId = "getEmployeeDetails"
-      description = "Retrieve information about this employee."
-      parameter(name = "employee_id", value = "\$request.path.employee_id")
-    }
-
-    // Optional composition.
-    // Only meaningful when multiple types are registered.
-    // If omitted, defaults to `AnyOf`.
-    composition = Composition.AnyOf
-
-    // Register an additional type.
-    addType<AnotherType>()
-
-    // Register another type but to XML only.
-    addType<YetAnotherType> {
-      contentType = setOf(ContentType.Application.Xml)
-    }
-  }
 }
 ```
 

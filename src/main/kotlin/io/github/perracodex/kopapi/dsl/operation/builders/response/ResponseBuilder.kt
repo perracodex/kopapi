@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.response
 
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeadersBuilder
@@ -33,10 +35,12 @@ import kotlin.reflect.typeOf
  * @see [ApiOperationBuilder.response]
  */
 @KopapiDsl
-public class ResponseBuilder @PublishedApi internal constructor() {
+public class ResponseBuilder @PublishedApi internal constructor(
+    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json),
+    public var composition: Composition? = null,
+    private val schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
+) : ISchemaAttributeConfigurable by schemaAttributeConfigurable {
     public var description: String by MultilineString()
-    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
-    public var composition: Composition? = null
 
     @Suppress("PropertyName")
     @PublishedApi
@@ -251,7 +255,8 @@ public class ResponseBuilder @PublishedApi internal constructor() {
             headers = _config.headers.takeIf { it.isNotEmpty() },
             composition = composition,
             content = contentMap,
-            links = _config.links.takeIf { it.isNotEmpty() }
+            links = _config.links.takeIf { it.isNotEmpty() },
+            schemaAttributes = schemaAttributeConfigurable.attributes
         )
     }
 

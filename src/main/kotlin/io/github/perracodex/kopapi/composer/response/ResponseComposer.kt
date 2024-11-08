@@ -50,7 +50,7 @@ internal object ResponseComposer {
             )
 
             if (apiResponse.content.isNullOrEmpty()) {
-                // No types associated with the response; create a PathResponse without content.
+                // No types associated with the response; create a ResponseObject without content.
                 composedResponses[statusCode.value.toString()] = ResponseObject(
                     description = apiResponse.description,
                     headers = finalHeaders,
@@ -66,12 +66,20 @@ internal object ResponseComposer {
             // Introspect each type and associate its schema with the relevant content types.
             apiResponse.content.forEach { (contentType, types) ->
                 types.forEach { type ->
-                    val schema: ElementSchema = SchemaRegistry.introspectType(type = type)?.schema
-                        ?: throw KopapiException("No schema found for type: $type, status code: $statusCode")
+                    var baseSchema: ElementSchema = SchemaRegistry.introspectType(type = type)?.schema
+                        ?: throw KopapiException("No schema found for response type: $type, status code: $statusCode")
+
+                    // Apply additional parameter attributes.
+                    apiResponse.schemaAttributes?.let {
+                        baseSchema = SchemaComposer.copySchemaAttributes(
+                            schema = baseSchema,
+                            attributes = apiResponse.schemaAttributes
+                        )
+                    }
 
                     schemasByContentType
                         .getOrPut(contentType) { mutableListOf() }
-                        .add(schema)
+                        .add(baseSchema)
                 }
             }
 

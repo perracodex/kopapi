@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.elements
 
+import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
@@ -21,6 +22,7 @@ import kotlin.reflect.KType
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
  * @property content A map of [ContentType] to a set of [KType] that this response may return.
  * @property links A map of [ApiLink] objects representing possible links to other operations.
+ * @property schemaAttributes Optional schema attributes for the header type. Not applicable for complex types.
  *
  * @see [ApiOperationBuilder.response]
  * @see [ApiHeader]
@@ -35,6 +37,7 @@ internal data class ApiResponse(
     val composition: Composition?,
     val content: Map<ContentType, Set<KType>>?,
     val links: Map<String, ApiLink>?,
+    val schemaAttributes: ApiSchemaAttributes?
 ) {
     init {
         content?.forEach { (_, types) ->
@@ -191,7 +194,8 @@ internal data class ApiResponse(
                 headers = null,
                 composition = null,
                 content = null,
-                links = null
+                links = null,
+                schemaAttributes = null
             )
         }
     }

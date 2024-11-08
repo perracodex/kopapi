@@ -28,6 +28,8 @@ internal interface ISchemaAttributeConfigurable {
      * ```
      *
      * @param configure A lambda for setting properties in [SchemaAttributeBuilder] that refine the type's attributes.
+     *
+     * @see [SchemaAttributeBuilder]
      */
     fun schema(configure: SchemaAttributeBuilder.() -> Unit)
 }
