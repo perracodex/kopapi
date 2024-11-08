@@ -6,22 +6,26 @@ package io.github.perracodex.kopapi.composer.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
+import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
+import io.ktor.http.*
 
 /**
  * Represents a response header adhering to the OpenAPI specification.
  *
- * @param description A description of the header.
- * @param required Indicates whether the header is mandatory.
- * @property explode Indicates if arrays and objects are serialized as a single comma-separated header. Has no effect on other types.
- * @param schema The schema of the header.
- * @param deprecated Indicates whether the response is deprecated and should be avoided.
+ * @property description A description of the header.
+ * @property required Indicates whether the header is mandatory.
+ * @property explode Indicates whether arrays and objects are serialized as a single comma-separated header.
+ * @property schema The schema of the header. Must be `null` if `content` is specified.
+ * @property content [ContentType] when a specific media format is required. Must be `null` if `schema` is specified.
+ * @property deprecated Indicates whether the response is deprecated and should be avoided.
  */
 @ComposerApi
 internal data class HeaderObject(
     @JsonProperty("description") val description: String?,
     @JsonProperty("required") val required: Boolean,
     @JsonProperty("explode") val explode: Boolean?,
-    @JsonProperty("schema") val schema: ElementSchema,
+    @JsonProperty("schema") val schema: ElementSchema?,
+    @JsonProperty("content") var content: Map<ContentType, OpenApiSchema.ContentSchema>?,
     @JsonProperty("deprecated") val deprecated: Boolean?
 )

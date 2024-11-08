@@ -107,14 +107,32 @@ internal object ResponseComposer {
 
         headers.forEach { (nam: String, header: ApiHeader) ->
             // Determine the schema for the header, and introspect accordingly.
-            val baseSchema: ElementSchema = SchemaRegistry.introspectType(type = header.type)?.schema
+            var schema: ElementSchema = SchemaRegistry.introspectType(type = header.type)?.schema
                 ?: throw KopapiException("No schema found for header type: ${header.type}")
 
+            // If the header is a primitive type, apply the pattern if specified.
+            // This is only meaningful for string headers, but we don't verify it
+            // as is the responsibility of the developer to provide a valid schema.
+            if (schema is ElementSchema.Primitive) {
+                header.pattern?.let { pattern ->
+                    schema = (schema as ElementSchema.Primitive).copy(
+                        pattern = pattern,
+                    )
+                }
+            }
+
+            // Determine the content schema if the header requires a specific media format.
+            val content: Map<ContentType, OpenApiSchema.ContentSchema>? = header.contentType?.let { contentType ->
+                mapOf(contentType to OpenApiSchema.ContentSchema(schema = schema))
+            }
+
+            // Construct the header object.
             val headerObject = HeaderObject(
                 description = header.description.trimOrNull(),
                 required = header.required,
                 explode = header.explode.takeIf { it == true },
-                schema = baseSchema,
+                schema = schema.takeIf { content == null },
+                content = content,
                 deprecated = header.deprecated.takeIf { it == true }
             )
             headerObjects[nam] = headerObject

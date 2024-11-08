@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.dsl.operation.builders.response.ResponseBuild
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
+import io.ktor.http.*
 import kotlin.reflect.KType
 
 /**
@@ -16,7 +17,9 @@ import kotlin.reflect.KType
  *
  * @property description A human-readable description of the header.
  * @property required Indicates whether the header is mandatory.
- * @property explode Indicates if arrays and objects are serialized as a single comma-separated header. Has no effect on other types.
+ * @property explode Indicates whether arrays and objects are serialized as a single comma-separated header.
+ * @property contentType Optional [ContentType] when a specific media format is required.
+ * @property pattern Optional regular expression pattern that the header value must match. Meaningful only for string headers.
  * @property deprecated Indicates whether the header is deprecated and should be avoided.
  *
  * @see [ResponseBuilder]
@@ -26,7 +29,9 @@ import kotlin.reflect.KType
 public class HeaderBuilder @PublishedApi internal constructor(
     public var required: Boolean = true,
     public var deprecated: Boolean = false,
-    public var explode: Boolean = false
+    public var explode: Boolean = false,
+    public var contentType: ContentType? = null,
+    public var pattern: String? = null
 ) {
     public var description: String by MultilineString()
 
@@ -43,6 +48,8 @@ public class HeaderBuilder @PublishedApi internal constructor(
             description = description.trimOrNull(),
             required = required,
             explode = explode.takeIf { it },
+            contentType = contentType,
+            pattern = pattern?.trimOrNull(),
             deprecated = deprecated.takeIf { it }
         )
     }
