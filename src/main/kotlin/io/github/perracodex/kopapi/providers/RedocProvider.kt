@@ -31,7 +31,9 @@ internal object RedocProvider {
                     <body>
                         <redoc spec-url='${apiDocs.openapiYamlUrl}'></redoc>
                         <script>
-                            Redoc.init('${apiDocs.openapiYamlUrl}');
+                            Redoc.init('${apiDocs.openapiYamlUrl}', {
+                                expandSingleSchemaField: true
+                            });
                         </script>
                     </body>
                 </html>

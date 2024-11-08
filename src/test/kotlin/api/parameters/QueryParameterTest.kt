@@ -29,7 +29,7 @@ class QueryParameterTest {
     }
 
     @Test
-    fun `query parameter`() = testApplication {
+    fun `query string parameter`() = testApplication {
         application {
             install(Kopapi)
 
@@ -69,7 +69,7 @@ class QueryParameterTest {
             assertEquals(expected = "A query parameter with various properties", actual = queryParameter["description"].asText())
             assertEquals(expected = true, actual = queryParameter["required"].asBoolean())
             assertEquals(expected = true, actual = queryParameter["allowReserved"].asBoolean())
-            assertEquals(expected = "defaultValue", actual = queryParameter["default"].asText())
+            assertEquals(expected = "defaultValue", actual = queryParameter["schema"]["default"].asText())
             assertEquals(expected = ParameterStyle.SIMPLE.value, actual = queryParameter["style"].asText())
             assertNull(actual = queryParameter["explode"], message = "Expected 'explode' to be null.")
             assertEquals(expected = true, actual = queryParameter["deprecated"].asBoolean())

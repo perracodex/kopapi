@@ -66,7 +66,7 @@ class HeaderParameterTest {
             assertEquals(expected = ApiParameter.Location.HEADER.value, actual = headerParameter["in"].asText())
             assertEquals(expected = "A header parameter with various properties", actual = headerParameter["description"].asText())
             assertEquals(expected = true, actual = headerParameter["required"].asBoolean())
-            assertEquals(expected = "defaultHeaderValue", actual = headerParameter["default"].asText())
+            assertEquals(expected = "defaultHeaderValue", actual = headerParameter["schema"]["default"].asText())
             assertEquals(expected = ParameterStyle.LABEL.value, actual = headerParameter["style"].asText())
             assertNull(actual = headerParameter["explode"], message = "Expected 'explode' to be null.")
             assertEquals(expected = true, actual = headerParameter["deprecated"].asBoolean())

@@ -27,19 +27,25 @@ class BasicConfigurationTest {
 
     @Test
     fun `test plugin basic configuration (enabled)`() = testApplication {
+        val openApiYamlUrlValue ="openapi/yaml2"
+        val openApiJsonUrlValue = "openapi/json1"
+        val swaggerUrlValue = "swagger123"
+        val redocUrlValue = "openapi/redoc5"
+        val debugUrlValue = "openapi/debug4"
+
         application {
             // Set some non-default configuration values.
             install(Kopapi) {
-                debugUrl = "openapi/debug4"
+                debugUrl = debugUrlValue
                 enableLogging = false
 
                 apiDocs {
-                    openapiYamlUrl = "openapi/yaml2"
-                    openapiJsonUrl = "openapi/json1"
-                    redocUrl = "openapi/redoc5"
+                    openapiYamlUrl = openApiYamlUrlValue
+                    openapiJsonUrl = openApiJsonUrlValue
+                    redocUrl = redocUrlValue
 
                     swagger {
-                        url = "swagger3"
+                        url = swaggerUrlValue
                         persistAuthorization = true
                         withCredentials = true
                         docExpansion = SwaggerDocExpansion.LIST
@@ -60,27 +66,27 @@ class BasicConfigurationTest {
             )
 
             assertEquals(
-                expected = "openapi/json1",
+                expected = "/$openApiJsonUrlValue",
                 actual = SchemaRegistry.apiConfiguration?.apiDocs?.openapiJsonUrl,
                 message = "Expected JSON URL to match."
             )
             assertEquals(
-                expected = "openapi/yaml2",
+                expected = "/$openApiYamlUrlValue",
                 actual = SchemaRegistry.apiConfiguration?.apiDocs?.openapiYamlUrl,
                 message = "Expected YAML URL to match."
             )
             assertEquals(
-                expected = "swagger3",
+                expected = "/$swaggerUrlValue",
                 actual = SchemaRegistry.apiConfiguration?.apiDocs?.swagger?.url,
                 message = "Expected Swagger URL to match."
             )
             assertEquals(
-                expected = "openapi/debug4",
+                expected = "/$debugUrlValue",
                 actual = SchemaRegistry.apiConfiguration?.debugUrl,
                 message = "Expected debug URL to match."
             )
             assertEquals(
-                expected = "openapi/redoc5",
+                expected = "/$redocUrlValue",
                 actual = SchemaRegistry.apiConfiguration?.apiDocs?.redocUrl,
                 message = "Expected Redoc URL to match."
             )
