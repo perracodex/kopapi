@@ -10,6 +10,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.types.DefaultValue
+import io.github.perracodex.kopapi.types.OpenApiFormat
 import io.github.perracodex.kopapi.types.ParameterStyle
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -50,7 +51,8 @@ class HeaderParameterTest {
 
             // Get the generated OpenAPI schema in JSON format.
             val schemaJson: String = SchemaRegistry.getOpenApiSchema(
-                format = SchemaRegistry.Format.JSON
+                format = OpenApiFormat.JSON,
+                cacheAllFormats = false
             )
 
             // Find the header parameter in the OpenAPI schema.

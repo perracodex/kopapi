@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.dsl.operation.api
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.types.DefaultValue
+import io.github.perracodex.kopapi.types.OpenApiFormat
 import io.github.perracodex.kopapi.types.ParameterStyle
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -89,7 +90,10 @@ class SchemaAttributesTest {
                 }
             }
 
-            val schemaJson: String = SchemaRegistry.getOpenApiSchema(SchemaRegistry.Format.JSON)
+            val schemaJson: String = SchemaRegistry.getOpenApiSchema(
+                format = OpenApiFormat.JSON,
+                cacheAllFormats = false
+            )
 
             // Validate "stringParam" attributes
             val stringParam: JsonNode? = ParameterTestUtils.findParameter(

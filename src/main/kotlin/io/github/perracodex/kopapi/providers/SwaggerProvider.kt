@@ -99,7 +99,7 @@ internal object SwaggerProvider {
     
                     // Initialize Swagger UI.
                     window.ui = SwaggerUIBundle({
-                        url: "${apiDocs.openapiYamlUrl}",
+                        url: "${apiDocs.openApiUrl}",
                         dom_id: '#swagger-ui',
                         deepLinking: true,
                         presets: [

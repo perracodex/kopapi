@@ -18,6 +18,7 @@ import io.github.perracodex.kopapi.introspector.schema.TypeSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.types.OpenApiFormat
 import java.util.*
 
 import kotlin.collections.set
@@ -29,17 +30,6 @@ import kotlin.reflect.KType
 @OptIn(ComposerApi::class)
 internal object SchemaRegistry {
     private val tracer = Tracer<SchemaRegistry>()
-
-    /**
-     * Represents the format of the final OpenAPI schema output.
-     */
-    enum class Format {
-        /** JSON format. */
-        JSON,
-
-        /** YAML format. */
-        YAML
-    }
 
     /** Represents the different sections in the debug JSON output. */
     enum class Section {
@@ -54,8 +44,7 @@ internal object SchemaRegistry {
 
     /** Represents the different resource URLs for the API documentation. */
     enum class ResourceUrl {
-        OPENAPI_JSON,
-        OPENAPI_YAML,
+        OPENAPI,
         REDOC,
         SWAGGER_UI,
     }
@@ -82,8 +71,8 @@ internal object SchemaRegistry {
     /** Cached JSON representations for debugging, categorized by section type. */
     private val debugJsonCache: MutableMap<Section, Set<String>> = mutableMapOf()
 
-    /** Cached OpenAPI schema representations, categorized by format. */
-    private var openApiSchemaCache: SchemaComposer.OpenApiSpec? = null
+    /** Cached OpenAPI schema specification. */
+    private var openApiSpec: SchemaComposer.OpenApiSpec? = null
 
     /** Set of errors detected during the schema generation process. */
     private val errors: SortedSet<String> = sortedSetOf(String.CASE_INSENSITIVE_ORDER)
@@ -163,7 +152,7 @@ internal object SchemaRegistry {
         typeSchemas.clear()
         schemaConflicts.clear()
         debugJsonCache.clear()
-        openApiSchemaCache = null
+        openApiSpec = null
         introspector.reset()
         apiConfiguration = null
     }
@@ -333,37 +322,49 @@ internal object SchemaRegistry {
     /**
      * Serves the OpenAPI schema in the specified format.
      *
-     * @param format The [Format] of the OpenAPI schema to serve.
+     * @param format The [OpenApiFormat] to serve.
+     * @param cacheAllFormats If `true`, all available formats will be generated and cached,
+     *                        otherwise, only the specified format will be generated and cached.
+     *                        This is useful for improving performance when multiple formats
+     *                        may eventually be needed, such as in the debug panel.
      * @return The OpenAPI schema in the specified format.
      */
-    fun getOpenApiSchema(format: Format): String {
+    fun getOpenApiSchema(format: OpenApiFormat, cacheAllFormats: Boolean): String {
         if (!isEnabled) {
             throw KopapiException("Attempted to generate OpenAPI schema while plugin is disabled.")
         }
 
-        openApiSchemaCache?.let { cache ->
-            return when (format) {
-                Format.JSON -> cache.json
-                Format.YAML -> cache.yaml
+        // Return cached schema if available.
+        val openApiSchema: String? = openApiSpec?.let { cache ->
+            when (format) {
+                OpenApiFormat.JSON -> cache.json
+                OpenApiFormat.YAML -> cache.yaml
             }
         }
+        if (openApiSchema != null) {
+            return openApiSchema
+        }
 
+        // Generate the OpenAPI schema.
         return apiConfiguration?.let { configuration ->
             processTypeSchemas()
 
-            val specificBootstrap: SchemaComposer.OpenApiSpec = SchemaComposer(
+            val composedSpec: SchemaComposer.OpenApiSpec = SchemaComposer(
                 apiConfiguration = configuration,
                 apiPaths = apiPath,
                 apiOperations = apiOperation,
                 registrationErrors = errors,
-                schemaConflicts = schemaConflicts
+                schemaConflicts = schemaConflicts,
+                format = if (cacheAllFormats) null else format
             ).compose()
-            openApiSchemaCache = specificBootstrap
-            errors.addAll(specificBootstrap.errors)
+            openApiSpec = composedSpec
+            composedSpec.errors?.let { compositionErrors ->
+                errors.addAll(compositionErrors)
+            }
 
             when (format) {
-                Format.JSON -> specificBootstrap.json
-                Format.YAML -> specificBootstrap.yaml
+                OpenApiFormat.JSON -> composedSpec.json
+                OpenApiFormat.YAML -> composedSpec.yaml
             }
         } ?: throw KopapiException("Failed to generate OpenAPI schema.")
     }
@@ -385,8 +386,7 @@ internal object SchemaRegistry {
     fun getResourceUrl(url: ResourceUrl): String {
         return apiConfiguration?.let { configuration ->
             when (url) {
-                ResourceUrl.OPENAPI_JSON -> configuration.apiDocs.openapiJsonUrl
-                ResourceUrl.OPENAPI_YAML -> configuration.apiDocs.openapiYamlUrl
+                ResourceUrl.OPENAPI -> configuration.apiDocs.openApiUrl
                 ResourceUrl.REDOC -> configuration.apiDocs.redocUrl
                 ResourceUrl.SWAGGER_UI -> configuration.apiDocs.swagger.url
             }

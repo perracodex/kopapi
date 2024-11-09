@@ -22,8 +22,7 @@ internal data class ApiConfiguration(
     init {
         val urls: List<String> = listOf(
             debugUrl,
-            apiDocs.openapiYamlUrl,
-            apiDocs.openapiJsonUrl,
+            apiDocs.openApiUrl,
             apiDocs.redocUrl,
             apiDocs.swagger.url
         )

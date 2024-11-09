@@ -79,7 +79,8 @@ public class KopapiConfig internal constructor(
      * #### Sample usage
      * ```
      * apiDocs {
-     *      openapiUrl = "/api/"
+     *      openApiUrl = "/openapi.yaml"
+     *      openApiFormat = OpenApiFormat.YAML
      *      redocUrl = "/api/redoc"
      *
      *      swagger {

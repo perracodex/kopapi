@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.serialization.SerializationUtils
+import io.github.perracodex.kopapi.types.OpenApiFormat
 import io.github.perracodex.kopapi.view.annotation.DebugViewApi
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -21,8 +22,8 @@ import kotlinx.coroutines.coroutineScope
 internal class DebugViewUtils {
     private val apiOperationJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.API_OPERATION)
     private val typeSchemasJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.TYPE_SCHEMAS)
-    private val openApiYaml: String = SchemaRegistry.getOpenApiSchema(format = SchemaRegistry.Format.YAML)
-    private val openApiJson: String = SchemaRegistry.getOpenApiSchema(format = SchemaRegistry.Format.JSON)
+    private val openApiYaml: String = SchemaRegistry.getOpenApiSchema(format = OpenApiFormat.YAML, cacheAllFormats = true)
+    private val openApiJson: String = SchemaRegistry.getOpenApiSchema(format = OpenApiFormat.JSON, cacheAllFormats = true)
     private val serializationUtils = SerializationUtils()
 
     /**

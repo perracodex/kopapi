@@ -11,6 +11,7 @@ import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
+import io.github.perracodex.kopapi.types.OpenApiFormat
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -47,7 +48,8 @@ class PathParameterTest {
 
             // Get the generated OpenAPI schema in JSON format.
             val schemaJson: String = SchemaRegistry.getOpenApiSchema(
-                format = SchemaRegistry.Format.JSON
+                format = OpenApiFormat.JSON,
+                cacheAllFormats = false
             )
 
             val idParameter: JsonNode? = ParameterTestUtils.findParameter(

@@ -40,7 +40,7 @@ class BasicConfigurationTest {
                 enableLogging = false
 
                 apiDocs {
-                    openapiUrl = openApiUrlValue
+                    openApiUrl = openApiUrlValue
                     redocUrl = redocUrlValue
 
                     swagger {
@@ -66,13 +66,8 @@ class BasicConfigurationTest {
 
             assertEquals(
                 expected = "/$openApiUrlValue/${ApiDocsBuilder.DEFAULT_OPENAPI_FILENAME}${ApiDocsBuilder.YAML_EXTENSION}",
-                actual = SchemaRegistry.apiConfiguration?.apiDocs?.openapiYamlUrl,
+                actual = SchemaRegistry.apiConfiguration?.apiDocs?.openApiUrl,
                 message = "Expected YAML URL to match."
-            )
-            assertEquals(
-                expected = "/$openApiUrlValue/${ApiDocsBuilder.DEFAULT_OPENAPI_FILENAME}${ApiDocsBuilder.JSON_EXTENSION}",
-                actual = SchemaRegistry.apiConfiguration?.apiDocs?.openapiJsonUrl,
-                message = "Expected JSON URL to match."
             )
             assertEquals(
                 expected = "/$swaggerUrlValue",

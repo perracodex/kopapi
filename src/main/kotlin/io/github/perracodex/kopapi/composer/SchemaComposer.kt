@@ -29,6 +29,7 @@ import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.types.Composition
+import io.github.perracodex.kopapi.types.OpenApiFormat
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.swagger.v3.parser.OpenAPIV3Parser
 import io.swagger.v3.parser.core.models.ParseOptions
@@ -44,6 +45,7 @@ internal class SchemaComposer(
     private val apiOperations: Set<ApiOperation>,
     private val registrationErrors: Set<String>,
     private val schemaConflicts: Set<SchemaConflicts.Conflict>,
+    private val format: OpenApiFormat?
 ) {
     private val tracer = Tracer<SchemaComposer>()
 
@@ -108,20 +110,20 @@ internal class SchemaComposer(
         )
 
         // Serialize the OpenAPI schema, producing the final specification.
-        val openApiYaml: String = SerializationUtils().toYaml(instance = openApiSchema)
+        val openApiSpec: OpenApiSpec = serializeOpenApiSchema(
+            openApiSchema = openApiSchema,
+            format = format,
+            errors = null
+        )
 
         // If the official swagger parser detects, rebuild the schema with the errors appended to the `info` section.
         // Note that the AppInfo composer already adds some errors, but these are very basic.
-        val parserErrors: Set<String> = verify(openApiYaml = openApiYaml)
+        val parserErrors: Set<String> = verify(openApiSpec = openApiSpec)
         if (apiConfiguration.apiDocs.swagger.includeErrors && parserErrors.isNotEmpty()) {
-            return rebuildWithErrors(openApiSchema = openApiSchema, parserErrors = parserErrors)
+            return rebuildWithErrors(openApiSchema = openApiSchema, parserErrors = parserErrors, format = format)
         }
 
-        // Generate the JSON after ensuring no errors were detected, as it would have
-        // been a wasted step, since the rebuild would have to be done anyway.
-        val openApiJson: String = SerializationUtils().toJson(instance = openApiSchema)
-
-        return OpenApiSpec(yaml = openApiYaml, json = openApiJson, errors = parserErrors)
+        return openApiSpec.copy(errors = parserErrors)
     }
 
     /**
@@ -130,9 +132,14 @@ internal class SchemaComposer(
      *
      * @param openApiSchema The OpenAPI schema to update.
      * @param parserErrors The set of errors detected during the final verification of the OpenAPI schema.
+     * @param format The format to serialize the OpenAPI schema in. `null` to serialize to all formats.
      * @return The updated OpenAPI schema.
      */
-    private fun rebuildWithErrors(openApiSchema: OpenApiSchema, parserErrors: Set<String>): OpenApiSpec {
+    private fun rebuildWithErrors(
+        openApiSchema: OpenApiSchema,
+        parserErrors: Set<String>,
+        format: OpenApiFormat?
+    ): OpenApiSpec {
         // Update the info section with error details.
         tracer.info("Validation errors detected. Updating the info section with error details.")
 
@@ -146,9 +153,11 @@ internal class SchemaComposer(
         val updatedOpenApiSchema: OpenApiSchema = openApiSchema.copy(info = updatedInfoSection)
 
         // Re-serialize the OpenAPI schema.
-        val (updatedOpenApiJson: String, updatedOpenApiYaml: String) = serializeOpenApiSchema(updatedOpenApiSchema)
-
-        return OpenApiSpec(yaml = updatedOpenApiYaml, json = updatedOpenApiJson, errors = parserErrors)
+        return serializeOpenApiSchema(
+            openApiSchema = updatedOpenApiSchema,
+            format = format,
+            errors = parserErrors
+        )
     }
 
     /**
@@ -177,21 +186,30 @@ internal class SchemaComposer(
      * Serializes the OpenAPI schema into both YAML and JSON formats.
      *
      * @param openApiSchema The OpenAPI schema to serialize.
-     * @return A pair containing the OpenAPI schema in JSON and YAML formats.
+     * @param format The format to serialize the OpenAPI schema in.
+     * @param errors The set of errors detected during the final verification of the OpenAPI schema.
+     * @return The serialized OpenAPI schema.
      */
-    private fun serializeOpenApiSchema(openApiSchema: OpenApiSchema): Pair<String, String> {
-        val openApiJson: String = SerializationUtils().toJson(instance = openApiSchema)
-        val openApiYaml: String = SerializationUtils().toYaml(instance = openApiSchema)
-        return Pair(openApiJson, openApiYaml)
+    private fun serializeOpenApiSchema(
+        openApiSchema: OpenApiSchema,
+        format: OpenApiFormat?,
+        errors: Set<String>?
+    ): OpenApiSpec {
+        val (yaml: String?, json: String?) = when (format) {
+            OpenApiFormat.YAML -> SerializationUtils().toYaml(instance = openApiSchema) to null
+            OpenApiFormat.JSON -> null to SerializationUtils().toJson(instance = openApiSchema)
+            else -> SerializationUtils().toYaml(instance = openApiSchema) to SerializationUtils().toJson(instance = openApiSchema)
+        }
+        return OpenApiSpec(yaml = yaml, json = json, errors = errors)
     }
 
     /**
      * Verifies the OpenAPI schema to ensure it is valid.
      *
-     * @param openApiYaml The OpenAPI schema in YAML format.
+     * @param openApiSpec The OpenAPI specification to verify.
      * @return A set of errors that occurred during the verification process.
      */
-    private fun verify(openApiYaml: String): Set<String> {
+    private fun verify(openApiSpec: OpenApiSpec): Set<String> {
         return runCatching {
             val options: ParseOptions = ParseOptions().apply {
                 isResolve = true               // Resolve $ref references.
@@ -203,8 +221,14 @@ internal class SchemaComposer(
                 isValidateExternalRefs = true  // Validate external $ref references.
             }
 
-            val openAPI: SwaggerParseResult = OpenAPIV3Parser().readContents(openApiYaml, null, options)
-            return openAPI.messages.toSet()
+            val openApi: String = when {
+                !openApiSpec.yaml.isNullOrBlank() -> openApiSpec.yaml
+                !openApiSpec.json.isNullOrBlank() -> openApiSpec.json
+                else -> throw IllegalStateException("No OpenAPI specification found.")
+            }
+
+            val openApiResult: SwaggerParseResult = OpenAPIV3Parser().readContents(openApi, null, options)
+            return openApiResult.messages.toSet()
         }.onFailure { error ->
             tracer.error(message = "Failed to verify the OpenAPI schema.", cause = error)
         }.getOrDefault(emptySet())
@@ -287,8 +311,8 @@ internal class SchemaComposer(
      * @property errors A set of errors that occurred during the final verification of the OpenAPI schema.
      */
     data class OpenApiSpec(
-        val yaml: String,
-        val json: String,
-        val errors: Set<String>
+        val yaml: String?,
+        val json: String?,
+        val errors: Set<String>?
     )
 }

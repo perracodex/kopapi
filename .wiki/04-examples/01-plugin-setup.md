@@ -9,8 +9,9 @@ fun Application.configureApiSchema() {
 
         // Define API documentation settings
         apiDocs {
-            openapiUrl = "/api/"
-            redocUrl = "/api/redoc"
+            openApiUrl = "/openapi.yaml"
+            openApiFormat = OpenApiFormat.YAML
+            redocUrl = "/redoc"
 
             // Swagger UI settings
             swagger {

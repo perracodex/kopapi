@@ -29,9 +29,9 @@ internal object RedocProvider {
                         <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
                     </head>
                     <body>
-                        <redoc spec-url='${apiDocs.openapiYamlUrl}'></redoc>
+                        <redoc spec-url='${apiDocs.openApiUrl}'></redoc>
                         <script>
-                            Redoc.init('${apiDocs.openapiYamlUrl}', {
+                            Redoc.init('${apiDocs.openApiUrl}', {
                                 expandSingleSchemaField: true
                             });
                         </script>

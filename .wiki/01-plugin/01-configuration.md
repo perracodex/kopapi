@@ -20,35 +20,24 @@ The `KopapiConfig` provides several properties to define the URLs for your OpenA
 
 ### API Documentation Section
 
-| Property   | Description                                                                    | Default                             |
-|------------|--------------------------------------------------------------------------------|-------------------------------------|
-| openapiUrl | The URL to provide the OpenAPI schema file, in both `yaml` and `json` formats. | `/openapi.yaml`<br/>`/openapi.json` |
-| redocUrl   | The URL to provide access to the OpenAPI `Redoc` documentation.                | `/redoc`                            |
+| Property      | Description                                                     | Default         |
+|---------------|-----------------------------------------------------------------|-----------------|
+| openApiUrl    | The URL to provide the OpenAPI schema.                          | `/openapi.yaml` |
+| openApiFormat | The output format for the OpenApi schema.                       | `YAML`          |
+| redocUrl      | The URL to provide access to the OpenAPI `Redoc` documentation. | `/redoc`        |
 
 ```kotlin
 install(Kopapi) {
     apiDocs {
-        openapiUrl = "/api/"
-        redocUrl = "/api/redoc"
+        openApiUrl = "/openapi.yaml"
+        openApiFormat = OpenApiFormat.YAML
+        redocUrl = "/redoc"
     }
 }
 ```
 
-- Paths are relative URL path for the OpenAPI schema.
-
-The `openapiUrl` provides access to the OpenAPI schema in both `yaml` and `json` formats.
-You can provide just a path or a file path with a format extension. The alternative format will be appended automatically.
-When defining a filename, it must have either a `.yaml` or `.json` extension, otherwise will be treated as a directory path.
-
-- Directory Path
-    - Will append `openapi.yaml` and `openapi.json`.
-        - *Example:* `"/api/"`
-        - *Results:* `"/api/openapi.yaml"`, `"/api/openapi.json"`
-
-- File Path with Format Extension (`.yaml` or `.json`)
-    - Retains the provided file and adds the alternate format extension.
-        - *Example:* `"/api/spec.yaml"`
-        - *Results:* `"/api/spec.yaml"`, `"/api/spec.json"`
+- The `openApiUrl` value does not determine the output format. Only the `openApiFormat` property specifies the format.
+  For example, if `openApiUrl` is set to `/openapi.json`, but `openApiFormat` is set `YAML`, the output will still be in `YAML` format.
 
 ---
 
@@ -128,8 +117,9 @@ install(Kopapi) {
 
     // API Documentation section.
     apiDocs {
-        openapilUrl = "/api/"
-        redocUrl = "/api/redoc"
+        openApilUrl = "/openapi.yaml"
+        openApiFormat = OpenApiFormat.YAML
+        redocUrl = "/redoc"
 
         // Swagger UI settings.
         swagger {

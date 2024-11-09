@@ -33,6 +33,7 @@ internal fun String?.trimOrDefault(defaultValue: String): String {
  * @param suffix The suffix to remove.
  * @return The string without the suffix if it was present; otherwise, the original string.
  */
+@Suppress("unused")
 internal fun String.removeSuffixIgnoreCase(suffix: String): String {
     return if (this.regionMatches(
             thisOffset = this.length - suffix.length,

@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.view
 
 import io.github.perracodex.kopapi.schema.SchemaRegistry
+import io.github.perracodex.kopapi.types.OpenApiFormat
 import io.github.perracodex.kopapi.view.annotation.DebugViewApi
 import kotlinx.html.*
 import kotlinx.serialization.encodeToString
@@ -21,8 +22,8 @@ import kotlinx.serialization.json.*
 internal class DebugPanelView(private val debugInfo: DebugInfo) {
     private val schemaConflictsJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.SCHEMA_CONFLICTS)
     private val configurationJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.API_CONFIGURATION)
-    private val openApiYaml: String = SchemaRegistry.getOpenApiSchema(format = SchemaRegistry.Format.YAML)
-    private val openApiJson: String = SchemaRegistry.getOpenApiSchema(format = SchemaRegistry.Format.JSON)
+    private val openApiYaml: String = SchemaRegistry.getOpenApiSchema(format = OpenApiFormat.YAML, cacheAllFormats = true)
+    private val openApiJson: String = SchemaRegistry.getOpenApiSchema(format = OpenApiFormat.JSON, cacheAllFormats = true)
     private val registryErrors: Set<String> = SchemaRegistry.getErrors()
     private val jsonParser: Json = Json { prettyPrint = true }
 

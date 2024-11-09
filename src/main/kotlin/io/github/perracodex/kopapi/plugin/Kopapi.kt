@@ -6,7 +6,7 @@ package io.github.perracodex.kopapi.plugin
 
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.routing.debugRoute
-import io.github.perracodex.kopapi.routing.openApiRoutes
+import io.github.perracodex.kopapi.routing.openApiRoute
 import io.github.perracodex.kopapi.routing.redocRoute
 import io.github.perracodex.kopapi.routing.swaggerRoute
 import io.github.perracodex.kopapi.schema.SchemaRegistry
@@ -45,7 +45,7 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     // Configure the plugin endpoints using the extracted function.
     application.routing {
         debugRoute(debugUrl = apiConfiguration.debugUrl)
-        openApiRoutes(apiDocs = apiConfiguration.apiDocs)
+        openApiRoute(apiDocs = apiConfiguration.apiDocs)
         redocRoute(apiDocs = apiConfiguration.apiDocs)
         swaggerRoute(apiDocs = apiConfiguration.apiDocs)
     }
@@ -56,9 +56,8 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
         """
         |Kopapi plugin enabled.
         |  Debug: $server${apiConfiguration.debugUrl}
-        |  OpenAPI YAML: $server${apiConfiguration.apiDocs.openapiYamlUrl}
-        |  OpenAPI JSON: $server${apiConfiguration.apiDocs.openapiJsonUrl}
-        |  Swagger UI: $server${apiConfiguration.apiDocs.swagger.url}
+        |  OpenAPI: $server${apiConfiguration.apiDocs.openApiUrl}
+        |  Swagger: $server${apiConfiguration.apiDocs.swagger.url}
         |  ReDoc: $server${apiConfiguration.apiDocs.redocUrl}
         """.trimMargin()
     )

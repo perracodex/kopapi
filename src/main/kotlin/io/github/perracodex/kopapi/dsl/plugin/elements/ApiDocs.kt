@@ -4,22 +4,19 @@
 
 package io.github.perracodex.kopapi.dsl.plugin.elements
 
-import io.github.perracodex.kopapi.types.SwaggerDocExpansion
-import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
-import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
-import io.github.perracodex.kopapi.types.SwaggerUiTheme
+import io.github.perracodex.kopapi.types.*
 
 /**
  * Represents the API documentation configuration.
  *
- * @property openapiYamlUrl The URL to the OpenAPI YAML file.
- * @property openapiJsonUrl The URL to the OpenAPI JSON file.
+ * @property openApiUrl The URL to the OpenAPI output.
+ * @property openApiFormat The format of the OpenAPI schema output.
  * @property redocUrl The URL to the Redoc documentation.
  * @property swagger The swagger configuration.
  */
 internal data class ApiDocs(
-    val openapiYamlUrl: String,
-    val openapiJsonUrl: String,
+    val openApiUrl: String,
+    val openApiFormat: OpenApiFormat,
     val redocUrl: String,
     val swagger: Swagger
 ) {
