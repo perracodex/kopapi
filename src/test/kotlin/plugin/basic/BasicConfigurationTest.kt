@@ -7,10 +7,7 @@ package plugin.basic
 import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
-import io.github.perracodex.kopapi.types.SwaggerDocExpansion
-import io.github.perracodex.kopapi.types.SwaggerOperationsSorter
-import io.github.perracodex.kopapi.types.SwaggerSyntaxTheme
-import io.github.perracodex.kopapi.types.SwaggerUiTheme
+import io.github.perracodex.kopapi.types.*
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import org.junit.jupiter.api.BeforeEach
@@ -28,7 +25,6 @@ class BasicConfigurationTest {
 
     @Test
     fun `test plugin basic configuration (enabled)`() = testApplication {
-        val openApiUrlValue = "api"
         val swaggerUrlValue = "swagger123"
         val redocUrlValue = "openapi/redoc5"
         val debugUrlValue = "openapi/debug4"
@@ -40,7 +36,8 @@ class BasicConfigurationTest {
                 enableLogging = false
 
                 apiDocs {
-                    openApiUrl = openApiUrlValue
+                    openApiUrl = ""
+                    openApiFormat = OpenApiFormat.YAML
                     redocUrl = redocUrlValue
 
                     swagger {
@@ -65,7 +62,7 @@ class BasicConfigurationTest {
             )
 
             assertEquals(
-                expected = "/$openApiUrlValue/${ApiDocsBuilder.DEFAULT_OPENAPI_FILENAME}${ApiDocsBuilder.YAML_EXTENSION}",
+                expected = ApiDocsBuilder.DEFAULT_OPENAPI_URL,
                 actual = SchemaRegistry.apiConfiguration?.apiDocs?.openApiUrl,
                 message = "Expected YAML URL to match."
             )

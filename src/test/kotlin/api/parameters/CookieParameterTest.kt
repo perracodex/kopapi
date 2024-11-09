@@ -47,7 +47,16 @@ class CookieParameterTest {
                         explode = true
                         deprecated = false
                     }
-                    response(status = HttpStatusCode.OK)
+                    response(status = HttpStatusCode.OK) {
+                        links {
+                            add(name = "GetEmployeeDetails") {
+                                operationRef = "/api/v1/employee/{employee_id}"
+                                description = "Retrieve information about this employee."
+                                parameter(name = "employee_id", value = "\$request. path. employee_id")
+                            }
+                        }
+                    }
+                    skipSecurity()
                 }
             }
 

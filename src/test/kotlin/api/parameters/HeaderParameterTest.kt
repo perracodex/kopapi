@@ -45,7 +45,12 @@ class HeaderParameterTest {
                         style = ParameterStyle.LABEL
                         deprecated = true
                     }
-                    response(status = HttpStatusCode.OK)
+                    response(status = HttpStatusCode.OK) {
+                        link(name = "GetEmployeeDetails") {
+                            operationId = "getEmployeeDetails"
+                            parameter(name = "employee_id", value = "\$request. path. employee_id")
+                        }
+                    }
                 }
             }
 
