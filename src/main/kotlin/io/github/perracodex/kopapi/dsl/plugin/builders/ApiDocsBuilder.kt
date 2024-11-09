@@ -26,7 +26,7 @@ public class ApiDocsBuilder internal constructor() {
      *  Only the `openApiFormat` property specifies the format.
      *
      *  For example, if `openApiUrl` is set to `/openapi.json`, but `openApiFormat` is set `YAML`,
-     *  the output will still be in `YAML` format.
+     *  the output will still be in `yaml` format.
      *
      * @see [openApiFormat]
      */

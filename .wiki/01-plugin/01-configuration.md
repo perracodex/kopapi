@@ -37,7 +37,7 @@ install(Kopapi) {
 ```
 
 - The `openApiUrl` value does not determine the output format. Only the `openApiFormat` property specifies the format.
-  For example, if `openApiUrl` is set to `/openapi.json`, but `openApiFormat` is set `YAML`, the output will still be in `YAML` format.
+  For example, if `openApiUrl` is set to `/openapi.json`, but `openApiFormat` is set `YAML`, the output will still be in `yaml` format.
 
 ---
 
