@@ -16,12 +16,14 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  *
  * @property description Description of the property.
  * @property defaultValue Default value of the property.
- * @property anyOf The list that includes the base schema (with stripped attributes) and null type.
+ * @property type The list that includes the base schema type and null type. (For primitive types).
+ * @property anyOf The list that includes the base schema (with stripped attributes) and null type. (For complex types).
  */
 internal data class NullableSchema private constructor(
     @JsonProperty("description") val description: String? = null,
     @JsonProperty("default") val defaultValue: Any? = null,
-    @JsonProperty("anyOf") val anyOf: List<Any>
+    @JsonProperty("type") val type: List<String>? = null,
+    @JsonProperty("anyOf") val anyOf: List<Any>? = null
 ) : ISchemaFacet {
 
     companion object {
@@ -34,14 +36,23 @@ internal data class NullableSchema private constructor(
         fun create(schemaProperty: SchemaProperty): NullableSchema {
             val decomposedSchema: DecomposedSchema = decomposeSchema(schema = schemaProperty.schema)
 
-            return NullableSchema(
-                description = decomposedSchema.description,
-                defaultValue = decomposedSchema.defaultValue,
-                anyOf = listOf(
-                    decomposedSchema.strippedSchema,
-                    mapOf("type" to ApiType.NULL())
-                ),
-            )
+            // Determine if the schema is a Primitive type to use less verbose syntax.
+            return if (decomposedSchema.strippedSchema is ElementSchema.Primitive) {
+                NullableSchema(
+                    description = decomposedSchema.description,
+                    defaultValue = decomposedSchema.defaultValue,
+                    type = listOf(decomposedSchema.strippedSchema.schemaType.toString(), ApiType.NULL())
+                )
+            } else {
+                NullableSchema(
+                    description = decomposedSchema.description,
+                    defaultValue = decomposedSchema.defaultValue,
+                    anyOf = listOf(
+                        decomposedSchema.strippedSchema,
+                        mapOf("type" to ApiType.NULL())
+                    )
+                )
+            }
         }
 
         /**
