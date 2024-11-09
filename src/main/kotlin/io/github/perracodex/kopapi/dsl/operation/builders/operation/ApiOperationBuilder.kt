@@ -125,16 +125,27 @@ public class ApiOperationBuilder internal constructor(
     public var description: String by MultilineString()
 
     /**
+     * The identifier for the API operation.
+     * Must be unique across all API operations.
+     */
+    public var operationId: String? = null
+
+    /**
      * Optional set of descriptive tags for categorizing the endpoint in API documentation.
-     *
-     * Declaring multiple `tags` will append all of them to the existing list.
-     * Repeated tags are discarded in a case-insensitive manner.
      *
      * #### Sample Usage
      * ```
      * tags = setOf("Items", "Data")
-     * tags = setOf("NewTag1", "NewTag2")
      * ```
+     * ```
+     * tags("Items", "Data")
+     * ```
+     * ```
+     * tags(listOf("Items", "Data"))
+     * ```
+     *
+     * Declaring multiple `tags` will append all of them to the existing list.
+     * Repeated tags are discarded in a case-insensitive manner.
      *
      * @see [summary]
      * @see [description]
@@ -146,10 +157,52 @@ public class ApiOperationBuilder internal constructor(
         }
 
     /**
-     * The identifier for the API operation.
-     * Must be unique across all API operations.
+     * Optional set of descriptive tags for categorizing the endpoint in API documentation.
+     *
+     * #### Sample Usage
+     * ```
+     * tags = setOf("Items", "Data")
+     * ```
+     * ```
+     * tags("Items", "Data")
+     * ```
+     * ```
+     * tags(listOf("Items", "Data"))
+     * ```
+     *
+     * Declaring multiple `tags` will append all of them to the existing list.
+     * Repeated tags are discarded in a case-insensitive manner.
+     *
+     * @see [summary]
+     * @see [description]
      */
-    public var operationId: String? = null
+    public fun tags(vararg tags: String) {
+        this.tags = tags.toSet()
+    }
+
+    /**
+     * Optional set of descriptive tags for categorizing the endpoint in API documentation.
+     *
+     * #### Sample Usage
+     * ```
+     * tags = setOf("Items", "Data")
+     * ```
+     * ```
+     * tags("Items", "Data")
+     * ```
+     * ```
+     * tags(listOf("Items", "Data"))
+     * ```
+     *
+     * Declaring multiple `tags` will append all of them to the existing list.
+     * Repeated tags are discarded in a case-insensitive manner.
+     *
+     * @see [summary]
+     * @see [description]
+     */
+    public fun tags(tags: Collection<String>) {
+        this.tags = tags.toSet()
+    }
 
     /**
      * Disables the security schemes for the API operation.
