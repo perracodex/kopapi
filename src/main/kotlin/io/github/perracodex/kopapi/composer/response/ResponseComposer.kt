@@ -6,7 +6,8 @@ package io.github.perracodex.kopapi.composer.response
 
 import io.github.perracodex.kopapi.composer.SchemaComposer
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
+import io.github.perracodex.kopapi.composer.header.HeaderComposer
+import io.github.perracodex.kopapi.composer.header.HeaderObject
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.schema.SchemaRegistry
@@ -45,7 +46,7 @@ internal object ResponseComposer {
             tracer.debug("Composing response: [${statusCode.value}] → ${apiResponse.description}")
 
             // Process the headers for the response.
-            val finalHeaders: MutableMap<String, HeaderObject>? = processHeaders(
+            val finalHeaders: MutableMap<String, HeaderObject>? = HeaderComposer.compose(
                 headers = apiResponse.headers.orEmpty()
             )
 
@@ -107,44 +108,5 @@ internal object ResponseComposer {
         tracer.info("Composed ${composedResponses.size} responses.")
 
         return composedResponses
-    }
-
-    /**
-     * Converts a map of [ApiHeader] instances to a map of OpenAPI header objects.
-     */
-    private fun processHeaders(headers: Map<String, ApiHeader>): MutableMap<String, HeaderObject>? {
-        val headerObjects: MutableMap<String, HeaderObject> = mutableMapOf()
-
-        headers.forEach { (nam: String, header: ApiHeader) ->
-            // Determine the schema for the header, and introspect accordingly.
-            var baseSchema: ElementSchema = SchemaRegistry.introspectType(type = header.type)?.schema
-                ?: throw KopapiException("No schema found for header type: ${header.type}")
-
-            // Apply additional parameter attributes.
-            header.schemaAttributes?.let {
-                baseSchema = SchemaComposer.copySchemaAttributes(
-                    schema = baseSchema,
-                    attributes = header.schemaAttributes
-                )
-            }
-
-            // Determine the content schema if the header requires a specific media format.
-            val content: Map<ContentType, OpenApiSchema.ContentSchema>? = header.contentType?.let { contentType ->
-                mapOf(contentType to OpenApiSchema.ContentSchema(schema = baseSchema))
-            }
-
-            // Construct the header object.
-            val headerObject = HeaderObject(
-                description = header.description.trimOrNull(),
-                required = header.required,
-                explode = header.explode.takeIf { it == true },
-                schema = baseSchema.takeIf { content == null },
-                content = content,
-                deprecated = header.deprecated.takeIf { it == true }
-            )
-            headerObjects[nam] = headerObject
-        }
-
-        return headerObjects.takeIf { it.isNotEmpty() }
     }
 }

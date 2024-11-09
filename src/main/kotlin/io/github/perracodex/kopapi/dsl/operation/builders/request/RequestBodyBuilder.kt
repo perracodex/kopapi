@@ -115,9 +115,9 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
      * }
      * ```
      * ```
-     * // Explicit ContentType.MultiPart.Encrypted.
+     * // Explicit ContentType.MultiPart.Signed.
      * multipart {
-     *      contentType = ContentType.MultiPart.Encrypted
+     *      contentType = ContentType.MultiPart.Signed
      *
      *      part<PartData.FileItem>("secureFile") {
      *          description = "A securely uploaded file."
@@ -183,8 +183,8 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
             description = description.trimOrNull(),
             required = required,
             composition = contentComposition,
-            content = contentMap.takeIf { it.isNotEmpty() },
-            multipartContent = _config.multipartParts.takeIf { it.isNotEmpty() }
+            content = contentMap.ifEmpty { null },
+            multipartContent = _config.multipartParts.ifEmpty { null }
         )
     }
 

@@ -6,12 +6,13 @@ package io.github.perracodex.kopapi.composer.request
 
 import io.github.perracodex.kopapi.composer.SchemaComposer
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
+import io.github.perracodex.kopapi.composer.header.HeaderComposer
+import io.github.perracodex.kopapi.composer.header.HeaderObject
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
-import io.github.perracodex.kopapi.schema.facets.MultipartSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.types.ApiFormat
@@ -127,9 +128,9 @@ internal object RequestBodyComposer {
         return requestBody.multipartContent.mapValues { (_, apiMultipart) ->
             tracer.debug("Processing multipart content type: ${apiMultipart.contentType}")
 
-            val properties: MutableMap<String, MultipartSchema> = mutableMapOf()
+            val properties: MutableMap<String, MultipartObject> = mutableMapOf()
             val requiredFields: MutableList<String> = mutableListOf()
-            val encodingMap: MutableMap<String, Map<String, String>> = mutableMapOf()
+            val encodings: MutableMap<String, Any> = mutableMapOf()
 
             apiMultipart.parts.forEach { part ->
                 // Add encoding information for each part based on the content type.
@@ -139,7 +140,7 @@ internal object RequestBodyComposer {
                     ?: throw KopapiException("Unsupported PartData type: $partKClassifier")
 
                 // Create the part schema.
-                val partSchema: MultipartSchema = createPartSchema(
+                val partSchema: MultipartObject = createPartSchema(
                     part = part,
                     defaultConfiguration = defaultConfiguration
                 )
@@ -150,18 +151,26 @@ internal object RequestBodyComposer {
                     requiredFields.add(part.name)
                 }
 
+                // Process headers for the part.
+                val headers: MutableMap<String, HeaderObject>? = part.headers?.let {
+                    HeaderComposer.compose(headers = part.headers)
+                }
+
                 // Determine the encoding for the part.
                 val contentType: Set<ContentType> = part.contentType ?: setOf(defaultConfiguration.contentType)
-                val encodings: String = contentType.joinToString(separator = ", ") { it.toString() }
-                encodingMap[part.name] = mapOf("contentType" to encodings)
+                val partEncoding: String = contentType.joinToString(separator = ", ") { it.toString() }
+                encodings[part.name] = mapOf(
+                    "contentType" to partEncoding,
+                    "headers" to headers
+                )
             }
 
             // Construct the multipart schema without placeholders.
-            val schema: MultipartSchema.Object = MultipartSchema.Object(
+            val schema: MultipartObject.Object = MultipartObject.Object(
                 description = apiMultipart.description.trimOrNull(),
                 properties = properties,
                 requiredFields = requiredFields.ifEmpty { null },
-                encoding = encodingMap
+                encoding = encodings,
             )
 
             OpenApiSchema.ContentSchema(schema = schema)
@@ -169,22 +178,22 @@ internal object RequestBodyComposer {
     }
 
     /**
-     * Factory function to create the corresponding [MultipartSchema] for a given [part].
+     * Factory function to create the corresponding [MultipartObject] for a given [part].
      *
      * @param part The [ApiMultipart.Part] instance containing part metadata.
      * @param defaultConfiguration The default configuration for the given [part].
-     * @return The corresponding [MultipartSchema] for the given [part].
+     * @return The corresponding [MultipartObject] for the given [part].
      */
     private fun createPartSchema(
         part: ApiMultipart.Part,
         defaultConfiguration: MultipartDefaultConfig
-    ): MultipartSchema {
+    ): MultipartObject {
         // Override defaults with provided values if present.
         val schemaType: ApiType = part.schemaType ?: defaultConfiguration.schemaType
         val schemaFormat: String? = part.schemaFormat ?: defaultConfiguration.schemaFormat?.value
 
         // Construct the schema.
-        return MultipartSchema.PartItem(
+        return MultipartObject.PartItem(
             name = part.name,
             isRequired = part.isRequired,
             description = part.description.trimOrNull(),

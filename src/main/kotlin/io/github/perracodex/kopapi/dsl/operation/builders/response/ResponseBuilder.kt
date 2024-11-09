@@ -4,16 +4,14 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.response
 
+import io.github.perracodex.kopapi.dsl.common.header.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
-import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
-import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeadersBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinksBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.type.TypeConfig
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
 import io.github.perracodex.kopapi.system.KopapiException
@@ -41,7 +39,8 @@ public class ResponseBuilder @PublishedApi internal constructor(
     @Suppress("PropertyName")
     @PublishedApi
     internal val _schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
-) : ISchemaAttributeConfigurable by _schemaAttributeConfigurable {
+) : ISchemaAttributeConfigurable by _schemaAttributeConfigurable, HeaderBuilder() {
+
     public var description: String by MultilineString()
 
     @Suppress("PropertyName")
@@ -99,67 +98,6 @@ public class ResponseBuilder @PublishedApi internal constructor(
         effectiveContentTypes.forEach { contentTypeKey ->
             _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(typeDetails)
         }
-    }
-
-    /**
-     * Adds a header to the response.
-     *
-     * #### Sample usage
-     * ```
-     * header<Int>(name = "X-Rate-Limit") {
-     *     description = "Number of allowed requests per period."
-     * }
-     * ```
-     * ```
-     * header<String>(name = "X-Session-Token") {
-     *     description = "The session token for the user."
-     *     schema {
-     *         pattern = "^[A-Za-z0-9_-]{20,50}$"
-     *         minLength = 20
-     *         maxLength = 50
-     *     }
-     * }
-     *```
-     *
-     * @param T The type of the header.
-     * @param name The name of the header.
-     * @param configure A lambda receiver for configuring the [HeaderBuilder].
-     */
-    public inline fun <reified T : Any> header(
-        name: String,
-        noinline configure: HeaderBuilder.() -> Unit
-    ) {
-        headers { add<T>(name = name, configure = configure) }
-    }
-
-    /**
-     * Adds a collection of headers defined within a `headers { ... }` block.
-     *
-     * The `headers { ... }` block serves only as organizational syntactic sugar.
-     * Headers can be defined directly without needing to use the `headers { ... }` block.
-     *
-     * #### Sample Usage
-     * ```
-     * headers {
-     *      add<Int>("X-Rate-Limit") {
-     *          description = "Number of allowed requests per period."
-     *      }
-     *      add<String>(name = "X-Session-Token") {
-     *          description = "The session token for the user."
-     *          schema {
-     *              pattern = "^[A-Za-z0-9_-]{20,50}$"
-     *              minLength = 20
-     *              maxLength = 50
-     *          }
-     *      }
-     * }
-     * ```
-     *
-     * @param configure A lambda receiver for configuring the [HeadersBuilder].
-     */
-    public fun headers(configure: HeadersBuilder.() -> Unit) {
-        val headersBuilder: HeadersBuilder = HeadersBuilder().apply(configure)
-        headersBuilder.build().forEach { _config.addHeader(name = it.key, header = it.value) }
     }
 
     /**
@@ -244,7 +182,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
     internal fun build(status: HttpStatusCode): ApiResponse {
         // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to its specific types.
         val contentMap: Map<ContentType, Set<ApiResponse.TypeDetails>>? = _config
-            .allTypes.takeIf { it.isNotEmpty() }
+            .allTypes.ifEmpty { null }
             ?.mapValues { it.value.toSet() }
             ?.filterValues { it.isNotEmpty() }
             ?.toSortedMap(
@@ -258,10 +196,10 @@ public class ResponseBuilder @PublishedApi internal constructor(
         return ApiResponse(
             status = status,
             description = description.trimOrNull(),
-            headers = _config.headers.takeIf { it.isNotEmpty() },
+            headers = _headers.ifEmpty { null },
             composition = composition,
             content = contentMap,
-            links = _config.links.takeIf { it.isNotEmpty() }
+            links = _config.links.ifEmpty { null }
         )
     }
 
@@ -270,29 +208,8 @@ public class ResponseBuilder @PublishedApi internal constructor(
         /** Holds the types associated with the response. */
         val allTypes: MutableMap<ContentType, MutableSet<ApiResponse.TypeDetails>> = mutableMapOf()
 
-        /** Holds the headers associated with the response. */
-        val headers: MutableMap<String, ApiHeader> = mutableMapOf()
-
         /** Holds the links associated with the response. */
         val links: MutableMap<String, ApiLink> = mutableMapOf()
-
-        /**
-         * Adds a new [ApiHeader] instance to the cache, ensuring that the header name is unique
-         *
-         * @param name The unique name of the header.
-         * @param header The [ApiHeader] instance to add to the cache.
-         * @throws KopapiException If an [ApiHeader] with the same name already exists.
-         */
-        fun addHeader(name: String, header: ApiHeader) {
-            val headerName: String = name.sanitize()
-            if (headerName.isBlank()) {
-                throw KopapiException("Header name must not be blank.")
-            }
-            if (headers.any { it.key.equals(other = headerName, ignoreCase = true) }) {
-                throw KopapiException("Header with name '${headerName}' already exists within the same response.")
-            }
-            headers[headerName] = header
-        }
 
         /**
          * Adds a new [ApiLink] instance to the cache, ensuring that the link name is unique

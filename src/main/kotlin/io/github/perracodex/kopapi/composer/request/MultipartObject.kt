@@ -2,10 +2,12 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.schema.facets
+package io.github.perracodex.kopapi.composer.request
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
+import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.safeName
 import io.ktor.http.content.*
@@ -16,7 +18,8 @@ import io.ktor.http.content.*
  * @property definition A unique identifier for debugging and clarity during schema generation.
  * @property isRequired Indicates if the part is required for the request.
  */
-internal sealed class MultipartSchema(
+@ComposerApi
+internal sealed class MultipartObject(
     @JsonIgnore open val definition: String,
     @JsonIgnore open val isRequired: Boolean
 ) : ISchemaFacet {
@@ -32,10 +35,10 @@ internal sealed class MultipartSchema(
         @JsonIgnore override val definition: String = Object::class.safeName(),
         @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
         @JsonProperty("description") val description: String?,
-        @JsonProperty("properties") val properties: MutableMap<String, MultipartSchema> = mutableMapOf(),
+        @JsonProperty("properties") val properties: MutableMap<String, MultipartObject> = mutableMapOf(),
         @JsonProperty("required") val requiredFields: List<String>?,
-        @JsonProperty("encoding") val encoding: MutableMap<String, Map<String, String>>?
-    ) : MultipartSchema(
+        @JsonProperty("encoding") val encoding: MutableMap<String, Any>?
+    ) : MultipartObject(
         definition = definition,
         isRequired = true
     )
@@ -55,7 +58,7 @@ internal sealed class MultipartSchema(
         @JsonProperty("description") val description: String?,
         @JsonProperty("type") val schemaType: ApiType,
         @JsonProperty("format") val schemaFormat: String?
-    ) : MultipartSchema(
+    ) : MultipartObject(
         definition = definition,
         isRequired = isRequired
     )

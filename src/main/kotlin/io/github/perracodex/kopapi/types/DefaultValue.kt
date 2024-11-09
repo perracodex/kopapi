@@ -284,15 +284,15 @@ public sealed class DefaultValue {
             is ofDate -> this.value
             is ofDateTime -> this.value
             is ofEnum<*> -> this.value.name
-            is ofStringArray -> this.value.takeIf { it.isNotEmpty() }
-            is ofIntArray -> this.value.takeIf { it.isNotEmpty() }
-            is ofLongArray -> this.value.takeIf { it.isNotEmpty() }
-            is ofDoubleArray -> this.value.takeIf { it.isNotEmpty() }
-            is ofFloatArray -> this.value.takeIf { it.isNotEmpty() }
-            is ofBooleanArray -> this.value.takeIf { it.isNotEmpty() }
-            is ofDateArray -> this.value.takeIf { it.isNotEmpty() }
-            is ofDateTimeArray -> this.value.takeIf { it.isNotEmpty() }
-            is ofEnumArray<*> -> this.value.takeIf { it.isNotEmpty() }?.map { it.name }
+            is ofStringArray -> this.value.ifEmpty { null }
+            is ofIntArray -> this.value.ifEmpty { null }
+            is ofLongArray -> this.value.ifEmpty { null }
+            is ofDoubleArray -> this.value.ifEmpty { null }
+            is ofFloatArray -> this.value.ifEmpty { null }
+            is ofBooleanArray -> this.value.ifEmpty { null }
+            is ofDateArray -> this.value.ifEmpty { null }
+            is ofDateTimeArray -> this.value.ifEmpty { null }
+            is ofEnumArray<*> -> this.value.ifEmpty { null }?.map { it.name }
         }
     }
 }

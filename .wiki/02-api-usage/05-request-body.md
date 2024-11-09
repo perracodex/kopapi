@@ -121,12 +121,9 @@ multipart {
     }
 }
 ```
-
-Or specify the content details explicitly:
-
 ```kotlin
 multipart {
-    contentType = ContentType.MultiPart.Encrypted
+  contentType = ContentType.MultiPart.Signed
 
     part<PartData.FormItem>("myFormPart") {
         description = "The form data."
@@ -134,12 +131,33 @@ multipart {
 }
 ```
 
-- **Properties of Part:**
+- **Properties of `part`:**
   - `description`: A description of the part's content and what it represents.
   - `required`: Indicates whether the part is mandatory for the API call. (Default: `true`)
+  - `contentType`: Optional set of `ContentType` items for the part.
   - `schemaType`: Specify the type for the schema, such as STRING, NUMBER, etc. (Optional).
   - `schemaFormat`: Specify the format for the schema, such as BINARY, UUID, etc. (Optional).
-  - `contentType`: Optional parameter to explicitly define the content type of the part. By default, inferred on the type of `PartData`.
+
+```kotlin
+multipart {
+  part<PartData.FileItem>("myFilePart") {
+    description = "The file to upload."
+
+    contentType = setOf(
+      ContentType.Image.JPEG,
+      ContentType.Image.PNG
+    )
+
+    header<Int>(name = "SomeHader") {
+      description = "Some header value."
+      schema {
+        minimum = 1
+        maximum = 10
+      }
+    }
+  }
+}
+```
 
 ---
 

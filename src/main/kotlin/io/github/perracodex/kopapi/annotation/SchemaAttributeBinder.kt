@@ -145,6 +145,6 @@ internal object SchemaAttributeBinder {
                     ApiType.BOOLEAN -> trimmedElement.toBooleanStrictOrNull()
                     else -> null
                 }
-            }.takeIf { it.isNotEmpty() }
+            }.ifEmpty { null }
     }
 }

@@ -28,7 +28,7 @@ internal object OperationVerifier {
                 errors.add(it)
             }
 
-            return errors.takeIf { it.isNotEmpty() }
+            return errors.ifEmpty { null }
         } else {
             null
         }

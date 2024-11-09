@@ -157,9 +157,9 @@ public class KopapiConfig internal constructor(
             apiDocs = apiDocs ?: ApiDocsBuilder().build(),
             debugUrl = NetworkUtils.normalizeUrl(url = debugUrl, defaultValue = DEFAULT_DEBUG_URL),
             apiInfo = apiInfo,
-            apiServers = serverConfigurable.servers.takeIf { it.isNotEmpty() } ?: setOf(ServerBuilder.defaultServer()),
-            apiTags = tags.takeIf { it.isNotEmpty() },
-            apiSecuritySchemes = securityConfigurable.securitySchemes.takeIf { it.isNotEmpty() }
+            apiServers = serverConfigurable.servers.ifEmpty { null } ?: setOf(ServerBuilder.defaultServer()),
+            apiTags = tags.ifEmpty { null },
+            apiSecuritySchemes = securityConfigurable.securitySchemes.ifEmpty { null }
         )
     }
 

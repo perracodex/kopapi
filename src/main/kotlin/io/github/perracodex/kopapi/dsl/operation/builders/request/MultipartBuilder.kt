@@ -50,9 +50,9 @@ public class MultipartBuilder internal constructor() {
      * }
      * ```
      * ```
-     * // Explicit ContentType.MultiPart.Encrypted.
+     * // Explicit ContentType.MultiPart.Signed.
      * multipart {
-     *      contentType = ContentType.MultiPart.Encrypted
+     *      contentType = ContentType.MultiPart.Signed
      *
      *      part<PartData.FileItem>("secureFile") {
      *          description = "A securely uploaded file."
@@ -85,11 +85,12 @@ public class MultipartBuilder internal constructor() {
         val part = ApiMultipart.Part(
             type = typeOf<T>(),
             name = partName,
-            contentType = partBuilder.contentType?.takeIf { it.isNotEmpty() },
+            contentType = partBuilder.contentType?.ifEmpty { null },
             schemaType = partBuilder.schemaType,
             schemaFormat = partBuilder.schemaFormat.trimOrNull(),
             description = partBuilder.description.trimOrNull(),
-            isRequired = partBuilder.required
+            isRequired = partBuilder.required,
+            headers = partBuilder._headers.ifEmpty { null },
         )
 
         _config.parts.add(part)

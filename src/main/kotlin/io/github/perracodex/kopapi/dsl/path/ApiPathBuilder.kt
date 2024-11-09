@@ -115,8 +115,8 @@ public class ApiPathBuilder internal constructor(
             path = endpoint,
             summary = summary.trimOrNull(),
             description = description.trimOrNull(),
-            servers = serverConfigurable.servers.takeIf { it.isNotEmpty() },
-            parameters = _parametersConfig.parameters.takeIf { it.isNotEmpty() }
+            servers = serverConfigurable.servers.ifEmpty { null },
+            parameters = _parametersConfig.parameters.ifEmpty { null }
         )
     }
 }

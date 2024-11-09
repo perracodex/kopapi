@@ -53,7 +53,7 @@ public class ServerVariableBuilder internal constructor(
             defaultValue = defaultValue.trim(),
             choices = choices.map { it.trim() }
                 .filter { it.isNotEmpty() }
-                .takeIf { it.isNotEmpty() }?.toSortedSet(),
+                .ifEmpty { null }?.toSortedSet(),
             description = description.trimOrNull()
         )
     }

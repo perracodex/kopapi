@@ -110,7 +110,7 @@ internal class SecurityComposer(
 
         tracer.info("Composed ${schemes.size} schemes.")
 
-        return schemes.toSortedMap().takeIf { it.isNotEmpty() }
+        return schemes.toSortedMap().ifEmpty { null }
     }
 
     /**
@@ -150,7 +150,7 @@ internal class SecurityComposer(
                     SecurityObject(
                         method = operation.method.value,
                         path = operation.path,
-                        security = securityRequirements.takeIf { it.isNotEmpty() }
+                        security = securityRequirements.ifEmpty { null }
                     )
                 )
             }
@@ -158,7 +158,7 @@ internal class SecurityComposer(
 
         tracer.info("Composed ${securityObjectList.size} security objects.")
 
-        return securityObjectList.takeIf { it.isNotEmpty() }
+        return securityObjectList.ifEmpty { null }
     }
 
     /**

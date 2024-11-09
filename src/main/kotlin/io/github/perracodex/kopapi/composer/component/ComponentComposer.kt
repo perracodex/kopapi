@@ -32,7 +32,7 @@ internal object ComponentComposer {
             components[typeSchema.name] = schemaFacet
         }
 
-        return components.takeIf { it.isNotEmpty() }
+        return components.ifEmpty { null }
     }
 
     /**
@@ -67,8 +67,8 @@ internal object ComponentComposer {
                 // Return a new transformed object schema.
                 ObjectSchema(
                     description = schema.description.trimOrNull(),
-                    properties = properties.takeIf { it.isNotEmpty() },
-                    required = required.takeIf { it.isNotEmpty() }
+                    properties = properties.ifEmpty { null },
+                    required = required.ifEmpty { null }
                 )
             }
 

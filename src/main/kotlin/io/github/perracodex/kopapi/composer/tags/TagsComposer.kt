@@ -50,7 +50,7 @@ internal class TagsComposer(
 
         tracer.debug("Merged tags: $mergedTags")
 
-        return mergedTags.takeIf { it.isNotEmpty() }?.toList()
+        return mergedTags.ifEmpty { null }?.toList()
     }
 
     /**

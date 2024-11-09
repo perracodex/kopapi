@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
+import io.github.perracodex.kopapi.dsl.common.header.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -26,6 +27,6 @@ public class PartBuilder @PublishedApi internal constructor(
     public var contentType: Set<ContentType>? = null,
     public var schemaType: ApiType? = null,
     public var schemaFormat: String? = null
-) {
+) : HeaderBuilder() {
     public var description: String by MultilineString()
 }

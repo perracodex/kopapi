@@ -71,6 +71,6 @@ public class ServerConfigBuilder internal constructor(
     internal fun build(): ApiServerConfig = ApiServerConfig(
         url = urlString.trim(),
         description = description.trimOrNull(),
-        variables = variables.takeIf { it.isNotEmpty() }?.toMap()
+        variables = variables.ifEmpty { null }?.toMap()
     )
 }

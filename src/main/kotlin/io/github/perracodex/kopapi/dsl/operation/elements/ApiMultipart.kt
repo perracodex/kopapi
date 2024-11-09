@@ -47,6 +47,7 @@ internal data class ApiMultipart(
      * @property schemaFormat Optional format of the schema type.
      * @property description Optional detailed explanation of the endpoint and its functionality.
      * @property isRequired Indicates whether the part is mandatory.
+     * @property headers A map of [ApiHeader] objects representing the headers that may be included in the part.
      */
     data class Part(
         val type: KType,
@@ -55,7 +56,8 @@ internal data class ApiMultipart(
         val schemaType: ApiType?,
         val schemaFormat: String?,
         val description: String?,
-        val isRequired: Boolean
+        val isRequired: Boolean,
+        val headers: Map<String, ApiHeader>?,
     ) {
         init {
             if (name.isBlank()) {

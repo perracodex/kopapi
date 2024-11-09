@@ -249,15 +249,15 @@ internal object OperationComposer {
             ResponseComposer.compose(responses = apiOperation.responses)
         }
         return OperationObject(
-            tags = apiOperation.tags.takeIf { !it.isNullOrEmpty() },
+            tags = apiOperation.tags?.ifEmpty { null },
             summary = apiOperation.summary,
             description = apiOperation.description,
             operationId = apiOperation.operationId,
-            parameters = parameters.takeIf { !it.isNullOrEmpty() },
+            parameters = parameters?.ifEmpty { null },
             requestBody = requestBody,
-            responses = responses.takeIf { !it.isNullOrEmpty() },
+            responses = responses?.ifEmpty { null },
             security = security,
-            servers = apiOperation.servers.takeIf { !it.isNullOrEmpty() }
+            servers = apiOperation.servers?.ifEmpty { null }
         )
     }
 }

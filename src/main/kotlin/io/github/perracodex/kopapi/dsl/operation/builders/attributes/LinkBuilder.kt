@@ -154,7 +154,7 @@ public class LinkBuilder internal constructor() {
             operationId = operationId?.trimOrNull(),
             operationRef = operationRef?.trimOrNull(),
             description = description.trimOrNull(),
-            parameters = _parameters.takeIf { it.isNotEmpty() },
+            parameters = _parameters.ifEmpty { null },
             requestBody = requestBody.trimOrNull(),
             server = _server
         )

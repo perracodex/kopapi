@@ -215,9 +215,9 @@ public class ApiOperationBuilder internal constructor(
      *          }
      *      }
      *
-     *      // Explicit ContentType.MultiPart.Encrypted
+     *      // Explicit ContentType.MultiPart.Signed
      *      multipart {
-     *          contentType = ContentType.MultiPart.Encrypted
+     *          contentType = ContentType.MultiPart.Signed
      *
      *          part<PartData.FileItem>("secureFile") {
      *              description = "A securely uploaded file."
@@ -413,16 +413,16 @@ public class ApiOperationBuilder internal constructor(
         return ApiOperation(
             path = endpointPath,
             method = method,
-            tags = _config.tags.takeIf { it.isNotEmpty() },
+            tags = _config.tags.ifEmpty { null },
             summary = summary.trimOrNull(),
             description = description.trimOrNull(),
             operationId = operationId.trimOrNull()?.sanitize(),
-            parameters = _parametersConfig.parameters.takeIf { it.isNotEmpty() },
+            parameters = _parametersConfig.parameters.ifEmpty { null },
             requestBody = _config.requestBody,
             responses = responses,
-            securitySchemes = securityConfigurable.securitySchemes.takeIf { it.isNotEmpty() },
+            securitySchemes = securityConfigurable.securitySchemes.ifEmpty { null },
             skipSecurity = securityConfigurable.skipSecurity,
-            servers = serverConfigurable.servers.takeIf { it.isNotEmpty() }
+            servers = serverConfigurable.servers.ifEmpty { null }
         )
     }
 
