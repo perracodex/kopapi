@@ -18,7 +18,7 @@ internal object SchemaAttributeBinder {
      * @param attributes The [SchemaAnnotationAttributes] to copy into the schema.
      * @return A new [ElementSchema] with the attributes copied, if applicable, or the original schema.
      */
-    fun apply(schema: ElementSchema, attributes: SchemaAnnotationAttributes): ElementSchema {
+    fun bind(schema: ElementSchema, attributes: SchemaAnnotationAttributes): ElementSchema {
         return when (schema) {
             is ElementSchema.AdditionalProperties -> schema.copy(
                 description = attributes.description.trimOrNull(),

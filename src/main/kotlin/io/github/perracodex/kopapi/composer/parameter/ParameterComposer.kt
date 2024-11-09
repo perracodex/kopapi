@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.parameter
 
-import io.github.perracodex.kopapi.composer.SchemaComposer
+import io.github.perracodex.kopapi.annotation.SchemaAttributeUtils
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.schema.SchemaRegistry
@@ -46,7 +46,7 @@ internal object ParameterComposer {
 
             // Apply additional parameter attributes.
             parameter.schemaAttributes?.let {
-                baseSchema = SchemaComposer.copySchemaAttributes(
+                baseSchema = SchemaAttributeUtils.copySchemaAttributes(
                     schema = baseSchema,
                     attributes = parameter.schemaAttributes
                 )

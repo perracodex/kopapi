@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.header
 
-import io.github.perracodex.kopapi.composer.SchemaComposer
+import io.github.perracodex.kopapi.annotation.SchemaAttributeUtils
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.schema.OpenApiSchema
@@ -37,9 +37,9 @@ internal object HeaderComposer {
             var baseSchema: ElementSchema = SchemaRegistry.introspectType(type = header.type)?.schema
                 ?: throw KopapiException("No schema found for header type: ${header.type}")
 
-            // Apply additional parameter attributes.
+            // Apply additional header attributes.
             header.schemaAttributes?.let {
-                baseSchema = SchemaComposer.copySchemaAttributes(
+                baseSchema = SchemaAttributeUtils.copySchemaAttributes(
                     schema = baseSchema,
                     attributes = header.schemaAttributes
                 )

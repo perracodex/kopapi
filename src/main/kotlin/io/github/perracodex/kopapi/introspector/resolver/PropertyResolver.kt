@@ -78,7 +78,7 @@ internal class PropertyResolver(private val introspector: TypeIntrospector) {
                     typeSchema.schema
 
                 else ->
-                    SchemaAttributeBinder.apply(
+                    SchemaAttributeBinder.bind(
                         schema = typeSchema.schema,
                         attributes = attributes
                     )

@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.composer.request
 
+import io.github.perracodex.kopapi.annotation.SchemaAttributeUtils
 import io.github.perracodex.kopapi.composer.SchemaComposer
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.header.HeaderComposer
@@ -94,7 +95,7 @@ internal object RequestBodyComposer {
 
                 // Apply additional parameter attributes.
                 details.schemaAttributes?.let { attributes ->
-                    baseSchema = SchemaComposer.copySchemaAttributes(
+                    baseSchema = SchemaAttributeUtils.copySchemaAttributes(
                         schema = baseSchema,
                         attributes = attributes
                     )
