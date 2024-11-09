@@ -11,13 +11,14 @@ import io.github.perracodex.kopapi.dsl.common.parameter.QueryParameterBuilder
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.system.KopapiException
+import io.ktor.http.*
 import kotlin.reflect.typeOf
 
 /**
  * Handles the registration of parameters.
  */
 @KopapiDsl
-public open class ParametersBuilder internal constructor(endpoint: String) {
+public open class ParametersBuilder internal constructor(private val endpoint: String) {
     @Suppress("PropertyName")
     @PublishedApi
     internal val _parametersConfig: Config = Config(endpoint = endpoint)
@@ -187,6 +188,27 @@ public open class ParametersBuilder internal constructor(endpoint: String) {
         val builder: CookieParameterBuilder = CookieParameterBuilder().apply(configure)
         val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
         _parametersConfig.addApiParameter(apiParameter = parameter)
+    }
+
+    /**
+     * Adds a collection of parameters defined within a `parameters { ... }` block.
+     *
+     * The `parameters { ... }` block serves only as organizational syntactic sugar.
+     * Parameters can be defined directly without needing to use the `parameters` block.
+     *
+     * #### Sample Usage
+     * ```
+     * parameters {
+     *     pathParameter<Uuid>("data_id") { description = "The data Id." }
+     *     queryParameter<String>("item_id") { description = "Optional item Id." }
+     * }
+     * ```
+     *
+     * @param configure A lambda receiver for configuring the [ParametersBuilder].
+     */
+    public fun parameters(configure: ParametersBuilder.() -> Unit) {
+        val builder: ParametersBuilder = ParametersBuilder(endpoint = endpoint).apply(configure)
+        _parametersConfig.parameters.addAll(builder._parametersConfig.parameters)
     }
 
     @PublishedApi

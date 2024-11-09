@@ -11,7 +11,6 @@ import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.string.SpacedString
 import io.github.perracodex.kopapi.utils.trimOrNull
-import io.ktor.http.*
 import io.ktor.server.routing.*
 
 /**
@@ -105,27 +104,6 @@ public class ApiPathBuilder internal constructor(
      * @see [summary]
      */
     public var description: String by MultilineString()
-
-    /**
-     * Adds a collection of parameters defined within a `parameters { ... }` block.
-     *
-     * The `parameters { ... }` block serves only as organizational syntactic sugar.
-     * Parameters can be defined directly without needing to use the `parameters { ... }` block.
-     *
-     * #### Sample Usage
-     * ```
-     * parameters {
-     *     pathParameter<Uuid>("data_id") { description = "The data Id." }
-     *     queryParameter<String>("item_id") { description = "Optional item Id." }
-     * }
-     * ```
-     *
-     * @param configure A lambda receiver for configuring the [ParametersBuilder].
-     */
-    public fun parameters(configure: ParametersBuilder.() -> Unit) {
-        val builder: ParametersBuilder = ParametersBuilder(endpoint = endpoint).apply(configure)
-        _parametersConfig.parameters.addAll(builder._parametersConfig.parameters)
-    }
 
     /**
      * Builds the [ApiPath] instance with the configured properties.

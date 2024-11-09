@@ -152,27 +152,6 @@ public class ApiOperationBuilder internal constructor(
     public var operationId: String? = null
 
     /**
-     * Adds a collection of parameters defined within a `parameters { ... }` block.
-     *
-     * The `parameters { ... }` block serves only as organizational syntactic sugar.
-     * Parameters can be defined directly without needing to use the `parameters { ... }` block.
-     *
-     * #### Sample Usage
-     * ```
-     * parameters {
-     *     pathParameter<Uuid>("data_id") { description = "The data Id." }
-     *     queryParameter<String>("item_id") { description = "Optional item Id." }
-     * }
-     * ```
-     *
-     * @param configure A lambda receiver for configuring the [ParametersBuilder].
-     */
-    public fun parameters(configure: ParametersBuilder.() -> Unit) {
-        val builder: ParametersBuilder = ParametersBuilder(endpoint = endpoint).apply(configure)
-        _parametersConfig.parameters.addAll(builder._parametersConfig.parameters)
-    }
-
-    /**
      * Disables the security schemes for the API operation.
      * Both top-level and local-level security schemes will not be applied to this API Operation.
      *
