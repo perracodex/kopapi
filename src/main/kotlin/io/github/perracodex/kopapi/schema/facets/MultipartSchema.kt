@@ -6,10 +6,8 @@ package io.github.perracodex.kopapi.schema.facets
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.safeName
-import io.ktor.http.*
 import io.ktor.http.content.*
 
 /**
@@ -36,6 +34,7 @@ internal sealed class MultipartSchema(
         @JsonProperty("description") val description: String?,
         @JsonProperty("properties") val properties: MutableMap<String, MultipartSchema> = mutableMapOf(),
         @JsonProperty("required") val requiredFields: List<String>?,
+        @JsonProperty("encoding") val encoding: MutableMap<String, Map<String, String>>?
     ) : MultipartSchema(
         definition = definition,
         isRequired = true
@@ -45,34 +44,19 @@ internal sealed class MultipartSchema(
      * Represents a single `part` of a multipart request.
      *
      * @property name The name of the multipart field or part in the request.
-     * @property contentType The content type of the part.
+     * @property description An optional description for this part.
      * @property schemaType The schema type of the part.
      * @property schemaFormat Optional schema format for the part.
-     * @property description An optional description for this part.
      */
     data class PartItem(
         @JsonIgnore override val definition: String = PartItem::class.safeName(),
         @JsonIgnore override val isRequired: Boolean,
         @JsonIgnore val name: String,
-        @JsonIgnore val contentType: ContentType,
-        @JsonIgnore val schemaType: ApiType,
-        @JsonIgnore val schemaFormat: ApiFormat?,
-        @JsonProperty("description") val description: String?
+        @JsonProperty("description") val description: String?,
+        @JsonProperty("type") val schemaType: ApiType,
+        @JsonProperty("format") val schemaFormat: String?
     ) : MultipartSchema(
         definition = definition,
         isRequired = isRequired
-    ) {
-        /**
-         * Constructs the OpenApi schema for the part item.
-         */
-        @JsonProperty("content")
-        val content: Map<String, Map<String, Any?>> = mapOf(
-            contentType.toString() to mapOf(
-                "schema" to mapOf(
-                    "type" to schemaType,
-                    "format" to schemaFormat
-                )
-            )
-        )
-    }
+    )
 }

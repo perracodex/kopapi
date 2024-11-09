@@ -39,18 +39,27 @@ public class MultipartBuilder internal constructor() {
      * multipart {
      *      part<PartData.FileItem>("file") {
      *          description = "The file to upload."
+     *          contentType = setOf(
+     *              ContentType.Image.JPEG,
+     *              ContentType.Image.PNG
+     *          )
      *      }
      *      part<PartData.FormItem>("metadata") {
      *          description = "Metadata about the file, provided as JSON."
      *      }
      * }
-     *
+     * ```
+     * ```
      * // Explicit ContentType.MultiPart.Encrypted.
      * multipart {
      *      contentType = ContentType.MultiPart.Encrypted
      *
      *      part<PartData.FileItem>("secureFile") {
      *          description = "A securely uploaded file."
+     *          contentType = setOf(
+     *              ContentType.Image.JPEG,
+     *              ContentType.Image.PNG
+     *          )
      *      }
      *      part<PartData.FormItem>("metadata") {
      *          description = "Additional metadata about the file."
@@ -76,9 +85,9 @@ public class MultipartBuilder internal constructor() {
         val part = ApiMultipart.Part(
             type = typeOf<T>(),
             name = partName,
-            contentType = partBuilder.contentType,
+            contentType = partBuilder.contentType?.takeIf { it.isNotEmpty() },
             schemaType = partBuilder.schemaType,
-            schemaFormat = partBuilder.schemaFormat,
+            schemaFormat = partBuilder.schemaFormat.trimOrNull(),
             description = partBuilder.description.trimOrNull(),
             isRequired = partBuilder.required
         )

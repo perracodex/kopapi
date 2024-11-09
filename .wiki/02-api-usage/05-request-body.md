@@ -156,7 +156,7 @@ requestBody<Unit> {
         // Upload the primary product image (JPEG)
         part<PartData.FileItem>("primaryImage") {
             description = "The primary image of the product."
-            contentType = ContentType.Image.JPEG
+          contentType = setOf(ContentType.Image.JPEG, ContentType.Image.PNG)
             schemaType = ApiType.STRING
             schemaFormat = ApiFormat.BINARY
         }
@@ -164,7 +164,7 @@ requestBody<Unit> {
         // Upload the secondary product image (optional)
         part<PartData.FileItem>("secondaryImage") {
             description = "An optional secondary image of the product."
-            contentType = ContentType.Image.JPEG
+          contentType = setOf(ContentType.Image.JPEG, ContentType.Image.PNG)
             schemaType = ApiType.STRING
             schemaFormat = ApiFormat.BINARY
             required = false
@@ -186,7 +186,7 @@ requestBody<Unit> {
         // Upload a JSON object for product metadata (optional)
         part<PartData.FormItem>("metadata") {
             description = "Additional metadata about the product."
-            contentType = ContentType.Application.Json
+          contentType = setOf(ContentType.Application.Json)
             schemaType = ApiType.OBJECT
             required = false
         }

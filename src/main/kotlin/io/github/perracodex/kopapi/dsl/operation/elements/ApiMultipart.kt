@@ -5,7 +5,6 @@
 package io.github.perracodex.kopapi.dsl.operation.elements
 
 import io.github.perracodex.kopapi.system.KopapiException
-import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -43,7 +42,7 @@ internal data class ApiMultipart(
      *
      * @property type The [KType] of the part. Expected to be a subclass of [PartData].
      * @property name The name of the part.
-     * @property contentType Optional [ContentType] for the part.
+     * @property contentType Optional set of [ContentType]s for the part.
      * @property schemaType Optional type of the schema.
      * @property schemaFormat Optional format of the schema type.
      * @property description Optional detailed explanation of the endpoint and its functionality.
@@ -52,9 +51,9 @@ internal data class ApiMultipart(
     data class Part(
         val type: KType,
         val name: String,
-        val contentType: ContentType?,
+        val contentType: Set<ContentType>?,
         val schemaType: ApiType?,
-        val schemaFormat: ApiFormat?,
+        val schemaFormat: String?,
         val description: String?,
         val isRequired: Boolean
     ) {

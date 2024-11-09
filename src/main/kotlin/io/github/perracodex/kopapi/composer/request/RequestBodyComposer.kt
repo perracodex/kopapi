@@ -129,22 +129,39 @@ internal object RequestBodyComposer {
 
             val properties: MutableMap<String, MultipartSchema> = mutableMapOf()
             val requiredFields: MutableList<String> = mutableListOf()
+            val encodingMap: MutableMap<String, Map<String, String>> = mutableMapOf()
 
             apiMultipart.parts.forEach { part ->
-                val partSchema: MultipartSchema = createPartSchema(part = part)
+                // Add encoding information for each part based on the content type.
+                val partKClassifier: KClassifier = part.type.classifier
+                    ?: throw KopapiException("KType classifier is null: ${part.type}")
+                val defaultConfiguration: MultipartDefaultConfig = multipartConfigs[partKClassifier]
+                    ?: throw KopapiException("Unsupported PartData type: $partKClassifier")
+
+                // Create the part schema.
+                val partSchema: MultipartSchema = createPartSchema(
+                    part = part,
+                    defaultConfiguration = defaultConfiguration
+                )
                 properties[part.name] = partSchema
 
                 // Track required fields for the multipart schema.
                 if (partSchema.isRequired) {
                     requiredFields.add(part.name)
                 }
+
+                // Determine the encoding for the part.
+                val contentType: Set<ContentType> = part.contentType ?: setOf(defaultConfiguration.contentType)
+                val encodings: String = contentType.joinToString(separator = ", ") { it.toString() }
+                encodingMap[part.name] = mapOf("contentType" to encodings)
             }
 
-            // Construct the multipart schema.
+            // Construct the multipart schema without placeholders.
             val schema: MultipartSchema.Object = MultipartSchema.Object(
                 description = apiMultipart.description.trimOrNull(),
                 properties = properties,
-                requiredFields = requiredFields.ifEmpty { null }
+                requiredFields = requiredFields.ifEmpty { null },
+                encoding = encodingMap
             )
 
             OpenApiSchema.ContentSchema(schema = schema)
@@ -155,28 +172,24 @@ internal object RequestBodyComposer {
      * Factory function to create the corresponding [MultipartSchema] for a given [part].
      *
      * @param part The [ApiMultipart.Part] instance containing part metadata.
+     * @param defaultConfiguration The default configuration for the given [part].
      * @return The corresponding [MultipartSchema] for the given [part].
      */
-    private fun createPartSchema(part: ApiMultipart.Part): MultipartSchema {
-        // Get the default configuration for the given PartData subclass.
-        val partKClassifier: KClassifier = part.type.classifier
-            ?: throw KopapiException("KType classifier is null: ${part.type}")
-        val defaultConfiguration: MultipartDefaultConfig = multipartConfigs[partKClassifier]
-            ?: throw KopapiException("Unsupported PartData type: $partKClassifier")
-
+    private fun createPartSchema(
+        part: ApiMultipart.Part,
+        defaultConfiguration: MultipartDefaultConfig
+    ): MultipartSchema {
         // Override defaults with provided values if present.
-        val contentType: ContentType = part.contentType ?: defaultConfiguration.contentType
         val schemaType: ApiType = part.schemaType ?: defaultConfiguration.schemaType
-        val schemaFormat: ApiFormat? = part.schemaFormat ?: defaultConfiguration.schemaFormat
+        val schemaFormat: String? = part.schemaFormat ?: defaultConfiguration.schemaFormat?.value
 
         // Construct the schema.
         return MultipartSchema.PartItem(
             name = part.name,
             isRequired = part.isRequired,
             description = part.description.trimOrNull(),
-            contentType = contentType,
             schemaType = schemaType,
-            schemaFormat = schemaFormat
+            schemaFormat = schemaFormat.trimOrNull()
         )
     }
 

@@ -104,18 +104,27 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
      * multipart {
      *      part<PartData.FileItem>("file") {
      *          description = "The file to upload."
+     *          contentType = setOf(
+     *              ContentType.Image.JPEG,
+     *              ContentType.Image.PNG
+     *          )
      *      }
      *      part<PartData.FormItem>("metadata") {
      *          description = "Metadata about the file, provided as JSON."
      *      }
      * }
-     *
+     * ```
+     * ```
      * // Explicit ContentType.MultiPart.Encrypted.
      * multipart {
      *      contentType = ContentType.MultiPart.Encrypted
      *
      *      part<PartData.FileItem>("secureFile") {
      *          description = "A securely uploaded file."
+     *          contentType = setOf(
+     *              ContentType.Image.JPEG,
+     *              ContentType.Image.PNG
+     *          )
      *      }
      *      part<PartData.FormItem>("metadata") {
      *          description = "Additional metadata about the file."

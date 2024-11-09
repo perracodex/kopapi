@@ -5,7 +5,6 @@
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
-import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.ktor.http.*
@@ -16,18 +15,17 @@ import io.ktor.http.*
  * @property name The name of the part.
  * @property required Indicates whether the part is mandatory for the multipart request. Default: `true`.
  * @property description Optional description of the part.
- * @property contentType Optional content type for the part.
+ * @property contentType Optional set of [ContentType]s for the part.
  * @property schemaType Optional schema type for the part. Default: `string`.
- * @property schemaFormat Optional schema format for the part.
+ * @property schemaFormat Optional schema format for the part
  */
 @KopapiDsl
 public class PartBuilder @PublishedApi internal constructor(
     public val name: String,
     public var required: Boolean = true,
-    public var contentType: ContentType? = null,
+    public var contentType: Set<ContentType>? = null,
     public var schemaType: ApiType? = null,
-    public var schemaFormat: ApiFormat? = null
-
+    public var schemaFormat: String? = null
 ) {
     public var description: String by MultilineString()
 }
