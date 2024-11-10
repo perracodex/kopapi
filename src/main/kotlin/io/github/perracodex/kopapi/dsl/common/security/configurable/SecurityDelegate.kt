@@ -16,7 +16,7 @@ import io.ktor.http.*
  * Configurable handling security scheme registration.
  */
 @KopapiDsl
-internal class SecurityConfigurable : ISecurityConfigurable {
+internal class SecurityDelegate : ISecurityConfigurable {
     /** The cache for security schemes. */
     val securitySchemes: LinkedHashSet<ApiSecurityScheme> = linkedSetOf()
 

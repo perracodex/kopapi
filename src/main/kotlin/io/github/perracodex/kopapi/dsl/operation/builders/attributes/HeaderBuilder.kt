@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.builders.attributes
 
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
-import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
@@ -32,8 +32,8 @@ public class HeaderBuilder @PublishedApi internal constructor(
     public var deprecated: Boolean = false,
     public var explode: Boolean = false,
     public var contentType: ContentType? = null,
-    private val schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
-) : ISchemaAttributeConfigurable by schemaAttributeConfigurable {
+    private val schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate()
+) : ISchemaAttributeConfigurable by schemaAttributeDelegate {
     public var description: String by MultilineString()
 
     /**
@@ -50,7 +50,7 @@ public class HeaderBuilder @PublishedApi internal constructor(
             required = required,
             explode = explode.takeIf { it },
             contentType = contentType,
-            schemaAttributes = schemaAttributeConfigurable.attributes,
+            schemaAttributes = schemaAttributeDelegate.attributes,
             deprecated = deprecated.takeIf { it }
         )
     }

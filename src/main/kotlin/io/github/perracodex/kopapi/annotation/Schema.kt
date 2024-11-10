@@ -47,6 +47,10 @@ package io.github.perracodex.kopapi.annotation
  * - Non-relevant attributes to a type are ignored.
  * - The class itself can also be annotated, but only the `description` attribute is applicable.
  *
+ * #### Examples Attribute
+ * - `example` and the list `examples` should not be used together. Only one should be defined.
+ * - If both are sey, then the list of `examples` will take precedence and the single `example` will be ignored.
+ *
  * @property description A brief description of the field. (Can be used also with the class)
  * @property defaultValue A default value for the field.
  * @property format Overrides the default format for the field allowing for custom formats.
@@ -63,6 +67,8 @@ package io.github.perracodex.kopapi.annotation
  * @property minItems Specifies the minimum number of items in an array.
  * @property maxItems Specifies the maximum number of items in an array.
  * @property uniqueItems Specifies that all items in an array must be unique.
+ * @property example An example to be used for documentation purposes.
+ * @property examples An array of examples to be used for documentation purposes.
  */
 @Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
@@ -83,5 +89,7 @@ public annotation class Schema(
     val multipleOf: String = "",
     val minItems: Int = -1,
     val maxItems: Int = -1,
-    val uniqueItems: Boolean = false
+    val uniqueItems: Boolean = false,
+    val example: String = "",
+    val examples: Array<String> = []
 )

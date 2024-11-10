@@ -5,6 +5,8 @@
 package io.github.perracodex.kopapi.schema.facets
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.perracodex.kopapi.composer.annotation.ComposerApi
+import io.github.perracodex.kopapi.dsl.common.example.IExample
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.types.DefaultValue
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -14,14 +16,17 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  *
  * Nullable types are represented as a composition of the base schema and a null type.
  *
- * @property description Description of the property.
- * @property defaultValue Default value of the property.
+ * @property description Description of the schema.
+ * @property defaultValue Default value of the schema.
+ * @property examples Examples for the schema.
  * @property type The list that includes the base schema type and null type. (For primitive types).
  * @property anyOf The list that includes the base schema (with stripped attributes) and null type. (For complex types).
  */
+@ComposerApi
 internal data class NullableSchema private constructor(
     @JsonProperty("description") val description: String? = null,
     @JsonProperty("default") val defaultValue: Any? = null,
+    @JsonProperty("examples") val examples: IExample? = null,
     @JsonProperty("type") val type: List<String>? = null,
     @JsonProperty("anyOf") val anyOf: List<Any>? = null
 ) : ISchemaFacet {
@@ -39,14 +44,16 @@ internal data class NullableSchema private constructor(
             // Determine if the schema is a Primitive type to use less verbose syntax.
             return if (decomposedSchema.strippedSchema is ElementSchema.Primitive) {
                 NullableSchema(
-                    description = decomposedSchema.description,
+                    description = decomposedSchema.description.trimOrNull(),
                     defaultValue = decomposedSchema.defaultValue,
+                    examples = decomposedSchema.examples,
                     type = listOf(decomposedSchema.strippedSchema.schemaType.toString(), ApiType.NULL())
                 )
             } else {
                 NullableSchema(
-                    description = decomposedSchema.description,
+                    description = decomposedSchema.description.trimOrNull(),
                     defaultValue = decomposedSchema.defaultValue,
+                    examples = decomposedSchema.examples,
                     anyOf = listOf(
                         decomposedSchema.strippedSchema,
                         mapOf("type" to ApiType.NULL())
@@ -72,37 +79,32 @@ internal data class NullableSchema private constructor(
         private fun decomposeSchema(schema: ElementSchema): DecomposedSchema {
             val strippedSchema: ElementSchema = when (schema) {
                 is ElementSchema.ObjectDescriptor ->
-                    schema.copy(description = null)
+                    schema.copy(description = null, defaultValue = null, examples = null)
 
                 is ElementSchema.AdditionalProperties ->
-                    schema.copy(description = null, defaultValue = null)
+                    schema.copy(description = null, defaultValue = null, examples = null)
 
                 is ElementSchema.Array ->
-                    schema.copy(description = null, defaultValue = null)
+                    schema.copy(description = null, defaultValue = null, examples = null)
 
                 is ElementSchema.Enum ->
-                    schema.copy(description = null, defaultValue = null)
+                    schema.copy(description = null, defaultValue = null, examples = null)
 
                 is ElementSchema.Primitive ->
-                    schema.copy(description = null, defaultValue = null)
+                    schema.copy(description = null, defaultValue = null, examples = null)
 
                 is ElementSchema.Reference ->
-                    schema.copy(description = null, defaultValue = null)
+                    schema.copy(description = null, defaultValue = null, examples = null)
             }
 
-            val defaultValue: Any? = when (schema) {
-                is ElementSchema.ObjectDescriptor -> null
-                is ElementSchema.AdditionalProperties -> schema.defaultValue
-                is ElementSchema.Array -> schema.defaultValue
-                is ElementSchema.Enum -> schema.defaultValue
-                is ElementSchema.Primitive -> schema.defaultValue
-                is ElementSchema.Reference -> schema.defaultValue
-            }
+            val defaultValue: Any? = schema.defaultValue
+            val examples: IExample? = schema.examples
 
             return DecomposedSchema(
                 strippedSchema = strippedSchema,
                 description = schema.description.trimOrNull(),
-                defaultValue = (defaultValue as? DefaultValue)?.toValue() ?: defaultValue
+                defaultValue = (defaultValue as? DefaultValue)?.toValue() ?: defaultValue,
+                examples = examples
             )
         }
     }
@@ -114,9 +116,11 @@ internal data class NullableSchema private constructor(
  * @property strippedSchema The schema with specific attributes removed.
  * @property description The description associated with the schema, if any.
  * @property defaultValue The default value associated with the schema, if any.
+ * @property examples The examples associated with the schema, if any.
  */
 private data class DecomposedSchema(
     val strippedSchema: ElementSchema,
     val description: String?,
-    val defaultValue: Any?
+    val defaultValue: Any?,
+    val examples: IExample?
 )

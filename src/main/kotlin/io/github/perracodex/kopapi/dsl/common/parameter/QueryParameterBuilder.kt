@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.dsl.common.parameter
 
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
-import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.types.DefaultValue
@@ -37,8 +37,8 @@ public class QueryParameterBuilder @PublishedApi internal constructor(
     public var style: ParameterStyle = ParameterStyle.FORM,
     public var explode: Boolean = true,
     public var deprecated: Boolean = false,
-    private val schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
-) : ISchemaAttributeConfigurable by schemaAttributeConfigurable {
+    private val schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate()
+) : ISchemaAttributeConfigurable by schemaAttributeDelegate {
     public var description: String by MultilineString()
 
     /**
@@ -61,7 +61,7 @@ public class QueryParameterBuilder @PublishedApi internal constructor(
             style = style.takeIf { it != ParameterStyle.FORM },
             explode = explode.takeIf { !it },
             deprecated = deprecated.takeIf { it },
-            schemaAttributes = schemaAttributeConfigurable.attributes
+            schemaAttributes = schemaAttributeDelegate.attributes
         )
     }
 }

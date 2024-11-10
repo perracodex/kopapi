@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.common.schema
 
+import io.github.perracodex.kopapi.dsl.common.example.IExample
+
 /**
  * Represents a schema for primitive types (e.g., `string`, `integer`, etc.).
  *
@@ -21,6 +23,7 @@ package io.github.perracodex.kopapi.dsl.common.schema
  * @property minItems The minimum number of items in an array type.
  * @property maxItems The maximum number of items in an array type.
  * @property uniqueItems Determines if all items in an array type must be unique.
+ * @property examples Examples be used for documentation purposes.
  */
 internal data class ApiSchemaAttributes(
     val format: String?,
@@ -36,5 +39,6 @@ internal data class ApiSchemaAttributes(
     val multipleOf: Number?,
     val minItems: Int?,
     val maxItems: Int?,
-    val uniqueItems: Boolean?
+    val uniqueItems: Boolean?,
+    val examples: IExample?
 )

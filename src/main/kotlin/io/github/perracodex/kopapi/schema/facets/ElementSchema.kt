@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.schema.facets
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.perracodex.kopapi.dsl.common.example.IExample
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.safeName
 import kotlin.reflect.KType
@@ -18,11 +19,15 @@ import kotlin.reflect.KType
  *
  * @property definition A unique identifier for debugging and clarity during schema generation.
  * @property description A brief description of the schema.
+ * @property defaultValue An optional default value for the schema.
+ * @property examples Optional examples for the schema.
  */
 internal sealed class ElementSchema(
     @JsonIgnore open val definition: String,
     open val schemaType: ApiType,
-    open val description: String?
+    open val description: String?,
+    open val defaultValue: Any? = null,
+    open val examples: IExample? = null,
 ) : ISchemaFacet {
     /**
      * Represents an object schema with a set of named properties.
@@ -40,6 +45,8 @@ internal sealed class ElementSchema(
         override val definition: String = Object::class.safeName(),
         val objectProperties: MutableMap<String, SchemaProperty>,
         override val description: String? = null,
+        override val defaultValue: Any? = null,
+        override val examples: IExample? = null
     ) : ElementSchema(
         definition = definition,
         schemaType = ApiType.OBJECT,
@@ -54,7 +61,6 @@ internal sealed class ElementSchema(
      * @property maxItems The maximum number of items in the array.
      * @property uniqueItems Specifies that all items in the array must be unique.
      * @property items The schema of the items contained in the array.
-     * @property defaultValue An optional default value for the schema.
      */
     data class Array(
         @JsonIgnore override val definition: String = Array::class.safeName(),
@@ -64,7 +70,8 @@ internal sealed class ElementSchema(
         @JsonProperty("maxItems") val maxItems: Int? = null,
         @JsonProperty("uniqueItems") val uniqueItems: Boolean? = null,
         @JsonProperty("items") val items: ElementSchema,
-        @JsonProperty("default") val defaultValue: Any? = null
+        @JsonProperty("default") override val defaultValue: Any? = null,
+        @JsonProperty("examples") override val examples: IExample? = null
     ) : ElementSchema(
         definition = definition,
         schemaType = ApiType.ARRAY,
@@ -77,14 +84,14 @@ internal sealed class ElementSchema(
      *
      * @property schemaType The API type of the schema as defined in the OpenAPI specification.
      * @property additionalProperties The schema that defines the allowed types of the additional properties.
-     * @property defaultValue An optional default value for the schema.
      */
     data class AdditionalProperties(
         @JsonIgnore override val definition: String = AdditionalProperties::class.safeName(),
         @JsonProperty("type") override val schemaType: ApiType = ApiType.OBJECT,
         @JsonProperty("description") override val description: String? = null,
         @JsonProperty("additionalProperties") val additionalProperties: ElementSchema,
-        @JsonProperty("default") val defaultValue: Any? = null
+        @JsonProperty("default") override val defaultValue: Any? = null,
+        @JsonProperty("examples") override val examples: IExample? = null
     ) : ElementSchema(
         definition = definition,
         schemaType = ApiType.OBJECT,
@@ -96,14 +103,14 @@ internal sealed class ElementSchema(
      *
      * @property schemaType The API type of the schema as defined in the OpenAPI specification.
      * @property values The list of allowed values for the enumeration.
-     * @property defaultValue An optional default value for the schema.
      */
     data class Enum(
         @JsonIgnore override val definition: String = Enum::class.safeName(),
         @JsonProperty("type") override val schemaType: ApiType = ApiType.STRING,
         @JsonProperty("enum") val values: List<String>,
         @JsonProperty("description") override val description: String? = null,
-        @JsonProperty("default") val defaultValue: Any? = null
+        @JsonProperty("default") override val defaultValue: Any? = null,
+        @JsonProperty("examples") override val examples: IExample? = null
     ) : ElementSchema(
         definition = definition,
         schemaType = ApiType.STRING,
@@ -116,7 +123,6 @@ internal sealed class ElementSchema(
      * @property schemaType The primitive [ApiType] as defined in the OpenAPI specification.
      * @property schemaType The API type of the schema as defined in the OpenAPI specification.
      * @property format Optional format to further define the api type (e.g., `date-time`, `uuid`).
-     * @property defaultValue An optional default value for the schema.
      * @property minLength The minimum character length for string fields.
      * @property maxLength The maximum character length for string fields.
      * @property pattern A regular expression pattern that the field must match.
@@ -133,7 +139,7 @@ internal sealed class ElementSchema(
         @JsonProperty("type") override val schemaType: ApiType,
         @JsonProperty("format") val format: String?,
         @JsonProperty("description") override val description: String? = null,
-        @JsonProperty("default") val defaultValue: Any? = null,
+        @JsonProperty("default") override val defaultValue: Any? = null,
         @JsonProperty("minLength") val minLength: Int? = null,
         @JsonProperty("maxLength") val maxLength: Int? = null,
         @JsonProperty("pattern") val pattern: String? = null,
@@ -143,7 +149,8 @@ internal sealed class ElementSchema(
         @JsonProperty("maximum") val maximum: Number? = null,
         @JsonProperty("exclusiveMinimum") val exclusiveMinimum: Number? = null,
         @JsonProperty("exclusiveMaximum") val exclusiveMaximum: Number? = null,
-        @JsonProperty("multipleOf") val multipleOf: Number? = null
+        @JsonProperty("multipleOf") val multipleOf: Number? = null,
+        @JsonProperty("examples") override val examples: IExample? = null
     ) : ElementSchema(
         definition = definition,
         schemaType = schemaType,
@@ -156,7 +163,6 @@ internal sealed class ElementSchema(
      *
      * @property schemaType The API type of the schema as defined in the OpenAPI specification.
      * @property schemaName The name of the schema being referenced.
-     * @property defaultValue An optional default value for the schema.
      * @property ref The reference path to the schema definition.
      */
     data class Reference(
@@ -165,7 +171,8 @@ internal sealed class ElementSchema(
         @JsonIgnore val referencedType: KType,
         @JsonIgnore val schemaName: String,
         @JsonProperty("description") override val description: String? = null,
-        @JsonProperty("default") val defaultValue: Any? = null
+        @JsonProperty("default") override val defaultValue: Any? = null,
+        @JsonProperty("examples") override val examples: IExample? = null
     ) : ElementSchema(
         definition = definition,
         schemaType = ApiType.OBJECT,

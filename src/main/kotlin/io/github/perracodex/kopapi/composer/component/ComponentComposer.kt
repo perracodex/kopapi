@@ -67,6 +67,8 @@ internal object ComponentComposer {
                 // Return a new transformed object schema.
                 ObjectSchema(
                     description = schema.description.trimOrNull(),
+                    defaultValue = schema.defaultValue,
+                    examples = schema.examples,
                     properties = properties.ifEmpty { null },
                     required = required.ifEmpty { null }
                 )

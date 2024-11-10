@@ -22,9 +22,8 @@ internal object SchemaAttributeBinder {
         return when (schema) {
             is ElementSchema.AdditionalProperties -> schema.copy(
                 description = attributes.description.trimOrNull(),
-                defaultValue = attributes.defaultValue?.let { defaultValue ->
-                    parseDefaultValue(defaultValue = defaultValue, apiType = ApiType.STRING)
-                } ?: schema.defaultValue
+                examples = attributes.examples ?: schema.examples,
+                defaultValue = parseDefaultValue(defaultValue = attributes.defaultValue, apiType = ApiType.STRING)
             )
 
             is ElementSchema.Array -> {
@@ -33,31 +32,32 @@ internal object SchemaAttributeBinder {
                 val updatedItems: ElementSchema = attributes.format.trimOrNull()?.let { format ->
                     (schema.items as? ElementSchema.Primitive)?.copy(format = format)
                 } ?: schema.items
+
                 schema.copy(
                     description = attributes.description.trimOrNull(),
                     minItems = attributes.minItems ?: schema.minItems,
                     maxItems = attributes.maxItems ?: schema.maxItems,
                     uniqueItems = attributes.uniqueItems ?: schema.uniqueItems,
                     items = updatedItems,
-                    defaultValue = attributes.defaultValue?.let { defaultValue ->
-                        parseDefaultValue(
-                            defaultValue = defaultValue,
-                            apiType = ApiType.ARRAY,
-                            elementType = schema.items.schemaType
-                        )
-                    } ?: schema.defaultValue
+                    examples = attributes.examples ?: schema.examples,
+                    defaultValue = parseDefaultValue(
+                        defaultValue = attributes.defaultValue,
+                        apiType = ApiType.ARRAY,
+                        elementType = schema.items.schemaType
+                    )
                 )
             }
 
             is ElementSchema.Enum -> schema.copy(
                 description = attributes.description.trimOrNull(),
-                defaultValue = attributes.defaultValue?.let { defaultValue ->
-                    parseDefaultValue(defaultValue = defaultValue, apiType = schema.schemaType)
-                } ?: schema.defaultValue
+                examples = attributes.examples ?: schema.examples,
+                defaultValue = parseDefaultValue(defaultValue = attributes.defaultValue, apiType = schema.schemaType)
             )
 
             is ElementSchema.ObjectDescriptor -> schema.copy(
                 description = attributes.description.trimOrNull(),
+                examples = attributes.examples ?: schema.examples,
+                defaultValue = parseDefaultValue(defaultValue = attributes.defaultValue, apiType = schema.schemaType)
             )
 
             is ElementSchema.Primitive -> schema.copy(
@@ -73,17 +73,15 @@ internal object SchemaAttributeBinder {
                 exclusiveMinimum = attributes.exclusiveMinimum ?: schema.exclusiveMinimum,
                 exclusiveMaximum = attributes.exclusiveMaximum ?: schema.exclusiveMaximum,
                 multipleOf = attributes.multipleOf ?: schema.multipleOf,
-                defaultValue = attributes.defaultValue?.let { defaultValue ->
-                    parseDefaultValue(defaultValue = defaultValue, apiType = schema.schemaType)
-                } ?: schema.defaultValue
+                examples = attributes.examples ?: schema.examples,
+                defaultValue = parseDefaultValue(defaultValue = attributes.defaultValue, apiType = schema.schemaType)
             )
 
             is ElementSchema.Reference -> {
                 schema.copy(
                     description = attributes.description.trimOrNull(),
-                    defaultValue = attributes.defaultValue?.let { defaultValue ->
-                        parseDefaultValue(defaultValue = defaultValue, apiType = ApiType.STRING)
-                    } ?: schema.defaultValue
+                    examples = attributes.examples ?: schema.examples,
+                    defaultValue = parseDefaultValue(defaultValue = attributes.defaultValue, apiType = ApiType.STRING)
                 )
             }
         }
@@ -100,7 +98,7 @@ internal object SchemaAttributeBinder {
      * @param defaultValue The default value string to parse.
      * @param apiType The primary `ApiType` of the value, indicating how it should be parsed.
      * @param elementType The `ApiType` of each element if `apiType` is `ARRAY`; ignored for other types.
-     * @return The parsed value as the appropriate type, or `null` if parsing fails or `defaultValue` is blank.
+     * @return The parsed value as the appropriate type, or the input `defaultValue` if parsing is not possible.
      */
     private fun parseDefaultValue(
         defaultValue: String?,
@@ -108,7 +106,7 @@ internal object SchemaAttributeBinder {
         elementType: ApiType? = null
     ): Any? {
         if (defaultValue.isNullOrBlank()) {
-            return null
+            return defaultValue
         }
 
         return when (apiType) {
@@ -118,7 +116,7 @@ internal object SchemaAttributeBinder {
             ApiType.BOOLEAN -> defaultValue.toBooleanStrictOrNull()
             ApiType.ARRAY -> parseArray(defaultValue = defaultValue, elementType = elementType)
             else -> defaultValue
-        }
+        } ?: defaultValue
     }
 
     /**

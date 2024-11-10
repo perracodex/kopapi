@@ -6,9 +6,9 @@ package io.github.perracodex.kopapi.dsl.operation.builders.operation
 
 import io.github.perracodex.kopapi.dsl.common.parameter.configurable.ParametersBuilder
 import io.github.perracodex.kopapi.dsl.common.security.configurable.ISecurityConfigurable
-import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityConfigurable
+import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityDelegate
 import io.github.perracodex.kopapi.dsl.common.server.configurable.IServerConfigurable
-import io.github.perracodex.kopapi.dsl.common.server.configurable.ServerConfigurable
+import io.github.perracodex.kopapi.dsl.common.server.configurable.ServerDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
@@ -81,10 +81,10 @@ import java.util.*
 @KopapiDsl
 public class ApiOperationBuilder internal constructor(
     @PublishedApi internal val endpoint: String,
-    private val serverConfigurable: ServerConfigurable = ServerConfigurable(),
-    private val securityConfigurable: SecurityConfigurable = SecurityConfigurable()
-) : IServerConfigurable by serverConfigurable,
-    ISecurityConfigurable by securityConfigurable,
+    private val serverDelegate: ServerDelegate = ServerDelegate(),
+    private val securityDelegate: SecurityDelegate = SecurityDelegate()
+) : IServerConfigurable by serverDelegate,
+    ISecurityConfigurable by securityDelegate,
     ParametersBuilder(endpoint = endpoint) {
 
     @Suppress("PropertyName")
@@ -216,8 +216,8 @@ public class ApiOperationBuilder internal constructor(
      * @see [openIdConnectSecurity]
      */
     public fun skipSecurity() {
-        securityConfigurable.securitySchemes.clear()
-        securityConfigurable.skipSecurity = true
+        securityDelegate.securitySchemes.clear()
+        securityDelegate.skipSecurity = true
     }
 
     /**
@@ -304,7 +304,7 @@ public class ApiOperationBuilder internal constructor(
                 apply(configure)
                 addType<T> {
                     this.contentType = this@apply.contentType
-                    this._schemaAttributeConfigurable.attributes = this@apply._schemaAttributeConfigurable.attributes
+                    this._schemaAttributeDelegate.attributes = this@apply._schemaAttributeDelegate.attributes
                 }
             }.build()
         } else {
@@ -433,7 +433,7 @@ public class ApiOperationBuilder internal constructor(
             apply(configure)
             addType<T> {
                 this.contentType = this@apply.contentType
-                this._schemaAttributeConfigurable.attributes = this@apply._schemaAttributeConfigurable.attributes
+                this._schemaAttributeDelegate.attributes = this@apply._schemaAttributeDelegate.attributes
             }
         }.build(status = status)
 
@@ -473,9 +473,9 @@ public class ApiOperationBuilder internal constructor(
             parameters = _parametersConfig.parameters.ifEmpty { null },
             requestBody = _config.requestBody,
             responses = responses,
-            securitySchemes = securityConfigurable.securitySchemes.ifEmpty { null },
-            skipSecurity = securityConfigurable.skipSecurity,
-            servers = serverConfigurable.servers.ifEmpty { null }
+            securitySchemes = securityDelegate.securitySchemes.ifEmpty { null },
+            skipSecurity = securityDelegate.skipSecurity,
+            servers = serverDelegate.servers.ifEmpty { null }
         )
     }
 

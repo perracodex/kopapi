@@ -23,6 +23,15 @@ import kotlin.reflect.KType
  * Provides utility functions for serialization.
  */
 internal class SerializationUtils {
+    /** Configures custom serializers for Jackson. */
+    private val serializerModule: SimpleModule = SimpleModule().apply {
+        addSerializer(KType::class.java, KTypeSerializer)
+        addSerializer(ContentType::class.java, ContentTypeSerializer)
+        addSerializer(HttpMethod::class.java, HttpMethodSerializer)
+        addSerializer(HttpStatusCode::class.java, HttpStatusCodeSerializer)
+        addSerializer(Url::class.java, UrlSerializer)
+    }
+
     /** Configured Jackson Mapper. for debugging purposes. */
     val debugJson: JsonMapper = JsonMapper.builder()
         .addModule(kotlinModule())
@@ -33,7 +42,8 @@ internal class SerializationUtils {
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_BY_DECLARATION_ORDER)
         .disable(MapperFeature.USE_ANNOTATIONS)
-        .addModule(serializerModule())
+        .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+        .addModule(serializerModule)
         .build()
 
     /**
@@ -47,7 +57,8 @@ internal class SerializationUtils {
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_BY_DECLARATION_ORDER)
         .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
-        .addModule(serializerModule())
+        .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+        .addModule(serializerModule)
         .build()
 
     /**
@@ -67,19 +78,9 @@ internal class SerializationUtils {
         .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
         .disable(YAMLGenerator.Feature.SPLIT_LINES)
         .enable(YAMLGenerator.Feature.ALLOW_LONG_KEYS)
-        .addModule(serializerModule())
+        .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+        .addModule(serializerModule)
         .build()
-
-    /** Configures custom serializers for Jackson. */
-    private fun serializerModule(): SimpleModule {
-        return SimpleModule().apply {
-            addSerializer(ContentType::class.java, ContentTypeSerializer)
-            addSerializer(HttpMethod::class.java, HttpMethodSerializer)
-            addSerializer(HttpStatusCode::class.java, HttpStatusCodeSerializer)
-            addSerializer(KType::class.java, KTypeSerializer)
-            addSerializer(Url::class.java, UrlSerializer)
-        }
-    }
 
     /**
      * Serializes the given object [instance] to a JSON string.

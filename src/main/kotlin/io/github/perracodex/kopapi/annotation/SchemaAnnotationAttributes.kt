@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.annotation
 
+import io.github.perracodex.kopapi.dsl.common.example.IExample
+
 /**
  * Represents the parsed attribute constraints from the [Schema] annotation.
  *
@@ -23,6 +25,7 @@ package io.github.perracodex.kopapi.annotation
  * @property minItems Specifies the minimum number of items in an array.
  * @property maxItems Specifies the maximum number of items in an array.
  * @property uniqueItems Specifies that all items in an array must be unique.
+ * @property examples Examples to be used for documentation purposes.
  */
 internal class SchemaAnnotationAttributes(
     val description: String?,
@@ -40,5 +43,6 @@ internal class SchemaAnnotationAttributes(
     val multipleOf: Number?,
     val minItems: Int?,
     val maxItems: Int?,
-    val uniqueItems: Boolean?
+    val uniqueItems: Boolean?,
+    val examples: IExample?
 )

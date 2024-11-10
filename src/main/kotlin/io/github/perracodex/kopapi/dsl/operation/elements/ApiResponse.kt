@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.elements
 
+import io.github.perracodex.kopapi.dsl.common.example.IExample
 import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.system.KopapiException
@@ -22,6 +23,7 @@ import kotlin.reflect.KType
  * @property composition The composition of the response. Only meaningful if multiple types are provided.
  * @property content A map of [ContentType] to a set of [KType] that this response may return.
  * @property links A map of [ApiLink] objects representing possible links to other operations.
+ * @property examples Examples be used for documentation purposes.
  *
  * @see [ApiOperationBuilder.response]
  * @see [ApiHeader]
@@ -35,7 +37,8 @@ internal data class ApiResponse(
     val headers: Map<String, ApiHeader>?,
     val composition: Composition?,
     val content: Map<ContentType, Set<TypeDetails>>?,
-    val links: Map<String, ApiLink>?
+    val links: Map<String, ApiLink>?,
+    val examples: IExample?
 ) {
     @PublishedApi
     internal data class TypeDetails(
@@ -201,7 +204,8 @@ internal data class ApiResponse(
                 headers = null,
                 composition = null,
                 content = null,
-                links = null
+                links = null,
+                examples = null
             )
         }
     }

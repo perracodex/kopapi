@@ -4,9 +4,11 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.response
 
+import io.github.perracodex.kopapi.dsl.common.example.configurables.ExampleDelegate
+import io.github.perracodex.kopapi.dsl.common.example.configurables.IExampleConfigurable
 import io.github.perracodex.kopapi.dsl.common.header.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
-import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinksBuilder
@@ -38,8 +40,11 @@ public class ResponseBuilder @PublishedApi internal constructor(
 
     @Suppress("PropertyName")
     @PublishedApi
-    internal val _schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
-) : ISchemaAttributeConfigurable by _schemaAttributeConfigurable, HeaderBuilder() {
+    internal val _schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate(),
+    private val examplesDelegate: ExampleDelegate = ExampleDelegate()
+) : ISchemaAttributeConfigurable by _schemaAttributeDelegate,
+    IExampleConfigurable by examplesDelegate,
+    HeaderBuilder() {
 
     public var description: String by MultilineString()
 
@@ -54,12 +59,14 @@ public class ResponseBuilder @PublishedApi internal constructor(
      * ```
      * // Register a type defaulting to JSON.
      * addType<SomeType>()
-     *
+     * ```
+     * ```
      * // Register another type to a specific content type.
      * addType<SomeType> {
      *      contentType = setOf(ContentType.Application.Xml)
      * }
-     *
+     * ```
+     * ```
      * // Register a type with multiple content types.
      * addType<SomeType> {
      *      contentType = setOf(
@@ -93,7 +100,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
         // Register the new type with the effective content types.
         val typeDetails: ApiResponse.TypeDetails = ApiResponse.TypeDetails(
             type = typeOf<T>(),
-            schemaAttributes = typeConfig._schemaAttributeConfigurable.attributes
+            schemaAttributes = typeConfig._schemaAttributeDelegate.attributes
         )
         effectiveContentTypes.forEach { contentTypeKey ->
             _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(typeDetails)
@@ -137,8 +144,8 @@ public class ResponseBuilder @PublishedApi internal constructor(
     /**
      * Adds a collection of links defined within a `links { ... }` block.
      *
-     * The `links { ... }` block serves only as organizational syntactic sugar.
-     * Links can be defined directly without needing to use the `links { ... }` block.
+     * The `links` block serves only as organizational syntactic sugar.
+     * Links can be defined directly without needing to use the `links` block.
      *
      * #### Sample Usage
      * ```
@@ -199,7 +206,8 @@ public class ResponseBuilder @PublishedApi internal constructor(
             headers = _headers.ifEmpty { null },
             composition = composition,
             content = contentMap,
-            links = _config.links.ifEmpty { null }
+            links = _config.links.ifEmpty { null },
+            examples = examplesDelegate.build()
         )
     }
 

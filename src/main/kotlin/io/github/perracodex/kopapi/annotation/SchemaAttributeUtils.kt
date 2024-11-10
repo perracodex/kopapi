@@ -25,11 +25,27 @@ internal object SchemaAttributeUtils {
         attributes: ApiSchemaAttributes
     ): ElementSchema {
         return when (schema) {
+            is ElementSchema.AdditionalProperties ->
+                schema.copy(
+                    examples = attributes.examples ?: schema.examples
+                )
+
             is ElementSchema.Array ->
                 schema.copy(
                     minItems = attributes.minItems ?: schema.minItems,
                     maxItems = attributes.maxItems ?: schema.maxItems,
-                    uniqueItems = attributes.uniqueItems ?: schema.uniqueItems
+                    uniqueItems = attributes.uniqueItems ?: schema.uniqueItems,
+                    examples = attributes.examples ?: schema.examples
+                )
+
+            is ElementSchema.Enum ->
+                schema.copy(
+                    examples = attributes.examples ?: schema.examples
+                )
+
+            is ElementSchema.ObjectDescriptor ->
+                schema.copy(
+                    examples = attributes.examples ?: schema.examples
                 )
 
             is ElementSchema.Primitive ->
@@ -44,10 +60,14 @@ internal object SchemaAttributeUtils {
                     maximum = attributes.maximum ?: schema.maximum,
                     exclusiveMinimum = attributes.exclusiveMinimum ?: schema.exclusiveMinimum,
                     exclusiveMaximum = attributes.exclusiveMaximum ?: schema.exclusiveMaximum,
-                    multipleOf = attributes.multipleOf ?: schema.multipleOf
+                    multipleOf = attributes.multipleOf ?: schema.multipleOf,
+                    examples = attributes.examples ?: schema.examples
                 )
 
-            else -> return schema
+            is ElementSchema.Reference ->
+                schema.copy(
+                    examples = attributes.examples ?: schema.examples
+                )
         }
     }
 }

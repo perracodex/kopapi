@@ -5,10 +5,10 @@
 package io.github.perracodex.kopapi.plugin
 
 import io.github.perracodex.kopapi.dsl.common.security.configurable.ISecurityConfigurable
-import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityConfigurable
+import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityDelegate
 import io.github.perracodex.kopapi.dsl.common.server.ServerBuilder
 import io.github.perracodex.kopapi.dsl.common.server.configurable.IServerConfigurable
-import io.github.perracodex.kopapi.dsl.common.server.configurable.ServerConfigurable
+import io.github.perracodex.kopapi.dsl.common.server.configurable.ServerDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
@@ -24,10 +24,10 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
  */
 @KopapiDsl
 public class KopapiConfig internal constructor(
-    private val serverConfigurable: ServerConfigurable = ServerConfigurable(),
-    private val securityConfigurable: SecurityConfigurable = SecurityConfigurable()
-) : IServerConfigurable by serverConfigurable,
-    ISecurityConfigurable by securityConfigurable {
+    private val serverDelegate: ServerDelegate = ServerDelegate(),
+    private val securityDelegate: SecurityDelegate = SecurityDelegate()
+) : IServerConfigurable by serverDelegate,
+    ISecurityConfigurable by securityDelegate {
     /**
      * Whether the plugin should be enabled (Default is `true`).
      *
@@ -157,9 +157,9 @@ public class KopapiConfig internal constructor(
             apiDocs = apiDocs ?: ApiDocsBuilder().build(),
             debugUrl = NetworkUtils.normalizeUrl(url = debugUrl, defaultValue = DEFAULT_DEBUG_URL),
             apiInfo = apiInfo,
-            apiServers = serverConfigurable.servers.ifEmpty { null } ?: setOf(ServerBuilder.defaultServer()),
+            apiServers = serverDelegate.servers.ifEmpty { null } ?: setOf(ServerBuilder.defaultServer()),
             apiTags = tags.ifEmpty { null },
-            apiSecuritySchemes = securityConfigurable.securitySchemes.ifEmpty { null }
+            apiSecuritySchemes = securityDelegate.securitySchemes.ifEmpty { null }
         )
     }
 

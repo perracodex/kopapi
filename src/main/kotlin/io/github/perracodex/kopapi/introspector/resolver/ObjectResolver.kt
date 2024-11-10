@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.introspector.resolver
 
+import io.github.perracodex.kopapi.annotation.SchemaAnnotationAttributes
+import io.github.perracodex.kopapi.annotation.SchemaAnnotationParser
 import io.github.perracodex.kopapi.introspector.TypeIntrospector
 import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
 import io.github.perracodex.kopapi.introspector.descriptor.ElementName
@@ -118,14 +120,14 @@ internal class ObjectResolver(private val introspector: TypeIntrospector) {
         }
         semaphore.add(kType.nativeName())
 
-        // Resolve the description if the object was annotated.
-        val description: String? = MetadataDescriptor.getClassDescription(kClass = kClass)
+        // Resolve the object attributes.
+        val attributes: SchemaAnnotationAttributes? = SchemaAnnotationParser.parse(element = kClass)
 
         // Add a schema placeholder early to avoid circular references.
         val schemaPlaceholder: TypeSchema = TypeSchema.of(
             name = className,
             kType = kType,
-            schema = SchemaFactory.ofObjectDescriptor(description = description)
+            schema = SchemaFactory.ofObjectDescriptor(attributes = attributes)
         )
         introspector.addToCache(schema = schemaPlaceholder)
 

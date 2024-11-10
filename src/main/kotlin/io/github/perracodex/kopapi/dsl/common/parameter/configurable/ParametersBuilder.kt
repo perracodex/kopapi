@@ -193,7 +193,7 @@ public open class ParametersBuilder internal constructor(private val endpoint: S
     /**
      * Adds a collection of parameters defined within a `parameters { ... }` block.
      *
-     * The `parameters { ... }` block serves only as organizational syntactic sugar.
+     * The `parameters` block serves only as organizational syntactic sugar.
      * Parameters can be defined directly without needing to use the `parameters` block.
      *
      * #### Sample Usage

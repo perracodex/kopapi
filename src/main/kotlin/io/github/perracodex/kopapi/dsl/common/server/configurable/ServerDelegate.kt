@@ -12,7 +12,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
  * Configurable handling server registration.
  */
 @KopapiDsl
-internal class ServerConfigurable : IServerConfigurable {
+internal class ServerDelegate : IServerConfigurable {
     internal val servers: MutableSet<ApiServerConfig> = mutableSetOf()
 
     override fun servers(init: ServerBuilder.() -> Unit) {

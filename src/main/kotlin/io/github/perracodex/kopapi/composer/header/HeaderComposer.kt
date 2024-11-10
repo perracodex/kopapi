@@ -47,7 +47,8 @@ internal object HeaderComposer {
 
             // Determine the content schema if the header requires a specific media format.
             val content: Map<ContentType, OpenApiSchema.ContentSchema>? = header.contentType?.let { contentType ->
-                mapOf(contentType to OpenApiSchema.ContentSchema(schema = baseSchema))
+                val contentSchema: OpenApiSchema.ContentSchema = OpenApiSchema.ContentSchema(schema = baseSchema, examples = null)
+                mapOf(contentType to contentSchema)
             }
 
             // Construct the header object.

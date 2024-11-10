@@ -5,7 +5,6 @@
 package io.github.perracodex.kopapi.composer.request
 
 import io.github.perracodex.kopapi.annotation.SchemaAttributeUtils
-import io.github.perracodex.kopapi.composer.SchemaComposer
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.header.HeaderComposer
 import io.github.perracodex.kopapi.composer.header.HeaderObject
@@ -13,6 +12,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.schema.SchemaRegistry
+import io.github.perracodex.kopapi.schema.facets.CompositionSchema
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
@@ -108,7 +108,7 @@ internal object RequestBodyComposer {
         }
 
         return schemasByContentType.mapValues { (_, schemas) ->
-            SchemaComposer.determineSchema(composition = requestBody.composition, schemas = schemas)
+            CompositionSchema.determine(composition = requestBody.composition, schemas = schemas, examples = null)
         }
     }
 
@@ -174,7 +174,7 @@ internal object RequestBodyComposer {
                 encoding = encodings,
             )
 
-            OpenApiSchema.ContentSchema(schema = schema)
+            OpenApiSchema.ContentSchema(schema = schema, examples = null)
         }
     }
 

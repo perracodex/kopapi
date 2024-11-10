@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.common.schema
 
+import io.github.perracodex.kopapi.dsl.common.example.IExample
+import io.github.perracodex.kopapi.dsl.common.example.builders.SchemaExampleBuilder
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.utils.trimOrNull
 
@@ -27,6 +29,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @property minItems The minimum number of items in an array type.
  * @property maxItems The maximum number of items in an array type.
  * @property uniqueItems Determines if all items in an array type must be unique.
+ *
  */
 @KopapiDsl
 public class SchemaAttributeBuilder internal constructor(
@@ -43,8 +46,30 @@ public class SchemaAttributeBuilder internal constructor(
     public var multipleOf: Number? = null,
     public var minItems: Int? = null,
     public var maxItems: Int? = null,
-    public var uniqueItems: Boolean? = null
+    public var uniqueItems: Boolean? = null,
 ) {
+    /** Holds the examples associated with the schema. */
+    private var examples: IExample? = null
+
+    /**
+     * Adds an example to the schema.
+     *
+     * #### Sample Usage
+     * ```
+     * schema {
+     *     examples {
+     *         example("John Doe")
+     *         example(mapOf("role" to "Developer", "age" to 35))
+     *         example(listOf("Developer", "Project Manager"))
+     *     }
+     * }
+     * ```
+     * @see [SchemaExampleBuilder.example]
+     */
+    public fun examples(init: SchemaExampleBuilder.() -> Unit) {
+        examples = SchemaExampleBuilder().apply(init).build(existingExamples = examples)
+    }
+
     /**
      * Builds an [ApiSchemaAttributes] instance from the current builder state.
      *
@@ -65,7 +90,8 @@ public class SchemaAttributeBuilder internal constructor(
             multipleOf = multipleOf?.takeIf { it.toDouble() > 0 }, // Ensure multipleOf is positive.
             minItems = minItems?.takeIf { it >= 0 },
             maxItems = maxItems?.takeIf { it >= 0 },
-            uniqueItems = uniqueItems?.takeIf { it }
+            uniqueItems = uniqueItems?.takeIf { it },
+            examples = examples
         ).takeIf {
             listOfNotNull(
                 format,
@@ -81,7 +107,8 @@ public class SchemaAttributeBuilder internal constructor(
                 multipleOf,
                 minItems,
                 maxItems,
-                uniqueItems
+                uniqueItems,
+                examples
             ).isNotEmpty()
         }
     }

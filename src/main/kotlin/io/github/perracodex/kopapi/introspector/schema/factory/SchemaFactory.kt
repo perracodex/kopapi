@@ -4,10 +4,12 @@
 
 package io.github.perracodex.kopapi.introspector.schema.factory
 
+import io.github.perracodex.kopapi.annotation.SchemaAnnotationAttributes
 import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
+import io.github.perracodex.kopapi.utils.trimOrNull
 import kotlin.reflect.KType
 
 /**
@@ -19,8 +21,13 @@ import kotlin.reflect.KType
 @TypeIntrospectorApi
 internal object SchemaFactory {
     /** Creates a specification entry for an `object` descriptor type. */
-    fun ofObjectDescriptor(description: String? = null): ElementSchema.ObjectDescriptor {
-        return ElementSchema.ObjectDescriptor(description = description, objectProperties = mutableMapOf())
+    fun ofObjectDescriptor(attributes: SchemaAnnotationAttributes? = null): ElementSchema.ObjectDescriptor {
+        return ElementSchema.ObjectDescriptor(
+            description = attributes?.description.trimOrNull(),
+            defaultValue = attributes?.defaultValue,
+            examples = attributes?.examples,
+            objectProperties = mutableMapOf()
+        )
     }
 
     /** Creates a specification entry for a `string` primitive type. */

@@ -13,7 +13,6 @@ import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.cleanName
 import io.github.perracodex.kopapi.utils.safeName
-import io.github.perracodex.kopapi.utils.trimOrNull
 import kotlinx.serialization.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -52,17 +51,6 @@ internal data class MetadataDescriptor(
          */
         fun getClassName(kClass: KClass<*>): ElementName {
             return geElementName(target = kClass)
-        }
-
-        /**
-         * Resolves the description for the given [kClass], considering serializer annotations if present.
-         *
-         * @param kClass The [KClass] to process, which may contain a `@Schema` annotation.
-         * @return The resolved class description, if present.
-         */
-        fun getClassDescription(kClass: KClass<*>): String? {
-            val attributes: SchemaAnnotationAttributes? = SchemaAnnotationParser.parse(element = kClass)
-            return attributes?.description.trimOrNull()
         }
 
         /**

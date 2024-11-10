@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.builders.type
 
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
-import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.ktor.http.*
 
@@ -20,5 +20,5 @@ public class TypeConfig @PublishedApi internal constructor(
 
     @Suppress("PropertyName")
     @PublishedApi
-    internal val _schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
-) : ISchemaAttributeConfigurable by _schemaAttributeConfigurable
+    internal val _schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate()
+) : ISchemaAttributeConfigurable by _schemaAttributeDelegate

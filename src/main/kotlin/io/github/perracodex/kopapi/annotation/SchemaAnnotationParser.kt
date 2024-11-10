@@ -4,6 +4,9 @@
 
 package io.github.perracodex.kopapi.annotation
 
+import io.github.perracodex.kopapi.dsl.common.example.ApiExampleArray
+import io.github.perracodex.kopapi.dsl.common.example.ApiInlineExample
+import io.github.perracodex.kopapi.dsl.common.example.IExample
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.trimOrNull
 import java.math.BigDecimal
@@ -42,6 +45,15 @@ internal object SchemaAnnotationParser {
             val defaultValue: String? = attributes.defaultValue.trimOrNull()
             val format: String? = attributes.format.trimOrNull()
 
+            // Examples.
+            val example: String? = attributes.example.trimOrNull()
+            val examples: List<String>? = attributes.examples.ifEmpty { null }?.toList()
+            val finalExamples: IExample = when {
+                !examples.isNullOrEmpty() -> ApiExampleArray(examples = examples.map { ApiInlineExample(value = it) }.toTypedArray())
+                example != null -> ApiExampleArray(examples = arrayOf(ApiInlineExample(value = example)))
+                else -> ApiExampleArray(examples = emptyArray())
+            }
+
             // String-specific constraints.
             val minLength: Int? = attributes.minLength.takeIf { it >= 0 }
             val maxLength: Int? = attributes.maxLength.takeIf { it >= 0 }
@@ -67,7 +79,7 @@ internal object SchemaAnnotationParser {
             // Check if any attributes have been assigned.
             val hasAssignedAttributes: Boolean = listOfNotNull(
                 // Common attributes.
-                description, defaultValue, format,
+                description, defaultValue, format, finalExamples,
                 // String-specific constraints.
                 minLength, maxLength, pattern, contentEncoding, contentMediaType,
                 // Numeric-specific constraints.
@@ -96,7 +108,8 @@ internal object SchemaAnnotationParser {
                 multipleOf = multipleOf,
                 minItems = minItems,
                 maxItems = maxItems,
-                uniqueItems = uniqueItems
+                uniqueItems = uniqueItems,
+                examples = finalExamples
             )
         }.onFailure {
             tracer.error("Failed to parse `@Schema` annotation for element ${element::class}: ${it.message}")

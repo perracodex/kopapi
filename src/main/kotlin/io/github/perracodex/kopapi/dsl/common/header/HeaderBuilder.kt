@@ -55,8 +55,8 @@ public open class HeaderBuilder internal constructor() {
     /**
      * Adds a collection of headers defined within a `headers { ... }` block.
      *
-     * The `headers { ... }` block serves only as organizational syntactic sugar.
-     * Headers can be defined directly without needing to use the `headers { ... }` block.
+     * The `headers` block serves only as organizational syntactic sugar.
+     * Headers can be defined directly without needing to use the `headers` block.
      *
      * #### Sample Usage
      * ```

@@ -6,7 +6,7 @@ package io.github.perracodex.kopapi.dsl.path
 
 import io.github.perracodex.kopapi.dsl.common.parameter.configurable.ParametersBuilder
 import io.github.perracodex.kopapi.dsl.common.server.configurable.IServerConfigurable
-import io.github.perracodex.kopapi.dsl.common.server.configurable.ServerConfigurable
+import io.github.perracodex.kopapi.dsl.common.server.configurable.ServerDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.string.SpacedString
@@ -70,8 +70,8 @@ import io.ktor.server.routing.*
 @KopapiDsl
 public class ApiPathBuilder internal constructor(
     private val endpoint: String,
-    private val serverConfigurable: ServerConfigurable = ServerConfigurable()
-) : IServerConfigurable by serverConfigurable,
+    private val serverDelegate: ServerDelegate = ServerDelegate()
+) : IServerConfigurable by serverDelegate,
     ParametersBuilder(endpoint = endpoint) {
 
     /**
@@ -115,7 +115,7 @@ public class ApiPathBuilder internal constructor(
             path = endpoint,
             summary = summary.trimOrNull(),
             description = description.trimOrNull(),
-            servers = serverConfigurable.servers.ifEmpty { null },
+            servers = serverDelegate.servers.ifEmpty { null },
             parameters = _parametersConfig.parameters.ifEmpty { null }
         )
     }

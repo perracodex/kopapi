@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
-import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.type.TypeConfig
@@ -38,8 +38,8 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
 
     @Suppress("PropertyName")
     @PublishedApi
-    internal val _schemaAttributeConfigurable: SchemaAttributeConfigurable = SchemaAttributeConfigurable()
-) : ISchemaAttributeConfigurable by _schemaAttributeConfigurable {
+    internal val _schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate()
+) : ISchemaAttributeConfigurable by _schemaAttributeDelegate {
     public var description: String by MultilineString()
 
     @Suppress("PropertyName")
@@ -53,12 +53,14 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
      * ```
      * // Register a type defaulting to JSON.
      * addType<SomeType>()
-     *
+     * ```
+     * ```
      * // Register another type to a specific content type.
      * addType<SomeType> {
      *      contentType = setOf(ContentType.Application.Xml)
      * }
-     *
+     * ```
+     * ```
      * // Register a type with multiple content types.
      * addType<SomeType> {
      *      contentType = setOf(
@@ -88,7 +90,7 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
         // Register the new type with the effective content types.
         val typeDetails: ApiRequestBody.TypeDetails = ApiRequestBody.TypeDetails(
             type = typeOf<T>(),
-            schemaAttributes = typeConfig._schemaAttributeConfigurable.attributes
+            schemaAttributes = typeConfig._schemaAttributeDelegate.attributes
         )
         effectiveContentTypes.forEach { contentTypeKey ->
             _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(typeDetails)

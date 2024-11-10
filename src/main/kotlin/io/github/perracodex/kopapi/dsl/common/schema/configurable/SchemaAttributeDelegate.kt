@@ -13,7 +13,7 @@ import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
  */
 @KopapiDsl
 @PublishedApi
-internal class SchemaAttributeConfigurable : ISchemaAttributeConfigurable {
+internal class SchemaAttributeDelegate : ISchemaAttributeConfigurable {
     /** Cached schema attributes. */
     @PublishedApi
     internal var attributes: ApiSchemaAttributes? = null
