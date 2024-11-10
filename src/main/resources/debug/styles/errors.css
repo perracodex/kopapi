@@ -17,7 +17,7 @@
     z-index: 1000;
 
     /* Height and Overflow */
-    max-height: 256px;
+    max-height: 200px;
     overflow-y: auto;
     box-sizing: border-box;
     color: #d5d6db;
@@ -39,7 +39,7 @@
     padding: 8px;
     white-space: pre-wrap;
     word-wrap: break-word;
-    max-height: 216px;
+    max-height: 160px;
     overflow-y: auto;
     font-size: 1.0em;
 }
