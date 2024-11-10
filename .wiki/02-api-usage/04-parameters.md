@@ -136,7 +136,7 @@ api {
         description = "The page number to retrieve."
         required = false
         defaultValue = DefaultValue.ofInt(value = 1)
-      
+
         // Define additional properties for the above defined Int type
         schema {
             minimum = 1
@@ -152,6 +152,8 @@ api {
 | minLength        | Defines the minimum length for string types.                                   |
 | maxLength        | Defines the maximum length for string types.                                   |
 | pattern          | A regular expression pattern that a string type must match.                    |
+| contentEncoding  | May be used to specify the Content-Encoding for the schema.                    |
+| contentMediaType | May be used to specify the Media-Type for the schema.                          |                                                                   |
 | minimum          | Defines the inclusive lower bound for numeric types.                           |
 | maximum          | Defines the inclusive upper bound for numeric types.                           |
 | exclusiveMinimum | Defines a strict lower bound where the value must be greater than this number. |
@@ -162,7 +164,7 @@ api {
 | uniqueItems      | Specifies that all items in an array type must be unique.                      |
 
 - Depending on the type, only the relevant attributes are applicable:
-  - **String Types**: `minLength`, `maxLength`, `pattern`
+  - **String Types**: `minLength`, `maxLength`, `pattern`, `contentEncoding`, `contentMediaType`
   - **Numeric Types**: `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, `multipleOf`
   - **Array Types**: `minItems`, `maxItems`, `uniqueItems`
 

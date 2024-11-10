@@ -11,6 +11,8 @@ package io.github.perracodex.kopapi.dsl.common.schema
  * @property minLength The minimum character length for string types.
  * @property maxLength The maximum character length for string types.
  * @property pattern A regular expression pattern that the type must match.
+ * @property contentEncoding May be used to specify the Content-Encoding for the schema.
+ * @property contentMediaType May be used to specify the Media-Type for the schema.
  * @property minimum The minimum allowed value for numeric types.
  * @property maximum The maximum allowed value for numeric types.
  * @property exclusiveMinimum The exclusive lower bound for numeric types.
@@ -22,15 +24,17 @@ package io.github.perracodex.kopapi.dsl.common.schema
  */
 internal data class ApiSchemaAttributes(
     val format: String?,
-    val minLength: Int? = null,
-    val maxLength: Int? = null,
-    val pattern: String? = null,
-    val minimum: Number? = null,
-    val maximum: Number? = null,
-    val exclusiveMinimum: Number? = null,
-    val exclusiveMaximum: Number? = null,
-    val multipleOf: Number? = null,
-    val minItems: Int? = null,
-    val maxItems: Int? = null,
-    val uniqueItems: Boolean? = null
+    val minLength: Int?,
+    val maxLength: Int?,
+    val pattern: String?,
+    val contentEncoding: String?,
+    val contentMediaType: String?,
+    val minimum: Number?,
+    val maximum: Number?,
+    val exclusiveMinimum: Number?,
+    val exclusiveMaximum: Number?,
+    val multipleOf: Number?,
+    val minItems: Int?,
+    val maxItems: Int?,
+    val uniqueItems: Boolean?
 )

@@ -46,6 +46,8 @@ internal object SchemaAnnotationParser {
             val minLength: Int? = attributes.minLength.takeIf { it >= 0 }
             val maxLength: Int? = attributes.maxLength.takeIf { it >= 0 }
             val pattern: String? = attributes.pattern.trimOrNull()
+            val contentEncoding: String? = attributes.contentEncoding.trimOrNull()
+            val contentMediaType: String? = attributes.contentMediaType.trimOrNull()
 
             // Numeric-specific constraints.
             val minimum: Number? = parseNumber(value = attributes.minimum, classifier = classifier)
@@ -67,7 +69,7 @@ internal object SchemaAnnotationParser {
                 // Common attributes.
                 description, defaultValue, format,
                 // String-specific constraints.
-                minLength, maxLength, pattern,
+                minLength, maxLength, pattern, contentEncoding, contentMediaType,
                 // Numeric-specific constraints.
                 minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf,
                 // Array-specific constraints.
@@ -85,6 +87,8 @@ internal object SchemaAnnotationParser {
                 minLength = minLength,
                 maxLength = maxLength,
                 pattern = pattern,
+                contentEncoding = contentEncoding,
+                contentMediaType = contentMediaType,
                 minimum = minimum,
                 maximum = maximum,
                 exclusiveMinimum = exclusiveMinimum,

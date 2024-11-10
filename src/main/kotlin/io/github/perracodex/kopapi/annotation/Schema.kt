@@ -53,11 +53,13 @@ package io.github.perracodex.kopapi.annotation
  * @property minLength Specifies the minimum character length for string types.
  * @property maxLength Specifies the maximum character length for string types.
  * @property pattern A regular expression pattern that the field must match.
- * @property minimum The minimum allowed value for numeric types, as a string.
- * @property maximum The maximum allowed value for numeric types, as a string.
- * @property exclusiveMinimum Defines an exclusive lower bound for numeric types, as a string.
- * @property exclusiveMaximum Defines an exclusive upper bound for numeric types, as a string.
- * @property multipleOf Constrains the field value to be a multiple of this number, as a string.
+ * @property contentEncoding May be used to specify the Content-Encoding for the schema.
+ * @property contentMediaType May be used to specify the Media-Type for the schema.
+ * @property minimum The minimum allowed value for numeric types. As a string.
+ * @property maximum The maximum allowed value for numeric types, As a string.
+ * @property exclusiveMinimum Defines an exclusive lower bound for numeric types. As a string.
+ * @property exclusiveMaximum Defines an exclusive upper bound for numeric types. As a string.
+ * @property multipleOf Constrains the field value to be a multiple of this number. As a string.
  * @property minItems Specifies the minimum number of items in an array.
  * @property maxItems Specifies the maximum number of items in an array.
  * @property uniqueItems Specifies that all items in an array must be unique.
@@ -72,6 +74,8 @@ public annotation class Schema(
     val minLength: Int = -1,
     val maxLength: Int = -1,
     val pattern: String = "",
+    val contentEncoding: String = "",
+    val contentMediaType: String = "",
     val minimum: String = "",
     val maximum: String = "",
     val exclusiveMinimum: String = "",

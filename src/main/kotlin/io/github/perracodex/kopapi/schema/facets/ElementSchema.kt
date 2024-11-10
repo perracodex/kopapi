@@ -120,6 +120,8 @@ internal sealed class ElementSchema(
      * @property minLength The minimum character length for string fields.
      * @property maxLength The maximum character length for string fields.
      * @property pattern A regular expression pattern that the field must match.
+     * @property contentEncoding May be used to specify the Content-Encoding for the schema.
+     * @property contentMediaType May be used to specify the Media-Type for the schema.
      * @property minimum The minimum allowed value for numeric fields.
      * @property maximum The maximum allowed value for numeric fields.
      * @property exclusiveMinimum The exclusive lower bound for numeric fields.
@@ -135,6 +137,8 @@ internal sealed class ElementSchema(
         @JsonProperty("minLength") val minLength: Int? = null,
         @JsonProperty("maxLength") val maxLength: Int? = null,
         @JsonProperty("pattern") val pattern: String? = null,
+        @JsonProperty("contentEncoding") val contentEncoding: String? = null,
+        @JsonProperty("contentMediaType") val contentMediaType: String? = null,
         @JsonProperty("minimum") val minimum: Number? = null,
         @JsonProperty("maximum") val maximum: Number? = null,
         @JsonProperty("exclusiveMinimum") val exclusiveMinimum: Number? = null,

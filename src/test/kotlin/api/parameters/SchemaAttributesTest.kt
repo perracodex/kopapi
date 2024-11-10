@@ -51,6 +51,8 @@ class SchemaAttributesTest {
                             minLength = 5
                             maxLength = 10
                             pattern = "^[A-Za-z0-9_-]{5,10}$"
+                            contentEncoding = "utf-8"
+                            contentMediaType = "application/json"
                         }
                     }
 

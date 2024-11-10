@@ -38,6 +38,8 @@ internal object SchemaAttributeUtils {
                     minLength = attributes.minLength ?: schema.minLength,
                     maxLength = attributes.maxLength ?: schema.maxLength,
                     pattern = attributes.pattern ?: schema.pattern,
+                    contentEncoding = attributes.contentEncoding ?: schema.contentEncoding,
+                    contentMediaType = attributes.contentMediaType ?: schema.contentMediaType,
                     minimum = attributes.minimum ?: schema.minimum,
                     maximum = attributes.maximum ?: schema.maximum,
                     exclusiveMinimum = attributes.exclusiveMinimum ?: schema.exclusiveMinimum,

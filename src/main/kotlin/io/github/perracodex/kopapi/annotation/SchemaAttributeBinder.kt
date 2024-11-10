@@ -66,6 +66,8 @@ internal object SchemaAttributeBinder {
                 minLength = attributes.minLength ?: schema.minLength,
                 maxLength = attributes.maxLength ?: schema.maxLength,
                 pattern = attributes.pattern.trimOrNull(),
+                contentEncoding = attributes.contentEncoding.trimOrNull(),
+                contentMediaType = attributes.contentMediaType.trimOrNull(),
                 minimum = attributes.minimum ?: schema.minimum,
                 maximum = attributes.maximum ?: schema.maximum,
                 exclusiveMinimum = attributes.exclusiveMinimum ?: schema.exclusiveMinimum,

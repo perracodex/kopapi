@@ -48,6 +48,8 @@ data class Person(
 | minLength        | Defines the minimum length for string values.                                  |
 | maxLength        | Defines the maximum length for string values.                                  |
 | pattern          | A regular expression pattern that a string field must match.                   |
+| contentEncoding  | May be used to specify the Content-Encoding for the schema.                    |
+| contentMediaType | May be used to specify the Media-Type for the schema.                          |                                                                                 |
 | minimum          | Defines the inclusive lower bound for numeric types.                           |
 | maximum          | Defines the inclusive upper bound for numeric types.                           |
 | exclusiveMinimum | Defines a strict lower bound where the value must be greater than this number. |
@@ -62,7 +64,7 @@ data class Person(
 ### Attribute Applicability
 
 - Depending on the type of the field being annotated, only the relevant attributes are applicable:
-    - **String Fields**: `minLength`, `maxLength`, `pattern`
+  - **String Fields**: `minLength`, `maxLength`, `pattern`, `contentEncoding`, `contentMediaType`
     - **Numeric Fields**: `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, `multipleOf`
     - **Array Fields**: `minItems`, `maxItems`, `uniqueItems`
 

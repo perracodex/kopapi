@@ -17,6 +17,8 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  * @property minLength The minimum character length for string types.
  * @property maxLength The maximum character length for string types.
  * @property pattern A regular expression pattern that the type must match.
+ * @property contentEncoding May be used to specify the Content-Encoding for the schema.
+ * @property contentMediaType May be used to specify the Media-Type for the schema.
  * @property minimum The minimum allowed value for numeric types.
  * @property maximum The maximum allowed value for numeric types.
  * @property exclusiveMinimum The exclusive lower bound for numeric types.
@@ -32,6 +34,8 @@ public class SchemaAttributeBuilder internal constructor(
     public var minLength: Int? = null,
     public var maxLength: Int? = null,
     public var pattern: String? = null,
+    public var contentEncoding: String? = null,
+    public var contentMediaType: String? = null,
     public var minimum: Number? = null,
     public var maximum: Number? = null,
     public var exclusiveMinimum: Number? = null,
@@ -52,6 +56,8 @@ public class SchemaAttributeBuilder internal constructor(
             minLength = minLength?.takeIf { it >= 0 },
             maxLength = maxLength?.takeIf { it >= 0 },
             pattern = pattern.trimOrNull(),
+            contentEncoding = contentEncoding.trimOrNull(),
+            contentMediaType = contentMediaType.trimOrNull(),
             minimum = minimum,
             maximum = maximum,
             exclusiveMinimum = exclusiveMinimum,
@@ -66,6 +72,8 @@ public class SchemaAttributeBuilder internal constructor(
                 minLength,
                 maxLength,
                 pattern,
+                contentEncoding,
+                contentMediaType,
                 minimum,
                 maximum,
                 exclusiveMinimum,
