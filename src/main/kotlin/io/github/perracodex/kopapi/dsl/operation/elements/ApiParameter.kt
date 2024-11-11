@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.dsl.operation.elements
 
 import com.fasterxml.jackson.annotation.JsonValue
+import io.github.perracodex.kopapi.dsl.common.example.IExample
 import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter.Location
@@ -28,6 +29,7 @@ import kotlin.reflect.KType
  * @property explode Determines how arrays and objects are serialized. Only applicable to query and cookie parameters.
  * @property deprecated Indicates whether the parameter is deprecated and should be avoided.
  * @property schemaAttributes Optional schema attributes for the header type. Not applicable for complex types.
+ * @property examples Examples be used for documentation purposes.
  *
  * @see [ApiOperationBuilder.headerParameter]
  * @see [ApiOperationBuilder.queryParameter]
@@ -46,6 +48,7 @@ internal data class ApiParameter(
     val explode: Boolean?,
     val deprecated: Boolean?,
     val schemaAttributes: ApiSchemaAttributes?,
+    val examples: IExample?
 ) {
     init {
         if (name.isBlank()) {

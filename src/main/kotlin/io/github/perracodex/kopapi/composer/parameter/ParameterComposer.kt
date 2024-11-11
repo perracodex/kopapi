@@ -68,7 +68,8 @@ internal object ParameterComposer {
                 style = parameter.style?.value,
                 explode = parameter.explode.takeIf { it == true },
                 deprecated = parameter.deprecated.takeIf { it == true },
-                schema = finalSchema
+                schema = finalSchema,
+                examples = parameter.examples
             )
             parameterObjects.add(parameterObject)
         }

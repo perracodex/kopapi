@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.composer.parameter
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
+import io.github.perracodex.kopapi.dsl.common.example.IExample
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
 
@@ -21,6 +22,7 @@ import io.github.perracodex.kopapi.schema.facets.ElementSchema
  * @property explode Determines how arrays and objects are serialized. Only applicable to query and cookie parameters.
  * @property deprecated Indicates whether the parameter is deprecated and should be avoided.
  * @property schema The schema defining the structure and data type of the parameter, such as string, integer, or object.
+ * @property examples The [IExample] object representing the example data for the parameter.
  */
 @ComposerApi
 internal data class ParameterObject(
@@ -33,4 +35,5 @@ internal data class ParameterObject(
     @JsonProperty("explode") val explode: Boolean?,
     @JsonProperty("deprecated") val deprecated: Boolean?,
     @JsonProperty("schema") val schema: ElementSchema,
+    @JsonProperty("examples") var examples: IExample?
 )

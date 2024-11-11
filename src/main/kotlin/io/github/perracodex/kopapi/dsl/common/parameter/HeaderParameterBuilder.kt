@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.common.parameter
 
+import io.github.perracodex.kopapi.dsl.common.example.configurables.ExampleDelegate
+import io.github.perracodex.kopapi.dsl.common.example.configurables.IExampleConfigurable
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
@@ -29,8 +31,10 @@ import kotlin.reflect.KType
  */
 @KopapiDsl
 public class HeaderParameterBuilder @PublishedApi internal constructor(
-    private val schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate()
-) : ISchemaAttributeConfigurable by schemaAttributeDelegate {
+    private val schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate(),
+    private val examplesDelegate: ExampleDelegate = ExampleDelegate()
+) : ISchemaAttributeConfigurable by schemaAttributeDelegate,
+    IExampleConfigurable by examplesDelegate {
     public var description: String by MultilineString()
     public var required: Boolean = false
     public var defaultValue: DefaultValue? = null
@@ -57,7 +61,8 @@ public class HeaderParameterBuilder @PublishedApi internal constructor(
             style = style.takeIf { it != ParameterStyle.SIMPLE },
             explode = null,
             deprecated = deprecated.takeIf { it },
-            schemaAttributes = schemaAttributeDelegate.attributes
+            schemaAttributes = schemaAttributeDelegate.attributes,
+            examples = examplesDelegate.build()
         )
     }
 }
