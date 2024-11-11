@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.common.example
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
 /**
  * Represents an example for a schema with optional metadata.
  *
@@ -14,5 +16,6 @@ package io.github.perracodex.kopapi.dsl.common.example
 internal data class ApiExample(
     val summary: String? = null,
     val description: String? = null,
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     val value: Any?
 ) : IExample

@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.common.example
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonValue
 
 /**
@@ -12,5 +13,7 @@ import com.fasterxml.jackson.annotation.JsonValue
  * @property value The value of the example.
  */
 internal data class ApiInlineExample(
-    @JsonValue val value: Any?
+    @JsonValue
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    val value: Any?
 ) : IExample
