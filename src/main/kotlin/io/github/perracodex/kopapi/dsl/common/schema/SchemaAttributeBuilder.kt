@@ -52,7 +52,30 @@ public class SchemaAttributeBuilder internal constructor() {
     private var examples: IExample? = null
 
     /**
+     * Adds an example directly to the schema.
+     *
+     * #### Usage
+     * ```kotlin
+     * schema {
+     *     example("John Doe")
+     *     example(mapOf("role" to "Developer", "age" to 35))
+     *     example(listOf("Developer", "Project Manager"))
+     * }
+     * ```
+     *
+     * @param value The value of the example to add.
+     */
+    public fun example(value: Any?) {
+        examples {
+            example(value = value)
+        }
+    }
+
+    /**
      * Adds an example to the schema.
+     *
+     * The `examples` block serves only as organizational syntactic sugar.
+     * Examples can be defined directly without needing to use the `examples` block.
      *
      * #### Usage
      * ```

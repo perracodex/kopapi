@@ -15,7 +15,7 @@ import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 @KopapiDsl
 public class SchemaExampleBuilder internal constructor() {
     /** Holds inline examples for the schema as a list. */
-    private val examples: MutableList<Any?> = mutableListOf()
+    internal val _examples: MutableList<Any?> = mutableListOf()
 
     /**
      * Adds an example to the schema example list.
@@ -34,7 +34,7 @@ public class SchemaExampleBuilder internal constructor() {
      * @param value The value of the example to add.
      */
     public fun example(value: Any?) {
-        examples.add(value)
+        _examples.add(value)
     }
 
     /**
@@ -44,7 +44,7 @@ public class SchemaExampleBuilder internal constructor() {
      * @return A merged [ApiExampleArray] containing all inline examples.
      */
     internal fun build(existingExamples: IExample?): IExample {
-        val newExamplesArray = ApiExampleArray(examples = examples.map { ApiInlineExample(value = it) }.toTypedArray())
+        val newExamplesArray = ApiExampleArray(examples = _examples.map { ApiInlineExample(value = it) }.toTypedArray())
         return if (existingExamples is ApiExampleArray) {
             ApiExampleArray(examples = existingExamples.examples + newExamplesArray.examples)
         } else {
