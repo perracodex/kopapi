@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
+import io.github.perracodex.kopapi.dsl.common.example.IExample
 import io.github.perracodex.kopapi.dsl.common.example.configurables.ExampleDelegate
 import io.github.perracodex.kopapi.dsl.common.example.configurables.IExampleConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
@@ -25,9 +26,8 @@ import kotlin.reflect.typeOf
  */
 @KopapiDsl
 public class MultipartBuilder internal constructor(
-    @Suppress("PropertyName")
-    internal val _examplesDelegate: ExampleDelegate = ExampleDelegate()
-) : IExampleConfigurable by _examplesDelegate {
+    private val examplesDelegate: ExampleDelegate = ExampleDelegate()
+) : IExampleConfigurable by examplesDelegate {
     public var description: String by MultilineString()
     public var contentType: ContentType? = null
 
@@ -96,15 +96,22 @@ public class MultipartBuilder internal constructor(
             schemaFormat = partBuilder.schemaFormat.trimOrNull(),
             description = partBuilder.description.trimOrNull(),
             isRequired = partBuilder.required,
-            headers = partBuilder._headers.ifEmpty { null },
+            headers = partBuilder.headers().ifEmpty { null },
         )
 
         _config.parts.add(part)
     }
 
     @PublishedApi
-    internal class Config {
+    internal inner class Config {
         /** Holds the parts of the multipart request. */
         val parts: MutableList<ApiMultipart.Part> = mutableListOf()
+
+        /**
+         * Returns the registered examples.
+         */
+        fun examples(): IExample? {
+            return examplesDelegate.build()
+        }
     }
 }

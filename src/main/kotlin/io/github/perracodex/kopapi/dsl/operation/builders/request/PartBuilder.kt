@@ -4,8 +4,10 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
-import io.github.perracodex.kopapi.dsl.common.header.HeaderBuilder
+import io.github.perracodex.kopapi.dsl.common.header.configurable.HeaderDelegate
+import io.github.perracodex.kopapi.dsl.common.header.configurable.IHeaderConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
+import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.ktor.http.*
@@ -22,11 +24,20 @@ import io.ktor.http.*
  */
 @KopapiDsl
 public class PartBuilder @PublishedApi internal constructor(
-    public val name: String
-) : HeaderBuilder() {
+    public val name: String,
+    private val headerDelegate: HeaderDelegate = HeaderDelegate()
+) : IHeaderConfigurable by headerDelegate {
     public var required: Boolean = true
     public var description: String by MultilineString()
     public var contentType: Set<ContentType>? = null
     public var schemaType: ApiType? = null
     public var schemaFormat: String? = null
+
+    /**
+     * Returns the registered headers.
+     */
+    @PublishedApi
+    internal fun headers(): Map<String, ApiHeader> {
+        return headerDelegate.build()
+    }
 }

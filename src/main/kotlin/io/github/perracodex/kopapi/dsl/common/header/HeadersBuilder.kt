@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
  */
 
-package io.github.perracodex.kopapi.dsl.operation.builders.attributes
+package io.github.perracodex.kopapi.dsl.common.header
 
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
@@ -64,5 +64,6 @@ public class HeadersBuilder @PublishedApi internal constructor() {
      *
      * @return A set of [ApiHeader] instances.
      */
+    @PublishedApi
     internal fun build(): MutableMap<String, ApiHeader> = _headers
 }

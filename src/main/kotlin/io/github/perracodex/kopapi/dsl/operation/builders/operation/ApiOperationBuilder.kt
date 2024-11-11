@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.operation
 
-import io.github.perracodex.kopapi.dsl.common.header.HeaderBuilder
+import io.github.perracodex.kopapi.dsl.common.header.configurable.HeaderDelegate
 import io.github.perracodex.kopapi.dsl.common.parameter.configurable.ParametersBuilder
 import io.github.perracodex.kopapi.dsl.common.security.configurable.ISecurityConfigurable
 import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityDelegate
@@ -296,7 +296,7 @@ public class ApiOperationBuilder internal constructor(
                 apply(builder)
                 addType<T> {
                     this.contentType = this@apply.contentType
-                    this._schemaAttributeDelegate.attributes = this@apply._schemaAttributeDelegate.attributes
+                    this.setSchemaAttributes(attributes = this@apply._config.schemaAttributes())
                 }
             }.build()
         } else {
@@ -357,7 +357,7 @@ public class ApiOperationBuilder internal constructor(
      *
      * @param status The [HttpStatusCode] code associated with this response.
      *
-     * @see [HeaderBuilder.headers]
+     * @see [HeaderDelegate.headers]
      * @see [ResponseBuilder.links]
      */
     @JvmName(name = "responseWithoutType")
@@ -413,7 +413,7 @@ public class ApiOperationBuilder internal constructor(
      * @param T The body primary type of the response.
      * @param status The [HttpStatusCode] code associated with this response.
      *
-     * @see [HeaderBuilder.headers]
+     * @see [HeaderDelegate.headers]
      * @see [ResponseBuilder.links]
      */
     @JvmName(name = "responseWithType")
@@ -425,7 +425,7 @@ public class ApiOperationBuilder internal constructor(
             apply(builder)
             addType<T> {
                 this.contentType = this@apply.contentType
-                this._schemaAttributeDelegate.attributes = this@apply._schemaAttributeDelegate.attributes
+                this.setSchemaAttributes(attributes = this@apply._config.schemaAttributes())
             }
         }.build(status = status)
 

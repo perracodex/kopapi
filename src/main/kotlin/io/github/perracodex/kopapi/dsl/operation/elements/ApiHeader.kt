@@ -23,6 +23,7 @@ import kotlin.reflect.KType
  *
  * @see [ApiResponse]
  */
+@PublishedApi
 internal data class ApiHeader(
     val type: KType,
     val description: String?,

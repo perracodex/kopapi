@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.dsl.operation.builders.request
 
 import io.github.perracodex.kopapi.dsl.common.example.configurables.ExampleDelegate
 import io.github.perracodex.kopapi.dsl.common.example.configurables.IExampleConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
@@ -34,11 +35,9 @@ import kotlin.reflect.typeOf
  */
 @KopapiDsl
 public class RequestBodyBuilder @PublishedApi internal constructor(
-    @Suppress("PropertyName")
-    @PublishedApi
-    internal val _schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate(),
+    private val schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate(),
     private val examplesDelegate: ExampleDelegate = ExampleDelegate()
-) : ISchemaAttributeConfigurable by _schemaAttributeDelegate,
+) : ISchemaAttributeConfigurable by schemaAttributeDelegate,
     IExampleConfigurable by examplesDelegate {
     public var description: String by MultilineString()
     public var required: Boolean = true
@@ -94,7 +93,7 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
         // Register the new type with the effective content types.
         val typeDetails: ApiRequestBody.TypeDetails = ApiRequestBody.TypeDetails(
             type = typeOf<T>(),
-            schemaAttributes = typeConfig._schemaAttributeDelegate.attributes
+            schemaAttributes = typeConfig.schemaAttributes()
         )
         effectiveContentTypes.forEach { contentTypeKey ->
             _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(typeDetails)
@@ -147,7 +146,7 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
             contentType = multipartContentType,
             description = multipartBuilder.description.trimOrNull(),
             parts = multipartBuilder._config.parts,
-            examples = multipartBuilder._examplesDelegate.build()
+            examples = multipartBuilder._config.examples()
         )
 
         _config.multipartParts[multipartContentType] = apiMultipart
@@ -199,11 +198,18 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
     }
 
     @PublishedApi
-    internal class Config {
+    internal inner class Config {
         /** Holds the types associated with the request body (non-multipart). */
         val allTypes: MutableMap<ContentType, MutableSet<ApiRequestBody.TypeDetails>> = mutableMapOf()
 
         /** Holds the multipart parts schema. */
         val multipartParts: MutableMap<ContentType, ApiMultipart> = mutableMapOf()
+
+        /**
+         * Returns the registered schema attributes.
+         */
+        fun schemaAttributes(): ApiSchemaAttributes? {
+            return schemaAttributeDelegate.attributes
+        }
     }
 }

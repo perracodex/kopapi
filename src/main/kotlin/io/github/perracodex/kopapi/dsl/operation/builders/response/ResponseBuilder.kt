@@ -6,7 +6,9 @@ package io.github.perracodex.kopapi.dsl.operation.builders.response
 
 import io.github.perracodex.kopapi.dsl.common.example.configurables.ExampleDelegate
 import io.github.perracodex.kopapi.dsl.common.example.configurables.IExampleConfigurable
-import io.github.perracodex.kopapi.dsl.common.header.HeaderBuilder
+import io.github.perracodex.kopapi.dsl.common.header.configurable.HeaderDelegate
+import io.github.perracodex.kopapi.dsl.common.header.configurable.IHeaderConfigurable
+import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
@@ -35,13 +37,12 @@ import kotlin.reflect.typeOf
  */
 @KopapiDsl
 public class ResponseBuilder @PublishedApi internal constructor(
-    @Suppress("PropertyName")
-    @PublishedApi
-    internal val _schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate(),
-    private val examplesDelegate: ExampleDelegate = ExampleDelegate()
-) : ISchemaAttributeConfigurable by _schemaAttributeDelegate,
+    private val schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate(),
+    private val examplesDelegate: ExampleDelegate = ExampleDelegate(),
+    private val headerDelegate: HeaderDelegate = HeaderDelegate()
+) : ISchemaAttributeConfigurable by schemaAttributeDelegate,
     IExampleConfigurable by examplesDelegate,
-    HeaderBuilder() {
+    IHeaderConfigurable by headerDelegate {
 
     public var description: String by MultilineString()
     public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
@@ -100,7 +101,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
         // Register the new type with the effective content types.
         val typeDetails: ApiResponse.TypeDetails = ApiResponse.TypeDetails(
             type = typeOf<T>(),
-            schemaAttributes = typeConfig._schemaAttributeDelegate.attributes
+            schemaAttributes = typeConfig.schemaAttributes()
         )
         effectiveContentTypes.forEach { contentTypeKey ->
             _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(typeDetails)
@@ -205,7 +206,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
         return ApiResponse(
             status = status,
             description = description.trimOrNull(),
-            headers = _headers.ifEmpty { null },
+            headers = headerDelegate.build().ifEmpty { null },
             composition = composition,
             content = contentMap,
             links = _config.links.ifEmpty { null },
@@ -214,7 +215,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
     }
 
     @PublishedApi
-    internal class Config {
+    internal inner class Config {
         /** Holds the types associated with the response. */
         val allTypes: MutableMap<ContentType, MutableSet<ApiResponse.TypeDetails>> = mutableMapOf()
 
@@ -237,6 +238,13 @@ public class ResponseBuilder @PublishedApi internal constructor(
                 throw KopapiException("Link with name '${linkName}' already exists within the same response.")
             }
             links[linkName] = link
+        }
+
+        /**
+         * Returns the registered schema attributes.
+         */
+        fun schemaAttributes(): ApiSchemaAttributes? {
+            return schemaAttributeDelegate.attributes
         }
     }
 }
