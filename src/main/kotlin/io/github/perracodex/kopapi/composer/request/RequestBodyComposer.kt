@@ -108,7 +108,11 @@ internal object RequestBodyComposer {
         }
 
         return schemasByContentType.mapValues { (_, schemas) ->
-            CompositionSchema.determine(composition = requestBody.composition, schemas = schemas, examples = null)
+            CompositionSchema.determine(
+                composition = requestBody.composition,
+                schemas = schemas,
+                examples = requestBody.examples
+            )
         }
     }
 
@@ -174,7 +178,7 @@ internal object RequestBodyComposer {
                 encoding = encodings,
             )
 
-            OpenApiSchema.ContentSchema(schema = schema, examples = null)
+            OpenApiSchema.ContentSchema(schema = schema, examples = apiMultipart.examples)
         }
     }
 

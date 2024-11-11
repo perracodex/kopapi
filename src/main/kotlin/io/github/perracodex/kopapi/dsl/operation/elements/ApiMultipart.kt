@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.elements
 
+import io.github.perracodex.kopapi.dsl.common.example.IExample
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.ApiType
 import io.ktor.http.*
@@ -18,12 +19,14 @@ import kotlin.reflect.full.isSubtypeOf
  * @property contentType The content type of the multipart request.
  * @property description Optional detailed explanation of the endpoint and its functionality.
  * @property parts The parts of the multipart request.
+ * @property examples Examples be used for documentation purposes.
  */
 @PublishedApi
 internal data class ApiMultipart(
     val contentType: ContentType,
     val description: String?,
-    val parts: List<Part>
+    val parts: List<Part>,
+    val examples: IExample?
 ) {
     init {
         // Check at runtime if the contentType belongs to the "multipart" category.
@@ -34,7 +37,6 @@ internal data class ApiMultipart(
                 "Invalid content type for multipart. Must be of type: `ContentType.MultiPart`"
             )
         }
-
     }
 
     /**

@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
+import io.github.perracodex.kopapi.dsl.common.example.configurables.ExampleDelegate
+import io.github.perracodex.kopapi.dsl.common.example.configurables.IExampleConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.system.KopapiException
@@ -22,7 +24,10 @@ import kotlin.reflect.typeOf
  * @property contentType The content type of the multipart request. Default: `FormData`.
  */
 @KopapiDsl
-public class MultipartBuilder internal constructor() {
+public class MultipartBuilder internal constructor(
+    @Suppress("PropertyName")
+    internal val _examplesDelegate: ExampleDelegate = ExampleDelegate()
+) : IExampleConfigurable by _examplesDelegate {
     public var description: String by MultilineString()
     public var contentType: ContentType? = null
 

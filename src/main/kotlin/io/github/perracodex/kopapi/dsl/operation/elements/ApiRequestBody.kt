@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.elements
 
+import io.github.perracodex.kopapi.dsl.common.example.IExample
 import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.system.KopapiException
@@ -20,6 +21,7 @@ import kotlin.reflect.KType
  * @property required Indicates whether the request body is mandatory.
  * @property content A map of [ContentType] to a set of [KType] that this request requires.
  * @property multipartContent A list of [ApiMultipart] for multipart requests.
+ * @property examples Examples be used for documentation purposes.
  *
  * @see [ApiOperationBuilder.requestBody]
  */
@@ -30,6 +32,7 @@ internal data class ApiRequestBody internal constructor(
     val composition: Composition?,
     val content: Map<ContentType, Set<TypeDetails>>?,
     val multipartContent: Map<ContentType, ApiMultipart>?,
+    val examples: IExample?
 ) {
     @PublishedApi
     internal data class TypeDetails(

@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
+import io.github.perracodex.kopapi.dsl.common.example.configurables.ExampleDelegate
+import io.github.perracodex.kopapi.dsl.common.example.configurables.IExampleConfigurable
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
 import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
@@ -34,8 +36,10 @@ import kotlin.reflect.typeOf
 public class RequestBodyBuilder @PublishedApi internal constructor(
     @Suppress("PropertyName")
     @PublishedApi
-    internal val _schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate()
-) : ISchemaAttributeConfigurable by _schemaAttributeDelegate {
+    internal val _schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate(),
+    private val examplesDelegate: ExampleDelegate = ExampleDelegate()
+) : ISchemaAttributeConfigurable by _schemaAttributeDelegate,
+    IExampleConfigurable by examplesDelegate {
     public var description: String by MultilineString()
     public var required: Boolean = true
     public var composition: Composition? = null
@@ -142,7 +146,8 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
         val apiMultipart = ApiMultipart(
             contentType = multipartContentType,
             description = multipartBuilder.description.trimOrNull(),
-            parts = multipartBuilder._config.parts
+            parts = multipartBuilder._config.parts,
+            examples = multipartBuilder._examplesDelegate.build()
         )
 
         _config.multipartParts[multipartContentType] = apiMultipart
@@ -188,7 +193,8 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
             required = required,
             composition = contentComposition,
             content = contentMap.ifEmpty { null },
-            multipartContent = _config.multipartParts.ifEmpty { null }
+            multipartContent = _config.multipartParts.ifEmpty { null },
+            examples = examplesDelegate.build()
         )
     }
 
