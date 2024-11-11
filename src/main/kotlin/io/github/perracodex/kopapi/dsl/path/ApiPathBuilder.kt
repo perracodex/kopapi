@@ -16,19 +16,8 @@ import io.ktor.server.routing.*
 /**
  * Builder for constructing API path-level metadata.
  *
- * #### Information
- * - [summary]: Optional short description of the endpoint's purpose.
- * - [description]: Optional detailed explanation of the endpoint and its functionality.
- * - [servers]: Optional list of server configurations specific to this path.
- *
- * #### Parameters
- * - [pathParameter]: Adds a path parameter applicable to all operations within this path.
- * - [queryParameter]: Adds a query parameter applicable to all operations within this path.
- * - [headerParameter]: Adds a header parameter applicable to all operations within this path.
- * - [cookieParameter]: Adds a cookie parameter applicable to all operations within this path.
- *
- * #### Sample Usage
- * - Define for a `routing` block:
+ * #### Usage
+ * - Definition for a `routing` block:
  * ```
  * routing {
  *     // Implement routes as usual
@@ -45,7 +34,7 @@ import io.ktor.server.routing.*
  *    }
  * }
  * ```
- * - Define for a `route` block:
+ * - Definition for a `route` block:
  * ```
  * routing {
  *     route("some-endpoint") {
@@ -65,6 +54,17 @@ import io.ktor.server.routing.*
  * }
  * ```
  *
+ * #### Information
+ * - [summary]: Optional short description of the endpoint's purpose.
+ * - [description]: Optional detailed explanation of the endpoint and its functionality.
+ * - [servers]: Optional list of server configurations specific to this path.
+ *
+ * #### Parameters
+ * - [pathParameter]: Adds a path parameter applicable to all operations within this path.
+ * - [queryParameter]: Adds a query parameter applicable to all operations within this path.
+ * - [headerParameter]: Adds a header parameter applicable to all operations within this path.
+ * - [cookieParameter]: Adds a cookie parameter applicable to all operations within this path.
+ *
  * @see [Route.apiPath]
  */
 @KopapiDsl
@@ -80,7 +80,7 @@ public class ApiPathBuilder internal constructor(
      * Declaring the `summary` multiple times will concatenate all the summaries
      * delimited by a `space` character between each one.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * summary = "Retrieve data items."
      * ```
@@ -95,7 +95,7 @@ public class ApiPathBuilder internal constructor(
      * Declaring the `description` multiple times will concatenate all the descriptions
      * delimited by a `newline` character between each one.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * description = "Fetches all items for a group."
      * description = "In addition, it can fetch a specific item."

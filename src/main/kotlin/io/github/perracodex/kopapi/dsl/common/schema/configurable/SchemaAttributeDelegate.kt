@@ -18,7 +18,7 @@ internal class SchemaAttributeDelegate : ISchemaAttributeConfigurable {
     @PublishedApi
     internal var attributes: ApiSchemaAttributes? = null
 
-    override fun schema(configure: SchemaAttributeBuilder.() -> Unit) {
-        attributes = SchemaAttributeBuilder().apply(configure).build()
+    override fun schema(builder: SchemaAttributeBuilder.() -> Unit) {
+        attributes = SchemaAttributeBuilder().apply(builder).build()
     }
 }

@@ -26,11 +26,11 @@ internal class ExampleDelegate : IExampleConfigurable {
     /** Counter to generate sequential example names when none are provided. */
     private var exampleCounter: Int = 1
 
-    override fun example(name: String?, init: ExampleBuilder.() -> Unit) {
+    override fun example(name: String?, builder: ExampleBuilder.() -> Unit) {
         val exampleName: String = name?.sanitize() ?: generateName()
 
         if (exampleName.isNotBlank()) {
-            val exampleInstance: ExampleBuilder = ExampleBuilder().apply(init)
+            val exampleInstance: ExampleBuilder = ExampleBuilder().apply(builder)
             val apiExample = ApiExample(
                 summary = exampleInstance.summary.trimOrNull(),
                 description = exampleInstance.description.trimOrNull(),
@@ -43,9 +43,9 @@ internal class ExampleDelegate : IExampleConfigurable {
         }
     }
 
-    override fun examples(init: IExampleConfigurable.() -> Unit) {
-        with(this) {
-            init()
+    override fun examples(builder: IExampleConfigurable.() -> Unit) {
+        with(receiver = this) {
+            builder()
         }
     }
 

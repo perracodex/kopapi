@@ -26,7 +26,7 @@ public open class ParametersBuilder internal constructor(private val endpoint: S
     /**
      * Registers a `path` parameter.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * pathParameter<Uuid>(name = "id") {
      *     description = "The unique identifier of the item."
@@ -45,28 +45,28 @@ public open class ParametersBuilder internal constructor(private val endpoint: S
      * }
      * ```
      *
+     * @receiver [PathParameterBuilder] The builder used to configure the path parameter.
+     *
      * @param T The type of the parameter.
      * @param name The name of the parameter as it appears in the URL path.
-     * @param configure A lambda receiver for configuring the [PathParameterBuilder].
      *
-     * @see [PathParameterBuilder]
      * @see [cookieParameter]
      * @see [headerParameter]
      * @see [queryParameter]
      */
     public inline fun <reified T : Any> pathParameter(
         name: String,
-        noinline configure: PathParameterBuilder.() -> Unit = {}
+        noinline builder: PathParameterBuilder.() -> Unit = {}
     ) {
-        val builder: PathParameterBuilder = PathParameterBuilder().apply(configure)
-        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
+        val parameterBuilder: PathParameterBuilder = PathParameterBuilder().apply(builder)
+        val parameter: ApiParameter = parameterBuilder.build(name = name, type = typeOf<T>())
         _parametersConfig.addApiParameter(apiParameter = parameter)
     }
 
     /**
      * Registers a `query` parameter.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * queryParameter<Int>(name = "page") {
      *     description = "The page number to retrieve."
@@ -89,28 +89,28 @@ public open class ParametersBuilder internal constructor(private val endpoint: S
      * }
      * ```
      *
+     * @receiver [QueryParameterBuilder] The builder used to configure the query parameter.
+     *
      * @param T The type of the parameter.
      * @param name The name of the parameter as it appears in the URL path.
-     * @param configure A lambda receiver for configuring the [QueryParameterBuilder].
      *
-     * @see [QueryParameterBuilder]
      * @see [cookieParameter]
      * @see [headerParameter]
      * @see [pathParameter]
      */
     public inline fun <reified T : Any> queryParameter(
         name: String,
-        noinline configure: QueryParameterBuilder.() -> Unit = {}
+        noinline builder: QueryParameterBuilder.() -> Unit = {}
     ) {
-        val builder: QueryParameterBuilder = QueryParameterBuilder().apply(configure)
-        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
+        val parameterBuilder: QueryParameterBuilder = QueryParameterBuilder().apply(builder)
+        val parameter: ApiParameter = parameterBuilder.build(name = name, type = typeOf<T>())
         _parametersConfig.addApiParameter(apiParameter = parameter)
     }
 
     /**
      * Registers a `header` parameter.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * headerParameter<String>(name = "X-Custom-Header") {
      *     description = "A custom header for special purposes."
@@ -129,28 +129,28 @@ public open class ParametersBuilder internal constructor(private val endpoint: S
      * }
      * ```
      *
+     * @receiver [HeaderParameterBuilder] The builder used to configure the header parameter.
+     *
      * @param T The type of the parameter.
      * @param name The header of the parameter as it appears in the URL path.
-     * @param configure A lambda receiver for configuring the [HeaderParameterBuilder].
      *
-     * @see [HeaderParameterBuilder]
      * @see [cookieParameter]
      * @see [pathParameter]
      * @see [queryParameter]
      */
     public inline fun <reified T : Any> headerParameter(
         name: String,
-        noinline configure: HeaderParameterBuilder.() -> Unit = {}
+        noinline builder: HeaderParameterBuilder.() -> Unit = {}
     ) {
-        val builder: HeaderParameterBuilder = HeaderParameterBuilder().apply(configure)
-        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
+        val parameterBuilder: HeaderParameterBuilder = HeaderParameterBuilder().apply(builder)
+        val parameter: ApiParameter = parameterBuilder.build(name = name, type = typeOf<T>())
         _parametersConfig.addApiParameter(apiParameter = parameter)
     }
 
     /**
      * Registers a `cookie` parameter.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * cookieParameter<String>(name = "custom") {
      *     description = "Some custom cookie for the user."
@@ -172,21 +172,21 @@ public open class ParametersBuilder internal constructor(private val endpoint: S
      * }
      * ```
      *
+     * @receiver [CookieParameterBuilder] The builder used to configure the cookie parameter.
+     *
      * @param T The type of the parameter.
      * @param name The name of the parameter as it appears in the URL path.
-     * @param configure A lambda receiver for configuring the [CookieParameterBuilder].
      *
-     * @see [CookieParameterBuilder]
      * @see [headerParameter]
      * @see [pathParameter]
      * @see [queryParameter]
      */
     public inline fun <reified T : Any> cookieParameter(
         name: String,
-        noinline configure: CookieParameterBuilder.() -> Unit = {}
+        noinline builder: CookieParameterBuilder.() -> Unit = {}
     ) {
-        val builder: CookieParameterBuilder = CookieParameterBuilder().apply(configure)
-        val parameter: ApiParameter = builder.build(name = name, type = typeOf<T>())
+        val parameterBuilder: CookieParameterBuilder = CookieParameterBuilder().apply(builder)
+        val parameter: ApiParameter = parameterBuilder.build(name = name, type = typeOf<T>())
         _parametersConfig.addApiParameter(apiParameter = parameter)
     }
 
@@ -196,19 +196,19 @@ public open class ParametersBuilder internal constructor(private val endpoint: S
      * The `parameters` block serves only as organizational syntactic sugar.
      * Parameters can be defined directly without needing to use the `parameters` block.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * parameters {
-     *     pathParameter<Uuid>("data_id") { description = "The data Id." }
-     *     queryParameter<String>("item_id") { description = "Optional item Id." }
+     *     pathParameter<Uuid>("id_1") { description = "The data Id." }
+     *     queryParameter<String>("id_2") { description = "Optional item Id." }
      * }
      * ```
      *
-     * @param configure A lambda receiver for configuring the [ParametersBuilder].
+     * @receiver [ParametersBuilder] The builder used to configure the parameters.
      */
-    public fun parameters(configure: ParametersBuilder.() -> Unit) {
-        val builder: ParametersBuilder = ParametersBuilder(endpoint = endpoint).apply(configure)
-        _parametersConfig.parameters.addAll(builder._parametersConfig.parameters)
+    public fun parameters(builder: ParametersBuilder.() -> Unit) {
+        val parameterBuilder: ParametersBuilder = ParametersBuilder(endpoint = endpoint).apply(builder)
+        _parametersConfig.parameters.addAll(parameterBuilder._parametersConfig.parameters)
     }
 
     @PublishedApi

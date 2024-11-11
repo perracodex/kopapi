@@ -26,11 +26,11 @@ import kotlin.reflect.KType
  */
 @KopapiDsl
 public class PathParameterBuilder @PublishedApi internal constructor(
-    public var style: ParameterStyle = ParameterStyle.SIMPLE,
-    public var deprecated: Boolean = false,
     private val schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate()
 ) : ISchemaAttributeConfigurable by schemaAttributeDelegate {
     public var description: String by MultilineString()
+    public var style: ParameterStyle = ParameterStyle.SIMPLE
+    public var deprecated: Boolean = false
 
     /**
      * Builds an [ApiParameter] instance from the current builder state.

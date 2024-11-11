@@ -14,10 +14,10 @@ import io.ktor.server.routing.*
  * Defines API Path metadata for a Ktor route.
  * Intended for use with route paths without an HTTP method tied to them.
  *
- * For HTTP methods, use the [Route.api] extension function instead.
+ * **Note:** For HTTP methods, use the [Route.api] extension function instead.
  *
- * #### Sample Usage
- * - Define for a `routing` block:
+ * #### Usage
+ * - Definition for a `routing` block:
  * ```
  * routing {
  *     // Implement routes as usual
@@ -34,7 +34,7 @@ import io.ktor.server.routing.*
  *    }
  * }
  * ```
- * - Define for a `route` block:
+ * - Definition for a `route` block:
  * ```
  * routing {
  *     route("some-endpoint") {
@@ -54,13 +54,12 @@ import io.ktor.server.routing.*
  * }
  * ```
  *
- * @param configure A lambda receiver for configuring the [ApiPathBuilder].
+ * @receiver [ApiPathBuilder] The builder used to configure the API path metadata.
+ *
  * @return The current [Route] instance
  * @throws KopapiException If the route does not have an HTTP method selector.
- *
- * @see [ApiPathBuilder]
  */
-public infix fun Route.apiPath(configure: ApiPathBuilder.() -> Unit): Route {
+public infix fun Route.apiPath(builder: ApiPathBuilder.() -> Unit): Route {
     if (this !is RoutingNode || this.selector is HttpMethodRouteSelector) {
         throw KopapiException(message = buildErrorMessage(route = this))
     }
@@ -68,11 +67,11 @@ public infix fun Route.apiPath(configure: ApiPathBuilder.() -> Unit): Route {
     val endpointPath: String = this.extractRoutePath()
 
     // Apply the configuration within the ApiPathBuilder's scope.
-    val builder = ApiPathBuilder(endpoint = endpointPath)
-    with(builder) { configure() }
+    val pathBuilder = ApiPathBuilder(endpoint = endpointPath)
+    with(pathBuilder) { builder() }
 
     // Build the path using the provided configuration.
-    val apiPath: ApiPath = builder.build()
+    val apiPath: ApiPath = pathBuilder.build()
 
     // Register the path with the schema registry
     // for later use in generating OpenAPI documentation.

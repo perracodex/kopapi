@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.annotation
 /**
  * Annotation to define attributes for a field, aligned with OpenAPI 3.1 schema specification.
  *
- * #### Sample Usage
+ * #### Usage
  * ```kotlin
  * @Schema(description = "Represents a person.")
  * data class Person(

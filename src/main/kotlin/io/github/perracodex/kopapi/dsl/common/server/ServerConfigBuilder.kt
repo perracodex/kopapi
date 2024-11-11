@@ -32,7 +32,7 @@ public class ServerConfigBuilder internal constructor(
     /**
      * Adds a server variable.
      *
-     * ### Sample Usage
+     * #### Usage
      * ```
      * variable(name = "environment", defaultValue = "production") {
      *      choices = setOf("production", "staging", "development")
@@ -41,18 +41,17 @@ public class ServerConfigBuilder internal constructor(
      * ```
      * Multiple descriptions can be defined to construct a final multiline description.
      *
+     * @receiver [ServerVariableBuilder] The builder used to configure a server variable.
+     *
      * @param name The name of the variable.
      * @param defaultValue The default value of the variable.
-     * @param configure The configuration block for the variable.
      *
-     * @see [ServerVariableBuilder]
      * @see [ServerBuilder]
-     * @see [ServerConfigBuilder]
      */
     public fun variable(
         name: String,
         defaultValue: String,
-        configure: ServerVariableBuilder.() -> Unit
+        builder: ServerVariableBuilder.() -> Unit
     ) {
         if (name.isBlank()) {
             throw KopapiException("Server variable name cannot be blank.")
@@ -62,7 +61,7 @@ public class ServerConfigBuilder internal constructor(
         }
         variables[name.trim()] = ServerVariableBuilder(
             defaultValue = defaultValue.trim()
-        ).apply(configure).build()
+        ).apply(builder).build()
     }
 
     /**

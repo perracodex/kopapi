@@ -20,7 +20,7 @@ public class SchemaExampleBuilder internal constructor() {
     /**
      * Adds an example to the schema example list.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * schema {
      *     examples {

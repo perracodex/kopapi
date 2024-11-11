@@ -16,79 +16,83 @@ public interface ISecurityConfigurable {
     /**
      * Adds a `Basic` HTTP security scheme to the API metadata.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * basicSecurity(name = "MyBasicAuth") {
      *     description = "Basic Authentication"
      * }
      * ```
      *
+     * @receiver [HttpSecurityBuilder] The builder used to configure the security scheme.
+     *
      * @param name The unique name of the security scheme.
-     * @param configure A lambda receiver for configuring the [HttpSecurityBuilder].
      *
      * @see [bearerSecurity]
      * @see [digestSecurity]
      */
     public fun basicSecurity(
         name: String,
-        configure: HttpSecurityBuilder.() -> Unit = {}
+        builder: HttpSecurityBuilder.() -> Unit = {}
     )
 
     /**
      * Adds an `Bearer` HTTP security scheme to the API metadata.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * bearerSecurity(name = "MyBearerAuth") {
      *     description = "Bearer Authentication"
      * }
      * ```
      *
+     * @receiver [HttpSecurityBuilder] The builder used to configure the security scheme.
+     *
      * @param name The unique name of the security scheme.
-     * @param configure A lambda receiver for configuring the [HttpSecurityBuilder].
      *
      * @see [basicSecurity]
      * @see [digestSecurity]
      */
     public fun bearerSecurity(
         name: String,
-        configure: HttpSecurityBuilder.() -> Unit = {}
+        builder: HttpSecurityBuilder.() -> Unit = {}
     )
 
     /**
      * Adds an `Digest` HTTP security scheme to the API metadata.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * digestSecurity(name = "MyDigestAuth") {
      *     description = "Digest Authentication"
      * }
      * ```
      *
+     * @receiver [HttpSecurityBuilder] The builder used to configure the security scheme.
+     *
      * @param name The unique name of the security scheme.
-     * @param configure A lambda receiver for configuring the [HttpSecurityBuilder].
      *
      * @see [basicSecurity]
      * @see [bearerSecurity]
      */
     public fun digestSecurity(
         name: String,
-        configure: HttpSecurityBuilder.() -> Unit = {}
+        builder: HttpSecurityBuilder.() -> Unit = {}
     )
 
     /**
      * Adds an API key security scheme passed via header to the API metadata.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * headerApiKeySecurity(name = "Header API Key", key = "X-API-Key") {
      *     description = "API Key Authentication via header."
      * }
      * ```
      *
+     * @receiver [ApiKeySecurityBuilder] The builder used to configure the security scheme.
+     *
      * @param name The unique name of the security scheme.
      * @param key The name of the header parameter where the API key is passed.
-     * @param configure A lambda receiver for configuring the [ApiKeySecurityBuilder].
      *
      * @see [queryApiKeySecurity]
      * @see [cookieApiKeySecurity]
@@ -96,22 +100,23 @@ public interface ISecurityConfigurable {
     public fun headerApiKeySecurity(
         name: String,
         key: String,
-        configure: ApiKeySecurityBuilder.() -> Unit = {}
+        builder: ApiKeySecurityBuilder.() -> Unit = {}
     )
 
     /**
      * Adds an API key security scheme passed via query to the API metadata.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * queryApiKeySecurity(name = "Query API Key", key = "X-API-Key") {
      *     description = "API Key Authentication via query."
      * }
      * ```
      *
+     * @receiver [ApiKeySecurityBuilder] The builder used to configure the security scheme.
+     *
      * @param name The unique name of the security scheme.
      * @param key The name of the query parameter where the API key is passed.
-     * @param configure A lambda receiver for configuring the [ApiKeySecurityBuilder].
      *
      * @see [headerApiKeySecurity]
      * @see [cookieApiKeySecurity]
@@ -119,22 +124,23 @@ public interface ISecurityConfigurable {
     public fun queryApiKeySecurity(
         name: String,
         key: String,
-        configure: ApiKeySecurityBuilder.() -> Unit = {}
+        builder: ApiKeySecurityBuilder.() -> Unit = {}
     )
 
     /**
      * Adds an API key security scheme passed via cookie to the API metadata.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * cookieApiKeySecurity(name = "Cookie API Key", key = "X-API-Key") {
      *     description = "API Key Authentication via cookie."
      * }
      * ```
      *
+     * @receiver [ApiKeySecurityBuilder] The builder used to configure the security scheme.
+     *
      * @param name The unique name of the security scheme.
      * @param key The name of the cookie parameter where the API key is passed.
-     * @param configure A lambda receiver for configuring the [ApiKeySecurityBuilder].
      *
      * @see [headerApiKeySecurity]
      * @see [queryApiKeySecurity]
@@ -142,13 +148,13 @@ public interface ISecurityConfigurable {
     public fun cookieApiKeySecurity(
         name: String,
         key: String,
-        configure: ApiKeySecurityBuilder.() -> Unit = {}
+        builder: ApiKeySecurityBuilder.() -> Unit = {}
     )
 
     /**
      * Adds an OAuth2 security scheme to the API metadata.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * oauth2Security(name = "OAuth2") {
      *     description = "OAuth2 Authentication."
@@ -178,10 +184,10 @@ public interface ISecurityConfigurable {
      * }
      * ```
      *
-     * @param name The unique name of the security scheme.
-     * @param configure A lambda receiver for configuring the [OAuth2SecurityBuilder].
+     * @receiver [OAuth2SecurityBuilder] The builder used to configure the security scheme.
      *
-     * @see [OAuth2SecurityBuilder]
+     * @param name The unique name of the security scheme.
+     *
      * @see [OAuthFlowBuilder]
      * @see [basicSecurity]
      * @see [bearerSecurity]
@@ -194,13 +200,13 @@ public interface ISecurityConfigurable {
      */
     public fun oauth2Security(
         name: String,
-        configure: OAuth2SecurityBuilder.() -> Unit = {}
+        builder: OAuth2SecurityBuilder.() -> Unit
     )
 
     /**
      * Adds an OpenID Connect security scheme to the API metadata.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * openIdConnectSecurity(name = "OpenID") {
      *     description = "OpenID Connect Authentication."
@@ -208,9 +214,10 @@ public interface ISecurityConfigurable {
      * }
      * ```
      *
+     * @receiver [OpenIdConnectSecurityBuilder] The builder used to configure the security scheme.
+     *
      * @param name The unique name of the security scheme.
      * @param url The [Url] for the OpenID Connect configuration.
-     * @param configure A lambda receiver for configuring the [OpenIdConnectSecurityBuilder].
      *
      * @see [basicSecurity]
      * @see [bearerSecurity]
@@ -224,21 +231,22 @@ public interface ISecurityConfigurable {
     public fun openIdConnectSecurity(
         name: String,
         url: Url,
-        configure: OpenIdConnectSecurityBuilder.() -> Unit = {}
+        builder: OpenIdConnectSecurityBuilder.() -> Unit = {}
     )
 
     /**
      * Adds a Mutual TLS security scheme to the API metadata.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * mutualTLSSecurity(name = "MutualTLS") {
      *     description = "Mutual TLS Authentication."
      * }
      * ```
      *
+     * @receiver [MutualTLSSecurityBuilder] The builder used to configure the security scheme.
+     *
      * @param name The unique name of the security scheme.
-     * @param configure A lambda receiver for configuring the [MutualTLSSecurityBuilder].
      *
      * @see [basicSecurity]
      * @see [bearerSecurity]
@@ -251,6 +259,6 @@ public interface ISecurityConfigurable {
      */
     public fun mutualTLSSecurity(
         name: String,
-        configure: MutualTLSSecurityBuilder.() -> Unit = {}
+        builder: MutualTLSSecurityBuilder.() -> Unit = {}
     )
 }

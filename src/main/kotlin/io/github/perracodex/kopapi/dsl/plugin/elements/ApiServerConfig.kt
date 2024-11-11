@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig.Variable
 /**
  * Represents an immutable server configuration.
  *
- * #### IMPORTANT
+ * #### Attention
  * The naming, order and nullability of properties are defined
  * as per the OpenAPI specification, so no transformations are
  * needed generating the OpenAPI schema.

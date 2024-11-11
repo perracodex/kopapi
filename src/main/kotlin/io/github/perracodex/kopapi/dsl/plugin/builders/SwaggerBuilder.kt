@@ -15,7 +15,7 @@ import io.github.perracodex.kopapi.utils.NetworkUtils
 /**
  * Constructs the Swagger configuration for the API documentation.
  *
- * #### Sample usage
+ * #### Usage
  * ```
  * apiDocs {
  *      openApiUrl = "/openapi.yaml"

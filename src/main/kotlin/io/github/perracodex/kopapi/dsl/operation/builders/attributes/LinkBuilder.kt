@@ -68,10 +68,7 @@ public class LinkBuilder internal constructor() {
     /**
      * Adds a parameter mapping from the current operation to the linked operation.
      *
-     * @param name The name of the parameter in the linked operation.
-     * @param value The value expression referencing the current request's data.
-     *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * link(name = "ErrorResponseLink") {
      *     operationId = "findEmployeeById"
@@ -79,6 +76,9 @@ public class LinkBuilder internal constructor() {
      *     parameter(name = "employee_id", value = "$request.path.employee_id")
      * }
      * ```
+     *
+     * @param name The name of the parameter in the linked operation.
+     * @param value The value expression referencing the current request's data.
      */
     public fun parameter(name: String, value: String) {
         val parameterName: String = name.sanitize()
@@ -91,7 +91,7 @@ public class LinkBuilder internal constructor() {
     /**
      * Adds a server configuration with optional variables.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * // Simple example with no variables.
      * server(urlString = "http://localhost:8080") {
@@ -122,17 +122,17 @@ public class LinkBuilder internal constructor() {
      * }
      * ```
      *
-     * @param urlString The URL of the server. Expected to be a valid URL. If blank, the server is skipped.
-     * @param configure The configuration block for the server.
+     * @receiver [ServerConfigBuilder] The builder used to configure a server.
      *
-     * @see [ServerConfigBuilder]
+     * @param urlString The URL of the server. Expected to be a valid URL. If blank, the server is skipped.
+     *
      * @see [ServerVariableBuilder]
      */
-    public fun server(urlString: String, configure: ServerConfigBuilder.() -> Unit = {}) {
+    public fun server(urlString: String, builder: ServerConfigBuilder.() -> Unit = {}) {
         if (urlString.isBlank()) {
             throw KopapiException("Server URL cannot be blank.")
         }
-        _server = ServerConfigBuilder(urlString = urlString).apply(configure).build()
+        _server = ServerConfigBuilder(urlString = urlString).apply(builder).build()
     }
 
     /**

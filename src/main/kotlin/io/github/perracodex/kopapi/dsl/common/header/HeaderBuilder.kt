@@ -24,7 +24,7 @@ public open class HeaderBuilder internal constructor() {
     /**
      * Adds a header to the response.
      *
-     * #### Sample usage
+     * #### Usage
      * ```
      * header<Int>(name = "X-Rate-Limit") {
      *     description = "Number of allowed requests per period."
@@ -41,15 +41,16 @@ public open class HeaderBuilder internal constructor() {
      * }
      *```
      *
+     * @receiver [HeaderBuilder] The builder used to configure the header.
+     *
      * @param T The type of the header.
      * @param name The name of the header.
-     * @param configure A lambda receiver for configuring the [HeaderBuilder].
      */
     public inline fun <reified T : Any> header(
         name: String,
-        noinline configure: HeaderBuilder.() -> Unit
+        noinline builder: HeaderBuilder.() -> Unit
     ) {
-        headers { add<T>(name = name, configure = configure) }
+        headers { add<T>(name = name, builder = builder) }
     }
 
     /**
@@ -58,7 +59,7 @@ public open class HeaderBuilder internal constructor() {
      * The `headers` block serves only as organizational syntactic sugar.
      * Headers can be defined directly without needing to use the `headers` block.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * headers {
      *      add<Int>("X-Rate-Limit") {
@@ -75,10 +76,10 @@ public open class HeaderBuilder internal constructor() {
      * }
      * ```
      *
-     * @param configure A lambda receiver for configuring the [HeadersBuilder].
+     * @receiver [HeaderBuilder] The builder used to configure the headers.
      */
-    public fun headers(configure: HeadersBuilder.() -> Unit) {
-        val headersBuilder: HeadersBuilder = HeadersBuilder().apply(configure)
+    public fun headers(builder: HeadersBuilder.() -> Unit) {
+        val headersBuilder: HeadersBuilder = HeadersBuilder().apply(builder)
         headersBuilder.build().forEach { addHeader(name = it.key, header = it.value) }
     }
 

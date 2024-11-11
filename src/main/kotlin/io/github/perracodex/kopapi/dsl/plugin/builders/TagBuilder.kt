@@ -21,7 +21,7 @@ public class TagBuilder internal constructor() {
     /**
      * Adds a tag to the set of tags for the API.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * tags {
      *      add(name = "Items", description = "Operations related to items.")

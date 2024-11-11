@@ -21,7 +21,7 @@ public class ApiDocsBuilder internal constructor() {
      * - Default: `/openapi.yaml`
      * - Relative to the server root URL.
      *
-     * #### Attention:
+     * #### Attention
      *  The `openApiUrl` value does not determine the output format.
      *  Only the `openApiFormat` property specifies the format.
      *
@@ -57,7 +57,7 @@ public class ApiDocsBuilder internal constructor() {
     /**
      * Constructs the Swagger configuration.
      *
-     * #### Sample usage
+     * #### Usage
      * ```
      * apiDocs {
      *      openApiUrl = "/openapi.yaml"
@@ -77,11 +77,12 @@ public class ApiDocsBuilder internal constructor() {
      *          includeErrors = true
      *      }
      * }
+     * ```
      *
-     * @param block The configuration for the Swagger UI.
+     * @receiver [SwaggerBuilder] The builder used to configure the swagger UI.
      */
-    public fun swagger(block: SwaggerBuilder.() -> Unit) {
-        swagger = SwaggerBuilder().apply(block).build()
+    public fun swagger(builder: SwaggerBuilder.() -> Unit) {
+        swagger = SwaggerBuilder().apply(builder).build()
     }
 
     /**

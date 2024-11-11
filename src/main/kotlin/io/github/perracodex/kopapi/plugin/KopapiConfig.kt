@@ -52,9 +52,9 @@ public class KopapiConfig internal constructor(
      * When enabled the plugin will include additional logging information
      * such as when traversing types, resolving schemas, and building the OpenAPI schema.
      *
-     * #### Attention
-     * Enabling this option may produce quite verbose logs
-     * and is recommended for debugging purposes only.
+     * #### Caution
+     * Enabling this option may produce quite verbose logs.
+     * It is recommended only for debugging purposes.
      */
     public var enableLogging: Boolean = false
 
@@ -76,7 +76,7 @@ public class KopapiConfig internal constructor(
     /**
      * Constructs the information for the API documentation.
      *
-     * #### Sample usage
+     * #### Usage
      * ```
      * apiDocs {
      *      openApiUrl = "/openapi.yaml"
@@ -96,16 +96,18 @@ public class KopapiConfig internal constructor(
      *          includeErrors = true
      *      }
      * }
+     * ```
+     *
+     * @receiver [ApiDocsBuilder] The builder used to configure the API documentation section.
      */
-    public fun apiDocs(init: ApiDocsBuilder.() -> Unit) {
-        val builder: ApiDocsBuilder = ApiDocsBuilder().apply(init)
-        apiDocs = builder.build()
+    public fun apiDocs(builder: ApiDocsBuilder.() -> Unit) {
+        apiDocs = ApiDocsBuilder().apply(builder).build()
     }
 
     /**
      * Sets up the OpenAPI metadata.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      *  info {
      *      title = "API Title"
@@ -124,16 +126,16 @@ public class KopapiConfig internal constructor(
      *  }
      * ```
      *
-     * @see [InfoBuilder]
+     * @receiver [InfoBuilder] The builder used to configure the API info section.
      */
-    public fun info(init: InfoBuilder.() -> Unit) {
-        apiInfo = InfoBuilder().apply(init).build()
+    public fun info(builder: InfoBuilder.() -> Unit) {
+        apiInfo = InfoBuilder().apply(builder).build()
     }
 
     /**
      * Sets up tags for the API.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * tags {
      *     add(name = "Items", description = "Operations related to items.")
@@ -141,11 +143,10 @@ public class KopapiConfig internal constructor(
      * }
      * ```
      *
-     * @see [TagBuilder]
+     * @receiver [TagBuilder] The builder used to configure the API tags section.
      */
-    public fun tags(init: TagBuilder.() -> Unit) {
-        val builder: TagBuilder = TagBuilder().apply(init)
-        tags.addAll(builder.build())
+    public fun tags(builder: TagBuilder.() -> Unit) {
+        tags.addAll(TagBuilder().apply(builder).build())
     }
 
     /**

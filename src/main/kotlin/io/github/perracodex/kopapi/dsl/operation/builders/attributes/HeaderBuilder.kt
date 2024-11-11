@@ -28,13 +28,13 @@ import kotlin.reflect.KType
  */
 @KopapiDsl
 public class HeaderBuilder @PublishedApi internal constructor(
-    public var required: Boolean = true,
-    public var deprecated: Boolean = false,
-    public var explode: Boolean = false,
-    public var contentType: ContentType? = null,
     private val schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate()
 ) : ISchemaAttributeConfigurable by schemaAttributeDelegate {
     public var description: String by MultilineString()
+    public var required: Boolean = true
+    public var deprecated: Boolean = false
+    public var explode: Boolean = false
+    public var contentType: ContentType? = null
 
     /**
      * Builds an [ApiHeader] instance from the current builder state.

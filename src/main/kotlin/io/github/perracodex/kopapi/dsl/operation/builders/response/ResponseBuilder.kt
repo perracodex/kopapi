@@ -35,9 +35,6 @@ import kotlin.reflect.typeOf
  */
 @KopapiDsl
 public class ResponseBuilder @PublishedApi internal constructor(
-    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json),
-    public var composition: Composition? = null,
-
     @Suppress("PropertyName")
     @PublishedApi
     internal val _schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate(),
@@ -47,6 +44,8 @@ public class ResponseBuilder @PublishedApi internal constructor(
     HeaderBuilder() {
 
     public var description: String by MultilineString()
+    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
+    public var composition: Composition? = null
 
     @Suppress("PropertyName")
     @PublishedApi
@@ -55,7 +54,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
     /**
      * Registers a new type.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * // Register a type defaulting to JSON.
      * addType<SomeType>()
@@ -76,11 +75,12 @@ public class ResponseBuilder @PublishedApi internal constructor(
      * }
      * ```
      *
+     * @receiver [TypeConfig] Optional lambda for configuring the type. Default: `JSON`.
+     *
      * @param T The type of the response.
-     * @param configure An optional lambda for configuring the type. Default: `JSON`.
      */
     @Suppress("DuplicatedCode")
-    public inline fun <reified T : Any> addType(noinline configure: TypeConfig.() -> Unit = {}) {
+    public inline fun <reified T : Any> addType(noinline builder: TypeConfig.() -> Unit = {}) {
         if (T::class == Unit::class || T::class == Nothing::class || T::class == Any::class) {
             return
         }
@@ -91,7 +91,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
         }
 
         // Determine the effective content types for new type being added.
-        val typeConfig: TypeConfig = TypeConfig().apply(configure)
+        val typeConfig: TypeConfig = TypeConfig().apply(builder)
         val effectiveContentTypes: Set<ContentType> = when {
             typeConfig.contentType.isNullOrEmpty() -> contentType
             else -> typeConfig.contentType ?: contentType
@@ -110,7 +110,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
     /**
      * Adds a link to the response.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * link(name = "GetEmployeeDetails") {
      *      operationId = "getEmployeeDetails"
@@ -134,11 +134,12 @@ public class ResponseBuilder @PublishedApi internal constructor(
      * }
      * ```
      *
+     * @receiver [LinkBuilder] The builder used to configure the link.
+     *
      * @param name The unique name of the link.
-     * @param configure A lambda receiver for configuring the [LinkBuilder].
      */
-    public fun link(name: String, configure: LinkBuilder.() -> Unit) {
-        links { add(name = name, configure = configure) }
+    public fun link(name: String, builder: LinkBuilder.() -> Unit) {
+        links { add(name = name, builder = builder) }
     }
 
     /**
@@ -147,7 +148,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
      * The `links` block serves only as organizational syntactic sugar.
      * Links can be defined directly without needing to use the `links` block.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * links {
      *      add(name = "GetEmployeeDetails") {
@@ -177,11 +178,12 @@ public class ResponseBuilder @PublishedApi internal constructor(
      *          )
      *      }
      * }
+     * ```
      *
-     * @param configure A lambda receiver for configuring the [LinksBuilder].
+     * @receiver [LinkBuilder] The builder used to configure the links.
      */
-    public fun links(configure: LinksBuilder.() -> Unit) {
-        val linksBuilder: LinksBuilder = LinksBuilder().apply(configure)
+    public fun links(builder: LinksBuilder.() -> Unit) {
+        val linksBuilder: LinksBuilder = LinksBuilder().apply(builder)
         linksBuilder.build().forEach { _config.addLink(name = it.key, link = it.value) }
     }
 

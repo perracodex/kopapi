@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 /**
  * Builder for the `Contact` information.
  *
- * #### Sample usage
+ * #### Usage
  * ```
  *  contact {
  *      name = "John Doe"

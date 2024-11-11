@@ -31,15 +31,15 @@ import kotlin.reflect.KType
  */
 @KopapiDsl
 public class QueryParameterBuilder @PublishedApi internal constructor(
-    public var required: Boolean = false,
-    public var allowReserved: Boolean = false,
-    public var defaultValue: DefaultValue? = null,
-    public var style: ParameterStyle = ParameterStyle.FORM,
-    public var explode: Boolean = true,
-    public var deprecated: Boolean = false,
     private val schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate()
 ) : ISchemaAttributeConfigurable by schemaAttributeDelegate {
     public var description: String by MultilineString()
+    public var required: Boolean = false
+    public var allowReserved: Boolean = false
+    public var defaultValue: DefaultValue? = null
+    public var style: ParameterStyle = ParameterStyle.FORM
+    public var explode: Boolean = true
+    public var deprecated: Boolean = false
 
     /**
      * Builds an [ApiParameter] instance from the current builder state.

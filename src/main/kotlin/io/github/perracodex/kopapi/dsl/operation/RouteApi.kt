@@ -19,40 +19,31 @@ import io.ktor.server.routing.*
  *
  * For route paths without an HTTP method tied to them, use the [Route.apiPath] extension function instead.
  *
- * #### Sample Usage
+ * #### Usage
  * ```
  * get("/items/{data_id}/{item_id?}") {
  *     // Implement as usual
  * } api {
  *     tags = setOf("Items", "Data")
- *
  *     summary = "Retrieve data items."
- *
  *     description = "Fetches all items for a data set."
- *
  *     operationId = "getDataItems"
- *
  *     pathParameter<Uuid>("data_id") { description = "The data Id." }
- *
  *     queryParameter<String>("item_id") { description = "Optional item Id." }
- *
  *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful." }
- *
  *     response(HttpStatusCode.NotFound) { description = "Data not found." }
- *
  *     bearerSecurity(name = "Authentication") {
  *          description = "Access to data."
  *     }
  * }
  * ```
  *
- * @param configure A lambda receiver for configuring the [ApiOperationBuilder].
+ * @receiver [ApiOperationBuilder] The builder used to configure the API operation metadata.
+ *
  * @return The current [Route] instance
  * @throws KopapiException If the route does not have an HTTP method selector.
- *
- * @see [ApiOperationBuilder]
  */
-public infix fun Route.api(configure: ApiOperationBuilder.() -> Unit): Route {
+public infix fun Route.api(builder: ApiOperationBuilder.() -> Unit): Route {
     if (this !is RoutingNode) {
         throw KopapiException(message = buildErrorMessage(route = this))
     }
@@ -64,11 +55,11 @@ public infix fun Route.api(configure: ApiOperationBuilder.() -> Unit): Route {
     val endpointPath: String = this.extractRoutePath()
 
     // Apply the configuration within the ApiOperationBuilder's scope.
-    val builder = ApiOperationBuilder(endpoint = "[$method] $endpointPath")
-    with(builder) { configure() }
+    val operationBuilder = ApiOperationBuilder(endpoint = "[$method] $endpointPath")
+    with(operationBuilder) { builder() }
 
     // Build the operation using the provided configuration.
-    val apiOperation: ApiOperation = builder.build(
+    val apiOperation: ApiOperation = operationBuilder.build(
         method = method,
         endpointPath = endpointPath
     )

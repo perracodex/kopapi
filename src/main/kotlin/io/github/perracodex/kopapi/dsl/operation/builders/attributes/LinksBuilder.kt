@@ -20,7 +20,7 @@ public class LinksBuilder @PublishedApi internal constructor() {
     /**
      * Adds a link to the collection.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * links {
      *      add(name = "GetEmployeeDetails") {
@@ -52,16 +52,17 @@ public class LinksBuilder @PublishedApi internal constructor() {
      * }
      * ```
      *
+     * @receiver [LinkBuilder] The builder used to configure the link.
+     *
      * @param name The unique name of the link.
-     * @param configure A lambda receiver for configuring the [LinkBuilder].
      * @throws KopapiException If a link with the same operation ID already exists.
      */
-    public fun add(name: String, configure: LinkBuilder.() -> Unit) {
+    public fun add(name: String, builder: LinkBuilder.() -> Unit) {
         val linkName: String = name.sanitize()
         if (linkName.isBlank()) {
             throw KopapiException("Link name must not be blank.")
         }
-        val link: ApiLink = LinkBuilder().apply(configure).build()
+        val link: ApiLink = LinkBuilder().apply(builder).build()
         links[linkName] = link
     }
 

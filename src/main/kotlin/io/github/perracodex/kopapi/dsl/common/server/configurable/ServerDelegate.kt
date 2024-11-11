@@ -15,8 +15,8 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 internal class ServerDelegate : IServerConfigurable {
     internal val servers: MutableSet<ApiServerConfig> = mutableSetOf()
 
-    override fun servers(init: ServerBuilder.() -> Unit) {
-        val builder: ServerBuilder = ServerBuilder().apply(init)
-        servers.addAll(builder.build())
+    override fun servers(builder: ServerBuilder.() -> Unit) {
+        val serverBuilder: ServerBuilder = ServerBuilder().apply(builder)
+        servers.addAll(serverBuilder.build())
     }
 }

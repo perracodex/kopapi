@@ -57,7 +57,7 @@ internal data class ApiResponse(
     /**
      * Merges this `ApiResponse` with another `ApiResponse` to combine their properties.
      *
-     * #### Merging Rules:
+     * #### Merging Rules
      * - Headers from both responses are combined, eliminating duplicates.
      * - Links from both responses are combined, eliminating duplicates.
      * - Types from both responses are combined per `ContentType`, ensuring uniqueness.

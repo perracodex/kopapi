@@ -13,7 +13,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
 /**
  * Builder for server variables.
  *
- * ### Sample Usage
+ * #### Usage
  * ```
  * variable(name = "environment", defaultValue = "production") {
  *      choices = setOf("production", "staging", "development")

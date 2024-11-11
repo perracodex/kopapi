@@ -19,7 +19,7 @@ public sealed class DefaultValue {
     /**
      * Default value of type `String`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofString("hello")
      * ```
@@ -31,7 +31,7 @@ public sealed class DefaultValue {
     /**
      * Default value of type `Int`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofInt(1)
      * ```
@@ -43,7 +43,7 @@ public sealed class DefaultValue {
     /**
      * Default value of type `Long`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofLong(1L)
      * ```
@@ -55,7 +55,7 @@ public sealed class DefaultValue {
     /**
      * Default value of type `Float`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofFloat(1.0f)
      * ```
@@ -67,7 +67,7 @@ public sealed class DefaultValue {
     /**
      * Default value of type `Double`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofDouble(1.0)
      * ```
@@ -79,7 +79,7 @@ public sealed class DefaultValue {
     /**
      * Default value of type `Boolean`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofBoolean(true)
      * ```
@@ -95,7 +95,7 @@ public sealed class DefaultValue {
     /**
      * Default value for an array of `String`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofStringArray("value1", "value2", "value3")
      * ```
@@ -109,7 +109,7 @@ public sealed class DefaultValue {
     /**
      * Default value for an array of `Int`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofIntArray(1, 2, 3)
      * ```
@@ -123,7 +123,7 @@ public sealed class DefaultValue {
     /**
      * Default value for an array of `Long`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofLongArray(1L, 2L, 3L)
      * ```
@@ -137,7 +137,7 @@ public sealed class DefaultValue {
     /**
      * Default value for an array of `Double`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofDoubleArray(1.0, 2.0, 3.0)
      * ```
@@ -151,7 +151,7 @@ public sealed class DefaultValue {
     /**
      * Default value for an array of `Float`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofFloatArray(1.0f, 2.0f, 3.0f)
      * ```
@@ -165,7 +165,7 @@ public sealed class DefaultValue {
     /**
      * Default value for an array of `Boolean`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofBooleanArray(true, false, true)
      * ```
@@ -183,7 +183,7 @@ public sealed class DefaultValue {
     /**
      * Default value for a single `Date`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofDate("2024-12-31")
      * ```
@@ -195,7 +195,7 @@ public sealed class DefaultValue {
     /**
      * Default value for a single `Date-Time`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofDateTime("2024-12-31T23:59:59Z")
      * ```
@@ -207,7 +207,7 @@ public sealed class DefaultValue {
     /**
      * Default value for an array of `Date`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofDateArray("2024-12-31", "2025-01-01")
      * ```
@@ -221,7 +221,7 @@ public sealed class DefaultValue {
     /**
      * Default value for an array of `Date-Time`.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofDateTimeArray("2024-12-31T23:59:59Z", "2025-01-01T00:00:00Z")
      * ```
@@ -239,7 +239,7 @@ public sealed class DefaultValue {
     /**
      * Default value for enum types.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofEnum(MyEnum.DEFAULT)
      * ```
@@ -252,7 +252,7 @@ public sealed class DefaultValue {
     /**
      * Default value for an array of enum types.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * DefaultValue.ofEnumArray(MyEnum.DEFAULT, MyEnum.ALTERNATE)
      * ```

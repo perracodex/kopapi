@@ -28,38 +28,38 @@ internal class SecurityDelegate : ISecurityConfigurable {
 
     override fun basicSecurity(
         name: String,
-        configure: HttpSecurityBuilder.() -> Unit
+        builder: HttpSecurityBuilder.() -> Unit
     ) {
-        val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name, method = AuthMethod.BASIC)
+        val schemeBuilder: HttpSecurityBuilder = HttpSecurityBuilder().apply(builder)
+        val scheme: ApiSecurityScheme = schemeBuilder.build(name = name, method = AuthMethod.BASIC)
         addSecurityScheme(scheme = scheme)
     }
 
     override fun bearerSecurity(
         name: String,
-        configure: HttpSecurityBuilder.() -> Unit
+        builder: HttpSecurityBuilder.() -> Unit
     ) {
-        val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name, method = AuthMethod.BEARER)
+        val schemeBuilder: HttpSecurityBuilder = HttpSecurityBuilder().apply(builder)
+        val scheme: ApiSecurityScheme = schemeBuilder.build(name = name, method = AuthMethod.BEARER)
         addSecurityScheme(scheme = scheme)
     }
 
     override fun digestSecurity(
         name: String,
-        configure: HttpSecurityBuilder.() -> Unit
+        builder: HttpSecurityBuilder.() -> Unit
     ) {
-        val builder: HttpSecurityBuilder = HttpSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name, method = AuthMethod.DIGEST)
+        val schemeBuilder: HttpSecurityBuilder = HttpSecurityBuilder().apply(builder)
+        val scheme: ApiSecurityScheme = schemeBuilder.build(name = name, method = AuthMethod.DIGEST)
         addSecurityScheme(scheme = scheme)
     }
 
     override fun headerApiKeySecurity(
         name: String,
         key: String,
-        configure: ApiKeySecurityBuilder.() -> Unit
+        builder: ApiKeySecurityBuilder.() -> Unit
     ) {
-        val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(
+        val schemeBuilder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(builder)
+        val scheme: ApiSecurityScheme = schemeBuilder.build(
             name = name,
             key = key,
             location = SecurityLocation.HEADER
@@ -70,10 +70,10 @@ internal class SecurityDelegate : ISecurityConfigurable {
     override fun queryApiKeySecurity(
         name: String,
         key: String,
-        configure: ApiKeySecurityBuilder.() -> Unit
+        builder: ApiKeySecurityBuilder.() -> Unit
     ) {
-        val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(
+        val schemeBuilder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(builder)
+        val scheme: ApiSecurityScheme = schemeBuilder.build(
             name = name,
             key = key,
             location = SecurityLocation.QUERY
@@ -84,10 +84,10 @@ internal class SecurityDelegate : ISecurityConfigurable {
     override fun cookieApiKeySecurity(
         name: String,
         key: String,
-        configure: ApiKeySecurityBuilder.() -> Unit
+        builder: ApiKeySecurityBuilder.() -> Unit
     ) {
-        val builder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(
+        val schemeBuilder: ApiKeySecurityBuilder = ApiKeySecurityBuilder().apply(builder)
+        val scheme: ApiSecurityScheme = schemeBuilder.build(
             name = name,
             key = key,
             location = SecurityLocation.COOKIE
@@ -97,29 +97,29 @@ internal class SecurityDelegate : ISecurityConfigurable {
 
     override fun oauth2Security(
         name: String,
-        configure: OAuth2SecurityBuilder.() -> Unit
+        builder: OAuth2SecurityBuilder.() -> Unit
     ) {
-        val builder: OAuth2SecurityBuilder = OAuth2SecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name)
+        val schemeBuilder: OAuth2SecurityBuilder = OAuth2SecurityBuilder().apply(builder)
+        val scheme: ApiSecurityScheme = schemeBuilder.build(name = name)
         addSecurityScheme(scheme = scheme)
     }
 
     override fun openIdConnectSecurity(
         name: String,
         url: Url,
-        configure: OpenIdConnectSecurityBuilder.() -> Unit
+        builder: OpenIdConnectSecurityBuilder.() -> Unit
     ) {
-        val builder: OpenIdConnectSecurityBuilder = OpenIdConnectSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name, url = url)
+        val schemeBuilder: OpenIdConnectSecurityBuilder = OpenIdConnectSecurityBuilder().apply(builder)
+        val scheme: ApiSecurityScheme = schemeBuilder.build(name = name, url = url)
         addSecurityScheme(scheme = scheme)
     }
 
     override fun mutualTLSSecurity(
         name: String,
-        configure: MutualTLSSecurityBuilder.() -> Unit
+        builder: MutualTLSSecurityBuilder.() -> Unit
     ) {
-        val builder: MutualTLSSecurityBuilder = MutualTLSSecurityBuilder().apply(configure)
-        val scheme: ApiSecurityScheme = builder.build(name = name)
+        val schemeBuilder: MutualTLSSecurityBuilder = MutualTLSSecurityBuilder().apply(builder)
+        val scheme: ApiSecurityScheme = schemeBuilder.build(name = name)
         addSecurityScheme(scheme = scheme)
     }
 

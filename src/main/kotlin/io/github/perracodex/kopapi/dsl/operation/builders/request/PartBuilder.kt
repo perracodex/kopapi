@@ -22,11 +22,11 @@ import io.ktor.http.*
  */
 @KopapiDsl
 public class PartBuilder @PublishedApi internal constructor(
-    public val name: String,
-    public var required: Boolean = true,
-    public var contentType: Set<ContentType>? = null,
-    public var schemaType: ApiType? = null,
-    public var schemaFormat: String? = null
+    public val name: String
 ) : HeaderBuilder() {
+    public var required: Boolean = true
     public var description: String by MultilineString()
+    public var contentType: Set<ContentType>? = null
+    public var schemaType: ApiType? = null
+    public var schemaFormat: String? = null
 }

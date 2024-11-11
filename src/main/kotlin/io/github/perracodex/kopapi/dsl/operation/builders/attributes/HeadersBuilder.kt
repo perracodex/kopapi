@@ -23,7 +23,7 @@ public class HeadersBuilder @PublishedApi internal constructor() {
     /**
      * Adds a header to the collection.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * headers {
      *     add<Int>("X-Rate-Limit") {
@@ -36,14 +36,15 @@ public class HeadersBuilder @PublishedApi internal constructor() {
      * }
      * ```
      *
+     * @receiver [HeaderBuilder] The builder used to configure the header.
+     *
      * @param T The type of the header. Must not be [Unit], [Nothing], or [Any].
      * @param name The name of the header.
-     * @param configure A lambda receiver for configuring the [HeaderBuilder].
      * @throws KopapiException If a header with the same name already exists.
      */
     public inline fun <reified T : Any> add(
         name: String,
-        noinline configure: HeaderBuilder.() -> Unit = {}
+        noinline builder: HeaderBuilder.() -> Unit = {}
     ) {
         if (T::class == Unit::class || T::class == Nothing::class || T::class == Any::class) {
             throw KopapiException("Header type must not be Unit, Nothing, or Any. Specify an explicit type.")
@@ -54,7 +55,7 @@ public class HeadersBuilder @PublishedApi internal constructor() {
             throw KopapiException("Header name must not be blank.")
         }
 
-        val header: ApiHeader = HeaderBuilder().apply(configure).build(type = typeOf<T>())
+        val header: ApiHeader = HeaderBuilder().apply(builder).build(type = typeOf<T>())
         _headers[headerName] = header
     }
 

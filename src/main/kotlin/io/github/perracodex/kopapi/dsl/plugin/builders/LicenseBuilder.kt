@@ -11,7 +11,7 @@ import io.github.perracodex.kopapi.utils.trimOrNull
 /**
  * Builder for the `License` information.
  *
- * #### Sample usage
+ * #### Usage
  * ```
  *  license {
  *      name = "MIT"

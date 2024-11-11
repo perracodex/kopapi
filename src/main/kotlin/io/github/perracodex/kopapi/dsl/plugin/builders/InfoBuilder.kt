@@ -11,7 +11,7 @@ import io.github.perracodex.kopapi.utils.string.MultilineString
 /**
  * Constructs the information for the API documentation.
  *
- * #### Sample usage
+ * #### Usage
  * ```
  * info {
  *      title = "API Title"
@@ -55,7 +55,7 @@ public class InfoBuilder internal constructor() {
     /**
      * Builds the contact information for the API.
      *
-     * #### Sample usage
+     * #### Usage
      * ```
      *  contact {
      *      name = "John Doe"
@@ -64,16 +64,16 @@ public class InfoBuilder internal constructor() {
      *  }
      * ```
      *
-     * @see [ContactBuilder]
+     * @receiver [ContactBuilder] The builder used to configure the contact information.
      */
-    public fun contact(init: ContactBuilder.() -> Unit) {
-        this.contact = ContactBuilder().apply(init).build()
+    public fun contact(builder: ContactBuilder.() -> Unit) {
+        this.contact = ContactBuilder().apply(builder).build()
     }
 
     /**
      * Builds the license information for the API.
      *
-     * #### Sample usage
+     * #### Usage
      * ```
      *  license {
      *      name = "MIT"
@@ -81,10 +81,10 @@ public class InfoBuilder internal constructor() {
      *  }
      * ```
      *
-     * @see [LicenseBuilder]
+     * @receiver [LicenseBuilder] The builder used to configure the license information.
      */
-    public fun license(init: LicenseBuilder.() -> Unit) {
-        this.license = LicenseBuilder().apply(init).build()
+    public fun license(builder: LicenseBuilder.() -> Unit) {
+        this.license = LicenseBuilder().apply(builder).build()
     }
 
     /**

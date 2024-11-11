@@ -4,14 +4,13 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.operation
 
+import io.github.perracodex.kopapi.dsl.common.header.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.common.parameter.configurable.ParametersBuilder
 import io.github.perracodex.kopapi.dsl.common.security.configurable.ISecurityConfigurable
 import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityDelegate
 import io.github.perracodex.kopapi.dsl.common.server.configurable.IServerConfigurable
 import io.github.perracodex.kopapi.dsl.common.server.configurable.ServerDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
-import io.github.perracodex.kopapi.dsl.operation.builders.attributes.HeaderBuilder
-import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.request.RequestBodyBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
@@ -27,6 +26,21 @@ import java.util.*
 
 /**
  * Builder for constructing API Operations metadata for a route endpoint.
+ *
+ * #### Usage
+ * ```
+ * get("/items/{data_id}/{item_id?}") {
+ *     // Implement as usual
+ * } api {
+ *     tags = setOf("Items", "Data")
+ *     summary = "Retrieve data items."
+ *     description = "Fetches all items for a data set."
+ *     pathParameter<Uuid>("data_id") { description = "The data Id." }
+ *     queryParameter<String>("item_id") { description = "Optional item Id." }
+ *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful." }
+ *     response(HttpStatusCode.NotFound) { description = "Data not found." }
+ * }
+ * ```
  *
  * Usage involves defining a Ktor route and attaching API metadata using the `Route.api` infix
  * function to enrich the route with operational details and documentation specifications.
@@ -60,23 +74,6 @@ import java.util.*
  * - [oauth2Security]: Adds an OAuth 2.0 security scheme to the API metadata.
  * - [openIdConnectSecurity]: Adds an OpenID Connect security scheme to the API metadata.
  * - [skipSecurity]: Disables all security schemes for the API operation.
- *
- * #### Sample Usage
- * ```
- * get("/items/{data_id}/{item_id?}") {
- *     // Implement as usual
- * } api {
- *     tags = setOf("Items", "Data")
- *     summary = "Retrieve data items."
- *     description = "Fetches all items for a data set."
- *     pathParameter<Uuid>("data_id") { description = "The data Id." }
- *     queryParameter<String>("item_id") { description = "Optional item Id." }
- *     response<List<Item>>(HttpStatusCode.OK) { description = "Successful." }
- *     response(HttpStatusCode.NotFound) { description = "Data not found." }
- * }
- * ```
- *
- * @see [ApiOperation]
  */
 @KopapiDsl
 public class ApiOperationBuilder internal constructor(
@@ -94,13 +91,13 @@ public class ApiOperationBuilder internal constructor(
     /**
      * Optional short description of the endpoint's purpose.
      *
-     * Declaring the `summary` multiple times will concatenate all the summaries
-     * delimited by a `space` character between each one.
-     *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * summary = "Retrieve data items."
      * ```
+     *
+     * Declaring the `summary` multiple times will concatenate all the summaries
+     * delimited by a `space` character between each one.
      *
      * @see [description]
      * @see [tags]
@@ -110,14 +107,13 @@ public class ApiOperationBuilder internal constructor(
     /**
      * Optional detailed explanation of the endpoint and its functionality.
      *
-     * Declaring the `description` multiple times will concatenate all the descriptions
-     * delimited by a `newline` character between each one.
-     *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * description = "Fetches all items for a group."
-     * description = "In addition, it can fetch a specific item."
      * ```
+     *
+     * Declaring the `description` multiple times will concatenate all the descriptions
+     * delimited by a `newline` character between each one.
      *
      * @see [summary]
      * @see [tags]
@@ -133,7 +129,7 @@ public class ApiOperationBuilder internal constructor(
     /**
      * Optional set of descriptive tags for categorizing the endpoint in API documentation.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * tags = setOf("Items", "Data")
      * ```
@@ -144,8 +140,7 @@ public class ApiOperationBuilder internal constructor(
      * tags(listOf("Items", "Data"))
      * ```
      *
-     * Declaring multiple `tags` will append all of them to the existing list.
-     * Repeated tags are discarded in a case-insensitive manner.
+     * To include descriptions create top-level tags via the plugin configuration.
      *
      * @see [summary]
      * @see [description]
@@ -159,7 +154,7 @@ public class ApiOperationBuilder internal constructor(
     /**
      * Optional set of descriptive tags for categorizing the endpoint in API documentation.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * tags = setOf("Items", "Data")
      * ```
@@ -170,8 +165,7 @@ public class ApiOperationBuilder internal constructor(
      * tags(listOf("Items", "Data"))
      * ```
      *
-     * Declaring multiple `tags` will append all of them to the existing list.
-     * Repeated tags are discarded in a case-insensitive manner.
+     * To include descriptions create top-level tags via the plugin configuration.
      *
      * @see [summary]
      * @see [description]
@@ -183,7 +177,7 @@ public class ApiOperationBuilder internal constructor(
     /**
      * Optional set of descriptive tags for categorizing the endpoint in API documentation.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * tags = setOf("Items", "Data")
      * ```
@@ -194,8 +188,7 @@ public class ApiOperationBuilder internal constructor(
      * tags(listOf("Items", "Data"))
      * ```
      *
-     * Declaring multiple `tags` will append all of them to the existing list.
-     * Repeated tags are discarded in a case-insensitive manner.
+     * To include descriptions create top-level tags via the plugin configuration.
      *
      * @see [summary]
      * @see [description]
@@ -206,7 +199,7 @@ public class ApiOperationBuilder internal constructor(
 
     /**
      * Disables the security schemes for the API operation.
-     * Both top-level and local-level security schemes will not be applied to this API Operation.
+     * Both top-level and operation-level security schemes will not be applied to this API Operation.
      *
      * @see [basicSecurity]
      * @see [bearerSecurity]
@@ -223,7 +216,7 @@ public class ApiOperationBuilder internal constructor(
     /**
      * Registers a request body.
      *
-     * #### Sample Typed Request Body
+     * #### Typed Request Body Example
      * ```
      * // Standard request body.
      * requestBody<MyRequestBodyType> {
@@ -250,8 +243,7 @@ public class ApiOperationBuilder internal constructor(
      *      )
      * }
      * ```
-     *
-     * #### Sample Multipart
+     * #### Multipart Example
      * ```
      * requestBody<Unit> {
      *      // Implicit ContentType.MultiPart.FormData (default)
@@ -286,10 +278,10 @@ public class ApiOperationBuilder internal constructor(
      * }
      * ```
      *
-     * @param T The body primary type of the request.
-     * @param configure A lambda receiver for configuring the [RequestBodyBuilder].
+     * @receiver [RequestBodyBuilder] The builder used to configure the request body.
      *
-     * @see [RequestBodyBuilder]
+     * @param T The body primary type of the request.
+     *
      * @see [cookieParameter]
      * @see [headerParameter]
      * @see [pathParameter]
@@ -297,11 +289,11 @@ public class ApiOperationBuilder internal constructor(
      * @see [response]
      */
     public inline fun <reified T : Any> requestBody(
-        noinline configure: RequestBodyBuilder.() -> Unit = {}
+        noinline builder: RequestBodyBuilder.() -> Unit = {}
     ) {
         if (_config.requestBody == null) {
             _config.requestBody = RequestBodyBuilder().apply {
-                apply(configure)
+                apply(builder)
                 addType<T> {
                     this.contentType = this@apply.contentType
                     this._schemaAttributeDelegate.attributes = this@apply._schemaAttributeDelegate.attributes
@@ -326,7 +318,7 @@ public class ApiOperationBuilder internal constructor(
      * response(HttpStatusCode) { ... }
      * ```
      *
-     * #### Sample Usage
+     * #### Usage
      *```
      * response<String>(status = HttpStatusCode.OK) {
      *      description = "Successfully retrieved the item."
@@ -361,19 +353,19 @@ public class ApiOperationBuilder internal constructor(
      * }
      *```
      *
-     * @param status The [HttpStatusCode] code associated with this response.
-     * @param configure A lambda receiver for configuring the [ResponseBuilder].
+     * @receiver [ResponseBuilder] The builder used to configure the response.
      *
-     * @see [ResponseBuilder]
-     * @see [HeaderBuilder]
-     * @see [LinkBuilder]
+     * @param status The [HttpStatusCode] code associated with this response.
+     *
+     * @see [HeaderBuilder.headers]
+     * @see [ResponseBuilder.links]
      */
     @JvmName(name = "responseWithoutType")
     public fun response(
         status: HttpStatusCode,
-        configure: ResponseBuilder.() -> Unit = {}
+        builder: ResponseBuilder.() -> Unit = {}
     ) {
-        response<Unit>(status = status, configure = configure)
+        response<Unit>(status = status, builder = builder)
     }
 
     /**
@@ -385,7 +377,7 @@ public class ApiOperationBuilder internal constructor(
      * response(HttpStatusCode) { ... }
      * ```
      *
-     * #### Sample Usage
+     * #### Usage
      *```
      * response<String>(status = HttpStatusCode.OK) {
      *      description = "Successfully retrieved the item."
@@ -416,21 +408,21 @@ public class ApiOperationBuilder internal constructor(
      * }
      *```
      *
+     * @receiver [ResponseBuilder] The builder used to configure the response.
+     *
      * @param T The body primary type of the response.
      * @param status The [HttpStatusCode] code associated with this response.
-     * @param configure A lambda receiver for configuring the [ResponseBuilder].
      *
-     * @see [ResponseBuilder]
-     * @see [HeaderBuilder]
-     * @see [LinkBuilder]
+     * @see [HeaderBuilder.headers]
+     * @see [ResponseBuilder.links]
      */
     @JvmName(name = "responseWithType")
     public inline fun <reified T : Any> response(
         status: HttpStatusCode,
-        noinline configure: ResponseBuilder.() -> Unit = {}
+        noinline builder: ResponseBuilder.() -> Unit = {}
     ) {
         val apiResponse: ApiResponse = ResponseBuilder().apply {
-            apply(configure)
+            apply(builder)
             addType<T> {
                 this.contentType = this@apply.contentType
                 this._schemaAttributeDelegate.attributes = this@apply._schemaAttributeDelegate.attributes

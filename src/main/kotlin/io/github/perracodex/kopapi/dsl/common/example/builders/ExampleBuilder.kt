@@ -32,7 +32,7 @@ public class ExampleBuilder internal constructor() {
     /**
      * Adds an example to the operation.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * examples {
      *     example(name = "BasicEmployee") {
@@ -48,13 +48,14 @@ public class ExampleBuilder internal constructor() {
      * }
      * ```
      *
+     * @receiver [ExampleBuilder] The builder used to configure the example.
+     *
      * @param name The name of the example.
-     * @param init A lambda to configure the example's properties.
      */
-    public fun example(name: String, init: ExampleBuilder.() -> Unit) {
+    public fun example(name: String, builder: ExampleBuilder.() -> Unit) {
         val exampleName: String = name.sanitize()
         if (exampleName.isNotBlank()) {
-            val exampleInstance: ExampleBuilder = ExampleBuilder().apply(init)
+            val exampleInstance: ExampleBuilder = ExampleBuilder().apply(builder)
             examples[exampleName] = ApiExample(
                 summary = exampleInstance.summary.trimOrNull(),
                 description = exampleInstance.description.trimOrNull(),

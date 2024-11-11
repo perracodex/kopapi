@@ -12,7 +12,7 @@ Currently, can be set the following metadata:
 
 ### Usage
 
-- Define for a `routing` block:
+- Definition for a `routing` block:
 
 ```kotlin
 routing {
@@ -31,7 +31,7 @@ routing {
 }
 ```
 
-- Define for a `route` block:
+- Definition for a `route` block:
 
 ```kotlin
 routing {

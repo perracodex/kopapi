@@ -15,7 +15,7 @@ public interface IExampleConfigurable {
     /**
      * Adds an example to the operation.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * examples {
      *     example(name = "BasicEmployee") {
@@ -31,10 +31,11 @@ public interface IExampleConfigurable {
      * }
      * ```
      *
-     * @param name Optional name of the example. If not provided, a unique name is generated.
-     * @param init A lambda to configure the example's properties.
+     * @receiver [ExampleBuilder] The builder used to configure the example.
+     *
+     * @param name Optional name of the example. If omitted, a unique name is auto-generated.
      */
-    public fun example(name: String? = null, init: ExampleBuilder.() -> Unit)
+    public fun example(name: String? = null, builder: ExampleBuilder.() -> Unit)
 
     /**
      * Adds a collection of examples defined within a `examples { ... }` block.
@@ -42,7 +43,9 @@ public interface IExampleConfigurable {
      * The `examples` block serves only as organizational syntactic sugar.
      * Examples can be defined directly without needing to use the `examples` block.
      *
-     * #### Sample Usage
+     * Example names are optional, when omitted, unique names are auto-generated.
+     *
+     * #### Usage
      * ```
      * examples {
      *     example(name = "BasicEmployee") {
@@ -58,7 +61,9 @@ public interface IExampleConfigurable {
      * }
      * ```
      *
+     * @receiver [IExampleConfigurable] The builder used to configure the examples.
+     *
      * @see [ExampleBuilder.example]
      */
-    public fun examples(init: IExampleConfigurable.() -> Unit)
+    public fun examples(builder: IExampleConfigurable.() -> Unit)
 }

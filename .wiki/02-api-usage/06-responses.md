@@ -159,7 +159,8 @@ These will be merged and grouped according to their `status code` and `Content-T
 response<MyResponseType>(status = HttpStatusCode.OK) {
     desription = "Example 1."
 }
-
+```
+```kotlin
 // Again status code 200 OK, but with a body of AnotherResponseType and more content-types.
 response<AnotherResponseType>(status = HttpStatusCode.OK) {
     description = "Example 2."
@@ -168,7 +169,8 @@ response<AnotherResponseType>(status = HttpStatusCode.OK) {
         ContentType.Application.Xml
     )
 }
-
+```
+```kotlin
 // Status code 404 Not Found.
 response(status = HttpStatusCode.NotFound) {
     description = "Not Found."

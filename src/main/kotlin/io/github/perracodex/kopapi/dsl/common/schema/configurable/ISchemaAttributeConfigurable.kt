@@ -18,7 +18,7 @@ internal interface ISchemaAttributeConfigurable {
      * Not applicable to complex object types.
      * For complex objects, use instead the `@schema` annotation directly on the class type.
      *
-     * #### Sample usage
+     * #### Usage
      * ```
      * schema {
      *      pattern = "^[A-Za-z0-9_-]{20,50}$"
@@ -27,9 +27,7 @@ internal interface ISchemaAttributeConfigurable {
      * }
      * ```
      *
-     * @param configure A lambda for setting properties in [SchemaAttributeBuilder] that refine the type's attributes.
-     *
-     * @see [SchemaAttributeBuilder]
+     * @receiver [SchemaAttributeBuilder] The builder used to configure the schema attributes.
      */
-    fun schema(configure: SchemaAttributeBuilder.() -> Unit)
+    fun schema(builder: SchemaAttributeBuilder.() -> Unit)
 }

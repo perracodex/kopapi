@@ -32,15 +32,14 @@ import kotlin.reflect.typeOf
  */
 @KopapiDsl
 public class RequestBodyBuilder @PublishedApi internal constructor(
-    public var required: Boolean = true,
-    public var composition: Composition? = null,
-    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json),
-
     @Suppress("PropertyName")
     @PublishedApi
     internal val _schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate()
 ) : ISchemaAttributeConfigurable by _schemaAttributeDelegate {
     public var description: String by MultilineString()
+    public var required: Boolean = true
+    public var composition: Composition? = null
+    public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
 
     @Suppress("PropertyName")
     @PublishedApi
@@ -49,7 +48,7 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
     /**
      * Registers a new type for the request body.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * // Register a type defaulting to JSON.
      * addType<SomeType>()
@@ -70,18 +69,19 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
      * }
      * ```
      *
+     * @receiver [TypeConfig] Optional lambda for configuring the type. Default: `JSON`.
+     *
      * @param T The type of the request body.
-     * @param configure An optional lambda for configuring the type. Default: `JSON`.
      */
     @Suppress("DuplicatedCode")
-    public inline fun <reified T : Any> addType(noinline configure: TypeConfig.() -> Unit = {}) {
+    public inline fun <reified T : Any> addType(noinline builder: TypeConfig.() -> Unit = {}) {
         // Ensure there is always a default content type.
         if (contentType.isEmpty()) {
             contentType = setOf(ContentType.Application.Json)
         }
 
         // Determine the effective content types for new type being added.
-        val typeConfig: TypeConfig = TypeConfig().apply(configure)
+        val typeConfig: TypeConfig = TypeConfig().apply(builder)
         val effectiveContentTypes: Set<ContentType> = when {
             typeConfig.contentType.isNullOrEmpty() -> contentType
             else -> typeConfig.contentType ?: contentType
@@ -100,7 +100,7 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
     /**
      * Registers a multipart request body.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * // Implicit ContentType.MultiPart.FormData (default).
      * multipart {
@@ -133,9 +133,11 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
      *      }
      * }
      * ```
+     *
+     * @receiver [MultipartBuilder] The builder used to configure the multipart.
      */
-    public fun multipart(configure: MultipartBuilder.() -> Unit) {
-        val multipartBuilder: MultipartBuilder = MultipartBuilder().apply(configure)
+    public fun multipart(builder: MultipartBuilder.() -> Unit) {
+        val multipartBuilder: MultipartBuilder = MultipartBuilder().apply(builder)
         val multipartContentType: ContentType = multipartBuilder.contentType ?: ContentType.MultiPart.FormData
         val apiMultipart = ApiMultipart(
             contentType = multipartContentType,

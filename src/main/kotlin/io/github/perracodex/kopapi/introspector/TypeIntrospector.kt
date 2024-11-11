@@ -22,7 +22,7 @@ import kotlin.reflect.full.isSubclassOf
  * Class for introspecting various Kotlin types, capable of traversing and mapping [KType] objects
  * into [TypeSchema] objects containing the necessary information to construct OpenAPI schemas.
  *
- * ### Key Features
+ * #### Key Features
  * - Recursive Introspection: Capable of recursively traversing complex types, including nested objects,
  *   self-referencing and cross-referencing types.
  * - Comprehensive Type Support: Handles all primitive types, enums, and common Kotlin and Java types.

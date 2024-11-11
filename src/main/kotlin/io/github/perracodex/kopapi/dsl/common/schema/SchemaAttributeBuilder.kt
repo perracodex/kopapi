@@ -32,29 +32,29 @@ import io.github.perracodex.kopapi.utils.trimOrNull
  *
  */
 @KopapiDsl
-public class SchemaAttributeBuilder internal constructor(
-    public var format: String? = null,
-    public var minLength: Int? = null,
-    public var maxLength: Int? = null,
-    public var pattern: String? = null,
-    public var contentEncoding: String? = null,
-    public var contentMediaType: String? = null,
-    public var minimum: Number? = null,
-    public var maximum: Number? = null,
-    public var exclusiveMinimum: Number? = null,
-    public var exclusiveMaximum: Number? = null,
-    public var multipleOf: Number? = null,
-    public var minItems: Int? = null,
-    public var maxItems: Int? = null,
-    public var uniqueItems: Boolean? = null,
-) {
+public class SchemaAttributeBuilder internal constructor() {
+    public var format: String? = null
+    public var minLength: Int? = null
+    public var maxLength: Int? = null
+    public var pattern: String? = null
+    public var contentEncoding: String? = null
+    public var contentMediaType: String? = null
+    public var minimum: Number? = null
+    public var maximum: Number? = null
+    public var exclusiveMinimum: Number? = null
+    public var exclusiveMaximum: Number? = null
+    public var multipleOf: Number? = null
+    public var minItems: Int? = null
+    public var maxItems: Int? = null
+    public var uniqueItems: Boolean? = null
+
     /** Holds the examples associated with the schema. */
     private var examples: IExample? = null
 
     /**
      * Adds an example to the schema.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * schema {
      *     examples {
@@ -64,10 +64,13 @@ public class SchemaAttributeBuilder internal constructor(
      *     }
      * }
      * ```
+     *
+     * @receiver [SchemaExampleBuilder] The builder used to configure the schema examples.
+     *
      * @see [SchemaExampleBuilder.example]
      */
-    public fun examples(init: SchemaExampleBuilder.() -> Unit) {
-        examples = SchemaExampleBuilder().apply(init).build(existingExamples = examples)
+    public fun examples(builder: SchemaExampleBuilder.() -> Unit) {
+        examples = SchemaExampleBuilder().apply(builder).build(existingExamples = examples)
     }
 
     /**

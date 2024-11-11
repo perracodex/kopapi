@@ -33,7 +33,7 @@ public class MultipartBuilder internal constructor() {
     /**
      * Adds a part to the multipart request body.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * // Implicit ContentType.MultiPart.FormData (default).
      * multipart {
@@ -67,20 +67,21 @@ public class MultipartBuilder internal constructor() {
      * }
      * ```
      *
+     * @receiver [PartBuilder] The builder used to configure the part's metadata.
+     *
      * @param T The type of the part, typically a subclass of [PartData].
      * @param name The name of the part.
-     * @param configure A lambda receiver for configuring the part's metadata.
      */
     public inline fun <reified T : PartData> part(
         name: String,
-        noinline configure: PartBuilder.() -> Unit = {}
+        noinline builder: PartBuilder.() -> Unit = {}
     ) {
         val partName: String = name.trim()
         if (_config.parts.find { it.name.equals(partName, ignoreCase = true) } != null) {
             throw KopapiException("Part with name '$name' has already being defined in the multipart request.")
         }
 
-        val partBuilder: PartBuilder = PartBuilder(name = name).apply(configure)
+        val partBuilder: PartBuilder = PartBuilder(name = name).apply(builder)
 
         val part = ApiMultipart.Part(
             type = typeOf<T>(),

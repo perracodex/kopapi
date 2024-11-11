@@ -16,9 +16,9 @@ import io.ktor.http.*
  */
 @KopapiDsl
 public class TypeConfig @PublishedApi internal constructor(
-    public var contentType: Set<ContentType>? = null,
-
     @Suppress("PropertyName")
     @PublishedApi
     internal val _schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate()
-) : ISchemaAttributeConfigurable by _schemaAttributeDelegate
+) : ISchemaAttributeConfigurable by _schemaAttributeDelegate {
+    public var contentType: Set<ContentType>? = null
+}

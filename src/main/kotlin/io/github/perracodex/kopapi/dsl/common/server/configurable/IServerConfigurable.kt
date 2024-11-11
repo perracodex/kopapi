@@ -15,7 +15,7 @@ public interface IServerConfigurable {
     /**
      * Sets up servers, with optional support for variables.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * servers {
      *      // Simple example with no variables.
@@ -47,7 +47,7 @@ public interface IServerConfigurable {
      * }
      * ```
      *
-     * @see [ServerBuilder]
+     * @receiver [ServerBuilder] The builder used to configure the server.
      */
-    public fun servers(init: ServerBuilder.() -> Unit)
+    public fun servers(builder: ServerBuilder.() -> Unit)
 }

@@ -22,7 +22,7 @@ public class ServerBuilder internal constructor() {
     /**
      * Adds a new server configuration with optional variables.
      *
-     * #### Sample Usage
+     * #### Usage
      * ```
      * servers {
      *      // Simple example with no variables.
@@ -54,17 +54,17 @@ public class ServerBuilder internal constructor() {
      * }
      * ```
      *
-     * @param urlString The URL of the server. Expected to be a valid URL. If blank, the server is skipped.
-     * @param configure The configuration block for the server.
+     * @receiver [ServerConfigBuilder] The builder used to configure the server.
      *
-     * @see [ServerConfigBuilder]
+     * @param urlString The URL of the server. Expected to be a valid URL. If blank, the server is skipped.
+     *
      * @see [ServerVariableBuilder]
      */
-    public fun add(urlString: String, configure: ServerConfigBuilder.() -> Unit = {}) {
+    public fun add(urlString: String, builder: ServerConfigBuilder.() -> Unit = {}) {
         if (urlString.isBlank()) {
             throw KopapiException("Server URL cannot be blank.")
         }
-        val serverConfig: ApiServerConfig = ServerConfigBuilder(urlString = urlString).apply(configure).build()
+        val serverConfig: ApiServerConfig = ServerConfigBuilder(urlString = urlString).apply(builder).build()
         _servers.add(serverConfig)
     }
 
