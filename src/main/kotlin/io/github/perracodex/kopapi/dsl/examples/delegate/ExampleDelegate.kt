@@ -65,7 +65,5 @@ internal class ExampleDelegate : IExampleConfigurable {
     /**
      * Returns the registered examples.
      */
-    fun build(): IExample? {
-        return examplesCache.takeIf { it.examples.isNotEmpty() }
-    }
+    fun build(): IExample? = examplesCache.takeIf { it.examples.isNotEmpty() }
 }

@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperation
 import io.github.perracodex.kopapi.dsl.schema.elements.ApiSchemaAttributes
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import kotlin.reflect.KType
@@ -98,7 +99,7 @@ internal data class ApiResponse(
             headers = combinedHeaders,
             composition = newComposition,
             content = combinedContent,
-            links = combinedLinks.takeIf { it?.isNotEmpty() == true }
+            links = combinedLinks?.orNull()
         )
     }
 
