@@ -12,11 +12,9 @@ import io.github.perracodex.kopapi.dsl.schema.elements.ApiSchemaAttributes
  * Handles the registration of schema attributes.
  */
 @KopapiDsl
-@PublishedApi
 internal class SchemaAttributeDelegate : ISchemaAttributeConfigurable {
     /** Cached schema attributes. */
-    @PublishedApi
-    internal var attributes: ApiSchemaAttributes? = null
+    var attributes: ApiSchemaAttributes? = null
 
     override fun schema(builder: SchemaAttributeBuilder.() -> Unit) {
         attributes = SchemaAttributeBuilder().apply(builder).build()

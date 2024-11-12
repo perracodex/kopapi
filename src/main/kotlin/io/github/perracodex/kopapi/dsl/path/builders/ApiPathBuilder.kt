@@ -120,8 +120,8 @@ public class ApiPathBuilder internal constructor(
             path = endpoint,
             summary = summary.trimOrNull(),
             description = description.trimOrNull(),
-            servers = serverDelegate.servers.ifEmpty { null },
-            parameters = parameterDelegate.build().ifEmpty { null }
+            servers = serverDelegate.build(),
+            parameters = parameterDelegate.build()
         )
     }
 }

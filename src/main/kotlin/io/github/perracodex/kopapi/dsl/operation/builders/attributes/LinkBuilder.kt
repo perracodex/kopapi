@@ -36,10 +36,10 @@ import java.util.*
 @KopapiDsl
 public class LinkBuilder internal constructor() {
     /** A map representing parameters to pass to the linked operation. */
-    private val _parameters: SortedMap<String, String> = sortedMapOf()
+    private val parameters: SortedMap<String, String> = sortedMapOf()
 
     /** Cached server configuration. */
-    private var _server: ApiServerConfig? = null
+    private var serverConfig: ApiServerConfig? = null
 
     /**
      * The unique identifier of an existing operation in the OpenAPI specification.
@@ -86,7 +86,7 @@ public class LinkBuilder internal constructor() {
         if (parameterName.isBlank()) {
             throw KopapiException("Parameter name must not be blank.")
         }
-        _parameters[name] = value.trimOrNull()
+        parameters[name] = value.trimOrNull()
     }
 
     /**
@@ -133,7 +133,7 @@ public class LinkBuilder internal constructor() {
         if (urlString.isBlank()) {
             throw KopapiException("Server URL cannot be blank.")
         }
-        _server = ServerConfigBuilder(urlString = urlString).apply(builder).build()
+        serverConfig = ServerConfigBuilder(urlString = urlString).apply(builder).build()
     }
 
     /**
@@ -155,9 +155,9 @@ public class LinkBuilder internal constructor() {
             operationId = operationId?.trimOrNull(),
             operationRef = operationRef?.trimOrNull(),
             description = description.trimOrNull(),
-            parameters = _parameters.ifEmpty { null },
+            parameters = parameters.ifEmpty { null },
             requestBody = requestBody.trimOrNull(),
-            server = _server
+            server = serverConfig
         )
     }
 }

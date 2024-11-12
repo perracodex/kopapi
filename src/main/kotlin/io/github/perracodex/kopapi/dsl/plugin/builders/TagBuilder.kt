@@ -46,13 +46,9 @@ public class TagBuilder internal constructor() {
     }
 
     /**
-     * Builds and returns the immutable set of [ApiTag] items.
-     *
-     * @return A read-only set of tags.
+     * Returns the registered tags.
      */
-    internal fun build(): Set<ApiTag> {
-        return tags.toSet()
-    }
+    internal fun build(): Set<ApiTag>? = tags.ifEmpty { null }?.toSet()
 
     /** Provides a string representation of the tags. */
     override fun toString(): String = tags.toString()

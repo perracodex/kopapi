@@ -71,5 +71,5 @@ public class LinksBuilder @PublishedApi internal constructor() {
      *
      * @return A set of [ApiLink] instances.
      */
-    internal fun build(): MutableMap<String, ApiLink> = links
+    internal fun build(): MutableMap<String, ApiLink>? = links.ifEmpty { null }
 }

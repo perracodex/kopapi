@@ -69,13 +69,9 @@ public class ServerBuilder internal constructor() {
     }
 
     /**
-     * Builds and returns the immutable set of [ApiServerConfig].
-     *
-     * @return A read-only set of server configurations.
+     * Returns the registered server configurations.
      */
-    internal fun build(): Set<ApiServerConfig> {
-        return servers.toSet()
-    }
+    internal fun build(): Set<ApiServerConfig>? = servers.ifEmpty { null }?.toSet()
 
     /** Provides a string representation of the server configurations. */
     override fun toString(): String = servers.toString()

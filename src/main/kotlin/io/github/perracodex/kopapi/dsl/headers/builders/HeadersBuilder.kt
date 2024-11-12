@@ -55,13 +55,12 @@ public class HeadersBuilder internal constructor() {
             throw KopapiException("Header name must not be blank.")
         }
 
-        val header: ApiHeader = HeaderBuilder().apply(builder).build(type = typeOf<T>())
-        _headers[headerName] = header
+        _headers[headerName] = HeaderBuilder().apply(builder).build(type = typeOf<T>())
     }
 
     /**
      * Returns the registered headers.
      */
     @PublishedApi
-    internal fun build(): MutableMap<String, ApiHeader> = _headers
+    internal fun build(): MutableMap<String, ApiHeader>? = _headers.ifEmpty { null }
 }

@@ -235,10 +235,8 @@ public class ParametersBuilder internal constructor(
     }
 
     /**
-     * Builds the parameters collection.
-     *
-     * @return A set of [ApiParameter] instances.
+     * Returns the registered parameters.
      */
     @PublishedApi
-    internal fun build(): Set<ApiParameter> = _config.parameters
+    internal fun build(): Set<ApiParameter>? = _config.parameters.ifEmpty { null }
 }

@@ -28,7 +28,7 @@ internal class ParameterDelegate internal constructor(
      */
     override fun parameters(builder: ParametersBuilder.() -> Unit) {
         val parametersBuilder: ParametersBuilder = ParametersBuilder(endpoint = endpoint).apply(builder)
-        parametersBuilder.build().forEach { addParameter(it) }
+        parametersBuilder.build()?.forEach { addParameter(parameter = it) }
     }
 
     /**
@@ -57,5 +57,5 @@ internal class ParameterDelegate internal constructor(
     /**
      * Returns the registered parameters.
      */
-    fun build(): MutableSet<ApiParameter> = parameters
+    fun build(): MutableSet<ApiParameter>? = parameters.ifEmpty { null }
 }

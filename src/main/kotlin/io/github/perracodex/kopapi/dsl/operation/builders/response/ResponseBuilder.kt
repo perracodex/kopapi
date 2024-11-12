@@ -184,7 +184,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
      */
     public fun links(builder: LinksBuilder.() -> Unit) {
         val linksBuilder: LinksBuilder = LinksBuilder().apply(builder)
-        linksBuilder.build().forEach { _config.addLink(name = it.key, link = it.value) }
+        linksBuilder.build()?.forEach { _config.addLink(name = it.key, link = it.value) }
     }
 
     @PublishedApi
@@ -205,7 +205,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
         return ApiResponse(
             status = status,
             description = description.trimOrNull(),
-            headers = headerDelegate.build().ifEmpty { null },
+            headers = headerDelegate.build(),
             composition = composition,
             content = contentMap,
             links = _config.links.ifEmpty { null },

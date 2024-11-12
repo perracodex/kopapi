@@ -147,7 +147,8 @@ public class KopapiConfig internal constructor(
      * @receiver [TagBuilder] The builder used to configure the API tags section.
      */
     public fun tags(builder: TagBuilder.() -> Unit) {
-        tags.addAll(TagBuilder().apply(builder).build())
+        val tagsBuilder: TagBuilder = TagBuilder().apply(builder)
+        tagsBuilder.build()?.let { tags.addAll(it) }
     }
 
     /**
@@ -159,9 +160,9 @@ public class KopapiConfig internal constructor(
             apiDocs = apiDocs ?: ApiDocsBuilder().build(),
             debugUrl = NetworkUtils.normalizeUrl(url = debugUrl, defaultValue = DEFAULT_DEBUG_URL),
             apiInfo = apiInfo,
-            apiServers = serverDelegate.servers.ifEmpty { null } ?: setOf(ServerBuilder.defaultServer()),
+            apiServers = serverDelegate.build() ?: setOf(ServerBuilder.defaultServer()),
             apiTags = tags.ifEmpty { null },
-            apiSecuritySchemes = securityDelegate.securitySchemes.ifEmpty { null }
+            apiSecuritySchemes = securityDelegate.build()
         )
     }
 

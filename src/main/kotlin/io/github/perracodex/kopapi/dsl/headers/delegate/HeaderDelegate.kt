@@ -21,7 +21,7 @@ internal class HeaderDelegate internal constructor() : IHeaderConfigurable {
 
     override fun headers(builder: HeadersBuilder.() -> Unit) {
         val headersBuilder: HeadersBuilder = HeadersBuilder().apply(builder)
-        headersBuilder.build().forEach { addHeader(name = it.key, header = it.value) }
+        headersBuilder.build()?.forEach { addHeader(name = it.key, header = it.value) }
     }
 
     /**
@@ -47,5 +47,5 @@ internal class HeaderDelegate internal constructor() : IHeaderConfigurable {
     /**
      * Returns the registered headers.
      */
-    fun build(): Map<String, ApiHeader> = headers
+    fun build(): Map<String, ApiHeader>? = headers.ifEmpty { null }
 }

@@ -13,10 +13,16 @@ import io.github.perracodex.kopapi.dsl.servers.builders.ServerBuilder
  */
 @KopapiDsl
 internal class ServerDelegate : IServerConfigurable {
-    internal val servers: MutableSet<ApiServerConfig> = mutableSetOf()
+    /** Cached servers. */
+    private val servers: MutableSet<ApiServerConfig> = mutableSetOf()
 
     override fun servers(builder: ServerBuilder.() -> Unit) {
         val serverBuilder: ServerBuilder = ServerBuilder().apply(builder)
-        servers.addAll(serverBuilder.build())
+        serverBuilder.build()?.let { servers.addAll(it) }
     }
+
+    /**
+     * Returns the registered server configurations.
+     */
+    fun build(): Set<ApiServerConfig>? = servers.ifEmpty { null }
 }
