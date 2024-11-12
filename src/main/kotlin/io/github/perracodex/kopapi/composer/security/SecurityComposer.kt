@@ -40,9 +40,9 @@ internal class SecurityComposer(
         tracer.info("Composing the top-level security requirements.")
 
         // Determine if any API Operation requires security.
-        val requiresTopLevelSecurity: Boolean = apiOperations.any { !it.skipSecurity }
+        val requiresTopLevelSecurity: Boolean = apiOperations.any { !it.noSecurity }
         if (!requiresTopLevelSecurity) {
-            // All API Operated are marked as skipSecurity; no top-level security required.
+            // All API Operated are marked as `noSecurity`; no top-level security required.
             tracer.debug("No operations require top-level security.")
             return null
         }
@@ -93,11 +93,11 @@ internal class SecurityComposer(
         }
 
         // Include per-operation security schemes for operations that require security.
-        // If `skipSecurity` is set, the operation does not require security, so it is
+        // If `noSecurity` is set, the operation does not require security, so it is
         // assumed that either no security is needed at all, or any defined one
         // in the operation should be ignored.
         apiOperations.forEach { operation ->
-            if (!operation.skipSecurity) {
+            if (!operation.noSecurity) {
                 operation.securitySchemes?.forEach { scheme ->
                     val schemeName: String = scheme.schemeName.lowercase()
                     if (schemeName !in schemeNames) {
@@ -132,8 +132,8 @@ internal class SecurityComposer(
         apiOperations.forEach { operation ->
             tracer.debug("Composing security for operation: [${operation.method}] → ${operation.path}")
 
-            // If skipSecurity is set, explicitly disable security by assigning an empty list.
-            if (operation.skipSecurity) {
+            // If `noSecurity` is set, explicitly disable security by assigning an empty list.
+            if (operation.noSecurity) {
                 securityObjectList.add(
                     SecurityObject(
                         method = operation.method.value,

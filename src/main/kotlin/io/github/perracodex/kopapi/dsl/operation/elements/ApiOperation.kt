@@ -26,7 +26,7 @@ import io.ktor.http.*
  * @property requestBody Optional [ApiRequestBody] object for defining the request body schema.
  * @property responses Optional map of `status codes` to [ApiResponse] objects.
  * @property securitySchemes Optional set of [ApiSecurityScheme] objects for defining endpoint security schemes.
- * @property skipSecurity Whether no security is required and should ignore top level security schemes.
+ * @property noSecurity Whether no security is required and should ignore top level security schemes.
  * @property servers Optional set of server configurations for the operation.
  *
  * @see [ApiOperationBuilder]
@@ -42,7 +42,7 @@ internal data class ApiOperation(
     val requestBody: ApiRequestBody?,
     val responses: Map<HttpStatusCode, ApiResponse>?,
     val securitySchemes: Set<ApiSecurityScheme>?,
-    val skipSecurity: Boolean,
+    val noSecurity: Boolean,
     val servers: Set<ApiServerConfig>?
 ) {
     init {

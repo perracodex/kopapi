@@ -57,7 +57,7 @@ class CookieParameterTest {
                             }
                         }
                     }
-                    skipSecurity()
+                    noSecurity()
                 }
             }
 

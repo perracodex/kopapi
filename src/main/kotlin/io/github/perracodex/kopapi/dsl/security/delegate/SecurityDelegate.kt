@@ -18,13 +18,13 @@ import io.ktor.http.*
 @KopapiDsl
 internal class SecurityDelegate : ISecurityConfigurable {
     /** The cache for security schemes. */
-    val securitySchemes: LinkedHashSet<ApiSecurityScheme> = linkedSetOf()
+    private val securitySchemes: LinkedHashSet<ApiSecurityScheme> = linkedSetOf()
 
     /**
      * Flag to indicate that no security is required for the API operation.
      * Once set to `true`, all security schemes are ignored.
      */
-    var skipSecurity: Boolean = false
+    var noSecurity: Boolean = false
 
     override fun basicSecurity(
         name: String,
@@ -131,7 +131,7 @@ internal class SecurityDelegate : ISecurityConfigurable {
      * @throws KopapiException If a security scheme with the same name already exists.
      */
     private fun addSecurityScheme(scheme: ApiSecurityScheme) {
-        if (skipSecurity) {
+        if (noSecurity) {
             securitySchemes.clear()
             return
         }
@@ -145,4 +145,16 @@ internal class SecurityDelegate : ISecurityConfigurable {
 
         securitySchemes.add(scheme)
     }
+
+    /**
+     * Clears all registered security schemes.
+     */
+    fun clear() {
+        securitySchemes.clear()
+    }
+
+    /**
+     * Returns the registered security schemes.
+     */
+    fun build(): Set<ApiSecurityScheme>? = securitySchemes.ifEmpty { null }?.toSet()
 }

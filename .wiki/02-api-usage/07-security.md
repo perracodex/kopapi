@@ -51,14 +51,14 @@ oauth2Security(name = "MyOAuth2Scheme") {
 
 ### Disable Security
 
-Use the `skipSecurity()` method to disable security for an API Operation, ensuring that no top-level or operation-level
+Use the `noSecurity()` method to disable security for an API Operation, ensuring that no top-level or operation-level
 security schemes are applied to that API Operation.
 
 ```kotlin
-skipSecurity()
+noSecurity()
 ```
 
-- Behavior: If `skipSecurity()` is used along with other security schemes in the same API Operation,
+- Behavior: If `noSecurity()` is used along with other security schemes in the same API Operation,
   all other schemes are ignored, and no security is applied to the API Operation.
 
 ---

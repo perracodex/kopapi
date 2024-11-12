@@ -75,7 +75,7 @@ import java.util.*
  * - [mutualTLSSecurity]: Adds a mutual TLS security scheme to the API metadata.
  * - [oauth2Security]: Adds an OAuth 2.0 security scheme to the API metadata.
  * - [openIdConnectSecurity]: Adds an OpenID Connect security scheme to the API metadata.
- * - [skipSecurity]: Disables all security schemes for the API operation.
+ * - [noSecurity]: Disables all security schemes for the API operation.
  */
 @KopapiDsl
 public class ApiOperationBuilder internal constructor(
@@ -211,9 +211,9 @@ public class ApiOperationBuilder internal constructor(
      * @see [oauth2Security]
      * @see [openIdConnectSecurity]
      */
-    public fun skipSecurity() {
-        securityDelegate.securitySchemes.clear()
-        securityDelegate.skipSecurity = true
+    public fun noSecurity() {
+        securityDelegate.clear()
+        securityDelegate.noSecurity = true
     }
 
     /**
@@ -465,12 +465,12 @@ public class ApiOperationBuilder internal constructor(
             summary = summary.trimOrNull(),
             description = description.trimOrNull(),
             operationId = operationId.trimOrNull()?.sanitize(),
-            parameters = parameterDelegate.build().ifEmpty { null },
+            parameters = parameterDelegate.build(),
             requestBody = _config.requestBody,
             responses = responses,
-            securitySchemes = securityDelegate.securitySchemes.ifEmpty { null },
-            skipSecurity = securityDelegate.skipSecurity,
-            servers = serverDelegate.servers.ifEmpty { null }
+            securitySchemes = securityDelegate.build(),
+            noSecurity = securityDelegate.noSecurity,
+            servers = serverDelegate.build()
         )
     }
 

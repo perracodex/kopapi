@@ -80,7 +80,7 @@ fun Route.publicRoute() {
         }
 
         // Skip top-level security.
-        skipSecurity()
+        noSecurity()
     }
 }
 ```
