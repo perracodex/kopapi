@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.operation.OperationObject
 import io.github.perracodex.kopapi.composer.parameter.ParameterObject
-import io.github.perracodex.kopapi.dsl.common.example.IExample
+import io.github.perracodex.kopapi.dsl.examples.elements.IExample
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig

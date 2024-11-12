@@ -4,9 +4,9 @@
 
 package io.github.perracodex.kopapi.annotation
 
-import io.github.perracodex.kopapi.dsl.common.example.ApiExampleArray
-import io.github.perracodex.kopapi.dsl.common.example.ApiInlineExample
-import io.github.perracodex.kopapi.dsl.common.example.IExample
+import io.github.perracodex.kopapi.dsl.examples.elements.ApiExampleArray
+import io.github.perracodex.kopapi.dsl.examples.elements.ApiInlineExample
+import io.github.perracodex.kopapi.dsl.examples.elements.IExample
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.utils.trimOrNull
 import java.math.BigDecimal

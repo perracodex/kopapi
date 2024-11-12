@@ -22,11 +22,11 @@ public class ApiDocsBuilder internal constructor() {
      * - Relative to the server root URL.
      *
      * #### Attention
-     *  The `openApiUrl` value does not determine the output format.
-     *  Only the `openApiFormat` property specifies the format.
+     * The `openApiUrl` value does not determine the output format.
+     * Only the `openApiFormat` property specifies the format.
      *
-     *  For example, if `openApiUrl` is set to `/openapi.json`, but `openApiFormat` is set `YAML`,
-     *  the output will still be in `yaml` format.
+     * For example, if `openApiUrl` is set to `/openapi.json`, but `openApiFormat` is set `YAML`,
+     * the output will still be in `yaml` format.
      *
      * @see [openApiFormat]
      */

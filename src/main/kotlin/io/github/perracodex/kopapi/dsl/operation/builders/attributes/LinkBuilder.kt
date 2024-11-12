@@ -4,12 +4,13 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.attributes
 
-import io.github.perracodex.kopapi.dsl.common.server.ServerConfigBuilder
-import io.github.perracodex.kopapi.dsl.common.server.ServerVariableBuilder
+import io.github.perracodex.kopapi.dsl.headers.builders.HeadersBuilder
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
+import io.github.perracodex.kopapi.dsl.servers.builders.ServerConfigBuilder
+import io.github.perracodex.kopapi.dsl.servers.builders.ServerVariableBuilder
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -30,7 +31,7 @@ import java.util.*
  * @property description A human-readable description of the link.
  *
  * @see [ResponseBuilder]
- * @see [HeaderBuilder]
+ * @see [HeadersBuilder]
  */
 @KopapiDsl
 public class LinkBuilder internal constructor() {

@@ -4,10 +4,10 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.type
 
-import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
-import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
-import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
+import io.github.perracodex.kopapi.dsl.schema.delegate.ISchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.schema.delegate.SchemaAttributeDelegate
+import io.github.perracodex.kopapi.dsl.schema.elements.ApiSchemaAttributes
 import io.ktor.http.*
 
 /**
@@ -19,21 +19,17 @@ import io.ktor.http.*
 public class TypeConfig @PublishedApi internal constructor(
     private val schemaAttributeDelegate: SchemaAttributeDelegate = SchemaAttributeDelegate()
 ) : ISchemaAttributeConfigurable by schemaAttributeDelegate {
+
     public var contentType: Set<ContentType>? = null
 
     /**
-     * Returns the registered schema attributes.
+     * Schema attributes configuration.
      */
+    @Suppress("PropertyName")
     @PublishedApi
-    internal fun schemaAttributes(): ApiSchemaAttributes? {
-        return schemaAttributeDelegate.attributes
-    }
-
-    /**
-     * Sets the schema attributes.
-     */
-    @PublishedApi
-    internal fun setSchemaAttributes(attributes: ApiSchemaAttributes?) {
-        schemaAttributeDelegate.attributes = attributes
-    }
+    internal var _schemaAttributes: ApiSchemaAttributes?
+        get() = schemaAttributeDelegate.attributes
+        set(value) {
+            schemaAttributeDelegate.attributes = value
+        }
 }

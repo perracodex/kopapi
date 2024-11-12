@@ -4,13 +4,10 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.response
 
-import io.github.perracodex.kopapi.dsl.common.example.configurables.ExampleDelegate
-import io.github.perracodex.kopapi.dsl.common.example.configurables.IExampleConfigurable
-import io.github.perracodex.kopapi.dsl.common.header.configurable.HeaderDelegate
-import io.github.perracodex.kopapi.dsl.common.header.configurable.IHeaderConfigurable
-import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
-import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
-import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeDelegate
+import io.github.perracodex.kopapi.dsl.examples.delegate.ExampleDelegate
+import io.github.perracodex.kopapi.dsl.examples.delegate.IExampleConfigurable
+import io.github.perracodex.kopapi.dsl.headers.delegate.HeaderDelegate
+import io.github.perracodex.kopapi.dsl.headers.delegate.IHeaderConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinkBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.attributes.LinksBuilder
@@ -18,6 +15,9 @@ import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.builders.type.TypeConfig
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiLink
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
+import io.github.perracodex.kopapi.dsl.schema.delegate.ISchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.schema.delegate.SchemaAttributeDelegate
+import io.github.perracodex.kopapi.dsl.schema.elements.ApiSchemaAttributes
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.sanitize
@@ -80,7 +80,6 @@ public class ResponseBuilder @PublishedApi internal constructor(
      *
      * @param T The type of the response.
      */
-    @Suppress("DuplicatedCode")
     public inline fun <reified T : Any> addType(noinline builder: TypeConfig.() -> Unit = {}) {
         if (T::class == Unit::class || T::class == Nothing::class || T::class == Any::class) {
             return
@@ -101,7 +100,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
         // Register the new type with the effective content types.
         val typeDetails: ApiResponse.TypeDetails = ApiResponse.TypeDetails(
             type = typeOf<T>(),
-            schemaAttributes = typeConfig.schemaAttributes()
+            schemaAttributes = typeConfig._schemaAttributes
         )
         effectiveContentTypes.forEach { contentTypeKey ->
             _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(typeDetails)

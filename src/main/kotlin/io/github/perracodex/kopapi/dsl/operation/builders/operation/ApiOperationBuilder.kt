@@ -4,18 +4,20 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.operation
 
-import io.github.perracodex.kopapi.dsl.common.header.configurable.HeaderDelegate
-import io.github.perracodex.kopapi.dsl.common.parameter.configurable.ParametersBuilder
-import io.github.perracodex.kopapi.dsl.common.security.configurable.ISecurityConfigurable
-import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityDelegate
-import io.github.perracodex.kopapi.dsl.common.server.configurable.IServerConfigurable
-import io.github.perracodex.kopapi.dsl.common.server.configurable.ServerDelegate
+import io.github.perracodex.kopapi.dsl.headers.delegate.HeaderDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.request.RequestBodyBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.response.ResponseBuilder
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiResponse
+import io.github.perracodex.kopapi.dsl.parameters.builders.ParametersBuilder
+import io.github.perracodex.kopapi.dsl.parameters.delegate.IParameterConfigurable
+import io.github.perracodex.kopapi.dsl.parameters.delegate.ParameterDelegate
+import io.github.perracodex.kopapi.dsl.security.delegate.ISecurityConfigurable
+import io.github.perracodex.kopapi.dsl.security.delegate.SecurityDelegate
+import io.github.perracodex.kopapi.dsl.servers.delegate.IServerConfigurable
+import io.github.perracodex.kopapi.dsl.servers.delegate.ServerDelegate
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -51,10 +53,10 @@ import java.util.*
  * - [tags]: Optional set of descriptive tags for categorizing the endpoint in API documentation.
  *
  * #### Parameters
- * - [pathParameter]: Adds a path parameter to the API endpoint's metadata.
- * - [queryParameter]: Adds a query parameter to the API endpoint's metadata.
- * - [headerParameter]: Adds a header parameter to the API endpoint's metadata.
- * - [cookieParameter]: Adds a cookie parameter to the API endpoint's metadata.
+ * - [ParametersBuilder.pathParameter]: Adds a path parameter to the API endpoint's metadata.
+ * - [ParametersBuilder.queryParameter]: Adds a query parameter to the API endpoint's metadata.
+ * - [ParametersBuilder.headerParameter]: Adds a header parameter to the API endpoint's metadata.
+ * - [ParametersBuilder.cookieParameter]: Adds a cookie parameter to the API endpoint's metadata.
  *
  * #### Request Body
  * - [requestBody]: Adds a request body to the API endpoint's metadata.
@@ -79,10 +81,11 @@ import java.util.*
 public class ApiOperationBuilder internal constructor(
     @PublishedApi internal val endpoint: String,
     private val serverDelegate: ServerDelegate = ServerDelegate(),
-    private val securityDelegate: SecurityDelegate = SecurityDelegate()
+    private val securityDelegate: SecurityDelegate = SecurityDelegate(),
+    private val parameterDelegate: ParameterDelegate = ParameterDelegate(endpoint = endpoint)
 ) : IServerConfigurable by serverDelegate,
     ISecurityConfigurable by securityDelegate,
-    ParametersBuilder(endpoint = endpoint) {
+    IParameterConfigurable by parameterDelegate {
 
     @Suppress("PropertyName")
     @PublishedApi
@@ -282,10 +285,10 @@ public class ApiOperationBuilder internal constructor(
      *
      * @param T The body primary type of the request.
      *
-     * @see [cookieParameter]
-     * @see [headerParameter]
-     * @see [pathParameter]
-     * @see [queryParameter]
+     * @see [ParametersBuilder.cookieParameter]
+     * @see [ParametersBuilder.headerParameter]
+     * @see [ParametersBuilder.pathParameter]
+     * @see [ParametersBuilder.queryParameter]
      * @see [response]
      */
     public inline fun <reified T : Any> requestBody(
@@ -296,7 +299,7 @@ public class ApiOperationBuilder internal constructor(
                 apply(builder)
                 addType<T> {
                     this.contentType = this@apply.contentType
-                    this.setSchemaAttributes(attributes = this@apply._config.schemaAttributes())
+                    this._schemaAttributes = this@apply._config.schemaAttributes()
                 }
             }.build()
         } else {
@@ -425,7 +428,7 @@ public class ApiOperationBuilder internal constructor(
             apply(builder)
             addType<T> {
                 this.contentType = this@apply.contentType
-                this.setSchemaAttributes(attributes = this@apply._config.schemaAttributes())
+                this._schemaAttributes = this@apply._config.schemaAttributes()
             }
         }.build(status = status)
 
@@ -462,7 +465,7 @@ public class ApiOperationBuilder internal constructor(
             summary = summary.trimOrNull(),
             description = description.trimOrNull(),
             operationId = operationId.trimOrNull()?.sanitize(),
-            parameters = _parametersConfig.parameters.ifEmpty { null },
+            parameters = parameterDelegate.build().ifEmpty { null },
             requestBody = _config.requestBody,
             responses = responses,
             securitySchemes = securityDelegate.securitySchemes.ifEmpty { null },

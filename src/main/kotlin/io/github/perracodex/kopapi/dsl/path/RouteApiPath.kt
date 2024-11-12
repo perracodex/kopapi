@@ -5,6 +5,8 @@
 package io.github.perracodex.kopapi.dsl.path
 
 import io.github.perracodex.kopapi.dsl.operation.api
+import io.github.perracodex.kopapi.dsl.path.builders.ApiPathBuilder
+import io.github.perracodex.kopapi.dsl.path.elements.ApiPath
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.utils.extractRoutePath
@@ -75,7 +77,7 @@ public infix fun Route.apiPath(builder: ApiPathBuilder.() -> Unit): Route {
 
     // Register the path with the schema registry
     // for later use in generating OpenAPI documentation.
-    SchemaRegistry.registerApiPath(apiPath)
+    SchemaRegistry.registerApiPath(path = apiPath)
 
     return this
 }

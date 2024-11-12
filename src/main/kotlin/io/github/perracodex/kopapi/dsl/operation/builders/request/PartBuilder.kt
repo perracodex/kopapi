@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
-import io.github.perracodex.kopapi.dsl.common.header.configurable.HeaderDelegate
-import io.github.perracodex.kopapi.dsl.common.header.configurable.IHeaderConfigurable
+import io.github.perracodex.kopapi.dsl.headers.delegate.HeaderDelegate
+import io.github.perracodex.kopapi.dsl.headers.delegate.IHeaderConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.types.ApiType
@@ -27,6 +27,7 @@ public class PartBuilder @PublishedApi internal constructor(
     public val name: String,
     private val headerDelegate: HeaderDelegate = HeaderDelegate()
 ) : IHeaderConfigurable by headerDelegate {
+
     public var required: Boolean = true
     public var description: String by MultilineString()
     public var contentType: Set<ContentType>? = null

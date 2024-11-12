@@ -4,9 +4,9 @@
 
 package io.github.perracodex.kopapi.dsl.operation.elements
 
-import io.github.perracodex.kopapi.dsl.common.example.IExample
-import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
+import io.github.perracodex.kopapi.dsl.examples.elements.IExample
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.schema.elements.ApiSchemaAttributes
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
 import io.ktor.http.*

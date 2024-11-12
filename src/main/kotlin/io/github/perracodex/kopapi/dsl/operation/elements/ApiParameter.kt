@@ -5,13 +5,14 @@
 package io.github.perracodex.kopapi.dsl.operation.elements
 
 import com.fasterxml.jackson.annotation.JsonValue
-import io.github.perracodex.kopapi.dsl.common.example.IExample
-import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
-import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
+import io.github.perracodex.kopapi.dsl.examples.elements.IExample
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter.Location
+import io.github.perracodex.kopapi.dsl.parameters.builders.ParametersBuilder
+import io.github.perracodex.kopapi.dsl.schema.elements.ApiSchemaAttributes
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.DefaultValue
 import io.github.perracodex.kopapi.types.ParameterStyle
+import io.ktor.http.*
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 
@@ -31,10 +32,10 @@ import kotlin.reflect.KType
  * @property schemaAttributes Optional schema attributes for the header type. Not applicable for complex types.
  * @property examples Examples be used for documentation purposes.
  *
- * @see [ApiOperationBuilder.headerParameter]
- * @see [ApiOperationBuilder.queryParameter]
- * @see [ApiOperationBuilder.pathParameter]
- * @see [ApiOperationBuilder.cookieParameter]
+ * @see [ParametersBuilder.headerParameter]
+ * @see [ParametersBuilder.queryParameter]
+ * @see [ParametersBuilder.pathParameter]
+ * @see [ParametersBuilder.cookieParameter]
  */
 internal data class ApiParameter(
     val type: KType,

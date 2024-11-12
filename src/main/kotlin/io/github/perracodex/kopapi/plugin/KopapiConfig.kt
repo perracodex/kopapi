@@ -4,11 +4,6 @@
 
 package io.github.perracodex.kopapi.plugin
 
-import io.github.perracodex.kopapi.dsl.common.security.configurable.ISecurityConfigurable
-import io.github.perracodex.kopapi.dsl.common.security.configurable.SecurityDelegate
-import io.github.perracodex.kopapi.dsl.common.server.ServerBuilder
-import io.github.perracodex.kopapi.dsl.common.server.configurable.IServerConfigurable
-import io.github.perracodex.kopapi.dsl.common.server.configurable.ServerDelegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
 import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
@@ -17,6 +12,11 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
+import io.github.perracodex.kopapi.dsl.security.delegate.ISecurityConfigurable
+import io.github.perracodex.kopapi.dsl.security.delegate.SecurityDelegate
+import io.github.perracodex.kopapi.dsl.servers.builders.ServerBuilder
+import io.github.perracodex.kopapi.dsl.servers.delegate.IServerConfigurable
+import io.github.perracodex.kopapi.dsl.servers.delegate.ServerDelegate
 import io.github.perracodex.kopapi.utils.NetworkUtils
 
 /**
@@ -28,6 +28,7 @@ public class KopapiConfig internal constructor(
     private val securityDelegate: SecurityDelegate = SecurityDelegate()
 ) : IServerConfigurable by serverDelegate,
     ISecurityConfigurable by securityDelegate {
+
     /**
      * Whether the plugin should be enabled (Default is `true`).
      *

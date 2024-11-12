@@ -6,7 +6,7 @@ package io.github.perracodex.kopapi.schema.facets
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.perracodex.kopapi.dsl.common.example.IExample
+import io.github.perracodex.kopapi.dsl.examples.elements.IExample
 import io.github.perracodex.kopapi.types.ApiType
 import io.github.perracodex.kopapi.utils.safeName
 import kotlin.reflect.KType

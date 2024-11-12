@@ -10,7 +10,7 @@ import io.github.perracodex.kopapi.composer.operation.OperationVerifier
 import io.github.perracodex.kopapi.composer.request.RequestBodyComposer
 import io.github.perracodex.kopapi.composer.response.ResponseComposer
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
-import io.github.perracodex.kopapi.dsl.path.ApiPath
+import io.github.perracodex.kopapi.dsl.path.elements.ApiPath
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.introspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.introspector.schema.SchemaConflicts

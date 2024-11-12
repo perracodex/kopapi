@@ -14,7 +14,7 @@ import io.github.perracodex.kopapi.composer.security.TopLevelSecurityRequirement
 import io.github.perracodex.kopapi.composer.tags.TagsComposer
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.dsl.path.ApiPath
+import io.github.perracodex.kopapi.dsl.path.elements.ApiPath
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig

@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.annotation
 
-import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
+import io.github.perracodex.kopapi.dsl.schema.elements.ApiSchemaAttributes
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
 
 /**

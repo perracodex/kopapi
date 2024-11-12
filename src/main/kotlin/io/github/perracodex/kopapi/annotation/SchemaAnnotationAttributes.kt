@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.annotation
 
-import io.github.perracodex.kopapi.dsl.common.example.IExample
+import io.github.perracodex.kopapi.dsl.examples.elements.IExample
 
 /**
  * Represents the parsed attribute constraints from the [Schema] annotation.

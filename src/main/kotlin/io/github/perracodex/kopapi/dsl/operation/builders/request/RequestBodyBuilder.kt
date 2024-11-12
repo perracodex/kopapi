@@ -4,16 +4,16 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
-import io.github.perracodex.kopapi.dsl.common.example.configurables.ExampleDelegate
-import io.github.perracodex.kopapi.dsl.common.example.configurables.IExampleConfigurable
-import io.github.perracodex.kopapi.dsl.common.schema.ApiSchemaAttributes
-import io.github.perracodex.kopapi.dsl.common.schema.configurable.ISchemaAttributeConfigurable
-import io.github.perracodex.kopapi.dsl.common.schema.configurable.SchemaAttributeDelegate
+import io.github.perracodex.kopapi.dsl.examples.delegate.ExampleDelegate
+import io.github.perracodex.kopapi.dsl.examples.delegate.IExampleConfigurable
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.builders.operation.ApiOperationBuilder
 import io.github.perracodex.kopapi.dsl.operation.builders.type.TypeConfig
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiRequestBody
+import io.github.perracodex.kopapi.dsl.schema.delegate.ISchemaAttributeConfigurable
+import io.github.perracodex.kopapi.dsl.schema.delegate.SchemaAttributeDelegate
+import io.github.perracodex.kopapi.dsl.schema.elements.ApiSchemaAttributes
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
 import io.github.perracodex.kopapi.utils.string.MultilineString
@@ -39,6 +39,7 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
     private val examplesDelegate: ExampleDelegate = ExampleDelegate()
 ) : ISchemaAttributeConfigurable by schemaAttributeDelegate,
     IExampleConfigurable by examplesDelegate {
+
     public var description: String by MultilineString()
     public var required: Boolean = true
     public var composition: Composition? = null
@@ -76,7 +77,6 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
      *
      * @param T The type of the request body.
      */
-    @Suppress("DuplicatedCode")
     public inline fun <reified T : Any> addType(noinline builder: TypeConfig.() -> Unit = {}) {
         // Ensure there is always a default content type.
         if (contentType.isEmpty()) {
@@ -93,7 +93,7 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
         // Register the new type with the effective content types.
         val typeDetails: ApiRequestBody.TypeDetails = ApiRequestBody.TypeDetails(
             type = typeOf<T>(),
-            schemaAttributes = typeConfig.schemaAttributes()
+            schemaAttributes = typeConfig._schemaAttributes
         )
         effectiveContentTypes.forEach { contentTypeKey ->
             _config.allTypes.getOrPut(contentTypeKey) { mutableSetOf() }.add(typeDetails)

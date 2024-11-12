@@ -4,9 +4,9 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builders.request
 
-import io.github.perracodex.kopapi.dsl.common.example.IExample
-import io.github.perracodex.kopapi.dsl.common.example.configurables.ExampleDelegate
-import io.github.perracodex.kopapi.dsl.common.example.configurables.IExampleConfigurable
+import io.github.perracodex.kopapi.dsl.examples.delegate.ExampleDelegate
+import io.github.perracodex.kopapi.dsl.examples.delegate.IExampleConfigurable
+import io.github.perracodex.kopapi.dsl.examples.elements.IExample
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.system.KopapiException
@@ -28,6 +28,7 @@ import kotlin.reflect.typeOf
 public class MultipartBuilder internal constructor(
     private val examplesDelegate: ExampleDelegate = ExampleDelegate()
 ) : IExampleConfigurable by examplesDelegate {
+
     public var description: String by MultilineString()
     public var contentType: ContentType? = null
 
