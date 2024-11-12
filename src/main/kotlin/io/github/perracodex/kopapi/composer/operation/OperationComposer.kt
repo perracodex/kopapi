@@ -18,6 +18,7 @@ import io.github.perracodex.kopapi.dsl.path.elements.ApiPath
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
@@ -249,15 +250,15 @@ internal object OperationComposer {
             ResponseComposer.compose(responses = apiOperation.responses)
         }
         return OperationObject(
-            tags = apiOperation.tags?.ifEmpty { null },
+            tags = apiOperation.tags?.orNull(),
             summary = apiOperation.summary,
             description = apiOperation.description,
             operationId = apiOperation.operationId,
-            parameters = parameters?.ifEmpty { null },
+            parameters = parameters?.orNull(),
             requestBody = requestBody,
-            responses = responses?.ifEmpty { null },
+            responses = responses?.orNull(),
             security = security,
-            servers = apiOperation.servers?.ifEmpty { null }
+            servers = apiOperation.servers?.orNull()
         )
     }
 }

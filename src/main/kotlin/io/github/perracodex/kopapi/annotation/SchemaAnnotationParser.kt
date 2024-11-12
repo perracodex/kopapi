@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.dsl.examples.elements.ApiExampleArray
 import io.github.perracodex.kopapi.dsl.examples.elements.ApiInlineExample
 import io.github.perracodex.kopapi.dsl.examples.elements.IExample
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.trimOrNull
 import java.math.BigDecimal
 import kotlin.reflect.KAnnotatedElement
@@ -47,7 +48,7 @@ internal object SchemaAnnotationParser {
 
             // Examples.
             val example: String? = attributes.example.trimOrNull()
-            val examples: List<String>? = attributes.examples.ifEmpty { null }?.toList()
+            val examples: List<String>? = attributes.examples.orNull()?.toList()
             val finalExamples: IExample = when {
                 !examples.isNullOrEmpty() -> ApiExampleArray(examples = examples.map { ApiInlineExample(value = it) }.toTypedArray())
                 example != null -> ApiExampleArray(examples = arrayOf(ApiInlineExample(value = example)))

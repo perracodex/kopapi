@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.dsl.servers.builders
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.orNull
 
 /**
  * Builder constructing server configurations.
@@ -71,7 +72,7 @@ public class ServerBuilder internal constructor() {
     /**
      * Returns the registered server configurations.
      */
-    internal fun build(): Set<ApiServerConfig>? = servers.ifEmpty { null }?.toSet()
+    internal fun build(): Set<ApiServerConfig>? = servers.orNull()?.toSet()
 
     /** Provides a string representation of the server configurations. */
     override fun toString(): String = servers.toString()

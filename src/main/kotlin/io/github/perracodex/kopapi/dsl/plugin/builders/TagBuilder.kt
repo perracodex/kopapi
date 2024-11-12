@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.dsl.plugin.builders
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.utils.orNull
 
 /**
  * Builder constructing top level tags for the API.
@@ -48,7 +49,7 @@ public class TagBuilder internal constructor() {
     /**
      * Returns the registered tags.
      */
-    internal fun build(): Set<ApiTag>? = tags.ifEmpty { null }?.toSet()
+    internal fun build(): Set<ApiTag>? = tags.orNull()?.toSet()
 
     /** Provides a string representation of the tags. */
     override fun toString(): String = tags.toString()

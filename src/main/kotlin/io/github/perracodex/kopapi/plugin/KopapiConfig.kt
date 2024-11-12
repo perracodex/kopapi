@@ -18,6 +18,7 @@ import io.github.perracodex.kopapi.dsl.servers.builders.ServerBuilder
 import io.github.perracodex.kopapi.dsl.servers.delegate.IServerConfigurable
 import io.github.perracodex.kopapi.dsl.servers.delegate.ServerDelegate
 import io.github.perracodex.kopapi.utils.NetworkUtils
+import io.github.perracodex.kopapi.utils.orNull
 
 /**
  * Configuration for the [Kopapi] plugin.
@@ -161,7 +162,7 @@ public class KopapiConfig internal constructor(
             debugUrl = NetworkUtils.normalizeUrl(url = debugUrl, defaultValue = DEFAULT_DEBUG_URL),
             apiInfo = apiInfo,
             apiServers = serverDelegate.build() ?: setOf(ServerBuilder.defaultServer()),
-            apiTags = tags.ifEmpty { null },
+            apiTags = tags.orNull(),
             apiSecuritySchemes = securityDelegate.build()
         )
     }

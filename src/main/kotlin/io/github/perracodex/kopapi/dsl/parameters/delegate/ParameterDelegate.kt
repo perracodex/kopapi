@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.dsl.parameters.builders.ParametersBuilder
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.sanitize
 
 /**
@@ -57,5 +58,5 @@ internal class ParameterDelegate internal constructor(
     /**
      * Returns the registered parameters.
      */
-    fun build(): MutableSet<ApiParameter>? = parameters.ifEmpty { null }
+    fun build(): MutableSet<ApiParameter>? = parameters.orNull()
 }

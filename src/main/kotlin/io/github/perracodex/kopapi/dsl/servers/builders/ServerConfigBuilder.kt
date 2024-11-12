@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.dsl.servers.builders
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import kotlin.collections.set
@@ -70,6 +71,6 @@ public class ServerConfigBuilder internal constructor(
     internal fun build(): ApiServerConfig = ApiServerConfig(
         url = urlString.trim(),
         description = description.trimOrNull(),
-        variables = variables.ifEmpty { null }?.toMap()
+        variables = variables.orNull()?.toMap()
     )
 }

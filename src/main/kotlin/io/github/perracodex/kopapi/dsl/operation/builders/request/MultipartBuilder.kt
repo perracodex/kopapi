@@ -10,6 +10,7 @@ import io.github.perracodex.kopapi.dsl.examples.elements.IExample
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiMultipart
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
@@ -92,7 +93,7 @@ public class MultipartBuilder internal constructor(
         val part = ApiMultipart.Part(
             type = typeOf<T>(),
             name = partName,
-            contentType = partBuilder.contentType?.ifEmpty { null },
+            contentType = partBuilder.contentType?.orNull(),
             schemaType = partBuilder.schemaType,
             schemaFormat = partBuilder.schemaFormat.trimOrNull(),
             description = partBuilder.description.trimOrNull(),

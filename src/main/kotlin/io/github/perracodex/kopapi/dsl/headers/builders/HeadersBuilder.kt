@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.dsl.headers.builders
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.sanitize
 import kotlin.reflect.typeOf
 
@@ -62,5 +63,5 @@ public class HeadersBuilder internal constructor() {
      * Returns the registered headers.
      */
     @PublishedApi
-    internal fun build(): MutableMap<String, ApiHeader>? = _headers.ifEmpty { null }
+    internal fun build(): MutableMap<String, ApiHeader>? = _headers.orNull()
 }

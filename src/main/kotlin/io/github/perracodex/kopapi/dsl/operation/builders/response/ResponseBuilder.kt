@@ -20,6 +20,7 @@ import io.github.perracodex.kopapi.dsl.schema.delegate.SchemaAttributeDelegate
 import io.github.perracodex.kopapi.dsl.schema.elements.ApiSchemaAttributes
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -191,7 +192,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
     internal fun build(status: HttpStatusCode): ApiResponse {
         // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to its specific types.
         val contentMap: Map<ContentType, Set<ApiResponse.TypeDetails>>? = _config
-            .allTypes.ifEmpty { null }
+            .allTypes.orNull()
             ?.mapValues { it.value.toSet() }
             ?.filterValues { it.isNotEmpty() }
             ?.toSortedMap(
@@ -208,7 +209,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
             headers = headerDelegate.build(),
             composition = composition,
             content = contentMap,
-            links = _config.links.ifEmpty { null },
+            links = _config.links.orNull(),
             examples = examplesDelegate.build()
         )
     }

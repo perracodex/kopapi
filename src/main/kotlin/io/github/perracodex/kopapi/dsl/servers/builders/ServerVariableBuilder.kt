@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.dsl.servers.builders
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 
@@ -53,7 +54,7 @@ public class ServerVariableBuilder internal constructor(
             defaultValue = defaultValue.trim(),
             choices = choices.map { it.trim() }
                 .filter { it.isNotEmpty() }
-                .ifEmpty { null }?.toSortedSet(),
+                .orNull()?.toSortedSet(),
             description = description.trimOrNull()
         )
     }

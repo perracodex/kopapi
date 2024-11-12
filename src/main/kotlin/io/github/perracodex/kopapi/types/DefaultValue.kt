@@ -4,6 +4,8 @@
 
 package io.github.perracodex.kopapi.types
 
+import io.github.perracodex.kopapi.utils.orNull
+
 /**
  * Represents allowable default values for OpenAPI parameters.
  *
@@ -284,15 +286,15 @@ public sealed class DefaultValue {
             is ofDate -> this.value
             is ofDateTime -> this.value
             is ofEnum<*> -> this.value.name
-            is ofStringArray -> this.value.ifEmpty { null }
-            is ofIntArray -> this.value.ifEmpty { null }
-            is ofLongArray -> this.value.ifEmpty { null }
-            is ofDoubleArray -> this.value.ifEmpty { null }
-            is ofFloatArray -> this.value.ifEmpty { null }
-            is ofBooleanArray -> this.value.ifEmpty { null }
-            is ofDateArray -> this.value.ifEmpty { null }
-            is ofDateTimeArray -> this.value.ifEmpty { null }
-            is ofEnumArray<*> -> this.value.ifEmpty { null }?.map { it.name }
+            is ofStringArray -> this.value.orNull()
+            is ofIntArray -> this.value.orNull()
+            is ofLongArray -> this.value.orNull()
+            is ofDoubleArray -> this.value.orNull()
+            is ofFloatArray -> this.value.orNull()
+            is ofBooleanArray -> this.value.orNull()
+            is ofDateArray -> this.value.orNull()
+            is ofDateTimeArray -> this.value.orNull()
+            is ofEnumArray<*> -> this.value.orNull()?.map { it.name }
         }
     }
 }

@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.annotation
 
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.types.ApiType
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
@@ -145,6 +146,6 @@ internal object SchemaAttributeBinder {
                     ApiType.BOOLEAN -> trimmedElement.toBooleanStrictOrNull()
                     else -> null
                 }
-            }.ifEmpty { null }
+            }.orNull()
     }
 }

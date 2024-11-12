@@ -11,6 +11,7 @@ import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import kotlin.collections.component1
@@ -63,6 +64,6 @@ internal object HeaderComposer {
             headerObjects[nam] = headerObject
         }
 
-        return headerObjects.ifEmpty { null }
+        return headerObjects.orNull()
     }
 }

@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.utils.orNull
 import java.util.*
 
 /**
@@ -50,7 +51,7 @@ internal class TagsComposer(
 
         tracer.debug("Merged tags: $mergedTags")
 
-        return mergedTags.ifEmpty { null }?.toList()
+        return mergedTags.orNull()?.toList()
     }
 
     /**

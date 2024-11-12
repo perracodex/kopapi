@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.utils.orNull
 
 /**
  * Responsible for composing the security-related sections of the OpenAPI schema.
@@ -110,7 +111,7 @@ internal class SecurityComposer(
 
         tracer.info("Composed ${schemes.size} schemes.")
 
-        return schemes.toSortedMap().ifEmpty { null }
+        return schemes.toSortedMap().orNull()
     }
 
     /**
@@ -150,7 +151,7 @@ internal class SecurityComposer(
                     SecurityObject(
                         method = operation.method.value,
                         path = operation.path,
-                        security = securityRequirements.ifEmpty { null }
+                        security = securityRequirements.orNull()
                     )
                 )
             }
@@ -158,7 +159,7 @@ internal class SecurityComposer(
 
         tracer.info("Composed ${securityObjectList.size} security objects.")
 
-        return securityObjectList.ifEmpty { null }
+        return securityObjectList.orNull()
     }
 
     /**

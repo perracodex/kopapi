@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.dsl.operation.builders.attributes
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiLink
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.sanitize
 
 /**
@@ -71,5 +72,5 @@ public class LinksBuilder @PublishedApi internal constructor() {
      *
      * @return A set of [ApiLink] instances.
      */
-    internal fun build(): MutableMap<String, ApiLink>? = links.ifEmpty { null }
+    internal fun build(): MutableMap<String, ApiLink>? = links.orNull()
 }

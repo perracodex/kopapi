@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.dsl.servers.delegate
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.servers.builders.ServerBuilder
+import io.github.perracodex.kopapi.utils.orNull
 
 /**
  * Configurable handling server registration.
@@ -24,5 +25,5 @@ internal class ServerDelegate : IServerConfigurable {
     /**
      * Returns the registered server configurations.
      */
-    fun build(): Set<ApiServerConfig>? = servers.ifEmpty { null }
+    fun build(): Set<ApiServerConfig>? = servers.orNull()
 }

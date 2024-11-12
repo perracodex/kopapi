@@ -12,6 +12,7 @@ import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
 import io.github.perracodex.kopapi.dsl.servers.builders.ServerConfigBuilder
 import io.github.perracodex.kopapi.dsl.servers.builders.ServerVariableBuilder
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
@@ -155,7 +156,7 @@ public class LinkBuilder internal constructor() {
             operationId = operationId?.trimOrNull(),
             operationRef = operationRef?.trimOrNull(),
             description = description.trimOrNull(),
-            parameters = parameters.ifEmpty { null },
+            parameters = parameters.orNull(),
             requestBody = requestBody.trimOrNull(),
             server = serverConfig
         )

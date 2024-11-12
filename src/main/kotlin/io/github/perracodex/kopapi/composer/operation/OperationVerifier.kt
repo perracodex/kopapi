@@ -6,6 +6,7 @@ package io.github.perracodex.kopapi.composer.operation
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
+import io.github.perracodex.kopapi.utils.orNull
 
 @ComposerApi
 internal object OperationVerifier {
@@ -28,7 +29,7 @@ internal object OperationVerifier {
                 errors.add(it)
             }
 
-            return errors.ifEmpty { null }
+            return errors.orNull()
         } else {
             null
         }

@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.dsl.parameters.builders
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.orNull
 import io.ktor.http.*
 import kotlin.reflect.typeOf
 
@@ -238,5 +239,5 @@ public class ParametersBuilder internal constructor(
      * Returns the registered parameters.
      */
     @PublishedApi
-    internal fun build(): Set<ApiParameter>? = _config.parameters.ifEmpty { null }
+    internal fun build(): Set<ApiParameter>? = _config.parameters.orNull()
 }

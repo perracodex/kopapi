@@ -16,6 +16,7 @@ import io.github.perracodex.kopapi.dsl.schema.delegate.SchemaAttributeDelegate
 import io.github.perracodex.kopapi.dsl.schema.elements.ApiSchemaAttributes
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.Composition
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
@@ -191,8 +192,8 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
             description = description.trimOrNull(),
             required = required,
             composition = contentComposition,
-            content = contentMap.ifEmpty { null },
-            multipartContent = _config.multipartParts.ifEmpty { null },
+            content = contentMap.orNull(),
+            multipartContent = _config.multipartParts.orNull(),
             examples = examplesDelegate.build()
         )
     }

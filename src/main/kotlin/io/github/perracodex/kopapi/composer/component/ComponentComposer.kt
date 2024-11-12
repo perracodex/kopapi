@@ -10,6 +10,7 @@ import io.github.perracodex.kopapi.schema.facets.ElementSchema
 import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
 import io.github.perracodex.kopapi.schema.facets.NullableSchema
 import io.github.perracodex.kopapi.schema.facets.ObjectSchema
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.trimOrNull
 
 /**
@@ -32,7 +33,7 @@ internal object ComponentComposer {
             components[typeSchema.name] = schemaFacet
         }
 
-        return components.ifEmpty { null }
+        return components.orNull()
     }
 
     /**
@@ -69,8 +70,8 @@ internal object ComponentComposer {
                     description = schema.description.trimOrNull(),
                     defaultValue = schema.defaultValue,
                     examples = schema.examples,
-                    properties = properties.ifEmpty { null },
-                    required = required.ifEmpty { null }
+                    properties = properties.orNull(),
+                    required = required.orNull()
                 )
             }
 

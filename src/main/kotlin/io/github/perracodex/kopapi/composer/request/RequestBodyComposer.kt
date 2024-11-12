@@ -18,6 +18,7 @@ import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.types.ApiFormat
 import io.github.perracodex.kopapi.types.ApiType
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.trimOrNull
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -174,7 +175,7 @@ internal object RequestBodyComposer {
             val schema: MultipartObject.Object = MultipartObject.Object(
                 description = apiMultipart.description.trimOrNull(),
                 properties = properties,
-                requiredFields = requiredFields.ifEmpty { null },
+                requiredFields = requiredFields.orNull(),
                 encoding = encodings,
             )
 

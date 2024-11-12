@@ -19,6 +19,7 @@ import io.github.perracodex.kopapi.dsl.security.delegate.SecurityDelegate
 import io.github.perracodex.kopapi.dsl.servers.delegate.IServerConfigurable
 import io.github.perracodex.kopapi.dsl.servers.delegate.ServerDelegate
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.sanitize
 import io.github.perracodex.kopapi.utils.string.MultilineString
 import io.github.perracodex.kopapi.utils.string.SpacedString
@@ -461,7 +462,7 @@ public class ApiOperationBuilder internal constructor(
         return ApiOperation(
             path = endpointPath,
             method = method,
-            tags = _config.tags.ifEmpty { null },
+            tags = _config.tags.orNull(),
             summary = summary.trimOrNull(),
             description = description.trimOrNull(),
             operationId = operationId.trimOrNull()?.sanitize(),

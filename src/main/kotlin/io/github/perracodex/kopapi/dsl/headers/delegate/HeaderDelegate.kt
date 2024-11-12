@@ -8,6 +8,7 @@ import io.github.perracodex.kopapi.dsl.headers.builders.HeadersBuilder
 import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.utils.orNull
 import io.github.perracodex.kopapi.utils.sanitize
 
 /**
@@ -47,5 +48,5 @@ internal class HeaderDelegate internal constructor() : IHeaderConfigurable {
     /**
      * Returns the registered headers.
      */
-    fun build(): Map<String, ApiHeader>? = headers.ifEmpty { null }
+    fun build(): Map<String, ApiHeader>? = headers.orNull()
 }

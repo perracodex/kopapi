@@ -10,6 +10,7 @@ import io.github.perracodex.kopapi.dsl.security.builders.*
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.types.AuthMethod
 import io.github.perracodex.kopapi.types.SecurityLocation
+import io.github.perracodex.kopapi.utils.orNull
 import io.ktor.http.*
 
 /**
@@ -156,5 +157,5 @@ internal class SecurityDelegate : ISecurityConfigurable {
     /**
      * Returns the registered security schemes.
      */
-    fun build(): Set<ApiSecurityScheme>? = securitySchemes.ifEmpty { null }?.toSet()
+    fun build(): Set<ApiSecurityScheme>? = securitySchemes.orNull()?.toSet()
 }
