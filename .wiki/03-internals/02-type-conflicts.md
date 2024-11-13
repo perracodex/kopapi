@@ -27,8 +27,6 @@ use annotations such as `@SerialName` in Kotlinx Serialization, or `@JsonTypeNam
 Suppose you have two classes named `User` in different packages:
 
 ```kotlin
-package com.example.admin
-
 data class User(
   val id: Uuid,
   val adminLevel: Int
@@ -36,8 +34,6 @@ data class User(
 ```
 
 ```kotlin
-package com.example.customer
-
 data class User(
   val id: Uuid,
   val loyaltyPoints: Int,

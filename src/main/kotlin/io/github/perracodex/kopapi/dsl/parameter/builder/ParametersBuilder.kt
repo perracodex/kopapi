@@ -8,7 +8,6 @@ import io.github.perracodex.kopapi.dsl.marker.KopapiDsl
 import io.github.perracodex.kopapi.dsl.operation.element.ApiParameter
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.util.orNull
-import io.ktor.http.*
 import kotlin.reflect.typeOf
 
 /**

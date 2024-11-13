@@ -6,13 +6,11 @@ package io.github.perracodex.kopapi.dsl.operation.element
 
 import com.fasterxml.jackson.annotation.JsonValue
 import io.github.perracodex.kopapi.dsl.example.element.IExample
-import io.github.perracodex.kopapi.dsl.operation.element.ApiParameter.Location
 import io.github.perracodex.kopapi.dsl.parameter.builder.ParametersBuilder
 import io.github.perracodex.kopapi.dsl.schema.element.ApiSchemaAttributes
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.type.DefaultValue
 import io.github.perracodex.kopapi.type.ParameterStyle
-import io.ktor.http.*
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 

@@ -8,7 +8,6 @@ import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
 import io.github.perracodex.kopapi.schema.facet.ElementSchema
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.util.*
 import kotlin.reflect.KClass
 import kotlin.uuid.Uuid
 
@@ -56,7 +55,7 @@ internal object PrimitiveFactory {
             UShortArray::class -> SchemaFactory.ofArray(items = SchemaFactory.ofInt32())
 
             // UUID Types.
-            Uuid::class, UUID::class -> SchemaFactory.ofUuid()
+            Uuid::class, java.util.UUID::class -> SchemaFactory.ofUuid()
 
             // Kotlin Date/Time Types.
             kotlinx.datetime.LocalDate::class -> SchemaFactory.ofDate()

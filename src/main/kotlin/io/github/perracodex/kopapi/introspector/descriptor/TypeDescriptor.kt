@@ -66,7 +66,7 @@ internal object TypeDescriptor {
         val classifier: KClassifier = kType.classifier ?: return false
         return !isPrimitiveArray(classifier = classifier) &&
                 kType.arguments.firstOrNull() != null &&
-                ((classifier as? KClass<*>)?.javaObjectType?.isArray ?: false)
+                ((classifier as? KClass<*>)?.javaObjectType?.isArray == true)
     }
 
     /**
