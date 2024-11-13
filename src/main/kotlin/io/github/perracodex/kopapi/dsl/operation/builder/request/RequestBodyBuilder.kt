@@ -78,6 +78,7 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
      *
      * @param T The type of the request body.
      */
+    @Suppress("DuplicatedCode")
     public inline fun <reified T : Any> addType(noinline builder: TypeConfig.() -> Unit = {}) {
         // Ensure there is always a default content type.
         if (contentType.isEmpty()) {

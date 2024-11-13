@@ -81,6 +81,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
      *
      * @param T The type of the response.
      */
+    @Suppress("DuplicatedCode")
     public inline fun <reified T : Any> addType(noinline builder: TypeConfig.() -> Unit = {}) {
         if (T::class == Unit::class || T::class == Nothing::class || T::class == Any::class) {
             return
