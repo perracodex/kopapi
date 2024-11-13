@@ -38,7 +38,7 @@ internal object NetworkUtils {
 
             // Determine if SSL is enabled based on environment configurations.
             val sslEnabled: Boolean = environment.config.propertyOrNull("ktor.deployment.ssl")
-                ?.getString()?.toBoolean() == true
+                ?.getString().toBoolean()
 
             // Select the appropriate protocol and default port based on SSL configuration.
             val (protocol, defaultPort) = if (sslEnabled) {

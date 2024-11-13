@@ -222,7 +222,7 @@ internal data class MetadataDescriptor(
             return runCatching {
                 kClass.primaryConstructor?.parameters?.find { argument ->
                     argument.name == property.name
-                }?.let { !it.isOptional } == true // Assuming true if the parameter is not found.
+                }?.isOptional == false // Assuming true if the parameter is not found.
             }.onFailure {
                 tracer.error(
                     message = "Unable to determine if property is required by constructor. Field: $property",
