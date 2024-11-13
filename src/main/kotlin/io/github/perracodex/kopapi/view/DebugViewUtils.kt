@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.serialization.SerializationUtils
-import io.github.perracodex.kopapi.types.OpenApiFormat
+import io.github.perracodex.kopapi.type.OpenApiFormat
 import io.github.perracodex.kopapi.view.annotation.DebugViewApi
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async

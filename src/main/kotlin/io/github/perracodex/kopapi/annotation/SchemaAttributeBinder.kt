@@ -4,10 +4,10 @@
 
 package io.github.perracodex.kopapi.annotation
 
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
-import io.github.perracodex.kopapi.types.ApiType
-import io.github.perracodex.kopapi.utils.orNull
-import io.github.perracodex.kopapi.utils.trimOrNull
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
+import io.github.perracodex.kopapi.type.ApiType
+import io.github.perracodex.kopapi.util.orNull
+import io.github.perracodex.kopapi.util.trimOrNull
 
 /**
  * Utility class for binding parsed annotated attributes to [ElementSchema] instances.

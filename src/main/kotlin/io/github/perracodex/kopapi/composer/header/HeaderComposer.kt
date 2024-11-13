@@ -6,13 +6,13 @@ package io.github.perracodex.kopapi.composer.header
 
 import io.github.perracodex.kopapi.annotation.SchemaAttributeUtils
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiHeader
+import io.github.perracodex.kopapi.dsl.operation.element.ApiHeader
 import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.schema.SchemaRegistry
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
 import io.github.perracodex.kopapi.system.KopapiException
-import io.github.perracodex.kopapi.utils.orNull
-import io.github.perracodex.kopapi.utils.trimOrNull
+import io.github.perracodex.kopapi.util.orNull
+import io.github.perracodex.kopapi.util.trimOrNull
 import io.ktor.http.*
 import kotlin.collections.component1
 import kotlin.collections.component2

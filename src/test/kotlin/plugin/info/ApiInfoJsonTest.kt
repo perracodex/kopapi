@@ -4,7 +4,7 @@
 
 package plugin.info
 
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiInfo
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.serialization.SerializationUtils

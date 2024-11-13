@@ -4,7 +4,7 @@
 
 package swagger
 
-import io.github.perracodex.kopapi.dsl.plugin.builders.SwaggerBuilder
+import io.github.perracodex.kopapi.dsl.plugin.builder.SwaggerBuilder
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.ktor.client.request.*

@@ -4,10 +4,10 @@
 
 package plugin.basic
 
-import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
+import io.github.perracodex.kopapi.dsl.plugin.builder.ApiDocsBuilder
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
-import io.github.perracodex.kopapi.types.*
+import io.github.perracodex.kopapi.type.*
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import org.junit.jupiter.api.BeforeEach

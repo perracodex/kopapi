@@ -4,9 +4,9 @@
 
 package io.github.perracodex.kopapi.dsl.schema.delegate
 
-import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
-import io.github.perracodex.kopapi.dsl.schema.builders.SchemaAttributeBuilder
-import io.github.perracodex.kopapi.dsl.schema.elements.ApiSchemaAttributes
+import io.github.perracodex.kopapi.dsl.marker.KopapiDsl
+import io.github.perracodex.kopapi.dsl.schema.builder.SchemaAttributeBuilder
+import io.github.perracodex.kopapi.dsl.schema.element.ApiSchemaAttributes
 
 /**
  * Handles the registration of schema attributes.

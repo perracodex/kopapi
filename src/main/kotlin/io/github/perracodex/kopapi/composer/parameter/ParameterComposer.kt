@@ -6,13 +6,13 @@ package io.github.perracodex.kopapi.composer.parameter
 
 import io.github.perracodex.kopapi.annotation.SchemaAttributeUtils
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
+import io.github.perracodex.kopapi.dsl.operation.element.ApiParameter
 import io.github.perracodex.kopapi.schema.SchemaRegistry
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
-import io.github.perracodex.kopapi.types.DefaultValue
-import io.github.perracodex.kopapi.utils.trimOrNull
+import io.github.perracodex.kopapi.type.DefaultValue
+import io.github.perracodex.kopapi.util.trimOrNull
 
 /**
  * Responsible for composing the parameters section of the OpenAPI schema.

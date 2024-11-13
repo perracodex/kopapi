@@ -6,9 +6,9 @@ package introspection.array
 
 import io.github.perracodex.kopapi.introspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.introspector.schema.TypeSchema
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
-import io.github.perracodex.kopapi.types.ApiFormat
-import io.github.perracodex.kopapi.types.ApiType
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
+import io.github.perracodex.kopapi.type.ApiFormat
+import io.github.perracodex.kopapi.type.ApiType
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection

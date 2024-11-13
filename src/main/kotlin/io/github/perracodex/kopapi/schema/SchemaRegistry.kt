@@ -9,16 +9,16 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.operation.OperationVerifier
 import io.github.perracodex.kopapi.composer.request.RequestBodyComposer
 import io.github.perracodex.kopapi.composer.response.ResponseComposer
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
-import io.github.perracodex.kopapi.dsl.path.elements.ApiPath
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
+import io.github.perracodex.kopapi.dsl.operation.element.ApiOperation
+import io.github.perracodex.kopapi.dsl.path.element.ApiPath
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiConfiguration
 import io.github.perracodex.kopapi.introspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.introspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.introspector.schema.TypeSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
-import io.github.perracodex.kopapi.types.OpenApiFormat
+import io.github.perracodex.kopapi.type.OpenApiFormat
 import java.util.*
 
 import kotlin.collections.set

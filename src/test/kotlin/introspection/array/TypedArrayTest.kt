@@ -6,10 +6,10 @@ package introspection.array
 
 import io.github.perracodex.kopapi.introspector.TypeSchemaProvider
 import io.github.perracodex.kopapi.introspector.schema.TypeSchema
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
-import io.github.perracodex.kopapi.schema.facets.SchemaProperty
-import io.github.perracodex.kopapi.types.ApiFormat
-import io.github.perracodex.kopapi.types.ApiType
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
+import io.github.perracodex.kopapi.schema.facet.SchemaProperty
+import io.github.perracodex.kopapi.type.ApiFormat
+import io.github.perracodex.kopapi.type.ApiType
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 import kotlin.test.Test

@@ -2,7 +2,7 @@
 
 ```kotlin
 fun Route.createEmployeeRoute() {
-    post("v1/employees") {
+    post("/api/v1/employees") {
         // Implement as usual
     } api {
         tags = setOf("Employee")
@@ -25,7 +25,7 @@ fun Route.createEmployeeRoute() {
 
 ```kotlin  
 fun Route.createEmployeeRoute() {
-    post("v1/employees") {
+    post("/api/v1/employees") {
         // Implement as usual
     } api {
         tags = setOf("Employee")

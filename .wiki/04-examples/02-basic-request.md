@@ -4,7 +4,7 @@
 
 ```kotlin
 fun Route.findEmployeeByIdRoute() {
-    get("v1/employees/{employee_id}") {
+    get("/api/v1/employees/{employee_id}") {
         // Implement as usual
     } api {
         tags = setOf("Employee")
@@ -28,7 +28,7 @@ fun Route.findEmployeeByIdRoute() {
 
 ```kotlin
 fun Route.schedulerDashboardRoute() {
-    get("scheduler/dashboard/section_id/{group_id?}") {
+    get("/admin/scheduler/dashboard/section_id/{group_id?}") {
         // Implement as usual
     } api {
         tags = setOf("Scheduler - Maintenance")
@@ -55,7 +55,7 @@ fun Route.schedulerDashboardRoute() {
 
 ```kotlin
 fun Route.findAllEmployeesRoute() {
-    get("v1/employees/{page?}/{size?}") {
+    get("/api/v1/employees/{page?}/{size?}") {
         // Implement as usual
     } api {
         tags = setOf("Employee")

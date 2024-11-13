@@ -5,8 +5,8 @@
 package io.github.perracodex.kopapi.composer.operation
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
-import io.github.perracodex.kopapi.utils.orNull
+import io.github.perracodex.kopapi.dsl.operation.element.ApiOperation
+import io.github.perracodex.kopapi.util.orNull
 
 @ComposerApi
 internal object OperationVerifier {

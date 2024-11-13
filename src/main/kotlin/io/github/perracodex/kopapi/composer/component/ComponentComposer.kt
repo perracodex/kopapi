@@ -6,12 +6,12 @@ package io.github.perracodex.kopapi.composer.component
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.introspector.schema.TypeSchema
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
-import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
-import io.github.perracodex.kopapi.schema.facets.NullableSchema
-import io.github.perracodex.kopapi.schema.facets.ObjectSchema
-import io.github.perracodex.kopapi.utils.orNull
-import io.github.perracodex.kopapi.utils.trimOrNull
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
+import io.github.perracodex.kopapi.schema.facet.ISchemaFacet
+import io.github.perracodex.kopapi.schema.facet.NullableSchema
+import io.github.perracodex.kopapi.schema.facet.ObjectSchema
+import io.github.perracodex.kopapi.util.orNull
+import io.github.perracodex.kopapi.util.trimOrNull
 
 /**
  * Composes the `Components` section of the OpenAPI schema.

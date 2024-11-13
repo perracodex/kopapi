@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.dsl.security.delegate
 
-import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
-import io.github.perracodex.kopapi.dsl.security.builders.*
+import io.github.perracodex.kopapi.dsl.marker.KopapiDsl
+import io.github.perracodex.kopapi.dsl.security.builder.*
 import io.ktor.http.*
 
 /**

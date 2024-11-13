@@ -4,13 +4,13 @@
 
 package io.github.perracodex.kopapi.dsl.security.delegate
 
-import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.dsl.security.builders.*
+import io.github.perracodex.kopapi.dsl.marker.KopapiDsl
+import io.github.perracodex.kopapi.dsl.operation.element.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.security.builder.*
 import io.github.perracodex.kopapi.system.KopapiException
-import io.github.perracodex.kopapi.types.AuthMethod
-import io.github.perracodex.kopapi.types.SecurityLocation
-import io.github.perracodex.kopapi.utils.orNull
+import io.github.perracodex.kopapi.type.AuthMethod
+import io.github.perracodex.kopapi.type.SecurityLocation
+import io.github.perracodex.kopapi.util.orNull
 import io.ktor.http.*
 
 /**

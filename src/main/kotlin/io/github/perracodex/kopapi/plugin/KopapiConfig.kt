@@ -4,21 +4,21 @@
 
 package io.github.perracodex.kopapi.plugin
 
-import io.github.perracodex.kopapi.dsl.markers.KopapiDsl
-import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
-import io.github.perracodex.kopapi.dsl.plugin.builders.InfoBuilder
-import io.github.perracodex.kopapi.dsl.plugin.builders.TagBuilder
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
+import io.github.perracodex.kopapi.dsl.marker.KopapiDsl
+import io.github.perracodex.kopapi.dsl.plugin.builder.ApiDocsBuilder
+import io.github.perracodex.kopapi.dsl.plugin.builder.InfoBuilder
+import io.github.perracodex.kopapi.dsl.plugin.builder.TagBuilder
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiConfiguration
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiDocs
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiInfo
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiTag
 import io.github.perracodex.kopapi.dsl.security.delegate.ISecurityConfigurable
 import io.github.perracodex.kopapi.dsl.security.delegate.SecurityDelegate
-import io.github.perracodex.kopapi.dsl.servers.builders.ServerBuilder
-import io.github.perracodex.kopapi.dsl.servers.delegate.IServerConfigurable
-import io.github.perracodex.kopapi.dsl.servers.delegate.ServerDelegate
-import io.github.perracodex.kopapi.utils.NetworkUtils
-import io.github.perracodex.kopapi.utils.orNull
+import io.github.perracodex.kopapi.dsl.server.builder.ServerBuilder
+import io.github.perracodex.kopapi.dsl.server.delegate.IServerConfigurable
+import io.github.perracodex.kopapi.dsl.server.delegate.ServerDelegate
+import io.github.perracodex.kopapi.util.NetworkUtils
+import io.github.perracodex.kopapi.util.orNull
 
 /**
  * Configuration for the [Kopapi] plugin.

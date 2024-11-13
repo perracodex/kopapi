@@ -11,8 +11,8 @@ import io.github.perracodex.kopapi.annotation.SchemaAnnotationAttributes
 import io.github.perracodex.kopapi.annotation.SchemaAnnotationParser
 import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
 import io.github.perracodex.kopapi.system.Tracer
-import io.github.perracodex.kopapi.utils.cleanName
-import io.github.perracodex.kopapi.utils.safeName
+import io.github.perracodex.kopapi.util.cleanName
+import io.github.perracodex.kopapi.util.safeName
 import kotlinx.serialization.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1

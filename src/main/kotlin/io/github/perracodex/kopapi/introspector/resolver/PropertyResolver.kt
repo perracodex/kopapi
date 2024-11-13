@@ -8,10 +8,10 @@ import io.github.perracodex.kopapi.annotation.SchemaAttributeBinder
 import io.github.perracodex.kopapi.introspector.TypeIntrospector
 import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
 import io.github.perracodex.kopapi.introspector.descriptor.MetadataDescriptor
+import io.github.perracodex.kopapi.introspector.descriptor.resolveArgumentBinding
 import io.github.perracodex.kopapi.introspector.schema.TypeSchema
-import io.github.perracodex.kopapi.introspector.utils.resolveArgumentBinding
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
-import io.github.perracodex.kopapi.schema.facets.SchemaProperty
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
+import io.github.perracodex.kopapi.schema.facet.SchemaProperty
 import io.github.perracodex.kopapi.system.Tracer
 import java.lang.reflect.Field
 import kotlin.reflect.*

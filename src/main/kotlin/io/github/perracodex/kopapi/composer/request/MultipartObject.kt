@@ -7,9 +7,9 @@ package io.github.perracodex.kopapi.composer.request
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
-import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
-import io.github.perracodex.kopapi.types.ApiType
-import io.github.perracodex.kopapi.utils.safeName
+import io.github.perracodex.kopapi.schema.facet.ISchemaFacet
+import io.github.perracodex.kopapi.type.ApiType
+import io.github.perracodex.kopapi.util.safeName
 import io.ktor.http.content.*
 
 /**

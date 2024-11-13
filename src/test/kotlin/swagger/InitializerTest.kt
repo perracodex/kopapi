@@ -4,11 +4,11 @@
 
 package swagger
 
-import io.github.perracodex.kopapi.dsl.plugin.builders.ApiDocsBuilder
-import io.github.perracodex.kopapi.dsl.plugin.builders.SwaggerBuilder
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
+import io.github.perracodex.kopapi.dsl.plugin.builder.ApiDocsBuilder
+import io.github.perracodex.kopapi.dsl.plugin.builder.SwaggerBuilder
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiDocs
 import io.github.perracodex.kopapi.plugin.Kopapi
-import io.github.perracodex.kopapi.providers.SwaggerProvider
+import io.github.perracodex.kopapi.provider.SwaggerProvider
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.ktor.client.request.*
 import io.ktor.client.statement.*

@@ -5,11 +5,11 @@
 package io.github.perracodex.kopapi.dsl.path
 
 import io.github.perracodex.kopapi.dsl.operation.api
-import io.github.perracodex.kopapi.dsl.path.builders.ApiPathBuilder
-import io.github.perracodex.kopapi.dsl.path.elements.ApiPath
+import io.github.perracodex.kopapi.dsl.path.builder.ApiPathBuilder
+import io.github.perracodex.kopapi.dsl.path.element.ApiPath
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.system.KopapiException
-import io.github.perracodex.kopapi.utils.extractRoutePath
+import io.github.perracodex.kopapi.util.extractRoutePath
 import io.ktor.server.routing.*
 
 /**

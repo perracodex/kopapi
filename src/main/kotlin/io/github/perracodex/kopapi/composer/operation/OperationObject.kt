@@ -9,7 +9,7 @@ import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.parameter.ParameterObject
 import io.github.perracodex.kopapi.composer.request.RequestBodyObject
 import io.github.perracodex.kopapi.composer.response.ResponseObject
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiServerConfig
 
 /**
  * Represents an individual API Operation (HTTP method) within a path item.

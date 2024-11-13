@@ -4,12 +4,12 @@
 
 package io.github.perracodex.kopapi.annotation
 
-import io.github.perracodex.kopapi.dsl.examples.elements.ApiExampleArray
-import io.github.perracodex.kopapi.dsl.examples.elements.ApiInlineExample
-import io.github.perracodex.kopapi.dsl.examples.elements.IExample
+import io.github.perracodex.kopapi.dsl.example.element.ApiExampleArray
+import io.github.perracodex.kopapi.dsl.example.element.ApiInlineExample
+import io.github.perracodex.kopapi.dsl.example.element.IExample
 import io.github.perracodex.kopapi.system.Tracer
-import io.github.perracodex.kopapi.utils.orNull
-import io.github.perracodex.kopapi.utils.trimOrNull
+import io.github.perracodex.kopapi.util.orNull
+import io.github.perracodex.kopapi.util.trimOrNull
 import java.math.BigDecimal
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass

@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.routing
 
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
-import io.github.perracodex.kopapi.providers.RedocProvider
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiDocs
+import io.github.perracodex.kopapi.provider.RedocProvider
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*

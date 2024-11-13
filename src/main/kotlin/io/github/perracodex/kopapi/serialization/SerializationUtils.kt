@@ -14,7 +14,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.github.perracodex.kopapi.serialization.serializers.*
+import io.github.perracodex.kopapi.serialization.serializer.*
 import io.ktor.http.*
 import kotlin.reflect.KType
 

@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.introspector.schema.factory
 
 import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*

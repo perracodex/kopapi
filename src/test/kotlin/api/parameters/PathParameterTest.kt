@@ -6,13 +6,13 @@ package api.parameters
 
 import com.fasterxml.jackson.databind.JsonNode
 import io.github.perracodex.kopapi.dsl.operation.api
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
-import io.github.perracodex.kopapi.dsl.parameters.pathParameter
+import io.github.perracodex.kopapi.dsl.operation.element.ApiParameter
+import io.github.perracodex.kopapi.dsl.parameter.pathParameter
 import io.github.perracodex.kopapi.plugin.Kopapi
 import io.github.perracodex.kopapi.schema.SchemaRegistry
-import io.github.perracodex.kopapi.types.ApiFormat
-import io.github.perracodex.kopapi.types.ApiType
-import io.github.perracodex.kopapi.types.OpenApiFormat
+import io.github.perracodex.kopapi.type.ApiFormat
+import io.github.perracodex.kopapi.type.ApiType
+import io.github.perracodex.kopapi.type.OpenApiFormat
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*

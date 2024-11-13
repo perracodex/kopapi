@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.annotation
 
-import io.github.perracodex.kopapi.dsl.schema.elements.ApiSchemaAttributes
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
+import io.github.perracodex.kopapi.dsl.schema.element.ApiSchemaAttributes
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
 
 /**
  * Provides utility functions for working with schema attributes.

@@ -6,10 +6,10 @@ package io.github.perracodex.kopapi.introspector.schema.factory
 
 import io.github.perracodex.kopapi.annotation.SchemaAnnotationAttributes
 import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
-import io.github.perracodex.kopapi.types.ApiFormat
-import io.github.perracodex.kopapi.types.ApiType
-import io.github.perracodex.kopapi.utils.trimOrNull
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
+import io.github.perracodex.kopapi.type.ApiFormat
+import io.github.perracodex.kopapi.type.ApiType
+import io.github.perracodex.kopapi.util.trimOrNull
 import kotlin.reflect.KType
 
 /**

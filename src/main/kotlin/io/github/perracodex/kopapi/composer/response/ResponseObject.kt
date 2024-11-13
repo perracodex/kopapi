@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.composer.response
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.header.HeaderObject
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiLink
+import io.github.perracodex.kopapi.dsl.operation.element.ApiLink
 import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.ktor.http.*
 import java.util.*

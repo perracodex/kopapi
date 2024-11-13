@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.system
 
-import io.github.perracodex.kopapi.utils.safeName
+import io.github.perracodex.kopapi.util.safeName
 import io.ktor.util.logging.*
 import org.slf4j.Logger
 import kotlin.reflect.KFunction
@@ -60,6 +60,27 @@ internal class Tracer(private val logger: Logger) {
         logger.error(message, cause)
     }
 
+    /**
+     * Logs a message with the specified severity level.
+     *
+     * #### Usage
+     *
+     * - Class-based logging:
+     * ```
+     * class SomeClass {
+     *      private val tracer = Tracer<SomeClass>()
+     *
+     *      fun someFunction() {
+     *          tracer.info("Logging message.")
+     *      }
+     * }
+     * ```
+     *
+     * - Top-level and extension functions:
+     * ```
+     * Tracer(ref = ::someTopLevelFunction).info("Logging message.")
+     * ```
+     */
     companion object {
         /** Toggle for full package name or simple name. */
         const val LOG_FULL_PACKAGE: Boolean = true
@@ -76,6 +97,17 @@ internal class Tracer(private val logger: Logger) {
         /**
          * Creates a new [Tracer] instance for a given class.
          * Intended for classes where the class context is applicable.
+         *
+         * #### Usage
+         * ```
+         * class SomeClass {
+         *      private val tracer = Tracer<SomeClass>()
+         *
+         *      fun someFunction() {
+         *          tracer.info("Logging message.")
+         *      }
+         * }
+         * ```
          *
          * @param T The class for which the logger is being created.
          * @return Tracer instance with a logger named after the class.
@@ -99,6 +131,11 @@ internal class Tracer(private val logger: Logger) {
         /**
          * Creates a new [Tracer] instance intended for top-level and extension functions
          * where class context is not applicable.
+         *
+         * #### Usage
+         * ```
+         * Tracer(ref = ::someTopLevelFunction).info("Logging message.")
+         * ```
          *
          * @param ref The source reference to the top-level or extension function.
          * @return Tracer instance named after the function and its declaring class (if available).

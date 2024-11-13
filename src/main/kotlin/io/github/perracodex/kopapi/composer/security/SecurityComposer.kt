@@ -5,11 +5,11 @@
 package io.github.perracodex.kopapi.composer.security
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
+import io.github.perracodex.kopapi.dsl.operation.element.ApiOperation
+import io.github.perracodex.kopapi.dsl.operation.element.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiConfiguration
 import io.github.perracodex.kopapi.system.Tracer
-import io.github.perracodex.kopapi.utils.orNull
+import io.github.perracodex.kopapi.util.orNull
 
 /**
  * Responsible for composing the security-related sections of the OpenAPI schema.

@@ -6,9 +6,9 @@ package io.github.perracodex.kopapi.composer.parameter
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
-import io.github.perracodex.kopapi.dsl.examples.elements.IExample
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiParameter
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
+import io.github.perracodex.kopapi.dsl.example.element.IExample
+import io.github.perracodex.kopapi.dsl.operation.element.ApiParameter
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
 
 /**
  * Represents an API operation parameter in the OpenAPI specification.

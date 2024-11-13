@@ -13,10 +13,10 @@ import io.github.perracodex.kopapi.introspector.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.introspector.schema.TypeSchema
 import io.github.perracodex.kopapi.introspector.schema.factory.PrimitiveFactory
 import io.github.perracodex.kopapi.introspector.schema.factory.SchemaFactory
-import io.github.perracodex.kopapi.schema.facets.ElementSchema
-import io.github.perracodex.kopapi.schema.facets.SchemaProperty
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
+import io.github.perracodex.kopapi.schema.facet.SchemaProperty
 import io.github.perracodex.kopapi.system.Tracer
-import io.github.perracodex.kopapi.utils.nativeName
+import io.github.perracodex.kopapi.util.nativeName
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KProperty1

@@ -4,7 +4,7 @@
 
 package io.github.perracodex.kopapi.routing
 
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiDocs
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.ktor.http.*
 import io.ktor.server.response.*

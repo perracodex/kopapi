@@ -11,22 +11,22 @@ import io.github.perracodex.kopapi.composer.operation.OperationComposer
 import io.github.perracodex.kopapi.composer.security.SecurityComposer
 import io.github.perracodex.kopapi.composer.security.SecurityObject
 import io.github.perracodex.kopapi.composer.security.TopLevelSecurityRequirement
-import io.github.perracodex.kopapi.composer.tags.TagsComposer
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.dsl.path.elements.ApiPath
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
+import io.github.perracodex.kopapi.composer.tag.TagComposer
+import io.github.perracodex.kopapi.dsl.operation.element.ApiOperation
+import io.github.perracodex.kopapi.dsl.operation.element.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.path.element.ApiPath
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiConfiguration
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiInfo
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiServerConfig
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiTag
 import io.github.perracodex.kopapi.introspector.schema.SchemaConflicts
 import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.schema.SchemaRegistry
-import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
+import io.github.perracodex.kopapi.schema.facet.ISchemaFacet
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.system.Tracer
-import io.github.perracodex.kopapi.types.OpenApiFormat
-import io.github.perracodex.kopapi.utils.trimOrNull
+import io.github.perracodex.kopapi.type.OpenApiFormat
+import io.github.perracodex.kopapi.util.trimOrNull
 import io.swagger.v3.parser.OpenAPIV3Parser
 import io.swagger.v3.parser.core.models.ParseOptions
 import io.swagger.v3.parser.core.models.SwaggerParseResult
@@ -64,7 +64,7 @@ internal class SchemaComposer(
         val serversSection: List<ApiServerConfig>? = apiConfiguration.apiServers?.toList()
 
         // Compose the `Tags` section.
-        val tags: List<ApiTag>? = TagsComposer(
+        val tags: List<ApiTag>? = TagComposer(
             apiConfiguration = apiConfiguration,
             apiOperations = apiOperations
         ).compose()

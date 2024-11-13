@@ -7,9 +7,9 @@ package io.github.perracodex.kopapi.introspector.resolver
 import io.github.perracodex.kopapi.introspector.TypeIntrospector
 import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
 import io.github.perracodex.kopapi.introspector.descriptor.ElementName
+import io.github.perracodex.kopapi.introspector.descriptor.resolveTypeBinding
 import io.github.perracodex.kopapi.introspector.schema.TypeSchema
 import io.github.perracodex.kopapi.introspector.schema.factory.SchemaFactory
-import io.github.perracodex.kopapi.introspector.utils.resolveTypeBinding
 import io.github.perracodex.kopapi.system.Tracer
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType

@@ -4,8 +4,8 @@
 
 package io.github.perracodex.kopapi.routing
 
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiDocs
-import io.github.perracodex.kopapi.providers.SwaggerProvider
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiDocs
+import io.github.perracodex.kopapi.provider.SwaggerProvider
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.http.content.*

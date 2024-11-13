@@ -2,7 +2,7 @@
 
 ```kotlin  
 fun Route.createTokenRoute() {
-    post("auth/token/create") {
+    post("/auth/token/create") {
         // Implement as usual
     } api {
         tags = setOf("Token")

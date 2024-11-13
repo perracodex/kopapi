@@ -13,13 +13,13 @@ import io.github.perracodex.kopapi.composer.response.ResponseComposer
 import io.github.perracodex.kopapi.composer.response.ResponseObject
 import io.github.perracodex.kopapi.composer.security.SecurityObject
 import io.github.perracodex.kopapi.composer.security.SecurityRequirement
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiOperation
-import io.github.perracodex.kopapi.dsl.path.elements.ApiPath
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
+import io.github.perracodex.kopapi.dsl.operation.element.ApiOperation
+import io.github.perracodex.kopapi.dsl.path.element.ApiPath
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiServerConfig
 import io.github.perracodex.kopapi.schema.OpenApiSchema
 import io.github.perracodex.kopapi.system.Tracer
-import io.github.perracodex.kopapi.utils.orNull
-import io.github.perracodex.kopapi.utils.trimOrNull
+import io.github.perracodex.kopapi.util.orNull
+import io.github.perracodex.kopapi.util.trimOrNull
 
 /**
  * Responsible for composing the `paths` section of the OpenAPI schema.

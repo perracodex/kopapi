@@ -4,14 +4,14 @@
 
 package io.github.perracodex.kopapi.plugin
 
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiConfiguration
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiConfiguration
 import io.github.perracodex.kopapi.routing.debugRoute
 import io.github.perracodex.kopapi.routing.openApiRoute
 import io.github.perracodex.kopapi.routing.redocRoute
 import io.github.perracodex.kopapi.routing.swaggerRoute
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.system.Tracer
-import io.github.perracodex.kopapi.utils.NetworkUtils
+import io.github.perracodex.kopapi.util.NetworkUtils
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 

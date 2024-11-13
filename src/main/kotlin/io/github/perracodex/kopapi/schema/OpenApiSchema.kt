@@ -9,12 +9,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.composer.operation.OperationObject
 import io.github.perracodex.kopapi.composer.parameter.ParameterObject
-import io.github.perracodex.kopapi.dsl.examples.elements.IExample
-import io.github.perracodex.kopapi.dsl.operation.elements.ApiSecurityScheme
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiInfo
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiServerConfig
-import io.github.perracodex.kopapi.dsl.plugin.elements.ApiTag
-import io.github.perracodex.kopapi.schema.facets.ISchemaFacet
+import io.github.perracodex.kopapi.dsl.example.element.IExample
+import io.github.perracodex.kopapi.dsl.operation.element.ApiSecurityScheme
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiInfo
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiServerConfig
+import io.github.perracodex.kopapi.dsl.plugin.element.ApiTag
+import io.github.perracodex.kopapi.schema.facet.ISchemaFacet
 import io.github.perracodex.kopapi.system.KopapiException
 import io.ktor.http.*
 

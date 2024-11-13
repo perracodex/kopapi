@@ -4,7 +4,7 @@
 
 ```kotlin
 fun Route.findEmployeeByIdRoute() {
-    get("v1/employees/{employee_id}") {
+    get("/api/v1/employees/{employee_id}") {
         // Implement as usual
     } api {
         tags = setOf("Employee")
@@ -33,7 +33,7 @@ fun Route.findEmployeeByIdRoute() {
 
 ```kotlin
 fun Route.createEmployeeRoute() {
-    post("v1/employees") {
+    post("/api/v1/employees") {
         // Implement as usual
     } api {
         tags = setOf("Employee")
@@ -67,7 +67,7 @@ fun Route.createEmployeeRoute() {
 
 ```kotlin
 fun Route.publicRoute() {
-    get("v1/public") {
+    get("/api/v1/public") {
         // Implement as usual
     } api {
         tags = setOf("Public")
