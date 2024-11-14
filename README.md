@@ -39,11 +39,11 @@ get("/items/{data_id}/{item_id?}") {
 
 ## Installation
 
-Add the library to your project gradle dependencies. Make sure to replace `1.0.0` with the latest version.
+Add the library to your project gradle dependencies. Make sure to replace `1.0.1` with the latest version.
 
 ```kotlin
 dependencies {
-  implementation("io.github.perracodex:kopapi:1.0.0")
+  implementation("io.github.perracodex:kopapi:1.0.1")
 }
 ```
 
