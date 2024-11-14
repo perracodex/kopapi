@@ -58,36 +58,36 @@ dependencies {
 ### Wiki
 
 * ### Plugin
-  - #### [Plugin Configuration](.wiki/01-plugin/01-configuration.md)
-  - #### [Servers](.wiki/01-plugin/02-servers.md)
-  - #### [Security](.wiki/01-plugin/03-security.md)
-  - #### [Top Level Tags](.wiki/01-plugin/04-tags.md)
+  - #### [Plugin Configuration](https://github.com/perracodex/kopapi/wiki/01.-Plugin:-Configuration)
+  - #### [Servers](https://github.com/perracodex/kopapi/wiki/02.-Plugin:-Servers)
+  - #### [Security](https://github.com/perracodex/kopapi/wiki/03.-Plugin:-Security)
+  - #### [Top Level Tags](https://github.com/perracodex/kopapi/wiki/04.-Plugin:-Tags)
 
 * ### API
-  - #### [API Usage](.wiki/02-api-usage/01-route-api.md)
-  - #### [Summary and Description](.wiki/02-api-usage/02-summary-description.md)
-  - #### [Path Operation Tags](.wiki/02-api-usage/03-tags.md)
-  - #### [Parameters](.wiki/02-api-usage/04-parameters.md)
-  - #### [Request Bodies](.wiki/02-api-usage/05-request-body.md)
-  - #### [Responses](.wiki/02-api-usage/06-responses.md)
-  - #### [Security](.wiki/02-api-usage/07-security.md)
-  - #### [Servers](.wiki/02-api-usage/08-servers.md)
-  - #### [Schema Annotation](.wiki/02-api-usage/09-schema-annotation.md)
-  - #### [Path-Level Metadata](.wiki/02-api-usage/10-path-level-metadata.md)
+  - #### [API Usage](https://github.com/perracodex/kopapi/wiki/05.-API-Usage:-Routes)
+  - #### [Summary and Description](https://github.com/perracodex/kopapi/wiki/06.-API-Usage:-Summary-and-Description)
+  - #### [Path Operation Tags](https://github.com/perracodex/kopapi/wiki/07.-API-Usage:-Path-Operation-Tags)
+  - #### [Parameters](https://github.com/perracodex/kopapi/wiki/08.-API-Usage:-Parameters)
+  - #### [Request Bodies](https://github.com/perracodex/kopapi/wiki/09.-API-Usage:-Request-Body)
+  - #### [Responses](https://github.com/perracodex/kopapi/wiki/10.-API-Usage:-Responses)
+  - #### [Security](https://github.com/perracodex/kopapi/wiki/11.-API-Usage:-Security)
+  - #### [Servers](https://github.com/perracodex/kopapi/wiki/12.-API-Usage:-Servers)
+  - #### [Schema Annotation](https://github.com/perracodex/kopapi/wiki/13.-API-Usage:-@Schema-Annotation)
+  - #### [Path-Level Metadata](https://github.com/perracodex/kopapi/wiki/14.-API-Usage:-Path%E2%80%90Level-Metadata)
 
 * ### Internals
-  - #### [Debug Panel](.wiki/03-internals/01-debug-panel.md)
-  - #### [Type Conflicts](.wiki/03-internals/02-type-conflicts.md)
-  - #### [Type Introspection](.wiki/03-internals/03-type-introspection.md)
+  - #### [Debug Panel](https://github.com/perracodex/kopapi/wiki/15.-Internals:-Debug-Panel)
+  - #### [Type Conflicts](https://github.com/perracodex/kopapi/wiki/16.-Internals:-Conflict-Detection)
+  - #### [Type Introspection](https://github.com/perracodex/kopapi/wiki/17.-Internals:-Type-Introspection)
 
 * ### Examples
-  - #### [Plugin Setup](.wiki/04-examples/01-plugin-setup.md)
-  - #### [Basic Request](.wiki/04-examples/02-basic-request.md)
-  - #### [Multiple Responses](.wiki/04-examples/03-multiple-responses.md)
-  - #### [RequestBody](.wiki/04-examples/04-request-body.md)
-  - #### [Multipart](.wiki/04-examples/05-multipart.md)
-  - #### [Security](.wiki/04-examples/06-security.md)
-  - #### [Schema Annotation](.wiki/04-examples/07-schema-annotation.md)
+  - #### [Plugin Setup](https://github.com/perracodex/kopapi/wiki/18.-Examples:-Plugin-Setup)
+  - #### [Basic Request](https://github.com/perracodex/kopapi/wiki/19.--Examples:-Basic-Request)
+  - #### [Multiple Responses](https://github.com/perracodex/kopapi/wiki/20.-Examples:-Multiple-Responses)
+  - #### [RequestBody](https://github.com/perracodex/kopapi/wiki/21.-Examples:-Request-Body)
+  - #### [Multipart](https://github.com/perracodex/kopapi/wiki/22.-Examples:-Multi%E2%80%90Part)
+  - #### [Security](https://github.com/perracodex/kopapi/wiki/23.-Examples:-Security)
+  - #### [Schema Annotation](https://github.com/perracodex/kopapi/wiki/24.-Examples:-Schema-Annotation)
 
 ---
 
