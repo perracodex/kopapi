@@ -33,10 +33,10 @@ internal class DebugViewUtils {
      */
     suspend fun extractSections(): DebugInfo = coroutineScope {
         val operationsOutputTask: Deferred<Map<String, DebugInfo.Section>> = async {
-            extractApiOperationSections(apiOperationJson)
+            extractApiOperationSections(apiOperations = apiOperationJson)
         }
         val schemasOutputTask: Deferred<Map<String, DebugInfo.Section>> = async {
-            extractTypeSchemaSections(typeSchemasJson)
+            extractTypeSchemaSections(typeSchemas = typeSchemasJson)
         }
 
         val allApiOperationsYamlSectionTask: Deferred<String> = async {

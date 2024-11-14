@@ -49,6 +49,23 @@ public class KopapiConfig internal constructor(
     public var debugUrl: String = DEFAULT_DEBUG_URL
 
     /**
+     * Whether to enable on-demand API schema generation.
+     *
+     * When enabled (the default), the plugin will only generate and cache the OpenAPI schema
+     * the first time it is requested, in a synchronized manner.
+     * Otherwise, it will be asynchronously generated and cached right away when the plugin is initialized
+     * so it is ready to be served on the first request.
+     *
+     * As the schema can take a while to generate, depending on the number
+     * of routes and the complexity of the types, this setting can be used
+     * to defer the generation until it is needed, or to generate it right
+     * away to avoid any delays on the first request.
+     *
+     * - Default: `true`.
+     */
+    public var onDemand: Boolean = true
+
+    /**
      * Whether to enable internal logging for the plugin. Default: `false`.
      *
      * When enabled the plugin will include additional logging information
@@ -158,6 +175,7 @@ public class KopapiConfig internal constructor(
     internal fun build(): ApiConfiguration {
         return ApiConfiguration(
             isEnabled = enabled,
+            onDemand = onDemand,
             apiDocs = apiDocs ?: ApiDocsBuilder().build(),
             debugUrl = NetworkUtils.normalizeUrl(url = debugUrl, defaultValue = DEFAULT_DEBUG_URL),
             apiInfo = apiInfo,

@@ -20,8 +20,6 @@ import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.type.OpenApiFormat
 import java.util.*
-
-import kotlin.collections.set
 import kotlin.reflect.KType
 
 /**
@@ -216,7 +214,7 @@ internal object SchemaRegistry {
      * @param section The [Section] indicating the category of the object.
      * @return A set of JSON strings representing the data for the specified section.
      */
-    fun getDebugSection(section: Section): Set<String> {
+    fun getDebugSection(section: Section): Set<String> = synchronized(this) {
         return when (section) {
             Section.API_CONFIGURATION -> getConfigurationSectionJson(
                 instance = apiConfiguration,
@@ -329,7 +327,7 @@ internal object SchemaRegistry {
      *                        may eventually be needed, such as in the debug panel.
      * @return The OpenAPI schema in the specified format.
      */
-    fun getOpenApiSchema(format: OpenApiFormat, cacheAllFormats: Boolean): String {
+    fun getOpenApiSchema(format: OpenApiFormat, cacheAllFormats: Boolean): String = synchronized(this) {
         if (!isEnabled) {
             throw KopapiException("Attempted to generate OpenAPI schema while plugin is disabled.")
         }

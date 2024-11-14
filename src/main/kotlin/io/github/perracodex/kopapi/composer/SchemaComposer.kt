@@ -50,7 +50,7 @@ internal class SchemaComposer(
      *
      * @return The OpenAPI schema in both YAML and JSON formats.
      */
-    fun compose(): OpenApiSpec {
+    fun compose(): OpenApiSpec = synchronized(this) {
         tracer.info("Initiating schema composition")
 
         // Compose the `Info` section.

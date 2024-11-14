@@ -14,6 +14,8 @@ import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.util.NetworkUtils
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Kopapi plugin that provides OpenAPI functionality.
@@ -65,4 +67,22 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     // Enable logging if the plugin is configured to do so.
     // Done as last step to allow logging of the plugin setup.
     Tracer.enabled = this.pluginConfig.enableLogging
+
+    // Generate the OpenAPI schema if the plugin is configured to do so.
+    // When on-demand is disabled, all formats are cached so they are ready for the debug panel too.
+    // This operation must be done right after the application is fully started,
+    // so that all routes are registered and available for the schema generation.
+    if (!apiConfiguration.onDemand) {
+        lateinit var applicationStartedHandler: (Application) -> Unit
+        applicationStartedHandler = {
+            application.launch(Dispatchers.IO) {
+                SchemaRegistry.getOpenApiSchema(
+                    format = apiConfiguration.apiDocs.openApiFormat,
+                    cacheAllFormats = true
+                )
+            }
+            application.monitor.unsubscribe(definition = ApplicationStarted, handler = applicationStartedHandler)
+        }
+        application.monitor.subscribe(definition = ApplicationStarted, handler = applicationStartedHandler)
+    }
 }

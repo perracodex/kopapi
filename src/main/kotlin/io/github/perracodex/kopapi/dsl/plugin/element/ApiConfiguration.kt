@@ -12,6 +12,7 @@ import io.github.perracodex.kopapi.system.KopapiException
  */
 internal data class ApiConfiguration(
     val isEnabled: Boolean,
+    val onDemand: Boolean,
     val apiDocs: ApiDocs,
     val debugUrl: String,
     val apiInfo: ApiInfo?,
