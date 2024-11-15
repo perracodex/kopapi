@@ -144,7 +144,7 @@ internal object SchemaRegistry {
      * so if the plugin is disabled, we need to clear all cached data after the application
      * starts to free up resources.
      */
-    fun clear() {
+    fun clear() = synchronized(this) {
         apiOperation.clear()
         apiPath.clear()
         typeSchemas.clear()
@@ -201,7 +201,7 @@ internal object SchemaRegistry {
      * @param type The [KType] to introspect.
      * @return The [TypeSchema] object representing the introspected type, or `null` if the type is [Unit].
      */
-    fun introspectType(type: KType): TypeSchema? {
+    fun introspectType(type: KType): TypeSchema? = synchronized(this) {
         return when (type.classifier) {
             Unit::class -> return null
             else -> introspector.introspect(kType = type)
@@ -370,7 +370,7 @@ internal object SchemaRegistry {
     /**
      * Retrieves the set of [TypeSchema] objects generated from the registered API metadata.
      */
-    fun getSchemaTypes(): Set<TypeSchema> {
+    fun getSchemaTypes(): Set<TypeSchema> = synchronized(this) {
         processTypeSchemas()
         return typeSchemas
     }
@@ -381,7 +381,7 @@ internal object SchemaRegistry {
      * @param url The [ResourceUrl] indicating the type of resource to retrieve.
      * @return The URL for the specified API documentation resource.
      */
-    fun getResourceUrl(url: ResourceUrl): String {
+    fun getResourceUrl(url: ResourceUrl): String = synchronized(this) {
         return apiConfiguration?.let { configuration ->
             when (url) {
                 ResourceUrl.OPENAPI -> configuration.apiDocs.openApiUrl
@@ -394,7 +394,7 @@ internal object SchemaRegistry {
     /**
      * Retrieves the set of errors detected during the schema generation process.
      */
-    fun getErrors(): Set<String> {
+    fun getErrors(): Set<String> = synchronized(this) {
         if (errors.isNotEmpty() || schemaConflicts.isNotEmpty()) {
             return errors + getFormattedTypeConflicts(schemaConflicts = schemaConflicts)
         }
@@ -404,7 +404,7 @@ internal object SchemaRegistry {
     /**
      * Gets the formatted type conflicts for presentation.
      */
-    fun getFormattedTypeConflicts(schemaConflicts: Set<SchemaConflicts.Conflict>): Set<String> {
+    fun getFormattedTypeConflicts(schemaConflicts: Set<SchemaConflicts.Conflict>): Set<String> = synchronized(this) {
         return schemaConflicts.map { conflict ->
             "'${conflict.name}': ${conflict.conflictingTypes.joinToString(separator = ", ") { "[$it]" }}"
         }.toSortedSet()

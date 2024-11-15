@@ -24,65 +24,102 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     name = "Kopapi",
     createConfiguration = ::KopapiConfig
 ) {
-    // Register the configuration with the schema provider.
     val apiConfiguration: ApiConfiguration = this.pluginConfig.build()
+
+    // Enable logging if the plugin is configured to do so.
+    Tracer.enabled = apiConfiguration.enableLogging
+
+    // Register the configuration with the schema provider.
     SchemaRegistry.registerApiConfiguration(apiConfiguration = apiConfiguration)
 
-    // Subscribe to the application started event to clear
-    // the schema composer when the plugin is disabled.
+    // Handle plugin disabling by clearing schema on application starting.
     if (!apiConfiguration.isEnabled) {
-        lateinit var applicationStartedHandler: (Application) -> Unit
-        applicationStartedHandler = {
+        lateinit var eventHandler: (Application) -> Unit
+        eventHandler = {
             SchemaRegistry.clear()
-            application.monitor.unsubscribe(definition = ApplicationStarting, handler = applicationStartedHandler)
+            application.monitor.unsubscribe(definition = ApplicationStarting, handler = eventHandler)
         }
-        application.monitor.subscribe(definition = ApplicationStarting, handler = applicationStartedHandler)
-    }
+        application.monitor.subscribe(definition = ApplicationStarting, handler = eventHandler)
 
-    // Exit early if the plugin is disabled.
-    if (!apiConfiguration.isEnabled) {
+        // Exit early when the plugin is disabled.
         return@createApplicationPlugin
     }
 
-    // Configure the plugin endpoints using the extracted function.
-    application.routing {
-        debugRoute(debugUrl = apiConfiguration.debugUrl)
-        openApiRoute(apiDocs = apiConfiguration.apiDocs)
-        redocRoute(apiDocs = apiConfiguration.apiDocs)
-        swaggerRoute(apiDocs = apiConfiguration.apiDocs)
+    // Setup plugin routes.
+    setupRoutes(application = application, apiConfig = apiConfiguration)
+
+    // Subscribe to the application started event to perform post-startup operations.
+    lateinit var eventHandler: (Application) -> Unit
+    eventHandler = {
+        logConfiguredEndpoints(application = application, apiConfig = apiConfiguration)
+        generateOpenApiSchema(application = application, apiConfig = apiConfiguration)
+        application.monitor.unsubscribe(definition = ApplicationStarted, handler = eventHandler)
     }
+    application.monitor.subscribe(definition = ApplicationStarted, handler = eventHandler)
+}
 
-    // Dump the configured endpoints to the log.
-    val server: String = NetworkUtils.getServerUrl(environment = application.environment)
-    Tracer<KopapiConfig>().info(
-        """
-        |Kopapi plugin enabled.
-        |  Debug: $server${apiConfiguration.debugUrl}
-        |  OpenAPI: $server${apiConfiguration.apiDocs.openApiUrl}
-        |  Swagger: $server${apiConfiguration.apiDocs.swagger.url}
-        |  ReDoc: $server${apiConfiguration.apiDocs.redocUrl}
-        """.trimMargin()
-    )
+/**
+ * Configures the routing for the Kopapi plugin.
+ *
+ * @param application The application reference.
+ * @param apiConfig The API configuration for the plugin.
+ */
+private fun setupRoutes(application: Application, apiConfig: ApiConfiguration) {
+    application.routing {
+        debugRoute(debugUrl = apiConfig.debugUrl)
+        openApiRoute(apiDocs = apiConfig.apiDocs)
+        redocRoute(apiDocs = apiConfig.apiDocs)
+        swaggerRoute(apiDocs = apiConfig.apiDocs)
+    }
+}
 
-    // Enable logging if the plugin is configured to do so.
-    // Done as last step to allow logging of the plugin setup.
-    Tracer.enabled = this.pluginConfig.enableLogging
+/**
+ * Logs the configured endpoints if logging is enabled.
+ *
+ * @param application The application reference.
+ * @param apiConfig The API configuration for the plugin.
+ */
+private fun logConfiguredEndpoints(application: Application, apiConfig: ApiConfiguration) {
+    if (apiConfig.logPluginRoutes) {
 
-    // Generate the OpenAPI schema if the plugin is configured to do so.
-    // When on-demand is disabled, all formats are cached so they are ready for the debug panel too.
-    // This operation must be done right after the application is fully started,
-    // so that all routes are registered and available for the schema generation.
-    if (!apiConfiguration.onDemand) {
-        lateinit var applicationStartedHandler: (Application) -> Unit
-        applicationStartedHandler = {
-            application.launch(Dispatchers.IO) {
-                SchemaRegistry.getOpenApiSchema(
-                    format = apiConfiguration.apiDocs.openApiFormat,
-                    cacheAllFormats = true
-                )
-            }
-            application.monitor.unsubscribe(definition = ApplicationStarted, handler = applicationStartedHandler)
+        // Temporarily enable logging to log the plugin routes.
+        Tracer.enabled = true
+
+        val serverUrl: String = NetworkUtils.getServerUrl(application.environment)
+        Tracer<KopapiConfig>().info(
+            """
+            |Kopapi plugin enabled.
+            |  Debug: $serverUrl${apiConfig.debugUrl}
+            |  OpenAPI: $serverUrl${apiConfig.apiDocs.openApiUrl}
+            |  Swagger: $serverUrl${apiConfig.apiDocs.swagger.url}
+            |  ReDoc: $serverUrl${apiConfig.apiDocs.redocUrl}
+            """.trimMargin()
+        )
+
+        // Restore original logging state.
+        Tracer.enabled = apiConfig.enableLogging
+    }
+}
+
+/**
+ * Generate the OpenAPI schema if the plugin is configured to do so.
+ *
+ * When on-demand is disabled, all formats are cached so they are ready for the debug panel too.
+ *
+ * #### Attention
+ * This operation must be done right after the application is fully started,
+ * so that all routes are registered and available for the schema generation.
+ *
+ * @param application The application reference.
+ * @param apiConfig The API configuration for the plugin.
+ */
+private fun generateOpenApiSchema(application: Application, apiConfig: ApiConfiguration) {
+    if (!apiConfig.onDemand) {
+        application.launch(Dispatchers.IO) {
+            SchemaRegistry.getOpenApiSchema(
+                format = apiConfig.apiDocs.openApiFormat,
+                cacheAllFormats = true
+            )
         }
-        application.monitor.subscribe(definition = ApplicationStarted, handler = applicationStartedHandler)
     }
 }

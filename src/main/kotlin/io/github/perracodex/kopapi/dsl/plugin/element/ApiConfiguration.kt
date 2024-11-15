@@ -9,10 +9,23 @@ import io.github.perracodex.kopapi.system.KopapiException
 
 /**
  * Represents the final immutable configuration for the Kopapi plugin.
+ *
+ * @property isEnabled Whether the plugin is enabled.
+ * @property onDemand Whether to enable on-demand API schema generation.
+ * @property logPluginRoutes Whether to log plugin routes.
+ * @property enableLogging Whether to enable overall plugin logging.
+ * @property apiDocs The API documentation configuration.
+ * @property debugUrl The URL access the debug endpoint.
+ * @property apiInfo The API Schema information details.
+ * @property apiServers The API Schema server details.
+ * @property apiTags The API Schema tag details.
+ * @property apiSecuritySchemes The API Schema security scheme details.
  */
 internal data class ApiConfiguration(
     val isEnabled: Boolean,
     val onDemand: Boolean,
+    val logPluginRoutes: Boolean,
+    val enableLogging: Boolean,
     val apiDocs: ApiDocs,
     val debugUrl: String,
     val apiInfo: ApiInfo?,

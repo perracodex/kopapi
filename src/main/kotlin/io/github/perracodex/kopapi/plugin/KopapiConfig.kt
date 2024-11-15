@@ -52,18 +52,28 @@ public class KopapiConfig internal constructor(
      * Whether to enable on-demand API schema generation.
      *
      * When enabled (the default), the plugin will only generate and cache the OpenAPI schema
-     * the first time it is requested, in a synchronized manner.
-     * Otherwise, it will be asynchronously generated and cached right away when the plugin is initialized
-     * so it is ready to be served on the first request.
+     * in a synchronized manner the first time it is requested.
+     * Otherwise, it will be asynchronously generated and cached right away when the plugin
+     * is initialized so it is ready to be served on the first request.
      *
      * As the schema can take a while to generate, depending on the number
      * of routes and the complexity of the types, this setting can be used
-     * to defer the generation until it is needed, or to generate it right
-     * away to avoid any delays on the first request.
+     * to defer the generation until it is needed, or to generate and cache it
+     * right away to avoid any delays on the first request.
      *
      * - Default: `true`.
      */
     public var onDemand: Boolean = true
+
+    /**
+     * When enabled (the default), the plugin will log into the console the
+     * routes setup to access the OpenAPI schema, Swagger UI, and ReDoc.
+     *
+     * Useful to quickly identify how to access the URLs for the API documentation.
+     *
+     * - Default: `true`.
+     */
+    public var logPluginRoutes: Boolean = true
 
     /**
      * Whether to enable internal logging for the plugin. Default: `false`.
@@ -176,6 +186,8 @@ public class KopapiConfig internal constructor(
         return ApiConfiguration(
             isEnabled = enabled,
             onDemand = onDemand,
+            logPluginRoutes = logPluginRoutes,
+            enableLogging = enableLogging,
             apiDocs = apiDocs ?: ApiDocsBuilder().build(),
             debugUrl = NetworkUtils.normalizeUrl(url = debugUrl, defaultValue = DEFAULT_DEBUG_URL),
             apiInfo = apiInfo,
