@@ -27,7 +27,7 @@ get("/items/{data_id}/{item_id?}") {
 ### Characteristics:
 
 * Lightweight and minimally invasive integration.
-* Provides `Swagger UI` and `ReDoc` for testing and documentation.
+* Provides `Swagger UI` and `ReDoc` out of the box for testing and documentation.
 * Flexible and expressive `DSL` builder.
 * No unnatural modifications to your routes. Just add the `api` documentation block after it.
 * Support for arbitrary types, including `generics`, `collections` and complex nested structures.
