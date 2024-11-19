@@ -16,6 +16,9 @@ import io.ktor.server.routing.*
  * Defines API Path metadata for a Ktor route.
  * Intended for use with route paths without an HTTP method tied to them.
  *
+ * Useful to define shared metadata to multiple routes, such as servers and parameters
+ * which are reused across multiple routes.
+ *
  * **Note:** For HTTP methods, use the [Route.api] extension function instead.
  *
  * #### Usage
