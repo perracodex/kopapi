@@ -9,7 +9,7 @@ kotlinx-datetime = "0.6.1"              # https://github.com/Kotlin/kotlinx-date
 kotlinx-serialization = "1.7.3"         # https://github.com/Kotlin/kotlinx.serialization/releases
 ktor = "3.0.1"                          # https://ktor.io/docs/releases.html#release-details
 mockk = "1.13.13"                       # https://github.com/mockk/mockk/releases
-swagger-parser = "2.1.23"               # https://github.com/swagger-api/swagger-parser/releases
+swagger-parser = "2.1.24"               # https://github.com/swagger-api/swagger-parser/releases
 swagger-ui = "5.18.2"                   # https://github.com/swagger-api/swagger-ui/releases
 vanniktech = "0.29.0"                   # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
 
