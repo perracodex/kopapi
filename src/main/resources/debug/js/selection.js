@@ -1,7 +1,7 @@
 // noinspection JSUnusedGlobalSymbols,JSUnresolvedReference
 
 /*
- * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
+ * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an Apache 2.0 license.
  */
 const FILTER_SUFFIX = '-data-filter';
 

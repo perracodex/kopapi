@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an MIT license.
+ * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an Apache 2.0 license.
  */
 import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.configurationcache.extensions.capitalized
@@ -83,8 +83,8 @@ mavenPublishing {
         url.set("https://$repository/$artifactId")
         licenses {
             license {
-                name.set("MIT License")
-                url.set("https://opensource.org/licenses/MIT")
+                name.set("Apache 2.0")
+                url.set("https://github.com/perracodex/kopapi/blob/main/LICENSE")
             }
         }
         developers {
