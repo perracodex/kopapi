@@ -44,7 +44,7 @@ Add the library to your project gradle dependencies. Make sure to replace `1.0.3
 
 ```kotlin
 dependencies {
-    implementation("io.github.perracodex:kopapi:1.0.2")
+    implementation("io.github.perracodex:kopapi:1.0.3")
 }
 ```
 
