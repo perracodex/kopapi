@@ -45,7 +45,7 @@ pre.version {
 .swagger-ui input[disabled],
 .swagger-ui select[disabled],
 .swagger-ui textarea[disabled] {
-    background-color: #bbbbbb;
+    background-color: #555555;
 }
 
 /* Headers, scheme container, and operation block section header */
