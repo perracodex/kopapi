@@ -28,7 +28,7 @@ import kotlin.reflect.full.createType
  */
 @TypeIntrospectorApi
 internal class EnumResolver(private val introspector: TypeIntrospector) {
-    private val tracer = Tracer<EnumResolver>()
+    private val tracer: Tracer = Tracer<EnumResolver>()
 
     /**
      * Processes the given [enumClass] and creates a [TypeSchema] for it.

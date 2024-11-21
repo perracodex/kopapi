@@ -41,7 +41,7 @@ import kotlin.reflect.full.isSubclassOf
  */
 @TypeIntrospectorApi
 internal class TypeIntrospector {
-    private val tracer = Tracer<TypeIntrospector>()
+    private val tracer: Tracer = Tracer<TypeIntrospector>()
 
     /** Cache of [TypeSchema] objects that have been processed. */
     private val typeSchemaCache: MutableSet<TypeSchema> = mutableSetOf()

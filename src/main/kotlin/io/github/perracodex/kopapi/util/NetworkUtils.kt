@@ -11,7 +11,7 @@ import io.ktor.server.application.*
  * Utility class for network-related operations.
  */
 internal object NetworkUtils {
-    private val tracer = Tracer<NetworkUtils>()
+    private val tracer: Tracer = Tracer<NetworkUtils>()
 
     private const val DEFAULT_HOST: String = "0.0.0.0"
     private const val DEFAULT_HTTP_PORT: Int = 80

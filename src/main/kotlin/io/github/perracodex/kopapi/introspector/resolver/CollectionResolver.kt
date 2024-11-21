@@ -31,7 +31,7 @@ import kotlin.reflect.KType
  */
 @TypeIntrospectorApi
 internal class CollectionResolver(private val introspector: TypeIntrospector) {
-    private val tracer = Tracer<CollectionResolver>()
+    private val tracer: Tracer = Tracer<CollectionResolver>()
 
     /**
      * Process [Collection] types (e.g.: [List], [Set], etc.),

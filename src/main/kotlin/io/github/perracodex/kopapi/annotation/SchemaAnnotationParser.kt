@@ -21,7 +21,7 @@ import kotlin.reflect.full.findAnnotation
  * Utility class to parse the [Schema] annotation from an annotated element (property or class).
  */
 internal object SchemaAnnotationParser {
-    private val tracer = Tracer<SchemaAnnotationParser>()
+    private val tracer: Tracer = Tracer<SchemaAnnotationParser>()
 
     /**
      * Parses the [Schema] annotation from the given annotated [element].

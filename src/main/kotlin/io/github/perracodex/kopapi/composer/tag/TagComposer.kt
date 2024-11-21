@@ -20,7 +20,7 @@ internal class TagComposer(
     private val apiConfiguration: ApiConfiguration,
     private val apiOperations: Set<ApiOperation>
 ) {
-    private val tracer = Tracer<TagComposer>()
+    private val tracer: Tracer = Tracer<TagComposer>()
 
     /**
      * Collects and merges tags from both API operations and top-level configuration.

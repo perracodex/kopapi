@@ -16,7 +16,7 @@ import io.github.perracodex.kopapi.system.Tracer
  */
 @ComposerApi
 internal object InfoSectionComposer {
-    private val tracer = Tracer<InfoSectionComposer>()
+    private val tracer: Tracer = Tracer<InfoSectionComposer>()
 
     private const val DEFAULT_TITLE: String = "API"
     private const val DEFAULT_DESCRIPTION: String = "API Description"

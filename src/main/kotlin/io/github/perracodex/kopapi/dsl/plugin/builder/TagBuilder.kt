@@ -14,7 +14,7 @@ import io.github.perracodex.kopapi.util.orNull
  */
 @KopapiDsl
 public class TagBuilder internal constructor() {
-    private val tracer = Tracer<TagBuilder>()
+    private val tracer: Tracer = Tracer<TagBuilder>()
 
     /** The internal set to enforce uniqueness of tags. */
     private val tags: MutableSet<ApiTag> = LinkedHashSet()

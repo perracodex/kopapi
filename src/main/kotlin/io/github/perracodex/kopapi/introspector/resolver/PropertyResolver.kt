@@ -37,7 +37,7 @@ import kotlin.reflect.full.superclasses
  */
 @TypeIntrospectorApi
 internal class PropertyResolver(private val introspector: TypeIntrospector) {
-    private val tracer = Tracer<PropertyResolver>()
+    private val tracer: Tracer = Tracer<PropertyResolver>()
 
     /**
      * Processes the given [property] by traversing it and resolving its schema.
@@ -128,7 +128,7 @@ internal class PropertyResolver(private val introspector: TypeIntrospector) {
             runCatching {
                 // 1. Retrieve declared fields using Java reflection to maintain order,
                 // as Kotlin reflection does not guarantee order for properties.
-                val declaredFields: List<Field> = currentClass?.java?.declaredFields?.filter { !it.isSynthetic } ?: emptyList()
+                val declaredFields: List<Field> = currentClass.java.declaredFields.filter { !it.isSynthetic }
                 if (declaredFields.isEmpty()) {
                     tracer.warning("No backing fields found for class: $currentClass")
                     return@runCatching
@@ -137,7 +137,7 @@ internal class PropertyResolver(private val introspector: TypeIntrospector) {
                 // 2. Retrieve all properties declared directly within the current class.
                 // This includes both properties from the primary constructor and those declared in the class body.
                 val declaredMemberProperties: Collection<KProperty1<out Any, *>> = currentClass
-                    ?.declaredMemberProperties?.filter { it.visibility == KVisibility.PUBLIC } ?: emptyList()
+                    .declaredMemberProperties.filter { it.visibility == KVisibility.PUBLIC }
                 if (declaredMemberProperties.isEmpty()) {
                     tracer.warning("No public properties found for class: $currentClass")
                     return@runCatching

@@ -31,7 +31,7 @@ import io.github.perracodex.kopapi.util.trimOrNull
  */
 @ComposerApi
 internal object OperationComposer {
-    private val tracer = Tracer<OperationComposer>()
+    private val tracer: Tracer = Tracer<OperationComposer>()
 
     /**
      * Generates the `paths` section of the OpenAPI schema by iterating over each API operation

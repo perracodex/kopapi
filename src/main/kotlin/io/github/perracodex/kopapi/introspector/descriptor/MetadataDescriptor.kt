@@ -41,7 +41,7 @@ internal data class MetadataDescriptor(
     val isTransient: Boolean = false
 ) {
     companion object {
-        private val tracer = Tracer<MetadataDescriptor>()
+        private val tracer: Tracer = Tracer<MetadataDescriptor>()
 
         /**
          * Resolves the name for the give [kClass], considering serializer annotations if present.

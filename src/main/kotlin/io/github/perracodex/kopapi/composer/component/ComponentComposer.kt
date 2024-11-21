@@ -37,7 +37,7 @@ internal object ComponentComposer {
     }
 
     /**
-     * Transforms a `TypeSchema` into an schema component.
+     * Transforms a `TypeSchema` into a schema component.
      *
      * @param typeSchema The `TypeSchema` to transform.
      * @return The rebuilt transformed schema component.

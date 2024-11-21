@@ -137,7 +137,7 @@ import kotlin.reflect.*
  */
 @TypeIntrospectorApi
 internal class GenericsResolver(private val introspector: TypeIntrospector) {
-    private val tracer = Tracer<GenericsResolver>()
+    private val tracer: Tracer = Tracer<GenericsResolver>()
 
     /**
      * Handles generics types, considering nested and complex generics.

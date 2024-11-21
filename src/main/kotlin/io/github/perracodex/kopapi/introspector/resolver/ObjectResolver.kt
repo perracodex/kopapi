@@ -54,7 +54,7 @@ import kotlin.reflect.KType
  */
 @TypeIntrospectorApi
 internal class ObjectResolver(private val introspector: TypeIntrospector) {
-    private val tracer = Tracer<ObjectResolver>()
+    private val tracer: Tracer = Tracer<ObjectResolver>()
 
     /** Semaphore to prevent infinite recursion during type processing. */
     private val semaphore: MutableSet<String> = mutableSetOf()

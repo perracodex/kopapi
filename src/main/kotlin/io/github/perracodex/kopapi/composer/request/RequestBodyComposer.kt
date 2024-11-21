@@ -35,7 +35,7 @@ import kotlin.reflect.KClassifier
  */
 @ComposerApi
 internal object RequestBodyComposer {
-    private val tracer = Tracer<RequestBodyComposer>()
+    private val tracer: Tracer = Tracer<RequestBodyComposer>()
 
     /**
      * Generates the `request body` section of the OpenAPI schema.

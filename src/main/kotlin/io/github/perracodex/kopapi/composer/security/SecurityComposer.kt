@@ -25,7 +25,7 @@ internal class SecurityComposer(
     private val apiConfiguration: ApiConfiguration,
     private val apiOperations: Set<ApiOperation>
 ) {
-    private val tracer = Tracer<SecurityComposer>()
+    private val tracer: Tracer = Tracer<SecurityComposer>()
 
     /**
      * Determines and composes the top-level security requirements for the OpenAPI schema.

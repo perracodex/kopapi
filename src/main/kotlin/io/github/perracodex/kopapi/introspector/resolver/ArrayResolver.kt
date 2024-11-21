@@ -32,7 +32,7 @@ import kotlin.reflect.KType
  */
 @TypeIntrospectorApi
 internal class ArrayResolver(private val introspector: TypeIntrospector) {
-    private val tracer = Tracer<ArrayResolver>()
+    private val tracer: Tracer = Tracer<ArrayResolver>()
 
     /**
      * Handles [Collection] (eg: List, Set), in addition to typed [Array]s.

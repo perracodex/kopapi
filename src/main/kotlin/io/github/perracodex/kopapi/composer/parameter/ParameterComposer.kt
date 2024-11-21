@@ -22,7 +22,7 @@ import io.github.perracodex.kopapi.util.trimOrNull
  */
 @ComposerApi
 internal object ParameterComposer {
-    private val tracer = Tracer<ParameterComposer>()
+    private val tracer: Tracer = Tracer<ParameterComposer>()
 
     /**
      * Generates the `parameters` section of the OpenAPI schema.

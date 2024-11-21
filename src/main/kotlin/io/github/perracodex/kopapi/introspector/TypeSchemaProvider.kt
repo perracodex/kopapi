@@ -24,7 +24,7 @@ import kotlin.reflect.KType
  */
 @OptIn(TypeIntrospectorApi::class)
 internal class TypeSchemaProvider {
-    private val tracer = Tracer<TypeSchemaProvider>()
+    private val tracer: Tracer = Tracer<TypeSchemaProvider>()
 
     /** Instance of [SchemaConflicts] to keep track of conflicting [TypeSchema] objects. */
     private val conflicts = SchemaConflicts(schemaProvider = this)

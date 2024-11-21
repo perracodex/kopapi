@@ -29,7 +29,7 @@ import kotlin.collections.set
  */
 @ComposerApi
 internal object ResponseComposer {
-    private val tracer = Tracer<ResponseComposer>()
+    private val tracer: Tracer = Tracer<ResponseComposer>()
 
     /**
      * Generates the `responses` section of the OpenAPI schema by mapping each API response

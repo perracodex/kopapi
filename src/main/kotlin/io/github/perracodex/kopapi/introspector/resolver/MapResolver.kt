@@ -29,7 +29,7 @@ import kotlin.reflect.KTypeProjection
  */
 @TypeIntrospectorApi
 internal class MapResolver(private val introspector: TypeIntrospector) {
-    private val tracer = Tracer<MapResolver>()
+    private val tracer: Tracer = Tracer<MapResolver>()
 
     /**
      * Resolves a [Map] type to a [TypeSchema].

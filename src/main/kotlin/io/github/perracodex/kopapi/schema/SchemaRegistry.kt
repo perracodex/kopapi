@@ -27,7 +27,7 @@ import kotlin.reflect.KType
  */
 @OptIn(ComposerApi::class)
 internal object SchemaRegistry {
-    private val tracer = Tracer<SchemaRegistry>()
+    private val tracer: Tracer = Tracer<SchemaRegistry>()
 
     /** Represents the different sections in the debug JSON output. */
     enum class Section {

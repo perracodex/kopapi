@@ -43,7 +43,7 @@ internal class SchemaComposer(
     private val schemaConflicts: Set<SchemaConflicts.Conflict>,
     private val format: OpenApiFormat?
 ) {
-    private val tracer = Tracer<SchemaComposer>()
+    private val tracer: Tracer = Tracer<SchemaComposer>()
 
     /**
      * Creates the OpenAPI schema based on the provided configuration and operations.
