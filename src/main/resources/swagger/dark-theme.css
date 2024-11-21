@@ -45,7 +45,7 @@ pre.version {
 .swagger-ui input[disabled],
 .swagger-ui select[disabled],
 .swagger-ui textarea[disabled] {
-    background-color: #555555;
+    background-color: #424242;
 }
 
 /* Headers, scheme container, and operation block section header */
@@ -215,4 +215,16 @@ button.authorization__btn > svg {
 .swagger-ui .parameter__name.required span,
 .swagger-ui .parameter__name.required:after {
     color: #ff725c;
+}
+
+/* Adjust the 'Response content type' label */
+.swagger-ui .response-control-media-type__title,
+.swagger-ui .response-control-media-type__accept-message,
+.swagger-ui .request-body__content-type {
+    color: #DFE1E5 !important;
+}
+
+/* Adjust the color of .prop-format elements */
+.swagger-ui .prop-format {
+    color: #86bbf1 !important;
 }
