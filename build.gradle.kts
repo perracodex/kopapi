@@ -1,6 +1,8 @@
 /*
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an Apache 2.0 license.
  */
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.configurationcache.extensions.capitalized
 
@@ -71,11 +73,17 @@ mavenPublishing {
     val pomName: String = project.properties["pomName"] as String
     val pomDescription: String = project.properties["pomDescription"] as String
 
+    configure(KotlinJvm(JavadocJar.Dokka("dokkaHtml"), true))
+
     coordinates(
         groupId = group as String,
         artifactId = artifactId,
         version = version as String
     )
+
+    publishToMavenCentral(host = SonatypeHost.CENTRAL_PORTAL, automaticRelease = false)
+
+    signAllPublications()
 
     pom {
         name.set(pomName)
@@ -101,9 +109,6 @@ mavenPublishing {
             url.set("https://$repository/$artifactId")
         }
     }
-
-    publishToMavenCentral(host = SonatypeHost.CENTRAL_PORTAL, automaticRelease = false)
-    signAllPublications()
 }
 
 signing {
