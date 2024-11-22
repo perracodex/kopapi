@@ -73,7 +73,10 @@ mavenPublishing {
     val pomName: String = project.properties["pomName"] as String
     val pomDescription: String = project.properties["pomDescription"] as String
 
-    configure(KotlinJvm(JavadocJar.Dokka("dokkaHtml"), true))
+    configure(KotlinJvm(
+        javadocJar = JavadocJar.Dokka("dokkaHtml"),
+        sourcesJar = true,
+    ))
 
     coordinates(
         groupId = group as String,
@@ -81,7 +84,10 @@ mavenPublishing {
         version = version as String
     )
 
-    publishToMavenCentral(host = SonatypeHost.CENTRAL_PORTAL, automaticRelease = false)
+    publishToMavenCentral(
+        host = SonatypeHost.CENTRAL_PORTAL,
+        automaticRelease = false
+    )
 
     signAllPublications()
 
