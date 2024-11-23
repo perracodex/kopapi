@@ -2,7 +2,7 @@
 
 ```kotlin   
 fun Route.uploadDocumentsRoute() {
-    post("/api/v1/document/{owner_id?}") {
+    post("/api/v1/document") {
         // Implement as usual
     } api {
         tags = setOf("Document")
