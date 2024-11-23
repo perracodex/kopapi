@@ -9,7 +9,7 @@
 **Quick sample usage before diving into the Wiki:**
 
 ```kotlin
-get("/items/{data_id}/{item_id?}") {
+get("/items/{data_id}") {
     // Implement as usual
 } api {
     tags = setOf("Items", "Data")
