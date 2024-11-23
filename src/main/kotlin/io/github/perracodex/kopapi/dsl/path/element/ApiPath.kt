@@ -15,11 +15,13 @@ import io.github.perracodex.kopapi.dsl.plugin.element.ApiServerConfig
  * @property description Optional detailed explanation of the path.
  * @property servers Optional set of server configurations specific to this path.
  * @property parameters Optional set of parameters applicable to all API Operations within this path.
+ * @property errors A set of errors encountered during the construction process.
  */
 internal data class ApiPath(
     val path: String,
     val summary: String?,
     val description: String?,
     val servers: Set<ApiServerConfig>?,
-    val parameters: Set<ApiParameter>?
+    val parameters: Set<ApiParameter>?,
+    val errors: Set<String>?
 )

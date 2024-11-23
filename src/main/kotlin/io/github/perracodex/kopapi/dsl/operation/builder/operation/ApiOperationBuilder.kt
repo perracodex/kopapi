@@ -446,9 +446,10 @@ public class ApiOperationBuilder internal constructor(
      *
      * @param method The [HttpMethod] associated with the route.
      * @param endpointPath The URL path for the route.
+     * @param errors A set of errors encountered during the construction process.
      * @return The constructed [ApiOperation] instance.
      */
-    internal fun build(method: HttpMethod, endpointPath: String): ApiOperation {
+    internal fun build(method: HttpMethod, endpointPath: String, errors: Set<String>?): ApiOperation {
         // If no responses are defined, add a default NoContent response,
         // otherwise sort the responses by status code.
         val responses: LinkedHashMap<HttpStatusCode, ApiResponse> = if (_config.responses.isEmpty()) {
@@ -471,7 +472,8 @@ public class ApiOperationBuilder internal constructor(
             responses = responses,
             securitySchemes = securityDelegate.build(),
             noSecurity = securityDelegate.noSecurity,
-            servers = serverDelegate.build()
+            servers = serverDelegate.build(),
+            errors = errors
         )
     }
 

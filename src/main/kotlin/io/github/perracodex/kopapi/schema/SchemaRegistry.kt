@@ -118,6 +118,10 @@ internal object SchemaRegistry {
                     this.errors.addAll(errors)
                 }
 
+                operation.errors?.let { errors ->
+                    this.errors.addAll(errors)
+                }
+
                 apiOperation.add(operation)
             }
         }
@@ -132,6 +136,10 @@ internal object SchemaRegistry {
         synchronized(apiPath) {
             if (isEnabled) {
                 apiPath.add(path)
+
+                path.errors?.let { errors ->
+                    this.errors.addAll(errors)
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.dsl.path.builder.ApiPathBuilder
 import io.github.perracodex.kopapi.dsl.path.element.ApiPath
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.system.KopapiException
+import io.github.perracodex.kopapi.util.RoutePathDetails
 import io.github.perracodex.kopapi.util.extractRoutePath
 import io.ktor.server.routing.*
 
@@ -69,14 +70,14 @@ public infix fun Route.apiPath(builder: ApiPathBuilder.() -> Unit): Route {
         throw KopapiException(message = buildErrorMessage(route = this))
     }
 
-    val endpointPath: String = this.extractRoutePath()
+    val rotePathDetails: RoutePathDetails = this.extractRoutePath()
 
     // Apply the configuration within the ApiPathBuilder's scope.
-    val pathBuilder = ApiPathBuilder(endpoint = endpointPath)
+    val pathBuilder = ApiPathBuilder(endpoint = rotePathDetails.path)
     with(pathBuilder) { builder() }
 
     // Build the path using the provided configuration.
-    val apiPath: ApiPath = pathBuilder.build()
+    val apiPath: ApiPath = pathBuilder.build(errors = rotePathDetails.errors)
 
     // Register the path with the schema registry
     // for later use in generating OpenAPI documentation.

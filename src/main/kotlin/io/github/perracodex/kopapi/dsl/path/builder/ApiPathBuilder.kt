@@ -113,15 +113,17 @@ public class ApiPathBuilder internal constructor(
     /**
      * Builds the [ApiPath] instance with the configured properties.
      *
+     * @param errors A set of errors encountered during the construction process.
      * @return The constructed [ApiPath] instance.
      */
-    internal fun build(): ApiPath {
+    internal fun build(errors: Set<String>?): ApiPath {
         return ApiPath(
             path = endpoint,
             summary = summary.trimOrNull(),
             description = description.trimOrNull(),
             servers = serverDelegate.build(),
-            parameters = parameterDelegate.build()
+            parameters = parameterDelegate.build(),
+            errors = errors
         )
     }
 }

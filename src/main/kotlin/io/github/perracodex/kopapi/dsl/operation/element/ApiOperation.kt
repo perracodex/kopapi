@@ -28,6 +28,7 @@ import io.ktor.http.*
  * @property securitySchemes Optional set of [ApiSecurityScheme] objects for defining endpoint security schemes.
  * @property noSecurity Whether no security is required and should ignore top level security schemes.
  * @property servers Optional set of server configurations for the operation.
+ * @property errors A set of errors encountered during the construction process.
  *
  * @see [ApiOperationBuilder]
  */
@@ -43,7 +44,8 @@ internal data class ApiOperation(
     val responses: Map<HttpStatusCode, ApiResponse>?,
     val securitySchemes: Set<ApiSecurityScheme>?,
     val noSecurity: Boolean,
-    val servers: Set<ApiServerConfig>?
+    val servers: Set<ApiServerConfig>?,
+    val errors: Set<String>?
 ) {
     init {
         if (path.isBlank()) {
