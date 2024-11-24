@@ -39,7 +39,7 @@ internal class HeaderDelegate internal constructor() : IHeaderConfigurable {
             throw KopapiException("Header name must not be blank.")
         }
         if (headers.any { it.key.equals(other = headerName, ignoreCase = true) }) {
-            throw KopapiException("Header with name '${headerName}' already exists within the same response.")
+            throw KopapiException("Header with name '$headerName' already exists within the same response.")
         }
 
         headers[headerName] = header

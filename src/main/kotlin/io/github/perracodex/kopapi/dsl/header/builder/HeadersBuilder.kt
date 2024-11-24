@@ -17,7 +17,7 @@ import kotlin.reflect.typeOf
 @KopapiDsl
 public class HeadersBuilder internal constructor() {
     /** Cached headers. */
-    @Suppress("PropertyName")
+    @Suppress("PropertyName", "VariableNaming")
     @PublishedApi
     internal val _headers: MutableMap<String, ApiHeader> = mutableMapOf()
 

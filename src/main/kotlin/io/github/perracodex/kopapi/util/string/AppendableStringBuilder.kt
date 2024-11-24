@@ -16,8 +16,8 @@ package io.github.perracodex.kopapi.util.string
 private fun StringBuilder.appendWithSeparator(value: String, separator: String = " "): StringBuilder {
     val end: Int = this.length
     val sepLength: Int = separator.length
-    val startsWithSeparator: Boolean = (end >= sepLength)
-            && (this.substring(startIndex = end - sepLength, endIndex = end) == separator)
+    val startsWithSeparator: Boolean = (end >= sepLength) &&
+            (this.substring(startIndex = end - sepLength, endIndex = end) == separator)
 
     if (this.isNotEmpty() && !startsWithSeparator) {
         this.append(separator)

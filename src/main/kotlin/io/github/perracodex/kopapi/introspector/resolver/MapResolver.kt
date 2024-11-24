@@ -66,7 +66,7 @@ internal class MapResolver(private val introspector: TypeIntrospector) {
             tracer.debug("Traversing Map value type: $valueType.")
             introspector.traverseType(kType = valueType, typeArgumentBindings = typeArgumentBindings)
         } ?: TypeSchema.of(
-            name = ElementName(name = "MapOf${kType}"),
+            name = ElementName(name = "MapOf$kType"),
             kType = kType,
             schema = SchemaFactory.ofObjectDescriptor()
         )

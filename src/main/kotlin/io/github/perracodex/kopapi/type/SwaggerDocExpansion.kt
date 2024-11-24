@@ -4,7 +4,6 @@
 
 package io.github.perracodex.kopapi.type
 
-
 /**
  * Represents the different expansion states for Swagger UI documentation.
  */
@@ -28,5 +27,5 @@ public enum class SwaggerDocExpansion(internal val value: String) {
      *
      * Suitable for smaller APIs where users want to view all details at once.
      */
-    FULL(value = "full");
+    FULL(value = "full")
 }

@@ -17,7 +17,7 @@ import kotlin.reflect.typeOf
 public class ParametersBuilder internal constructor(
     internal val endpoint: String
 ) {
-    @Suppress("PropertyName")
+    @Suppress("PropertyName", "VariableNaming")
     @PublishedApi
     internal val _config: Config = Config(endpoint = endpoint)
 

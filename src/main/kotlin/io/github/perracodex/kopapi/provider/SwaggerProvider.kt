@@ -78,7 +78,9 @@ internal object SwaggerProvider {
                     style.innerHTML = `.opblock-summary-operation-id { word-break: normal !important; }`;
                     document.head.appendChild(style);
                 """.trimIndent()
-            } else ""
+            } else {
+                ""
+            }
 
             // Dark theme CSS.
             val swaggerDarkCssUrl: String = if (apiDocs.swagger.uiTheme == SwaggerUiTheme.DARK) {
@@ -90,7 +92,9 @@ internal object SwaggerProvider {
                     darkThemeLink.href = '/static-kopapi/dark-theme.css';
                     document.head.appendChild(darkThemeLink);
                 """.trimIndent()
-            } else ""
+            } else {
+                ""
+            }
 
             swaggerJs = """
                 window.onload = function() {

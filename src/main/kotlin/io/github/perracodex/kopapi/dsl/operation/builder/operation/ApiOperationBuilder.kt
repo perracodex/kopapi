@@ -88,7 +88,7 @@ public class ApiOperationBuilder internal constructor(
     ISecurityConfigurable by securityDelegate,
     IParameterConfigurable by parameterDelegate {
 
-    @Suppress("PropertyName")
+    @Suppress("PropertyName", "VariableNaming")
     @PublishedApi
     internal val _config: Config = Config()
 

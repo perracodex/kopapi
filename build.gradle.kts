@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.vanniktech)
+    alias(libs.plugins.detekt)
 }
 
 group = project.properties["group"] as String
@@ -21,6 +22,22 @@ version = project.properties["version"] as String
 repositories {
     mavenCentral()
     mavenLocal()
+}
+
+// Configure Detekt for static code analysis.
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom("$rootDir/config/detekt/detekt.yml")
+}
+
+// Configure Detekt task reports.
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    reports {
+        html.required.set(true)
+        xml.required.set(false)
+        sarif.required.set(true)
+    }
 }
 
 kotlin {
@@ -40,6 +57,8 @@ kotlin {
 }
 
 dependencies {
+    detektPlugins(libs.detekt.formatting)
+
     implementation(libs.jackson.kotlin)
     implementation(libs.jackson.yaml)
 

@@ -33,7 +33,7 @@ public class MultipartBuilder internal constructor(
     public var description: String by MultilineString()
     public var contentType: ContentType? = null
 
-    @Suppress("PropertyName")
+    @Suppress("PropertyName", "VariableNaming")
     @PublishedApi
     internal val _config: Config = Config()
 

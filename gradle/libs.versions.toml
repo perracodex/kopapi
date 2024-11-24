@@ -2,6 +2,7 @@
 
 [versions]
 
+detekt = "1.23.7"                       # https://github.com/detekt/detekt/releases
 dokka = "1.9.20"                        # https://github.com/Kotlin/dokka/releases
 jackson_version = "2.18.1"              # https://github.com/FasterXML/jackson-module-kotlin/tags
 kotlin = "2.0.21"                       # https://github.com/JetBrains/kotlin/releases
@@ -16,6 +17,7 @@ vanniktech = "0.29.0"                   # https://github.com/vanniktech/gradle-m
 
 [plugins]
 
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
@@ -23,6 +25,11 @@ vanniktech = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech" }
 
 
 [libraries]
+
+# Detekt.
+# https://github.com/detekt/detekt
+# https://github.com/detekt/detekt/releases
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
 # Jackson Serialization.
 # https://github.com/FasterXML/jackson-module-kotlin

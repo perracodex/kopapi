@@ -49,7 +49,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
     public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
     public var composition: Composition? = null
 
-    @Suppress("PropertyName")
+    @Suppress("PropertyName", "VariableNaming")
     @PublishedApi
     internal val _config: Config = Config()
 
@@ -236,7 +236,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
                 throw KopapiException("Link name must not be blank.")
             }
             if (links.any { it.key.equals(other = linkName, ignoreCase = true) }) {
-                throw KopapiException("Link with name '${linkName}' already exists within the same response.")
+                throw KopapiException("Link with name '$linkName' already exists within the same response.")
             }
             links[linkName] = link
         }

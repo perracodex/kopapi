@@ -349,8 +349,8 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
         title: String,
         content: String
     ) {
-        val overlayId = "${panelId}-overlay"
-        val contentId = "${panelId}-content"
+        val overlayId = "$panelId-overlay"
+        val contentId = "$panelId-content"
 
         with(htmlTag) {
             div(classes = "popup-overlay") {

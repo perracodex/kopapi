@@ -26,7 +26,6 @@ internal fun String?.trimOrDefault(defaultValue: String): String {
     return this?.trimOrNull() ?: defaultValue
 }
 
-
 /**
  * Removes the specified suffix from the string in a case-insensitive manner.
  *

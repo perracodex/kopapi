@@ -5,6 +5,10 @@
 package io.github.perracodex.kopapi.introspector.descriptor
 
 import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
+import io.github.perracodex.kopapi.introspector.descriptor.TypeDescriptor.isArray
+import io.github.perracodex.kopapi.introspector.descriptor.TypeDescriptor.isCollection
+import io.github.perracodex.kopapi.introspector.descriptor.TypeDescriptor.isPrimitiveArray
+import io.github.perracodex.kopapi.introspector.descriptor.TypeDescriptor.isTypedArray
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
@@ -42,8 +46,7 @@ internal object TypeDescriptor {
      */
     fun isArray(kType: KType): Boolean {
         val classifier: KClassifier = kType.classifier ?: return false
-        return isPrimitiveArray(classifier = classifier)
-                || isTypedArray(kType = kType)
+        return isPrimitiveArray(classifier = classifier) || isTypedArray(kType = kType)
     }
 
     /**

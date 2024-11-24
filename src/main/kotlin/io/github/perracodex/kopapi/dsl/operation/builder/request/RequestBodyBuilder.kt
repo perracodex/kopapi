@@ -46,7 +46,7 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
     public var composition: Composition? = null
     public var contentType: Set<ContentType> = setOf(ContentType.Application.Json)
 
-    @Suppress("PropertyName")
+    @Suppress("PropertyName", "VariableNaming")
     @PublishedApi
     internal val _config: Config = Config()
 

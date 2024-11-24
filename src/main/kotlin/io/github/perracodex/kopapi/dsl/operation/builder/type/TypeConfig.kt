@@ -25,7 +25,7 @@ public class TypeConfig @PublishedApi internal constructor(
     /**
      * Schema attributes configuration.
      */
-    @Suppress("PropertyName")
+    @Suppress("PropertyName", "VariableNaming")
     @PublishedApi
     internal var _schemaAttributes: ApiSchemaAttributes?
         get() = schemaAttributeDelegate.attributes

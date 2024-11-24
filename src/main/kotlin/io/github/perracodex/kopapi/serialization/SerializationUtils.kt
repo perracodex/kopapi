@@ -18,7 +18,6 @@ import io.github.perracodex.kopapi.serialization.serializer.*
 import io.ktor.http.*
 import kotlin.reflect.KType
 
-
 /**
  * Provides utility functions for serialization.
  */

@@ -87,7 +87,8 @@ internal class PropertyResolver(private val introspector: TypeIntrospector) {
 
         // Create the SchemaProperty with metadata
         return Pair(
-            metadata.name, SchemaProperty(
+            metadata.name,
+            SchemaProperty(
                 schema = schema,
                 isNullable = metadata.isNullable,
                 isRequired = metadata.isRequired,
