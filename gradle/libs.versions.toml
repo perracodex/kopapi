@@ -5,7 +5,7 @@
 detekt = "1.23.7"                       # https://github.com/detekt/detekt/releases
 dokka = "1.9.20"                        # https://github.com/Kotlin/dokka/releases
 jackson_version = "2.18.1"              # https://github.com/FasterXML/jackson-module-kotlin/tags
-kotlin = "2.0.21"                       # https://github.com/JetBrains/kotlin/releases
+kotlin = "2.1.0"                        # https://github.com/JetBrains/kotlin/releases
 kotlinx-datetime = "0.6.1"              # https://github.com/Kotlin/kotlinx-datetime/releases
 kotlinx-serialization = "1.7.3"         # https://github.com/Kotlin/kotlinx.serialization/releases
 ktor = "3.0.1"                          # https://ktor.io/docs/releases.html#release-details
