@@ -7,7 +7,7 @@ package io.github.perracodex.kopapi.composer.info
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
 import io.github.perracodex.kopapi.dsl.plugin.element.ApiConfiguration
 import io.github.perracodex.kopapi.dsl.plugin.element.ApiInfo
-import io.github.perracodex.kopapi.introspector.schema.SchemaConflicts
+import io.github.perracodex.kopapi.introspection.schema.SchemaConflicts
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.system.Tracer
 

@@ -2,11 +2,11 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an Apache 2.0 license.
  */
 
-package io.github.perracodex.kopapi.introspector.schema
+package io.github.perracodex.kopapi.introspection.schema
 
-import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
-import io.github.perracodex.kopapi.introspector.descriptor.ElementName
-import io.github.perracodex.kopapi.introspector.schema.factory.SchemaFactory
+import io.github.perracodex.kopapi.introspection.annotation.TypeIntrospectorApi
+import io.github.perracodex.kopapi.introspection.descriptor.ElementName
+import io.github.perracodex.kopapi.introspection.schema.factory.SchemaFactory
 import io.github.perracodex.kopapi.schema.facet.ElementSchema
 import io.github.perracodex.kopapi.util.nativeName
 import kotlin.reflect.KType

@@ -5,7 +5,7 @@
 package io.github.perracodex.kopapi.composer.component
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
-import io.github.perracodex.kopapi.introspector.schema.TypeSchema
+import io.github.perracodex.kopapi.introspection.schema.TypeSchema
 import io.github.perracodex.kopapi.schema.facet.ElementSchema
 import io.github.perracodex.kopapi.schema.facet.ISchemaFacet
 import io.github.perracodex.kopapi.schema.facet.NullableSchema

@@ -2,7 +2,7 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an Apache 2.0 license.
  */
 
-package io.github.perracodex.kopapi.introspector.annotation
+package io.github.perracodex.kopapi.introspection.annotation
 
 /**
  * Annotation for controlled access to the TypeIntrospector API.

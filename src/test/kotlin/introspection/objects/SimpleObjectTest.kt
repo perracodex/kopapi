@@ -4,8 +4,8 @@
 
 package introspection.objects
 
-import io.github.perracodex.kopapi.introspector.TypeSchemaProvider
-import io.github.perracodex.kopapi.introspector.schema.TypeSchema
+import io.github.perracodex.kopapi.introspection.TypeSchemaProvider
+import io.github.perracodex.kopapi.introspection.schema.TypeSchema
 import io.github.perracodex.kopapi.schema.facet.ElementSchema
 import io.github.perracodex.kopapi.schema.facet.SchemaProperty
 import io.github.perracodex.kopapi.type.ApiFormat

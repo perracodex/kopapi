@@ -2,13 +2,13 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an Apache 2.0 license.
  */
 
-package io.github.perracodex.kopapi.introspector
+package io.github.perracodex.kopapi.introspection
 
-import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
-import io.github.perracodex.kopapi.introspector.descriptor.TypeDescriptor
-import io.github.perracodex.kopapi.introspector.resolver.*
-import io.github.perracodex.kopapi.introspector.schema.TypeSchema
-import io.github.perracodex.kopapi.introspector.schema.factory.PrimitiveFactory
+import io.github.perracodex.kopapi.introspection.annotation.TypeIntrospectorApi
+import io.github.perracodex.kopapi.introspection.descriptor.TypeDescriptor
+import io.github.perracodex.kopapi.introspection.resolver.*
+import io.github.perracodex.kopapi.introspection.schema.TypeSchema
+import io.github.perracodex.kopapi.introspection.schema.factory.PrimitiveFactory
 import io.github.perracodex.kopapi.schema.facet.SchemaProperty
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.util.nativeName

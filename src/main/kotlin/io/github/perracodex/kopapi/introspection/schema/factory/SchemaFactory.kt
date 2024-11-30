@@ -2,10 +2,10 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an Apache 2.0 license.
  */
 
-package io.github.perracodex.kopapi.introspector.schema.factory
+package io.github.perracodex.kopapi.introspection.schema.factory
 
 import io.github.perracodex.kopapi.annotation.SchemaAnnotationAttributes
-import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
+import io.github.perracodex.kopapi.introspection.annotation.TypeIntrospectorApi
 import io.github.perracodex.kopapi.schema.facet.ElementSchema
 import io.github.perracodex.kopapi.type.ApiFormat
 import io.github.perracodex.kopapi.type.ApiType

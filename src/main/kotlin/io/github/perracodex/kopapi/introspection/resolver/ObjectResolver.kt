@@ -2,17 +2,17 @@
  * Copyright (c) 2024-Present Perracodex. Use of this source code is governed by an Apache 2.0 license.
  */
 
-package io.github.perracodex.kopapi.introspector.resolver
+package io.github.perracodex.kopapi.introspection.resolver
 
 import io.github.perracodex.kopapi.annotation.SchemaAnnotationAttributes
 import io.github.perracodex.kopapi.annotation.SchemaAnnotationParser
-import io.github.perracodex.kopapi.introspector.TypeIntrospector
-import io.github.perracodex.kopapi.introspector.annotation.TypeIntrospectorApi
-import io.github.perracodex.kopapi.introspector.descriptor.ElementName
-import io.github.perracodex.kopapi.introspector.descriptor.MetadataDescriptor
-import io.github.perracodex.kopapi.introspector.schema.TypeSchema
-import io.github.perracodex.kopapi.introspector.schema.factory.PrimitiveFactory
-import io.github.perracodex.kopapi.introspector.schema.factory.SchemaFactory
+import io.github.perracodex.kopapi.introspection.TypeIntrospector
+import io.github.perracodex.kopapi.introspection.annotation.TypeIntrospectorApi
+import io.github.perracodex.kopapi.introspection.descriptor.ElementName
+import io.github.perracodex.kopapi.introspection.descriptor.MetadataDescriptor
+import io.github.perracodex.kopapi.introspection.schema.TypeSchema
+import io.github.perracodex.kopapi.introspection.schema.factory.PrimitiveFactory
+import io.github.perracodex.kopapi.introspection.schema.factory.SchemaFactory
 import io.github.perracodex.kopapi.schema.facet.ElementSchema
 import io.github.perracodex.kopapi.schema.facet.SchemaProperty
 import io.github.perracodex.kopapi.system.Tracer

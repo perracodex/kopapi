@@ -12,9 +12,9 @@ import io.github.perracodex.kopapi.composer.response.ResponseComposer
 import io.github.perracodex.kopapi.dsl.operation.element.ApiOperation
 import io.github.perracodex.kopapi.dsl.path.element.ApiPath
 import io.github.perracodex.kopapi.dsl.plugin.element.ApiConfiguration
-import io.github.perracodex.kopapi.introspector.TypeSchemaProvider
-import io.github.perracodex.kopapi.introspector.schema.SchemaConflicts
-import io.github.perracodex.kopapi.introspector.schema.TypeSchema
+import io.github.perracodex.kopapi.introspection.TypeSchemaProvider
+import io.github.perracodex.kopapi.introspection.schema.SchemaConflicts
+import io.github.perracodex.kopapi.introspection.schema.TypeSchema
 import io.github.perracodex.kopapi.serialization.SerializationUtils
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
