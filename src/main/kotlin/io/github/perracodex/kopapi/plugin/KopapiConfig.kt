@@ -19,6 +19,7 @@ import io.github.perracodex.kopapi.dsl.server.delegate.IServerConfigurable
 import io.github.perracodex.kopapi.dsl.server.delegate.ServerDelegate
 import io.github.perracodex.kopapi.util.NetworkUtils
 import io.github.perracodex.kopapi.util.orNull
+import io.github.perracodex.kopapi.util.trimOrNull
 
 /**
  * Configuration for the [Kopapi] plugin.
@@ -39,6 +40,22 @@ public class KopapiConfig internal constructor(
      * - This is useful when you want to disable the plugin in certain environments, such as production.
      */
     public var enabled: Boolean = true
+
+    /**
+     * The host to provide the API schema.
+     *
+     * If not provided, the plugin will attempt to resolve the host based on the server environment.
+     * It is recommended to provide the host explicitly to avoid any issues with the host resolution.
+     *
+     * #### Example
+     * ```
+     * http://localhost:8080
+     * https://api.example.com
+     * ```
+     *
+     * - Default: `null`.
+     */
+    public var host: String? = null
 
     /**
      * The URL to provide the raw pre-processed API Operations metadata, for debugging purposes.
@@ -185,6 +202,7 @@ public class KopapiConfig internal constructor(
     internal fun build(): ApiConfiguration {
         return ApiConfiguration(
             isEnabled = enabled,
+            host = host.trimOrNull(),
             onDemand = onDemand,
             logPluginRoutes = logPluginRoutes,
             enableLogging = enableLogging,

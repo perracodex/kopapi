@@ -13,7 +13,7 @@ import io.ktor.server.application.*
 internal object NetworkUtils {
     private val tracer: Tracer = Tracer<NetworkUtils>()
 
-    private const val DEFAULT_HOST: String = "0.0.0.0"
+    private const val DEFAULT_HOST: String = "localhost"
     private const val DEFAULT_HTTP_PORT: Int = 80
     private const val DEFAULT_HTTPS_PORT: Int = 443
     private const val CUSTOM_DEFAULT_PORT: Int = 8080
@@ -30,7 +30,9 @@ internal object NetworkUtils {
         return runCatching {
             // Extract host from environment configurations or use the default host.
             val host: String = environment.config.propertyOrNull("ktor.deployment.host")
-                ?.getString() ?: DEFAULT_HOST
+                ?.getString()
+                ?.let { if (it == "0.0.0.0" || it == "::" || it.isBlank()) DEFAULT_HOST else it }
+                ?: DEFAULT_HOST
 
             // Extract port from environment configurations or use the custom default port.
             val port: Int = environment.config.propertyOrNull("ktor.deployment.port")

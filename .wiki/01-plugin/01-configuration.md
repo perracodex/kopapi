@@ -4,16 +4,21 @@
 
 The `KopapiConfig` provides several properties to define the URLs for your OpenAPI schemas, Swagger UI, and debugging endpoints.
 
-| Property        | Description                                                                           | Default          |
-|-----------------|---------------------------------------------------------------------------------------|------------------|
-| enabled         | The plugin enabled state.<br/>Useful to disable the plugin for specific environments. | `true`           |
-| debugUrl        | The URL to provide the API metadata for debugging purposes.                           | `/openapi/debug` |
-| apiDocs         | The OpenAPI related URLs and settings, including swagger-ui and redoc.                | N/A              |
-| info            | Metadata about your API (title, description, version, contact, license, etc.).        | N/A              |
-| servers         | List of servers to include in the OpenAPI schema, with optional URL variables.        | N/A              |
-| security        | List of top-level security schemes, overriding per endpoint schemes.                  | N/A              |
-| logPluginRoutes | Log the plugin routes to access the API Schema, Swagger, Redoc, etc.                  | `true`           |
-| onDemand        | Generate the schema only the first time it is requested.                              | `true`           |
+| Property        | Description                                                                            | Default          |
+|-----------------|----------------------------------------------------------------------------------------|------------------|
+| enabled         | The plugin enabled state.<br/>Useful to disable the plugin for specific environments.  | `true`           |
+| host            | The application host URL. If not provided will try to resolve it from the environment. | `null`           |
+| debugUrl        | The URL to provide the API metadata for debugging purposes.                            | `/openapi/debug` |
+| apiDocs         | The OpenAPI related URLs and settings, including swagger-ui and redoc.                 | N/A              |
+| info            | Metadata about your API (title, description, version, contact, license, etc.).         | N/A              |
+| servers         | List of servers to include in the OpenAPI schema, with optional URL variables.         | N/A              |
+| security        | List of top-level security schemes, overriding per endpoint schemes.                   | N/A              |
+| logPluginRoutes | Log the plugin routes to access the API Schema, Swagger, Redoc, etc.                   | `true`           |
+| onDemand        | Generate the schema only the first time it is requested.                               | `true`           |
+
+- The`host` property is used to define the application host URL. If not provided, the plugin will attempt
+  to resolve it from the environment configuration.
+  It is recommended to explicitly provide the `host` property to ensure the correct application URL resolution.
 
 - The `debugUrl` endpoint provides access to vital diagnostic information that assists in troubleshooting the plugin behavior.
   If the schema is not generated as expected, you can use this endpoint to inspect and identify potential issues.
@@ -115,6 +120,7 @@ install(Kopapi) {
 ```kotlin
 install(Kopapi) {
     enabled = true
+    host = "http://localhost:8080"
     debugUrl = "openapi/debug"
 
     // API Documentation section.
