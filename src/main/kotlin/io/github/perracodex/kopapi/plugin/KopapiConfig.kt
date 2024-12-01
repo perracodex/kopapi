@@ -42,10 +42,7 @@ public class KopapiConfig internal constructor(
     public var enabled: Boolean = true
 
     /**
-     * The host to provide the API schema.
-     *
-     * If not provided, the plugin will attempt to resolve the host based on the server environment.
-     * It is recommended to provide the host explicitly to avoid any issues with the host resolution.
+     * The application host.
      *
      * #### Example
      * ```

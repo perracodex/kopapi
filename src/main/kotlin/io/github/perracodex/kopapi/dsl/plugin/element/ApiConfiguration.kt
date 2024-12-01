@@ -11,7 +11,7 @@ import io.github.perracodex.kopapi.system.KopapiException
  * Represents the final immutable configuration for the Kopapi plugin.
  *
  * @property isEnabled Whether the plugin is enabled.
- * @property host The host to provide the API schema.
+ * @property host The application host.
  * @property onDemand Whether to enable on-demand API schema generation.
  * @property logPluginRoutes Whether to log plugin routes.
  * @property enableLogging Whether to enable overall plugin logging.

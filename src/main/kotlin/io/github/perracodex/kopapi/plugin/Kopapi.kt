@@ -85,17 +85,8 @@ private fun logConfiguredEndpoints(application: Application, apiConfig: ApiConfi
         // Temporarily enable logging to log the plugin routes.
         Tracer.enabled = true
 
-        var serverUrl: String? = apiConfig.host
-        var hostNotes = ""
-
-        if (serverUrl == null) {
-            serverUrl = NetworkUtils.getServerUrl(environment = application.environment)
-            hostNotes = """
-                |   Note: 'host' has not been explicitly set in the Kopapi configuration.
-                |   In containerized or remote environments, set 'host' to your public IP/domain for correct URLs.
-                |
-                """.trimMargin()
-        }
+        var serverUrl: String = apiConfig.host
+            ?: NetworkUtils.getServerUrl(environment = application.environment)
 
         Tracer<KopapiConfig>().info(
             """
@@ -104,7 +95,6 @@ private fun logConfiguredEndpoints(application: Application, apiConfig: ApiConfi
             |   OpenAPI: $serverUrl${apiConfig.apiDocs.openApiUrl}
             |   Swagger: $serverUrl${apiConfig.apiDocs.swagger.url}
             |   ReDoc: $serverUrl${apiConfig.apiDocs.redocUrl}
-            |$hostNotes
             """.trimMargin()
         )
 
