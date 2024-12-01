@@ -42,7 +42,15 @@ public class KopapiConfig internal constructor(
     public var enabled: Boolean = true
 
     /**
-     * The application host.
+     * The base URL of the application.
+     *
+     * Typically, this setting is not required because the plugin automatically
+     * resolves the base URL based on incoming requests.
+     * However, in containerized environments like Docker, where the application binds
+     * to `0.0.0.0`, the resolved URLs in output logs may not reflect the actual accessible address.
+     * In such cases, it is recommended to explicitly set the host property to the application's
+     * public IP address or domain name.
+     * This ensures that the full URLs in the logs are accurate.
      *
      * #### Example
      * ```

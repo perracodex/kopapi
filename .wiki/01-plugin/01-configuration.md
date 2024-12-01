@@ -16,6 +16,12 @@ The `KopapiConfig` provides several properties to define the URLs for your OpenA
 | logPluginRoutes | Log the plugin routes to access the API Schema, Swagger, Redoc, etc.                  | `true`           |
 | onDemand        | Generate the schema only the first time it is requested.                              | `true`           |
 
+- The `host` property specifies the base URL of the application. Typically, this setting is not required because the plugin automatically 
+  resolves the base URL based on incoming requests. However, in containerized environments like Docker, where the application binds
+  to `0.0.0.0`, the resolved URLs in output logs may not reflect the actual accessible address.
+  In such cases, it is recommended to explicitly set the host property to the application's public IP address or domain name.
+  This ensures that the full URLs in the logs are accurate.
+
 - The `debugUrl` endpoint provides access to vital diagnostic information that assists in troubleshooting the plugin behavior.
   If the schema is not generated as expected, you can use this endpoint to inspect and identify potential issues.
 
