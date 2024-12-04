@@ -80,7 +80,6 @@ tasks.test {
     maxParallelForks = 1
 }
 
-
 // https://central.sonatype.com/account
 // https://central.sonatype.com/publishing/deployments
 // https://vanniktech.github.io/gradle-maven-publish-plugin/central/#automatic-release
@@ -92,10 +91,12 @@ mavenPublishing {
     val pomName: String = project.properties["pomName"] as String
     val pomDescription: String = project.properties["pomDescription"] as String
 
-    configure(KotlinJvm(
-        javadocJar = JavadocJar.Dokka("dokkaHtml"),
-        sourcesJar = true,
-    ))
+    configure(
+        KotlinJvm(
+            javadocJar = JavadocJar.Dokka("dokkaHtml"),
+            sourcesJar = true,
+        )
+    )
 
     coordinates(
         groupId = group as String,
@@ -140,9 +141,9 @@ signing {
     val privateKeyPath: String? = System.getenv("MAVEN_SIGNING_KEY_PATH")
     val passphrase: String? = System.getenv("MAVEN_SIGNING_KEY_PASSPHRASE")
 
-    if (privateKeyPath.isNullOrBlank())
+    if (privateKeyPath.isNullOrBlank()) {
         println("MAVEN_SIGNING_KEY_PATH is not set. Skipping signing.")
-    else if (passphrase.isNullOrBlank()) {
+    } else if (passphrase.isNullOrBlank()) {
         println("MAVEN_SIGNING_KEY_PASSPHRASE is not set. Skipping signing.")
     } else {
         val privateKey: String = File(privateKeyPath).readText()
