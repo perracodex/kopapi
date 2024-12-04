@@ -5,7 +5,6 @@
 package io.github.perracodex.kopapi.view
 
 import io.github.perracodex.kopapi.schema.SchemaRegistry
-import io.github.perracodex.kopapi.type.OpenApiFormat
 import io.github.perracodex.kopapi.view.annotation.DebugViewApi
 import kotlinx.html.*
 import kotlinx.serialization.encodeToString
@@ -19,12 +18,12 @@ import kotlinx.serialization.json.*
  * Each panel includes a dropdown for filtering the displayed JSON data and syntax highlighting.
  */
 @DebugViewApi
-internal class DebugPanelView(private val debugInfo: DebugInfo) {
-    private val schemaConflictsJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.SCHEMA_CONFLICTS)
-    private val configurationJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.API_CONFIGURATION)
-    private val openApiYaml: String = SchemaRegistry.getOpenApiSchema(format = OpenApiFormat.YAML, cacheAllFormats = true)
-    private val openApiJson: String = SchemaRegistry.getOpenApiSchema(format = OpenApiFormat.JSON, cacheAllFormats = true)
-    private val registryErrors: Set<String> = SchemaRegistry.getErrors()
+internal class DebugPanelView private constructor(
+    private val debugInfo: DebugInfo,
+    private val schemaConflictsJson: Set<String>,
+    private val configurationJson: Set<String>,
+    private val registryErrors: Set<String>
+) {
     private val jsonParser: Json = Json { prettyPrint = true }
 
     /**
@@ -111,13 +110,13 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                     htmlTag = this,
                     panelId = "openapi-yaml-panel",
                     title = "YAML OpenAPI Schema",
-                    content = openApiYaml
+                    content = debugInfo.openApiYaml
                 )
                 buildPopup(
                     htmlTag = this,
                     panelId = "openapi-json-panel",
                     title = "JSON OpenAPI Schema",
-                    content = openApiJson
+                    content = debugInfo.openApiJson
                 )
             }
         }
@@ -406,6 +405,25 @@ internal class DebugPanelView(private val debugInfo: DebugInfo) {
                     +errors.joinToString(separator = "\n")
                 }
             }
+        }
+    }
+
+    companion object {
+        /**
+         * Factory method to create a new instance of the [DebugPanelView].
+         */
+        suspend fun create(): DebugPanelView {
+            val debugInfo: DebugInfo = DebugViewUtils().extractSections()
+            val schemaConflictsJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.SCHEMA_CONFLICTS)
+            val configurationJson: Set<String> = SchemaRegistry.getDebugSection(section = SchemaRegistry.Section.API_CONFIGURATION)
+            val registryErrors: Set<String> = SchemaRegistry.getErrors()
+
+            return DebugPanelView(
+                debugInfo = debugInfo,
+                schemaConflictsJson = schemaConflictsJson,
+                configurationJson = configurationJson,
+                registryErrors = registryErrors
+            )
         }
     }
 }

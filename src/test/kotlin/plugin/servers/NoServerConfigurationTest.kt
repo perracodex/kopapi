@@ -19,7 +19,7 @@ class NoServerConfigurationTest {
 
     @BeforeEach
     fun reset() {
-        SchemaRegistry.clear()
+        SchemaRegistry.release()
     }
 
     @Test

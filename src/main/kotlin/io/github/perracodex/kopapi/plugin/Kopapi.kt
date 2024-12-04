@@ -14,6 +14,7 @@ import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.util.NetworkUtils
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -36,7 +37,7 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     if (!apiConfiguration.isEnabled) {
         lateinit var eventHandler: (Application) -> Unit
         eventHandler = {
-            SchemaRegistry.clear()
+            SchemaRegistry.release()
             application.monitor.unsubscribe(definition = ApplicationStarting, handler = eventHandler)
         }
         application.monitor.subscribe(definition = ApplicationStarting, handler = eventHandler)
@@ -51,8 +52,8 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     // Subscribe to the application started event to perform post-startup operations.
     lateinit var eventHandler: (Application) -> Unit
     eventHandler = {
-        logConfiguredEndpoints(application = application, apiConfig = apiConfiguration)
-        generateOpenApiSchema(application = application, apiConfig = apiConfiguration)
+        logConfiguredEndpoints(environment = environment, apiConfig = apiConfiguration)
+        generateOpenApiSchema(scope = application, apiConfig = apiConfiguration)
         application.monitor.unsubscribe(definition = ApplicationStarted, handler = eventHandler)
     }
     application.monitor.subscribe(definition = ApplicationStarted, handler = eventHandler)
@@ -76,17 +77,17 @@ private fun setupRoutes(application: Application, apiConfig: ApiConfiguration) {
 /**
  * Logs the configured endpoints if logging is enabled.
  *
- * @param application The application reference.
+ * @param environment The application environment reference.
  * @param apiConfig The API configuration for the plugin.
  */
-private fun logConfiguredEndpoints(application: Application, apiConfig: ApiConfiguration) {
+private fun logConfiguredEndpoints(environment: ApplicationEnvironment, apiConfig: ApiConfiguration) {
     if (apiConfig.logPluginRoutes) {
 
         // Temporarily enable logging to log the plugin routes.
         Tracer.enabled = true
 
         var serverUrl: String = apiConfig.host
-            ?: NetworkUtils.getServerUrl(environment = application.environment)
+            ?: NetworkUtils.getServerUrl(environment = environment)
 
         Tracer<KopapiConfig>().info(
             """
@@ -112,12 +113,12 @@ private fun logConfiguredEndpoints(application: Application, apiConfig: ApiConfi
  * This operation must be done right after the application is fully started,
  * so that all routes are registered and available for the schema generation.
  *
- * @param application The application reference.
+ * @param scope The coroutine scope to launch the schema generation.
  * @param apiConfig The API configuration for the plugin.
  */
-private fun generateOpenApiSchema(application: Application, apiConfig: ApiConfiguration) {
+private fun generateOpenApiSchema(scope: CoroutineScope, apiConfig: ApiConfiguration) {
     if (!apiConfig.onDemand) {
-        application.launch(Dispatchers.IO) {
+        scope.launch(Dispatchers.IO) {
             SchemaRegistry.getOpenApiSchema(
                 format = apiConfig.apiDocs.openApiFormat,
                 cacheAllFormats = true

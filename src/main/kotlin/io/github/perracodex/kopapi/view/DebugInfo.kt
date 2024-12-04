@@ -16,7 +16,9 @@ internal data class DebugInfo(
     val allApiOperationsYamlSection: String,
     val allApiOperationsJsonSection: String,
     val allTypeSchemasYamlSection: String,
-    val allTypeSchemasJsonSection: String
+    val allTypeSchemasJsonSection: String,
+    val openApiYaml: String,
+    val openApiJson: String
 ) {
     /**
      * Data class for storing individual sections.

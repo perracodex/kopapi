@@ -27,7 +27,7 @@ class QueryParameterTest {
 
     @BeforeEach
     fun reset() {
-        SchemaRegistry.clear()
+        SchemaRegistry.release()
     }
 
     @Test

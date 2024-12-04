@@ -85,7 +85,9 @@ internal class DebugViewUtils {
             allApiOperationsYamlSection = allApiOperationsYamlSection,
             allApiOperationsJsonSection = allApiOperationsJsonSection,
             allTypeSchemasYamlSection = allTypeSchemasYamlSection,
-            allTypeSchemasJsonSection = allTypeSchemasJsonSection
+            allTypeSchemasJsonSection = allTypeSchemasJsonSection,
+            openApiYaml = openApiYaml,
+            openApiJson = openApiJson
         )
     }
 

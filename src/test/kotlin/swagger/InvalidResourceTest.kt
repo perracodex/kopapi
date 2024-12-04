@@ -19,7 +19,7 @@ class InvalidResourceTest {
 
     @BeforeEach
     fun reset() {
-        SchemaRegistry.clear()
+        SchemaRegistry.release()
     }
 
     @Test

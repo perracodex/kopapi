@@ -4,9 +4,7 @@
 
 package io.github.perracodex.kopapi.routing
 
-import io.github.perracodex.kopapi.view.DebugInfo
 import io.github.perracodex.kopapi.view.DebugPanelView
-import io.github.perracodex.kopapi.view.DebugViewUtils
 import io.github.perracodex.kopapi.view.annotation.DebugViewApi
 import io.ktor.http.*
 import io.ktor.server.html.*
@@ -27,9 +25,7 @@ internal fun Routing.debugRoute(debugUrl: String) {
 
     get(debugUrl) {
         runCatching {
-            val debugInfo: DebugInfo = DebugViewUtils().extractSections()
-            val debugPanelView = DebugPanelView(debugInfo = debugInfo)
-
+            val debugPanelView: DebugPanelView = DebugPanelView.create()
             call.respondHtml(status = HttpStatusCode.OK) {
                 debugPanelView.build(html = this)
             }

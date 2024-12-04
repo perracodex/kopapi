@@ -145,14 +145,23 @@ internal object SchemaRegistry {
     }
 
     /**
-     * Clears all cached data.
+     * Releases all cached data.
      * This method should be called if the plugin is disabled.
      *
      * `Routes.api` definitions can be registered before or after the plugin is installed,
      * so if the plugin is disabled, we need to clear all cached data after the application
      * starts to free up resources.
      */
-    fun clear() = synchronized(this) {
+    fun release() {
+        synchronized(this) {
+            clear()
+        }
+    }
+
+    /**
+     * Clears all cached data.
+     */
+    private fun clear() {
         apiOperation.clear()
         apiPath.clear()
         typeSchemas.clear()
@@ -298,7 +307,7 @@ internal object SchemaRegistry {
         }
 
         return debugJsonCache[section] ?: run {
-            val json: String = SerializationUtils().toRawJson(instance)
+            val json: String = SerializationUtils().toRawJson(instance = instance)
             debugJsonCache[section] = setOf(json)
             setOf(json)
         }
