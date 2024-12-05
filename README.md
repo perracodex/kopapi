@@ -26,14 +26,14 @@ get("/items/{data_id}") {
 
 ### Characteristics:
 
-* Lightweight and minimally invasive integration.
-* Provides `Swagger UI` and `ReDoc` out of the box for testing and documentation.
+* Minimally invasive integration.
+* Provides `Swagger UI` and `ReDoc` out of the box.
 * Flexible and expressive `DSL` builder.
-* No unnatural modifications to your routes. Just add the `api` documentation block after it.
+* No unnatural modifications to your routes.
 * Support for arbitrary types, including `generics`, `collections` and complex nested structures.
 * Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) and [Jackson](https://github.com/FasterXML/jackson-module-kotlin)
   annotations (under development).
-* Generate schema outputs in `YAML` or `JSON` format.
+* Schema outputs in `YAML` or `JSON` format.
 * Well documented.
 
 ---
@@ -50,9 +50,9 @@ dependencies {
 
 ### Version Compatibility
 
-| **Kopapi** | **Ktor**  | **Kotlin**      |
-|------------|-----------|-----------------|
-| 1.0.7      | \>= 3.0.2 | \>= 2.1.0       |
+| **Kopapi** | **Ktor**  | **Kotlin** |
+|------------|-----------|------------|
+| 1.0.7      | \>= 3.0.2 | \>= 2.1.0  |
 
 ---
 
@@ -94,11 +94,10 @@ dependencies {
 
 To see the library in action, check the [Kcrud](https://github.com/perracodex/kcrud) repository:
 
-- https://github.com/perracodex/kcrud/blob/main/kcrud-core/src/main/kotlin/kcrud/core/plugins/ApiSchema.kt
-- https://github.com/perracodex/kcrud/tree/main/kcrud-employee/src/main/kotlin/kcrud/domain/employee/api
-- https://github.com/perracodex/kcrud/tree/main/kcrud-access/src/main/kotlin/kcrud/access/token/api/operate
-- https://github.com/perracodex/kcrud/tree/main/kcrud-access/src/main/kotlin/kcrud/access/rbac/api
-- https://github.com/perracodex/kcrud/tree/main/kcrud-core/src/main/kotlin/kcrud/core/scheduler/api
+- https://github.com/perracodex/kcrud/blob/main/kcrud-system/core/src/main/kotlin/kcrud/core/plugins/ApiSchema.kt
+- https://github.com/perracodex/kcrud/tree/main/kcrud-domain/employee/src/main/kotlin/kcrud/domain/employee/api
+- https://github.com/perracodex/kcrud/tree/main/kcrud-system/scheduler/src/main/kotlin/kcrud/scheduler/api
+- https://github.com/perracodex/kcrud/tree/main/kcrud-system/access/src/main/kotlin/kcrud/access/domain/token/api
 
 ---
 
