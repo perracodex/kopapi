@@ -27,7 +27,7 @@ repositories {
 // Configure Detekt for static code analysis.
 detekt {
     buildUponDefaultConfig = true
-    allRules = false
+    allRules = true
     config.setFrom("$rootDir/config/detekt/detekt.yml")
 }
 
