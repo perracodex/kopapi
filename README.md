@@ -29,7 +29,7 @@ get("/items/{data_id}") {
 * Minimally invasive integration.
 * Provides `Swagger UI` and `ReDoc` out of the box.
 * Flexible and expressive `DSL` builder.
-* No unnatural modifications to your routes.
+* No unnatural modifications to the routes.
 * Support for arbitrary types, including `generics`, `collections` and complex nested structures.
 * Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) and [Jackson](https://github.com/FasterXML/jackson-module-kotlin)
   annotations (under development).
