@@ -80,7 +80,7 @@ internal object SchemaRegistry {
         private set
 
     /** The [TypeSchemaProvider] instance used for introspecting types and generating schemas. */
-    private val introspector = TypeSchemaProvider()
+    private val schemaProvider = TypeSchemaProvider()
 
     /**
      * Registers the [ApiConfiguration] object for the Kopapi plugin.
@@ -168,7 +168,7 @@ internal object SchemaRegistry {
         schemaConflicts.clear()
         debugJsonCache.clear()
         openApiSpec = null
-        introspector.reset()
+        schemaProvider.reset()
         apiConfiguration = null
     }
 
@@ -198,14 +198,14 @@ internal object SchemaRegistry {
         }
 
         // Collect and store sorted schemas.
-        introspector.getTypeSchemas().sortedWith(
+        schemaProvider.getTypeSchemas().sortedWith(
             compareBy { it.name }
         ).forEach { schema ->
             typeSchemas.add(schema)
         }
 
         // Collect and store sorted schema conflicts.
-        introspector.getConflicts().sortedWith(
+        schemaProvider.getConflicts().sortedWith(
             compareBy { it.name }
         ).forEach { conflict ->
             schemaConflicts.add(conflict)
@@ -221,7 +221,7 @@ internal object SchemaRegistry {
     fun introspectType(type: KType): TypeSchema? = synchronized(this) {
         return when (type.classifier) {
             Unit::class -> return null
-            else -> introspector.introspect(kType = type)
+            else -> schemaProvider.introspect(kType = type)
         }
     }
 
