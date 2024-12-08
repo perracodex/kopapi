@@ -34,7 +34,7 @@ internal class SchemaConflicts(private val schemaProvider: TypeSchemaProvider) {
             .groupBy { it.name }
             .filter { it.value.size > 1 }
             .forEach { (name, duplicates) ->
-                val conflictingTypes: MutableSet<String> = duplicates.mapTo(mutableSetOf()) { it.type }
+                val conflictingTypes: Set<String> = duplicates.map { it.type }.toSet()
                 val conflict = Conflict(name = name, conflictingTypes = conflictingTypes)
                 conflicts.add(conflict)
             }
@@ -56,6 +56,6 @@ internal class SchemaConflicts(private val schemaProvider: TypeSchemaProvider) {
      */
     internal data class Conflict(
         val name: String,
-        val conflictingTypes: MutableSet<String>
+        val conflictingTypes: Set<String>
     )
 }
