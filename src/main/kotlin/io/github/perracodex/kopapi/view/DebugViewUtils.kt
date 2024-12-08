@@ -201,7 +201,7 @@ internal class DebugViewUtils {
     private suspend fun extractTypeSchemaSections(
         typeSchemas: Set<String>
     ): Map<String, DebugInfo.Section> = coroutineScope {
-        val tasks: List<Deferred<Pair<String, DebugInfo.Section>>> = typeSchemas.map { rawSection ->
+        val tasks: List<Deferred<Pair<String, DebugInfo.Section>?>> = typeSchemas.map { rawSection ->
             async {
                 val jsonObject: JsonNode = serializationUtils.openApiJsonMapper.readTree(rawSection)
                 val name: String = jsonObject["name"]?.asText() ?: ""
@@ -229,7 +229,14 @@ internal class DebugViewUtils {
                 val yamlSection: String = yamlSectionDeferred.await()
                 val jsonSection: String = jsonSectionDeferred.await()
 
-                val compositeKey = "$name → $type"
+                // Ignore items with both yamlSection and jsonSection as empty strings.
+                // This can happen when a schema type is defined in a property marked as transient.
+                if (yamlSection.isEmpty() && jsonSection.isEmpty()) {
+                    return@async null
+                }
+
+                val typeSchemaUsages: Int = computeTypeSchemaUsages(schemaName = name)
+                val compositeKey = "$name → $type -> References: $typeSchemaUsages"
 
                 return@async compositeKey to DebugInfo.Section(
                     rawSection = rawSection,
@@ -239,6 +246,20 @@ internal class DebugViewUtils {
             }
         }
 
-        return@coroutineScope tasks.awaitAll().toMap()
+        return@coroutineScope tasks.awaitAll()
+            .filterNotNull()
+            .toMap()
+    }
+
+    /**
+     * Counts how many times a given schema is referenced
+     *
+     * @param schemaName The class name of the schema to count references for.
+     * @return The number of occurrences of "#/components/schemas/<schemaName>".
+     */
+    private fun computeTypeSchemaUsages(schemaName: String): Int {
+        val refToFind = "\"#/components/schemas/$schemaName\""
+        val pattern: String = Regex.escape(literal = refToFind)
+        return Regex(pattern = pattern).findAll(input = openApiYaml, startIndex = 0).count()
     }
 }
