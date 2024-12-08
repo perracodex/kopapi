@@ -22,45 +22,22 @@ internal class SchemaConflicts(private val schemaProvider: TypeSchemaProvider) {
     fun get(): Set<Conflict> = conflicts
 
     /**
-     * Updates the cache by detecting conflicting [TypeSchema] objects
-     * with the same name but different types.
-     *
-     * @param newSchema The [TypeSchema] to check for conflicts.
+     * Finds conflicting [TypeSchema] objects and stores them in the cache.
+     * These are schemas that share the same name but have different types.
      */
     @TypeIntrospectorApi
-    fun analyze(newSchema: TypeSchema) {
-        // Retrieve all existing TypeSchemas and filter out those that have the same name
-        // as newSchema (case-insensitive) but a different type (also case-insensitive).
-        val conflictingSchemas: List<TypeSchema> = schemaProvider.getTypeSchemas().filter { existingSchema ->
-            existingSchema.name.equals(newSchema.name, ignoreCase = true) &&
-                    !existingSchema.type.equals(newSchema.type, ignoreCase = true)
-        }
+    fun analyze() {
+        val typeSchemas: Set<TypeSchema> = schemaProvider.getTypeSchemas()
 
-        conflictingSchemas.forEach { existingSchema ->
-            // Attempt to find an existing Conflict entry that matches the newSchema's name.
-            val conflict: Conflict? = conflicts.find { conflict ->
-                conflict.name.equals(newSchema.name, ignoreCase = true)
+        // Find all schemas that have the same name and group them by name (case-sensitive).
+        typeSchemas
+            .groupBy { it.name }
+            .filter { it.value.size > 1 }
+            .forEach { (name, duplicates) ->
+                val conflictingTypes: MutableSet<String> = duplicates.mapTo(mutableSetOf()) { it.type }
+                val conflict = Conflict(name = name, conflictingTypes = conflictingTypes)
+                conflicts.add(conflict)
             }
-
-            if (conflict != null) {
-                // If a Conflict entry exists, add the conflicting type of the existing schema
-                // and the new schema's type to the conflictingTypes set.
-                conflict.conflictingTypes.add(existingSchema.type)
-                conflict.conflictingTypes.add(newSchema.type)
-            } else {
-                // If no Conflict entry exists for the newSchema's name, create a new Conflict
-                // instance with the differing types.
-                conflicts.add(
-                    Conflict(
-                        name = newSchema.name,
-                        conflictingTypes = mutableSetOf(
-                            existingSchema.type,
-                            newSchema.type
-                        )
-                    )
-                )
-            }
-        }
     }
 
     /**

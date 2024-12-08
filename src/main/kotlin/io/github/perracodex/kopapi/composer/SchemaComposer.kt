@@ -5,6 +5,7 @@
 package io.github.perracodex.kopapi.composer
 
 import io.github.perracodex.kopapi.composer.annotation.ComposerApi
+import io.github.perracodex.kopapi.composer.component.ComponentCleaner
 import io.github.perracodex.kopapi.composer.component.ComponentComposer
 import io.github.perracodex.kopapi.composer.info.InfoSectionComposer
 import io.github.perracodex.kopapi.composer.operation.OperationComposer
@@ -40,8 +41,8 @@ internal class SchemaComposer(
     private val apiPaths: Set<ApiPath>,
     private val apiOperations: Set<ApiOperation>,
     private val registrationErrors: Set<String>,
-    private val schemaConflicts: Set<SchemaConflicts.Conflict>,
-    private val format: OpenApiFormat?
+    private val schemaConflicts: MutableSet<SchemaConflicts.Conflict>,
+    private val format: OpenApiFormat?,
 ) {
     private val tracer: Tracer = Tracer<SchemaComposer>()
 
@@ -89,13 +90,13 @@ internal class SchemaComposer(
 
         // Create the `components` object.
         val components: OpenApiSchema.Components? = OpenApiSchema.Components(
-            componentSchemas = componentSchemas,
+            componentSchemas = componentSchemas?.toMutableMap(),
             securitySchemes = securitySchemes
         ).takeIf { it.hasContent() }
 
         // Create the OpenAPI schema.
         tracer.info("Composing the final OpenAPI schema.")
-        val openApiSchema = OpenApiSchema(
+        var openApiSchema = OpenApiSchema(
             openapi = OPEN_API_VERSION,
             info = infoSection,
             servers = serversSection,
@@ -105,21 +106,66 @@ internal class SchemaComposer(
             security = topLevelSecurity?.toOpenApiSpec(),
         )
 
+        // Perform additional processing on the OpenAPI specification
+        // and generate the final OpenAPI schema.
+        return processOpenApiSpec(openApiSchema = openApiSchema)
+    }
+
+    /**
+     * Processes the OpenAPI specification by cleaning orphaned components,
+     * rebuilding the schema if necessary, and appending error details.
+     *
+     * @param openApiSchema The current OpenAPI schema.
+     * @return The finalized OpenAPI specification.
+     */
+    private fun processOpenApiSpec(openApiSchema: OpenApiSchema): OpenApiSpec {
         // Serialize the OpenAPI schema, producing the final specification.
-        val openApiSpec: OpenApiSpec = serializeOpenApiSchema(
+        // This may still contain orphaned components, so it requires further processing.
+        var openApiSpec: OpenApiSpec = serializeOpenApiSchema(
             openApiSchema = openApiSchema,
             format = format,
             errors = null
         )
 
-        // If the official swagger parser detects, rebuild the schema with the errors appended to the `info` section.
-        // Note that the AppInfo composer already adds some errors, but these are very basic.
-        val parserErrors: Set<String> = verify(openApiSpec = openApiSpec)
-        if (apiConfiguration.apiDocs.swagger.includeErrors && parserErrors.isNotEmpty()) {
-            return rebuildWithErrors(openApiSchema = openApiSchema, parserErrors = parserErrors, format = format)
+        // Clean the schema from orphaned components.
+        val originalSchemaConflicts: Set<SchemaConflicts.Conflict> = schemaConflicts.toSet()
+        var updatedOpenApiSpec: OpenApiSpec = ComponentCleaner(
+            openApiSchema = openApiSchema,
+            openApiSpec = openApiSpec,
+            format = format,
+            schemaConflicts = schemaConflicts
+        ).clean()
+        val isSchemaConflictsUpdated: Boolean = (originalSchemaConflicts != schemaConflicts)
+
+        // Rebuild the 'info' section if orphans were removed and errors are to be included in the schema.
+        var updatedOpenApiSchema: OpenApiSchema = openApiSchema
+        if (apiConfiguration.apiDocs.swagger.includeErrors && isSchemaConflictsUpdated) {
+            updatedOpenApiSchema = updatedOpenApiSchema.copy(
+                info = InfoSectionComposer.compose(
+                    apiConfiguration = apiConfiguration,
+                    registrationErrors = registrationErrors,
+                    schemaConflicts = schemaConflicts
+                )
+            )
+
+            updatedOpenApiSpec = serializeOpenApiSchema(
+                openApiSchema = updatedOpenApiSchema,
+                format = format,
+                errors = null
+            )
         }
 
-        return openApiSpec.copy(errors = parserErrors)
+        // If the official swagger parser detects errors, rebuild the schema with the errors appended.
+        val parserErrors: Set<String> = verify(openApiSpec = updatedOpenApiSpec)
+        if (apiConfiguration.apiDocs.swagger.includeErrors && parserErrors.isNotEmpty()) {
+            return rebuildWithErrors(
+                openApiSchema = updatedOpenApiSchema,
+                parserErrors = parserErrors,
+                format = format
+            )
+        }
+
+        return updatedOpenApiSpec.copy(errors = parserErrors)
     }
 
     /**
@@ -149,11 +195,18 @@ internal class SchemaComposer(
         val updatedOpenApiSchema: OpenApiSchema = openApiSchema.copy(info = updatedInfoSection)
 
         // Re-serialize the OpenAPI schema.
-        return serializeOpenApiSchema(
+        val openApiSpec: OpenApiSpec = serializeOpenApiSchema(
             openApiSchema = updatedOpenApiSchema,
             format = format,
             errors = parserErrors
         )
+
+        return ComponentCleaner(
+            openApiSpec = openApiSpec,
+            format = format,
+            schemaConflicts = schemaConflicts,
+            openApiSchema = openApiSchema
+        ).clean()
     }
 
     /**
@@ -191,10 +244,11 @@ internal class SchemaComposer(
         format: OpenApiFormat?,
         errors: Set<String>?
     ): OpenApiSpec {
+        val serializationUtils = SerializationUtils()
         val (yaml: String?, json: String?) = when (format) {
-            OpenApiFormat.YAML -> SerializationUtils().toYaml(instance = openApiSchema) to null
-            OpenApiFormat.JSON -> null to SerializationUtils().toJson(instance = openApiSchema)
-            else -> SerializationUtils().toYaml(instance = openApiSchema) to SerializationUtils().toJson(instance = openApiSchema)
+            OpenApiFormat.YAML -> serializationUtils.toYaml(instance = openApiSchema) to null
+            OpenApiFormat.JSON -> null to serializationUtils.toJson(instance = openApiSchema)
+            else -> serializationUtils.toYaml(instance = openApiSchema) to serializationUtils.toJson(instance = openApiSchema)
         }
         return OpenApiSpec(yaml = yaml, json = json, errors = errors)
     }
@@ -217,10 +271,14 @@ internal class SchemaComposer(
                 isValidateExternalRefs = true  // Validate external $ref references.
             }
 
+            require(!openApiSpec.yaml.isNullOrBlank() || !openApiSpec.json.isNullOrBlank()) {
+                "No OpenAPI specification found."
+            }
+
             val openApi: String = when {
                 !openApiSpec.yaml.isNullOrBlank() -> openApiSpec.yaml
                 !openApiSpec.json.isNullOrBlank() -> openApiSpec.json
-                else -> throw IllegalStateException("No OpenAPI specification found.")
+                else -> return emptySet()
             }
 
             val openApiResult: SwaggerParseResult = OpenAPIV3Parser().readContents(openApi, null, options)

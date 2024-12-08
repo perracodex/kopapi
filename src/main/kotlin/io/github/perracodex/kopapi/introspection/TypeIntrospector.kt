@@ -5,10 +5,13 @@
 package io.github.perracodex.kopapi.introspection
 
 import io.github.perracodex.kopapi.introspection.annotation.TypeIntrospectorApi
+import io.github.perracodex.kopapi.introspection.descriptor.ElementName
 import io.github.perracodex.kopapi.introspection.descriptor.TypeDescriptor
 import io.github.perracodex.kopapi.introspection.resolver.*
 import io.github.perracodex.kopapi.introspection.schema.TypeSchema
 import io.github.perracodex.kopapi.introspection.schema.factory.PrimitiveFactory
+import io.github.perracodex.kopapi.introspection.schema.factory.SchemaFactory
+import io.github.perracodex.kopapi.schema.facet.ElementSchema
 import io.github.perracodex.kopapi.schema.facet.SchemaProperty
 import io.github.perracodex.kopapi.system.Tracer
 import io.github.perracodex.kopapi.util.nativeName
@@ -46,6 +49,18 @@ internal class TypeIntrospector {
     /** Cache of [TypeSchema] objects that have been processed. */
     private val typeSchemaCache: MutableSet<TypeSchema> = mutableSetOf()
 
+    /**
+     * Keeps track of the number of times a type is referenced.
+     *
+     * Note that this is not an accurate usage value, as the introspector cannot
+     * track if a new introspection trigger is due to just a repeated call.
+     *
+     * The value represents the first time it is introspected, and the subsequent
+     * matches within the same introspection due to circular references,
+     * or when a new type is introspected which references the same type.
+     */
+    private val typeSchemaUsages: MutableMap<String, Int> = mutableMapOf()
+
     private val arrayResolver = ArrayResolver(introspector = this)
     private val collectionResolver = CollectionResolver(introspector = this)
     private val enumResolver = EnumResolver(introspector = this)
@@ -58,6 +73,26 @@ internal class TypeIntrospector {
      * Retrieves the cached [TypeSchema] objects.
      */
     fun getTypeSchemas(): Set<TypeSchema> = typeSchemaCache
+
+    /**
+     * Retrieves the cached [TypeSchema] reference for the given [kType],
+     * if such has been previously introspected and cached.
+     *
+     * @param kType The [KType] to retrieve the reference for.
+     * @return The [TypeSchema] reference for the given [kType], if available; otherwise, `null`.
+     */
+    fun getTypeSchemaReference(kType: KType): TypeSchema? {
+        val cachedSchema: TypeSchema = typeSchemaCache.find { typeSchema ->
+            typeSchema.type == kType.nativeName()
+        } ?: return null
+
+        val className = ElementName(name = cachedSchema.name, renamedFrom = cachedSchema.renamedFrom)
+        return TypeSchema.of(
+            name = className,
+            kType = kType,
+            schema = SchemaFactory.ofReference(schemaName = className.name, referencedType = kType)
+        )
+    }
 
     /**
      * Traverses and resolves the given [kType], handling both simple and complex types,
@@ -275,11 +310,23 @@ internal class TypeIntrospector {
         property: KProperty1<out Any, *>,
         typeArgumentBindings: Map<KClassifier, KType>
     ): Pair<String, SchemaProperty> {
-        return propertyResolver.traverse(
+        // Traverse the property and resolve its schema.
+        val property: Pair<String, SchemaProperty> = propertyResolver.traverse(
             classKType = classKType,
             property = property,
             typeArgumentBindings = typeArgumentBindings
         )
+
+        // Decrease the reference count for transient properties.
+        val schemaProperty: SchemaProperty = property.second
+        if (schemaProperty.isTransient) {
+            if (schemaProperty.schema is ElementSchema.Reference) {
+                val referenceTypeName: String = schemaProperty.schema.referencedType.nativeName()
+                decreaseReferenceCount(nativeName = referenceTypeName)
+            }
+        }
+
+        return property
     }
 
     /**
@@ -314,9 +361,31 @@ internal class TypeIntrospector {
     }
 
     /**
+     * Increases the reference count for a [KType] given its [nativeName].
+     *
+     * @param nativeName The native name of the type.
+     */
+    fun increaseReferenceCount(nativeName: String) {
+        typeSchemaUsages[nativeName] = typeSchemaUsages.getOrDefault(nativeName, 0) + 1
+    }
+
+    /**
+     * Decreases the reference count for a [KType] given its [nativeName].
+     *
+     * @param nativeName The native name of the type.
+     */
+    private fun decreaseReferenceCount(nativeName: String) {
+        val count: Int = typeSchemaUsages.getOrDefault(nativeName, 0)
+        if (count > 0) {
+            typeSchemaUsages[nativeName] = count - 1
+        }
+    }
+
+    /**
      * Clears the [TypeSchema] cache.
      */
     fun clear() {
         typeSchemaCache.clear()
+        typeSchemaUsages.clear()
     }
 }

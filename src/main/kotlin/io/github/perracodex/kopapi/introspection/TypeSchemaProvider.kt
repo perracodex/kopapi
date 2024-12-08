@@ -42,9 +42,15 @@ internal class TypeSchemaProvider {
         if (kType.classifier == Unit::class) {
             throw KopapiException("Type 'Unit' cannot be introspected.")
         }
+
+        // Return a type reference if the schema has already been introspected.
+        introspector.getTypeSchemaReference(kType = kType)?.let { cachedSchema ->
+            return cachedSchema
+        }
+
         tracer.debug("Initiating introspection of type: $kType.")
         val result: TypeSchema = introspector.traverseType(kType = kType, typeArgumentBindings = emptyMap())
-        conflicts.analyze(newSchema = result)
+        conflicts.analyze()
         return result
     }
 
@@ -56,14 +62,18 @@ internal class TypeSchemaProvider {
      *
      * @return A set of [SchemaConflicts.Conflict] objects.
      */
-    fun getConflicts(): Set<SchemaConflicts.Conflict> = conflicts.get()
+    fun getConflicts(): Set<SchemaConflicts.Conflict> {
+        return conflicts.get()
+    }
 
     /**
      * Retrieve all the [TypeSchema] objects that have been introspected.
      *
      * @return A set of [TypeSchema] objects.
      */
-    fun getTypeSchemas(): Set<TypeSchema> = introspector.getTypeSchemas()
+    fun getTypeSchemas(): Set<TypeSchema> {
+        return introspector.getTypeSchemas()
+    }
 
     /**
      * Reset the [TypeSchemaProvider] to its initial state.

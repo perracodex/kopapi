@@ -11,6 +11,7 @@ import io.github.perracodex.kopapi.introspection.descriptor.MetadataDescriptor
 import io.github.perracodex.kopapi.introspection.schema.TypeSchema
 import io.github.perracodex.kopapi.introspection.schema.factory.SchemaFactory
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.util.nativeName
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
@@ -46,6 +47,10 @@ internal class EnumResolver(private val introspector: TypeIntrospector) {
         // Create the TypeSchema for the enum as a separate object.
         val enumClassName: ElementName = MetadataDescriptor.getClassName(kClass = enumClass)
         val enumKType: KType = enumClass.createType()
+
+        // Every time a traversal is initiated, increase the reference count for the type,
+        // as this implies that the type is being used in the schema.
+        introspector.increaseReferenceCount(nativeName = enumKType.nativeName())
 
         // If the enum type has not been processed yet,
         // create a schema for it and cache it for future reference.

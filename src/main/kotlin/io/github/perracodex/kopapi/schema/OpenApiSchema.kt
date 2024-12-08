@@ -111,7 +111,7 @@ internal data class OpenApiSchema(
      */
     @JsonTypeName("components")
     data class Components(
-        @JsonProperty("schemas") val componentSchemas: Map<String, ISchemaFacet>?,
+        @JsonProperty("schemas") val componentSchemas: MutableMap<String, ISchemaFacet>?,
         @JsonProperty("securitySchemes") val securitySchemes: Map<String, ApiSecurityScheme>?
     ) {
         /**

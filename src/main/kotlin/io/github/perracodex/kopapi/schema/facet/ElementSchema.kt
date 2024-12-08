@@ -186,7 +186,7 @@ internal sealed class ElementSchema(
             const val PATH: String = "#/components/schemas/"
 
             /** The key used to reference another schema. */
-            private const val REFERENCE_KEY: String = "\$ref"
+            public const val REFERENCE_KEY: String = "\$ref"
         }
     }
 }

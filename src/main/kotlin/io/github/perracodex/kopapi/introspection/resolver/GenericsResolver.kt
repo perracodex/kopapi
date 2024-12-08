@@ -14,6 +14,7 @@ import io.github.perracodex.kopapi.schema.facet.ElementSchema
 import io.github.perracodex.kopapi.schema.facet.SchemaProperty
 import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.system.Tracer
+import io.github.perracodex.kopapi.util.nativeName
 import kotlin.reflect.*
 
 /**
@@ -153,6 +154,10 @@ internal class GenericsResolver(private val introspector: TypeIntrospector) {
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
         tracer.debug("Traversing generics type: $kType.")
+
+        // Every time a traversal is initiated, increase the reference count for the type,
+        // as this implies that the type is being used in the schema.
+        introspector.increaseReferenceCount(nativeName = kType.nativeName())
 
         val genericsTypeName: String = generateTypeName(kType = kType, kClass = kClass)
 

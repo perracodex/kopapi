@@ -110,15 +110,21 @@ internal class ObjectResolver(private val introspector: TypeIntrospector) {
         kClass: KClass<*>,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
+        val nativeName: String = kType.nativeName()
+
+        // Every time a traversal is initiated, increase the reference count for the type,
+        // as this implies that the type is being used in the schema.
+        introspector.increaseReferenceCount(nativeName = nativeName)
+
         // Avoid redundant processing: skip if the type is already processed or self-references itself.
-        if (introspector.isCached(kType = kType) || semaphore.contains(kType.nativeName())) {
+        if (introspector.isCached(kType = kType) || semaphore.contains(nativeName)) {
             return TypeSchema.of(
                 name = className,
                 kType = kType,
                 schema = SchemaFactory.ofReference(schemaName = className.name, referencedType = kType)
             )
         }
-        semaphore.add(kType.nativeName())
+        semaphore.add(nativeName)
 
         // Resolve the object attributes.
         val attributes: SchemaAnnotationAttributes? = SchemaAnnotationParser.parse(element = kClass)
@@ -150,7 +156,7 @@ internal class ObjectResolver(private val introspector: TypeIntrospector) {
 
         // Once done traversing remove the processing type from the in-memory
         // tracker to handle different branches.
-        semaphore.remove(kType.nativeName())
+        semaphore.remove(nativeName)
 
         tracer.debug("Resolved object type: $kType.")
         return TypeSchema.of(
