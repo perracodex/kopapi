@@ -96,7 +96,6 @@ To see the library in action, check the [Kcrud](https://github.com/perracodex/kc
 
 - https://github.com/perracodex/kcrud/blob/main/kcrud-system/core/src/main/kotlin/kcrud/core/plugins/ApiSchema.kt
 - https://github.com/perracodex/kcrud/tree/main/kcrud-domain/employee/src/main/kotlin/kcrud/domain/employee/api
-- https://github.com/perracodex/kcrud/tree/main/kcrud-system/scheduler/src/main/kotlin/kcrud/scheduler/api
 - https://github.com/perracodex/kcrud/tree/main/kcrud-system/access/src/main/kotlin/kcrud/access/domain/token/api
 
 ---
