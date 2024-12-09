@@ -114,47 +114,84 @@ internal class ComponentCleaner(
         openApiMap: MutableMap<String, Any?>,
         usedRefs: Set<String>
     ): Boolean {
-        // Get the components.
-        val componentsSection: Any? = openApiMap[COMPONENTS_KEY]
-        if (componentsSection !is Map<*, *> || componentsSection.isEmpty()) {
-            return false
-        }
-        val components: MutableMap<String, Any?> = componentsSection.entries.associate { (key, value) ->
-            key.toString() to value
-        }.toMutableMap()
+        // Retrieve the 'components' section as a non-empty mutable map.
+        val components: MutableMap<String, Any?> = getNonEmptyMapSection(
+            source = openApiMap,
+            key = COMPONENTS_KEY,
+            errorMessage = "No valid or non-empty '$COMPONENTS_KEY' section found. No schemas removed."
+        ) ?: return false
 
-        // Get the schemas.
-        val schemasSection: Any? = components[SCHEMA_KEY]
-        if (schemasSection !is Map<*, *> || schemasSection.isEmpty()) {
-            return false
-        }
-        val schemas: MutableMap<String, Any?> = schemasSection.entries.associate { (key, value) ->
-            key.toString() to value
-        }.toMutableMap()
+        // Retrieve the 'schemas' section as a non-empty mutable map.
+        val schemas: MutableMap<String, Any?> = getNonEmptyMapSection(
+            source = components,
+            key = SCHEMA_KEY,
+            errorMessage = "No valid or non-empty '$SCHEMA_KEY' section found within '$COMPONENTS_KEY'. No schemas removed."
+        ) ?: return false
 
-        // Remove unused schemas.
-        val usedSchemaNames: Set<String> = usedRefs.map { it.substringAfterLast("/") }.toSet()
+        // Extract just the schema names from the used references.
+        val usedSchemaNames: Set<String> = usedRefs.mapNotNull { ref ->
+            ref.substringAfterLast(delimiter = "/", missingDelimiterValue = "").takeIf { it.isNotEmpty() }
+        }.toSet()
+
         val orphans: Set<String> = schemas.keys - usedSchemaNames
-
-        if (orphans.isNotEmpty()) {
-            orphans.forEach { orphan ->
-                schemas.remove(orphan)
-
-                // Remove the orphan from the OpenAPI schema structure.
-                openApiSchema.components?.componentSchemas?.remove(orphan)
-
-                // Remove the orphan from the schema conflicts.
-                schemaConflicts.removeIf { it.name == orphan }
-            }
-
-            // Put the modified schemas back.
-            components[SCHEMA_KEY] = schemas
-            openApiMap[COMPONENTS_KEY] = components
-
-            tracer.debug("Removed orphan schemas: $orphans")
+        if (orphans.isEmpty()) {
+            return false
         }
 
-        return orphans.isNotEmpty()
+        // Remove each orphaned schema.
+        orphans.forEach { orphan ->
+            schemas.remove(orphan)
+            openApiSchema.components?.componentSchemas?.remove(orphan)
+            schemaConflicts.removeIf { it.name == orphan }
+        }
+
+        // Update the document with cleaned schemas.
+        components[SCHEMA_KEY] = schemas
+        openApiMap[COMPONENTS_KEY] = components
+
+        tracer.debug("Removed orphan schemas: $orphans")
+        return true
+    }
+
+    /**
+     * Retrieves a section from the given source map by the specified key.
+     * Ensures that the section is a non-empty Map<*, *> and then converts it
+     * to MutableMap<String, Any?>. Returns `null` if any of these checks fail.
+     *
+     * @param source The source map to retrieve the section from.
+     * @param key The key of the section to retrieve.
+     * @param errorMessage The error message to log if the section is not found or is empty.
+     * @return The mutable map section if it exists and is non-empty; `null` otherwise.
+     */
+    private fun getNonEmptyMapSection(
+        source: Map<String, Any?>,
+        key: String,
+        errorMessage: String
+    ): MutableMap<String, Any?>? {
+        val section: Any? = source[key]
+        if (section !is Map<*, *> || section.isEmpty()) {
+            tracer.debug(errorMessage)
+            return null
+        }
+
+        val mutableMap: MutableMap<String, Any?> = section.toMutableMapSafely() ?: run {
+            tracer.debug("Failed to convert '$key' section to a mutable map.")
+            return null
+        }
+        return mutableMap
+    }
+
+    /**
+     * Safely converts a Map<*, *> into a MutableMap<String, Any?>.
+     * Returns `null` if any key is not a String.
+     */
+    private fun Map<*, *>.toMutableMapSafely(): MutableMap<String, Any?>? {
+        val mutableMap: MutableMap<String, Any?> = mutableMapOf<String, Any?>()
+        for ((key, value) in this) {
+            val keyStr: String = key?.toString() ?: return null
+            mutableMap[keyStr] = value
+        }
+        return mutableMap
     }
 
     private companion object {

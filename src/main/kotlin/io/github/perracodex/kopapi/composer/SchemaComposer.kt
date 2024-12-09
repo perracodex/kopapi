@@ -96,7 +96,7 @@ internal class SchemaComposer(
 
         // Create the OpenAPI schema.
         tracer.info("Composing the final OpenAPI schema.")
-        var openApiSchema = OpenApiSchema(
+        val openApiSchema = OpenApiSchema(
             openapi = OPEN_API_VERSION,
             info = infoSection,
             servers = serversSection,
@@ -121,7 +121,7 @@ internal class SchemaComposer(
     private fun processOpenApiSpec(openApiSchema: OpenApiSchema): OpenApiSpec {
         // Serialize the OpenAPI schema, producing the final specification.
         // This may still contain orphaned components, so it requires further processing.
-        var openApiSpec: OpenApiSpec = serializeOpenApiSchema(
+        val openApiSpec: OpenApiSpec = serializeOpenApiSchema(
             openApiSchema = openApiSchema,
             format = format,
             errors = null

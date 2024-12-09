@@ -86,7 +86,7 @@ private fun logConfiguredEndpoints(environment: ApplicationEnvironment, apiConfi
         // Temporarily enable logging to log the plugin routes.
         Tracer.enabled = true
 
-        var serverUrl: String = apiConfig.host
+        val serverUrl: String = apiConfig.host
             ?: NetworkUtils.getServerUrl(environment = environment)
 
         Tracer<KopapiConfig>().info(
