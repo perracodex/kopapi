@@ -5,18 +5,9 @@
 package io.github.perracodex.kopapi.plugin
 
 import io.github.perracodex.kopapi.dsl.plugin.element.ApiConfiguration
-import io.github.perracodex.kopapi.routing.debugRoute
-import io.github.perracodex.kopapi.routing.openApiRoute
-import io.github.perracodex.kopapi.routing.redocRoute
-import io.github.perracodex.kopapi.routing.swaggerRoute
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.system.Tracer
-import io.github.perracodex.kopapi.util.NetworkUtils
 import io.ktor.server.application.*
-import io.ktor.server.routing.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * Kopapi plugin that provides OpenAPI functionality.
@@ -33,96 +24,17 @@ public val Kopapi: ApplicationPlugin<KopapiConfig> = createApplicationPlugin(
     // Register the configuration with the schema provider.
     SchemaRegistry.registerApiConfiguration(apiConfiguration = apiConfiguration)
 
+    val pluginSetup = PluginSetup(application = application, apiConfiguration = apiConfiguration)
+
     // Handle plugin disabling by clearing schema on application starting.
     if (!apiConfiguration.isEnabled) {
-        lateinit var eventHandler: (Application) -> Unit
-        eventHandler = {
-            SchemaRegistry.release()
-            application.monitor.unsubscribe(definition = ApplicationStarting, handler = eventHandler)
-        }
-        application.monitor.subscribe(definition = ApplicationStarting, handler = eventHandler)
-
-        // Exit early when the plugin is disabled.
+        application.monitor.subscribe(definition = ApplicationStarting, handler = pluginSetup::onPluginDisabled)
         return@createApplicationPlugin
     }
 
     // Setup plugin routes.
-    setupRoutes(application = application, apiConfig = apiConfiguration)
+    pluginSetup.configureRoutes()
 
     // Subscribe to the application started event to perform post-startup operations.
-    lateinit var eventHandler: (Application) -> Unit
-    eventHandler = {
-        logConfiguredEndpoints(environment = environment, apiConfig = apiConfiguration)
-        generateOpenApiSchema(scope = application, apiConfig = apiConfiguration)
-        application.monitor.unsubscribe(definition = ApplicationStarted, handler = eventHandler)
-    }
-    application.monitor.subscribe(definition = ApplicationStarted, handler = eventHandler)
-}
-
-/**
- * Configures the routing for the Kopapi plugin.
- *
- * @param application The application reference.
- * @param apiConfig The API configuration for the plugin.
- */
-private fun setupRoutes(application: Application, apiConfig: ApiConfiguration) {
-    application.routing {
-        debugRoute(debugUrl = apiConfig.debugUrl)
-        openApiRoute(apiDocs = apiConfig.apiDocs)
-        redocRoute(apiDocs = apiConfig.apiDocs)
-        swaggerRoute(apiDocs = apiConfig.apiDocs)
-    }
-}
-
-/**
- * Logs the configured endpoints if logging is enabled.
- *
- * @param environment The application environment reference.
- * @param apiConfig The API configuration for the plugin.
- */
-private fun logConfiguredEndpoints(environment: ApplicationEnvironment, apiConfig: ApiConfiguration) {
-    if (apiConfig.logPluginRoutes) {
-
-        // Temporarily enable logging to log the plugin routes.
-        Tracer.enabled = true
-
-        val serverUrl: String = apiConfig.host
-            ?: NetworkUtils.getServerUrl(environment = environment)
-
-        Tracer<KopapiConfig>().info(
-            """
-            |Kopapi plugin enabled.
-            |   Debug: $serverUrl${apiConfig.debugUrl}
-            |   OpenAPI: $serverUrl${apiConfig.apiDocs.openApiUrl}
-            |   Swagger: $serverUrl${apiConfig.apiDocs.swagger.url}
-            |   ReDoc: $serverUrl${apiConfig.apiDocs.redocUrl}
-            """.trimMargin()
-        )
-
-        // Restore original logging state.
-        Tracer.enabled = apiConfig.enableLogging
-    }
-}
-
-/**
- * Generate the OpenAPI schema if the plugin is configured to do so.
- *
- * When on-demand is disabled, all formats are cached so they are ready for the debug panel too.
- *
- * #### Attention
- * This operation must be done right after the application is fully started,
- * so that all routes are registered and available for the schema generation.
- *
- * @param scope The coroutine scope to launch the schema generation.
- * @param apiConfig The API configuration for the plugin.
- */
-private fun generateOpenApiSchema(scope: CoroutineScope, apiConfig: ApiConfiguration) {
-    if (!apiConfig.onDemand) {
-        scope.launch(Dispatchers.IO) {
-            SchemaRegistry.getOpenApiSchema(
-                format = apiConfig.apiDocs.openApiFormat,
-                cacheAllFormats = true
-            )
-        }
-    }
+    application.monitor.subscribe(definition = ApplicationStarted, handler = pluginSetup::onPluginStarted)
 }
