@@ -27,28 +27,6 @@ internal fun String?.trimOrDefault(defaultValue: String): String {
 }
 
 /**
- * Removes the specified suffix from the string in a case-insensitive manner.
- *
- * @param suffix The suffix to remove.
- * @return The string without the suffix if it was present; otherwise, the original string.
- */
-@Suppress("unused")
-internal fun String.removeSuffixIgnoreCase(suffix: String): String {
-    return if (this.regionMatches(
-            thisOffset = this.length - suffix.length,
-            other = suffix,
-            otherOffset = 0,
-            length = suffix.length,
-            ignoreCase = true
-        )
-    ) {
-        this.substring(startIndex = 0, endIndex = this.length - suffix.length)
-    } else {
-        this
-    }
-}
-
-/**
  * Sanitizes a string to ensure it adheres to OpenAPI specifications.
  *
  * Rules:
