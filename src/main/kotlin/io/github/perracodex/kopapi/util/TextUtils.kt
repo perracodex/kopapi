@@ -12,7 +12,7 @@ package io.github.perracodex.kopapi.util
  */
 @PublishedApi
 internal fun String?.trimOrNull(): String? {
-    return this?.trim().takeIf { it?.isNotBlank() == true }
+    return this?.trim()?.takeIf { it.isNotBlank() == true }
 }
 
 /**
