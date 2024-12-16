@@ -94,7 +94,7 @@ dependencies {
 
 To see the library in action, check the [Krud](https://github.com/perracodex/krud) repository:
 
-- https://github.com/perracodex/krud/blob/main/krud-core/base/src/main/kotlin/krud/core/plugins/ApiSchema.kt
+- https://github.com/perracodex/krud/blob/main/krud-core/base/src/main/kotlin/krud/base/plugins/ApiSchema.kt
 - https://github.com/perracodex/krud/tree/main/krud-domain/employee/src/main/kotlin/krud/domain/employee/api
 - https://github.com/perracodex/krud/tree/main/krud-core/access/src/main/kotlin/krud/access/domain/token/api
 
