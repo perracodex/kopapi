@@ -98,7 +98,7 @@ public class MultipartBuilder internal constructor(
             schemaFormat = partBuilder.schemaFormat.trimOrNull(),
             description = partBuilder.description.trimOrNull(),
             isRequired = partBuilder.required,
-            headers = partBuilder.getHeaders(),
+            headers = partBuilder.buildHeaders(),
         )
 
         _config.parts.add(part)
@@ -112,7 +112,7 @@ public class MultipartBuilder internal constructor(
         /**
          * Returns the registered examples.
          */
-        fun examples(): IExample? {
+        fun buildExamples(): IExample? {
             return examplesDelegate.build()
         }
     }

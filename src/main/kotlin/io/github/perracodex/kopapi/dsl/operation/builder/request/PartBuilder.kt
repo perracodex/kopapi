@@ -39,7 +39,7 @@ public class PartBuilder @PublishedApi internal constructor(
      * Returns the registered headers.
      */
     @PublishedApi
-    internal fun getHeaders(): Map<String, ApiHeader>? {
+    internal fun buildHeaders(): Map<String, ApiHeader>? {
         return headerDelegate.build()
     }
 

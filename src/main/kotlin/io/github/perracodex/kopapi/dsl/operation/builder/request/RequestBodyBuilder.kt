@@ -148,7 +148,7 @@ public class RequestBodyBuilder @PublishedApi internal constructor(
             contentType = multipartContentType,
             description = multipartBuilder.description.trimOrNull(),
             parts = multipartBuilder._config.parts,
-            examples = multipartBuilder._config.examples()
+            examples = multipartBuilder._config.buildExamples()
         )
 
         _config.multipartParts[multipartContentType] = apiMultipart
