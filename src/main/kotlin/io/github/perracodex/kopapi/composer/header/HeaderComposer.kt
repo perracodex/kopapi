@@ -14,9 +14,6 @@ import io.github.perracodex.kopapi.system.KopapiException
 import io.github.perracodex.kopapi.util.orNull
 import io.github.perracodex.kopapi.util.trimOrNull
 import io.ktor.http.*
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 /**
  * Composes the `header` sections for the OpenAPI schema.
@@ -48,7 +45,10 @@ internal object HeaderComposer {
 
             // Determine the content schema if the header requires a specific media format.
             val content: Map<ContentType, OpenApiSchema.ContentSchema>? = header.contentType?.let { contentType ->
-                val contentSchema: OpenApiSchema.ContentSchema = OpenApiSchema.ContentSchema(schema = baseSchema, examples = null)
+                val contentSchema: OpenApiSchema.ContentSchema = OpenApiSchema.ContentSchema(
+                    schema = baseSchema,
+                    examples = null
+                )
                 mapOf(contentType to contentSchema)
             }
 
