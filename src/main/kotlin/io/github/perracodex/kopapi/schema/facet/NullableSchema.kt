@@ -20,7 +20,7 @@ import io.github.perracodex.kopapi.util.trimOrNull
  * @property defaultValue Default value of the schema.
  * @property examples Examples for the schema.
  * @property type The list that includes the base schema type and null type. (For primitive types).
- * @property anyOf The list that includes the base schema (with stripped attributes) and null type. (For complex types).
+ * @property oneOf The list that includes the base schema (with stripped attributes) and null type. (For complex types).
  */
 @ComposerApi
 internal data class NullableSchema private constructor(
@@ -28,7 +28,7 @@ internal data class NullableSchema private constructor(
     @JsonProperty("default") val defaultValue: Any? = null,
     @JsonProperty("examples") val examples: IExample? = null,
     @JsonProperty("type") val type: List<String>? = null,
-    @JsonProperty("anyOf") val anyOf: List<Any>? = null
+    @JsonProperty("oneOf") val oneOf: List<Any>? = null
 ) : ISchemaFacet {
 
     companion object {
@@ -54,7 +54,7 @@ internal data class NullableSchema private constructor(
                     description = decomposedSchema.description.trimOrNull(),
                     defaultValue = decomposedSchema.defaultValue,
                     examples = decomposedSchema.examples,
-                    anyOf = listOf(
+                    oneOf = listOf(
                         decomposedSchema.strippedSchema,
                         mapOf("type" to ApiType.NULL())
                     )
