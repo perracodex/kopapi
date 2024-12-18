@@ -88,7 +88,7 @@ internal object WebJarProvider {
     private fun findContainingJarFile(url: String): File {
         if (url.startsWith(prefix = "jar:file:")) {
             val jarPathSeparator: Int = url.indexOf(string = "!", startIndex = 9)
-            require(value = jarPathSeparator != -1) { "Jar path requires !/ separator but it is: $url" }
+            require(jarPathSeparator != -1) { "Jar path requires !/ separator but it is: $url" }
             return File(url.substring(startIndex = 9, endIndex = jarPathSeparator).decodeURLPart())
         }
         throw KopapiException("Only local jars are supported (jar:file:)")
