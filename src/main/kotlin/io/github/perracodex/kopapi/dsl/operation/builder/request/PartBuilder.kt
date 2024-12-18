@@ -4,6 +4,7 @@
 
 package io.github.perracodex.kopapi.dsl.operation.builder.request
 
+import io.github.perracodex.kopapi.dsl.header.builder.HeaderBuilder
 import io.github.perracodex.kopapi.dsl.header.delegate.HeaderDelegate
 import io.github.perracodex.kopapi.dsl.header.delegate.IHeaderConfigurable
 import io.github.perracodex.kopapi.dsl.marker.KopapiDsl
@@ -38,7 +39,41 @@ public class PartBuilder @PublishedApi internal constructor(
      * Returns the registered headers.
      */
     @PublishedApi
-    internal fun headers(): Map<String, ApiHeader>? {
+    internal fun getHeaders(): Map<String, ApiHeader>? {
         return headerDelegate.build()
+    }
+
+    /**
+     * Adds a header to the request part.
+     *
+     * #### Usage
+     * ```
+     * header<Int>(name = "X-Rate-Limit") {
+     *     description = "Number of allowed requests per period."
+     * }
+     * ```
+     * ```
+     * header<String>(name = "X-Session-Token") {
+     *     description = "The session token for the user."
+     *     schema {
+     *         pattern = "^[A-Za-z0-9_-]{20,50}$"
+     *         minLength = 20
+     *         maxLength = 50
+     *     }
+     * }
+     *```
+     *
+     * @receiver [HeaderBuilder] The builder used to configure the header.
+     *
+     * @param T The type of the header.
+     * @param name The name of the header.
+     */
+    public inline fun <reified T : Any> header(
+        name: String,
+        noinline builder: HeaderBuilder.() -> Unit = {}
+    ) {
+        this.headers {
+            add<T>(name = name, builder = builder)
+        }
     }
 }

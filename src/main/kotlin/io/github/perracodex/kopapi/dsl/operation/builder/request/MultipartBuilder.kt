@@ -98,7 +98,7 @@ public class MultipartBuilder internal constructor(
             schemaFormat = partBuilder.schemaFormat.trimOrNull(),
             description = partBuilder.description.trimOrNull(),
             isRequired = partBuilder.required,
-            headers = partBuilder.headers(),
+            headers = partBuilder.getHeaders(),
         )
 
         _config.parts.add(part)
