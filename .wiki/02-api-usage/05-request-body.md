@@ -117,19 +117,23 @@ To define a request body as `multipart` use the `multipart` function.
 - Use Ktor's `PartData` subclasses to specify the part type.
 
 ```kotlin
-multipart {
-    part<PartData.FileItem>("myFilePart") {
-        description = "The file to upload."
+requestBody<Unit> {
+    multipart {
+        part<PartData.FileItem>("myFilePart") {
+            description = "The file to upload."
+        }
     }
 }
 ```
 
 ```kotlin
-multipart {
-  contentType = ContentType.MultiPart.Signed
+requestBody<Unit> {
+    multipart {
+        contentType = ContentType.MultiPart.Signed
 
-    part<PartData.FormItem>("myFormPart") {
-        description = "The form data."
+        part<PartData.FormItem>("myFormPart") {
+            description = "The form data."
+        }
     }
 }
 ```
@@ -142,23 +146,25 @@ multipart {
   - `schemaFormat`: Specify the format for the schema, such as BINARY, UUID, etc. (Optional).
 
 ```kotlin
-multipart {
-  part<PartData.FileItem>("myFilePart") {
-    description = "The file to upload."
+requestBody<Unit> {
+    multipart {
+        part<PartData.FileItem>("myFilePart") {
+            description = "The file to upload."
 
-    contentType = setOf(
-      ContentType.Image.JPEG,
-      ContentType.Image.PNG
-    )
+            contentType = setOf(
+                ContentType.Image.JPEG,
+                ContentType.Image.PNG
+            )
 
-    header<Int>(name = "SomeHader") {
-      description = "Some header value."
-      schema {
-        minimum = 1
-        maximum = 10
-      }
+            header<Int>(name = "SomeHeader") {
+                description = "Some header value."
+                schema {
+                    minimum = 1
+                    maximum = 10
+                }
+            }
+        }
     }
-  }
 }
 ```
 
