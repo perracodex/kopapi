@@ -271,9 +271,8 @@ internal class SchemaComposer(
                 isValidateExternalRefs = true  // Validate external $ref references.
             }
 
-            require(!openApiSpec.yaml.isNullOrBlank() || !openApiSpec.json.isNullOrBlank()) {
-                "No OpenAPI specification found."
-            }
+            val hasOpenApiSpec: Boolean = !openApiSpec.yaml.isNullOrBlank() || !openApiSpec.json.isNullOrBlank()
+            check(hasOpenApiSpec) { "No OpenAPI specification found." }
 
             val openApi: String = when {
                 !openApiSpec.yaml.isNullOrBlank() -> openApiSpec.yaml

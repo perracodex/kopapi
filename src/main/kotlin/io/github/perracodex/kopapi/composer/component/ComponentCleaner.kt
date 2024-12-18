@@ -37,9 +37,8 @@ internal class ComponentCleaner(
      * Cleans the OpenAPI schema by removing orphaned schemas.
      */
     fun clean(): SchemaComposer.OpenApiSpec {
-        require(!openApiSpec.yaml.isNullOrBlank() || !openApiSpec.json.isNullOrBlank()) {
-            "No OpenAPI specification found."
-        }
+        val hasOpenApiSpec: Boolean = !openApiSpec.yaml.isNullOrBlank() || !openApiSpec.json.isNullOrBlank()
+        check(hasOpenApiSpec) { "No OpenAPI specification found." }
         val serializationUtils = SerializationUtils()
 
         // Determine the appropriate mapper and schema content.
