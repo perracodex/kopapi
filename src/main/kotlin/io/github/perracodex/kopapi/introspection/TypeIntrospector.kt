@@ -29,7 +29,7 @@ import kotlin.reflect.full.isSubclassOf
  * - Recursive Introspection: Capable of recursively traversing complex types, including nested objects,
  *   self-referencing and cross-referencing types.
  * - Comprehensive Type Support: Handles all primitive types, enums, and common Kotlin and Java types.
- * - Collections and Maps: Supports collections such as `List`, `Set`, including primitive and typed arrays,
+ * - Iterables and Maps: Supports iterables such as `List`, `Set`, including primitive and typed arrays,
  *   and maps with both primitive and complex object values.
  * - Generics Handling: Resolves generics, including nested and complex generic types.
  * - Annotation Support: Recognizes `Kotlinx` annotations, with partial support for `Jackson`.
@@ -62,7 +62,7 @@ internal class TypeIntrospector {
     private val typeSchemaUsages: MutableMap<String, Int> = mutableMapOf()
 
     private val arrayResolver = ArrayResolver(introspector = this)
-    private val collectionResolver = CollectionResolver(introspector = this)
+    private val iterableResolver = IterableResolver(introspector = this)
     private val enumResolver = EnumResolver(introspector = this)
     private val genericsResolver = GenericsResolver(introspector = this)
     private val mapResolver = MapResolver(introspector = this)
@@ -96,7 +96,7 @@ internal class TypeIntrospector {
 
     /**
      * Traverses and resolves the given [kType], handling both simple and complex types,
-     * including collections, maps, enums, and `Generics`. Manages recursion and self-referencing types.
+     * including iterables, maps, enums, and `Generics`. Manages recursion and self-referencing types.
      *
      * Returns a [TypeSchema] representing the structure of the [kType], considering `Generics`,
      * optional properties, nullable properties, and some concrete annotations (see [PrimitiveFactory]).
@@ -125,7 +125,7 @@ internal class TypeIntrospector {
      *     |        |       - Is it a typed array `Array<T>`?
      *     |        |           |
      *     |        |           +-> Yes:
-     *     |        |           |       - Delegate to `CollectionResolver`.
+     *     |        |           |       - Delegate to `IterableResolver`.
      *     |        |           |
      *     |        |           +-> No:
      *     |        |                   - Log error.
@@ -133,13 +133,13 @@ internal class TypeIntrospector {
      *     |        |
      *     |        +-> No: Skip to next decision check.
      *     |
-     *     +-> Is the type a Collection?
+     *     +-> Is the type a Iterable?
      *     |    |
      *     |    +-> Yes:
-     *     |    |       - `CollectionResolver` processes the type.
+     *     |    |       - `IterableResolver` processes the type.
      *     |    |       - Resolve the element type.
      *     |    |       - Traverse the element type using `TypeIntrospector`.
-     *     |    |       - Build collection schema.
+     *     |    |       - Build iterable schema.
      *     |    |       - Return schema.
      *     |    |
      *     |    +-> No: Skip to next decision check.
@@ -224,6 +224,7 @@ internal class TypeIntrospector {
 
         val typeSchema: TypeSchema = when {
             // Handle primitive arrays (e.g.: IntArray), and typed arrays "Array<T>".
+            // Must be checked before iterables and maps as they also have type arguments.
             TypeDescriptor.isArray(kType = kType) ->
                 arrayResolver.traverse(
                     kType = kType,
@@ -231,23 +232,23 @@ internal class TypeIntrospector {
                     typeArgumentBindings = typeArgumentBindings
                 )
 
-            // Handle collections (e.g., List<String>, Set<Int>, etc.).
-            TypeDescriptor.isCollection(classifier = classifier) ->
-                collectionResolver.traverse(
+            // Handle iterables (e.g., List<String>, Set<Int>, etc.).
+            TypeDescriptor.isIterable(classifier = classifier) ->
+                iterableResolver.traverse(
                     kType = kType,
                     classifier = classifier,
                     typeArgumentBindings = typeArgumentBindings
                 )
 
             // Handle maps (e.g., Map<String, Int>).
-            classifier == Map::class ->
+            TypeDescriptor.isMap(classifier = classifier) ->
                 mapResolver.traverse(kType = kType, typeArgumentBindings = typeArgumentBindings)
 
             // Handle enums.
             classifier is KClass<*> && classifier.isSubclassOf(Enum::class) ->
                 enumResolver.process(enumClass = classifier)
 
-            // Handle generics. Must be checked after arrays, collections, and maps
+            // Handle generics. Must be checked after arrays, iterables, and maps
             // ase they also have type arguments.
             kType.arguments.isNotEmpty() && kType.arguments.none { it.type == null } ->
                 genericsResolver.traverse(
@@ -277,20 +278,20 @@ internal class TypeIntrospector {
     }
 
     /**
-     * Process [Collection] types (e.g.: [List], [Set], etc.),
+     * Process [Iterable] types (e.g.: [List], [Set], etc.),
      * by introspecting the contained element type and traversing it if needed.
      *
-     * @param kType The [KType] representing the collection type.
-     * @param classifier The [KClassifier] representing the [Collection]  type.
+     * @param kType The [KType] representing the iterable type.
+     * @param classifier The [KClassifier] representing the [Iterable]  type.
      * @param typeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
-     * @return The resolved [TypeSchema] for the collection type.
+     * @return The resolved [TypeSchema] for the iterable type.
      */
-    fun traverseCollection(
+    fun traverseIterable(
         kType: KType,
         classifier: KClassifier,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
-        return collectionResolver.traverse(
+        return iterableResolver.traverse(
             kType = kType,
             classifier = classifier,
             typeArgumentBindings = typeArgumentBindings

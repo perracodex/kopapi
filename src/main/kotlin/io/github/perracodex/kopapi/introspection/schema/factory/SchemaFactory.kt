@@ -108,7 +108,7 @@ internal object SchemaFactory {
     /**
      * Creates a specification entry for an `array` of items.
      *
-     * @param items The schema items in the collection.
+     * @param items The schema items in the array.
      * @return  The [ElementSchema.Array] for the array.
      */
     fun ofArray(items: ElementSchema): ElementSchema.Array {
@@ -116,12 +116,12 @@ internal object SchemaFactory {
     }
 
     /**
-     * Creates a specification entry for a `collection` of items (e.g., `List` or `Set`).
+     * Creates a specification entry for an `iterable` of items (e.g., `List`, `Set`, `Collection`).
      *
-     * @param items The schema items in the collection.
-     * @return The [ElementSchema.Array] for the collection.
+     * @param items The schema items in the iterable.
+     * @return The [ElementSchema.Array] for the iterable.
      */
-    fun ofCollection(items: ElementSchema): ElementSchema.Array {
+    fun ofIterable(items: ElementSchema): ElementSchema.Array {
         return ElementSchema.Array(items = items)
     }
 

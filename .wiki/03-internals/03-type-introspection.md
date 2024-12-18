@@ -6,7 +6,7 @@ It describes the core components, type decisions, and traversals involved in thi
 ### Key Features:
 
 * Recursive Introspection: Capable of handling complex types, including nested and self-referencing objects.
-* Comprehensive Type Support: Processes primitive types, enums, collections, maps, arrays, and generic types.
+* Comprehensive Type Support: Processes primitive types, enums, iterables, maps, arrays, and generic types.
 * Annotation Support: Recognizes annotations from kotlinx serialization. Supports a subset of Jackson annotations.
 * Caching Mechanism: Caches resolved schemas to improve performance and avoid redundant processing.
 * Conflict Detection: Identifies conflicts where different types may have the same name.
@@ -21,7 +21,7 @@ Before diving into the flow, it's essential to understand the primary components
 - `TypeIntrospector`: The core orchestrator delegating to specific resolvers based on the type characteristics.
     - `Resolvers`: Specialized components that handle different kinds of types:
     - `ArrayResolver`: Handles array types.
-    - `CollectionResolver`: Handles collection types like `List` and `Set`, including typed arrays `Array<T>`.
+    - `IterableResolver`: Handles iterable types like `List` and `Set`, including typed arrays `Array<T>`.
     - `MapResolver`: Handles `map` types.
     - `EnumResolver`: Handles enumeration types.
     - `GenericsResolver`: Handles `generics` types with type parameters.
@@ -75,7 +75,7 @@ traverseType:
   |        |       - Is it a typed array `Array<T>`?
   |        |           |
   |        |           +-> Yes:
-  |        |           |       - Delegate to `CollectionResolver`.
+  |        |           |       - Delegate to `IterableResolver`.
   |        |           |
   |        |           +-> No:
   |        |                   - Log error.
@@ -83,13 +83,13 @@ traverseType:
   |        |
   |        +-> No: Skip to next decision check.
   |
-  +-> Is the type a Collection?
+  +-> Is the type an Iterable?
   |    |
   |    +-> Yes:
-  |    |       - `CollectionResolver` processes the type.
+  |    |       - `IterableResolver` processes the type.
   |    |       - Resolve the element type.
   |    |       - Traverse the element type using `TypeIntrospector`.
-  |    |       - Build collection schema.
+  |    |       - Build iterable schema.
   |    |       - Return schema.
   |    |
   |    +-> No: Skip to next decision check.
@@ -170,7 +170,7 @@ traverseType:
 
 #### Traversal with TypeIntrospector
 
-- Classifier Determination: The `TypeIntrospector` examines the type to determine its nature (e.g., array, collection, map).
+- Classifier Determination: The `TypeIntrospector` examines the type to determine its nature (e.g., array, iterable, map).
 - Decision-Making: Based on the decision tree, it determines which resolver is appropriate for the type.
 - Delegation: It delegates the processing to the chosen resolver.
 - Recursion: If necessary, the `TypeIntrospector` uses recursion to handle nested types.
@@ -183,15 +183,15 @@ traverseType:
         - Determines if the array is a primitive array (e.g., `IntArray`).
             - If yes, processes it immediately and constructs the schema.
       - If not a primitive array, checks if it's a typed array `Array<T>`.
-          - If yes, delegates processing to the `CollectionResolver`.
+          - If yes, delegates processing to the `IterableResolver`.
               - If neither, constructs an unknown object type schema.
 
-- **CollectionResolver**
-    - Purpose: Handles collection types like `List` and `Set`.
+- **IterableResolver**
+    - Purpose: Handles iterable types like `List` and `Set`.
     - Process:
-        - Resolves the element type of the collection.
+        - Resolves the element type of the iterable.
       - Traverses the element type using the `TypeIntrospector`, which may involve recursion.
-          - Constructs the collection schema using the element schema.
+          - Constructs the iterable schema using the element schema.
 
 - **MapResolver**
     - Purpose: Handles Map types.
@@ -311,8 +311,8 @@ traverseType:
         - It's not.
     - Checks if it's a typed array `Array<T>`.
         - It is.
-        - Delegates to `CollectionResolver`.
-3. `CollectionResolver`:
+        - Delegates to `IterableResolver`.
+3. `IterableResolver`:
     - Resolves the Element Type: `Employee`.
    - Traverses the Element Type using `TypeIntrospector`.
 4. `TypeIntrospector` (recursive call):
@@ -324,19 +324,19 @@ traverseType:
     - Retrieves properties of `Employee` using `PropertyResolver`.
    - Traverses each property, invoking `TypeIntrospector `recursively.
     - Updates the `Employee` schema in the cache.
-6. `CollectionResolver`:
+6. `IterableResolver`:
     - Constructs the schema for `Array<Employee>` using the `Employee` schema.
 7. `ArrayResolver`:
     - Returns the schema for `Array<Employee>`.
 8. `TypeIntrospector`:
     - Returns the schema for `Array<Employee>`.
 
-#### Introspecting a Collection: `List<Employee>`
+#### Introspecting an Iterable: `List<Employee>`
 
 1. `TypeIntrospector`:
-    - Determines the type is a Collection.
-    - Delegates to `CollectionResolver`.
-2. `CollectionResolver`:
+    - Determines the type is an Iterable.
+    - Delegates to `IterableResolver`.
+2. `IterableResolver`:
     - Resolves the Element Type: `Employee`.
    - Traverses the Element Type using `TypeIntrospector`.
 3. `TypeIntrospector` (recursive call):
@@ -348,7 +348,7 @@ traverseType:
     - Retrieves properties of `Employee` using `PropertyResolver`.
    - Traverses each property, invoking `TypeIntrospector `recursively.
     - Updates the `Employee` schema in the cache.
-5. `CollectionResolver`:
+5. `IterableResolver`:
     - Constructs the schema for `List<Employee>` using the `Employee` schema.
 6. `TypeIntrospector`:
     - Returns the schema for `List<Employee>`.

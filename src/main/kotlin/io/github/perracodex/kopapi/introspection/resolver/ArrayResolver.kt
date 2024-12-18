@@ -24,10 +24,10 @@ import kotlin.reflect.KType
  * - Action:
  *      - Determine Array Type:
  *          - Primitive Array (e.g., `IntArray`): processes it immediately and constructs the schema.
- *          - Typed arrays (`Array<T>`): delegates processing to `CollectionResolver`.
+ *          - Typed arrays (`Array<T>`): delegates processing to `IterableResolver`.
  *      - Result: Returns the constructed schema, or delegates as appropriate.
  *
- * @see [CollectionResolver]
+ * @see [IterableResolver]
  * @see [TypeIntrospector]
  */
 @TypeIntrospectorApi
@@ -35,13 +35,12 @@ internal class ArrayResolver(private val introspector: TypeIntrospector) {
     private val tracer: Tracer = Tracer<ArrayResolver>()
 
     /**
-     * Handles [Collection] (eg: List, Set), in addition to typed [Array]s.
-     * by introspecting the contained element type and traversing it if needed.
+     * Handles arrays of any type, both primitive and typed arrays (Array<T>).
      *
-     * @param kType The [KType] representing the collection type.
-     * @param classifier The [KClassifier] representing the `Collection` or typed array `Array<T>`.
+     * @param kType The [KType] representing the array type.
+     * @param classifier The [KClassifier] representing the `array` or typed array `Array<T>`.
      * @param typeArgumentBindings A map of type arguments' [KClassifier] to actual [KType] items for replacement.
-     * @return The resolved [TypeSchema] for the collection type.
+     * @return The resolved [TypeSchema] for the array type.
      */
     fun traverse(
         kType: KType,
@@ -55,7 +54,7 @@ internal class ArrayResolver(private val introspector: TypeIntrospector) {
         // Check if dealing with a primitive array first, such as IntArray, ByteArray, etc.,
         // and return the corresponding schema if it is.
         if (TypeDescriptor.isPrimitiveArray(classifier = classifier)) {
-            tracer.debug("Processing a primitive array: $classifier.")
+            tracer.debug("Processing primitive array: $classifier.")
             val schema: ElementSchema? = PrimitiveFactory.newSchema(kClass = classifier)
             return TypeSchema.of(
                 name = className,
@@ -74,9 +73,9 @@ internal class ArrayResolver(private val introspector: TypeIntrospector) {
             )
         }
 
-        // If dealing with a typed array (Array<T>), delegate to the CollectionResolver to handle it.
-        tracer.debug("Delegating array processing to CollectionResolver for typed array: $kType.")
-        return introspector.traverseCollection(
+        // If dealing with a typed array (Array<T>), delegate to the IterableResolver to handle it.
+        tracer.debug("Delegating array processing to IterableResolver for typed array: $kType.")
+        return introspector.traverseIterable(
             kType = kType,
             classifier = classifier,
             typeArgumentBindings = typeArgumentBindings

@@ -19,44 +19,44 @@ import kotlin.reflect.KType
 
 /**
  * - Purpose:
- *      - Handles `Collection` types like `List`, `Set`, etc.
+ *      - Handles `Iterables` types like `List`, `Set`, etc.
  * - Action:
- *      - Resolve Element Type: Determines the element type of the collection.
+ *      - Resolve Element Type: Determines the element type of the iterable.
  *      - Traverse Element Type: Uses `TypeIntrospector` to traverse the element type, which may involve recursion.
- *      - Construct Schema: Builds the collection schema, incorporating the element schema.
- *      - Result: Constructs and returns the collection schema.
+ *      - Construct Schema: Builds the iterable schema, incorporating the element schema.
+ *      - Result: Constructs and returns the iterable schema.
  *
  * @see [ArrayResolver]
  * @see [TypeIntrospector]
  */
 @TypeIntrospectorApi
-internal class CollectionResolver(private val introspector: TypeIntrospector) {
-    private val tracer: Tracer = Tracer<CollectionResolver>()
+internal class IterableResolver(private val introspector: TypeIntrospector) {
+    private val tracer: Tracer = Tracer<IterableResolver>()
 
     /**
-     * Process [Collection] types (e.g.: [List], [Set], etc.),
+     * Process [Iterable] types (e.g.: [List], [Set], etc.),
      * by introspecting the contained element type and traversing it if needed.
      *
-     * @param kType The [KType] representing the collection type.
-     * @param classifier The [KClassifier] representing the [Collection]  type.
+     * @param kType The [KType] representing the iterable type.
+     * @param classifier The [KClassifier] representing the [Iterable]  type.
      * @param typeArgumentBindings A map of type arguments' [KClassifier] to their actual [KType] replacements.
-     * @return The resolved [TypeSchema] for the collection type.
+     * @return The resolved [TypeSchema] for the iterable type.
      */
     fun traverse(
         kType: KType,
         classifier: KClassifier,
         typeArgumentBindings: Map<KClassifier, KType>
     ): TypeSchema {
-        tracer.debug("Traversing collection type: $kType.")
+        tracer.debug("Traversing iterable type: $kType.")
 
         val className: ElementName = MetadataDescriptor.getClassName(kClass = (classifier as KClass<*>))
 
         val argumentType: KType = kType.arguments.firstOrNull()?.resolveTypeBinding(
             bindings = typeArgumentBindings
         ) ?: run {
-            // Collections always have an argument type, so if not found,
+            // Iterables always have an argument type, so if not found,
             // log an error and treat it as an object type.
-            tracer.error("No argument found for Collection<T> type: $kType")
+            tracer.error("No argument found for Iterables<T> type: $kType")
             return TypeSchema.of(
                 name = className,
                 kType = kType,
@@ -64,24 +64,29 @@ internal class CollectionResolver(private val introspector: TypeIntrospector) {
             )
         }
 
-        // Traverse the collection argument element to resolve its respective TypeSchema.
-        tracer.debug("Traversing collection element type: $argumentType.")
+        // Traverse the iterable argument element to resolve its respective TypeSchema.
+        tracer.debug("Traversing iterable element type: $argumentType.")
         val typeSchema: TypeSchema = introspector.traverseType(
             kType = argumentType,
             typeArgumentBindings = typeArgumentBindings
         )
 
-        // Distinguishing names between Array<T> and Collections is solely for clarity and debugging,
-        // as neither results in a referable object in the final schema; only the contained element does.
-        val name: String = when {
-            TypeDescriptor.isCollection(classifier = classifier) -> "CollectionOf${typeSchema.name}"
-            else -> "ArrayOf${typeSchema.name}"
+        // Distinguishing iterable names is solely for clarity and debugging,
+        // and will never be included in the final schema output,
+        // as the iterable itself will never become a reference type;
+        // only the contained elements will become references.
+        // The iterable itself will be defined as a type array.
+        val descriptorPrefix: String = when {
+            TypeDescriptor.isCollection(classifier) -> "CollectionOf"
+            TypeDescriptor.isIterable(classifier) -> "IterableOf"
+            else -> "ArrayOf"
         }
+        val name = "$descriptorPrefix${typeSchema.name}"
 
         return TypeSchema.of(
             name = ElementName(name = name),
             kType = kType,
-            schema = SchemaFactory.ofCollection(items = typeSchema.schema)
+            schema = SchemaFactory.ofIterable(items = typeSchema.schema)
         )
     }
 }

@@ -7,6 +7,7 @@ package io.github.perracodex.kopapi.introspection.descriptor
 import io.github.perracodex.kopapi.introspection.annotation.TypeIntrospectorApi
 import io.github.perracodex.kopapi.introspection.descriptor.TypeDescriptor.isArray
 import io.github.perracodex.kopapi.introspection.descriptor.TypeDescriptor.isCollection
+import io.github.perracodex.kopapi.introspection.descriptor.TypeDescriptor.isIterable
 import io.github.perracodex.kopapi.introspection.descriptor.TypeDescriptor.isPrimitiveArray
 import io.github.perracodex.kopapi.introspection.descriptor.TypeDescriptor.isTypedArray
 import kotlin.reflect.KClass
@@ -25,12 +26,30 @@ internal object TypeDescriptor {
      * @param classifier The [KClassifier] of the `KType` to evaluate.
      * @return True if determined is a `Collection`, otherwise False.
      *
+     * @see [isIterable]
      * @see [isArray]
      * @see [isTypedArray]
      * @see [isPrimitiveArray]
      */
     fun isCollection(classifier: KClassifier): Boolean {
-        return classifier is KClass<*> && Collection::class.isSuperclassOf(classifier)
+        return classifier is KClass<*> && Collection::class.isSuperclassOf(derived = classifier)
+    }
+
+    /**
+     * Determines whether the given [KType] represents an `Iterable` type.
+     * Note that collections like `List` and `Set` are also `Iterable`.
+     * This is for custom iterable types that do not inherit from `Collection`.
+     *
+     * @param classifier The [KClassifier] of the `KType` to evaluate.
+     * @return True if determined is an `Iterable`, otherwise False.
+     *
+     * @see [isCollection]
+     * @see [isArray]
+     * @see [isTypedArray]
+     * @see [isPrimitiveArray]
+     */
+    fun isIterable(classifier: KClassifier): Boolean {
+        return classifier is KClass<*> && Iterable::class.isSuperclassOf(derived = classifier)
     }
 
     /**
@@ -43,6 +62,7 @@ internal object TypeDescriptor {
      * @see [isTypedArray]
      * @see [isPrimitiveArray]
      * @see [isCollection]
+     * @see [isIterable]
      */
     fun isArray(kType: KType): Boolean {
         val classifier: KClassifier = kType.classifier ?: return false
@@ -64,6 +84,7 @@ internal object TypeDescriptor {
      * @see [isArray]
      * @see [isPrimitiveArray]
      * @see [isCollection]
+     * @see [isIterable]
      */
     fun isTypedArray(kType: KType): Boolean {
         val classifier: KClassifier = kType.classifier ?: return false
@@ -84,6 +105,7 @@ internal object TypeDescriptor {
      * @see [isArray]
      * @see [isTypedArray]
      * @see [isCollection]
+     * @see [isIterable]
      */
     fun isPrimitiveArray(classifier: KClassifier): Boolean {
         return classifier == IntArray::class || classifier == ByteArray::class ||
@@ -92,5 +114,15 @@ internal object TypeDescriptor {
                 classifier == CharArray::class || classifier == BooleanArray::class ||
                 classifier == UIntArray::class || classifier == ULongArray::class ||
                 classifier == UByteArray::class || classifier == UShortArray::class
+    }
+
+    /**
+     * Determines whether the given [KClassifier] represents a `Map` type.
+     *
+     * @param classifier The [KClassifier] of the [KType] to evaluate.
+     * @return True if the [classifier] is a `Map`, otherwise False.
+     */
+    fun isMap(classifier: KClassifier): Boolean {
+        return classifier is KClass<*> && Map::class.isSuperclassOf(derived = classifier)
     }
 }
