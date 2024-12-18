@@ -116,16 +116,6 @@ internal object SchemaFactory {
     }
 
     /**
-     * Creates a specification entry for an `iterable` of items (e.g., `List`, `Set`, `Collection`).
-     *
-     * @param items The schema items in the iterable.
-     * @return The [ElementSchema.Array] for the iterable.
-     */
-    fun ofIterable(items: ElementSchema): ElementSchema.Array {
-        return ElementSchema.Array(items = items)
-    }
-
-    /**
      * Creates a specification entry for an object type with additional properties.
      *
      * @param value The type schema details to be set as the additional properties.

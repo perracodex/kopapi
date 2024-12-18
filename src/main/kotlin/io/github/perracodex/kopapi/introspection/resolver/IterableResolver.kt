@@ -86,7 +86,7 @@ internal class IterableResolver(private val introspector: TypeIntrospector) {
         return TypeSchema.of(
             name = ElementName(name = name),
             kType = kType,
-            schema = SchemaFactory.ofIterable(items = typeSchema.schema)
+            schema = SchemaFactory.ofArray(items = typeSchema.schema)
         )
     }
 }
