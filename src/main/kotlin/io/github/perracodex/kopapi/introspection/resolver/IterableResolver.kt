@@ -74,8 +74,8 @@ internal class IterableResolver(private val introspector: TypeIntrospector) {
         // Distinguishing iterable names is solely for clarity and debugging,
         // and will never be included in the final schema output,
         // as the iterable itself will never become a reference type;
-        // only the contained elements will become references.
-        // The iterable itself will be defined as a type array.
+        // only the contained elements may become references if such are not primitives.
+        // The iterable itself will be defined in the final schema as a type array.
         val descriptorPrefix: String = when {
             TypeDescriptor.isCollection(classifier) -> "CollectionOf"
             TypeDescriptor.isIterable(classifier) -> "IterableOf"
