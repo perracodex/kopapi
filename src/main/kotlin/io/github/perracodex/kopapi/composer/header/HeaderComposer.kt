@@ -33,7 +33,7 @@ internal object HeaderComposer {
 
         val headerObjects: MutableMap<String, HeaderObject> = mutableMapOf()
 
-        headers.forEach { (nam: String, header: ApiHeader) ->
+        headers.forEach { (name: String, header: ApiHeader) ->
             // Determine the schema for the header, and introspect accordingly.
             var baseSchema: ElementSchema = SchemaRegistry.introspectType(type = header.type)?.schema
                 ?: throw KopapiException("No schema found for header type: ${header.type}")
@@ -61,7 +61,7 @@ internal object HeaderComposer {
                 content = content,
                 deprecated = header.deprecated.takeIf { it == true }
             )
-            headerObjects[nam] = headerObject
+            headerObjects[name] = headerObject
         }
 
         return headerObjects.orNull()
