@@ -12,7 +12,7 @@ ktor = "3.0.3"
 mockk = "1.13.13"
 swagger-parser = "2.1.24"
 swagger-ui = "5.18.2"
-vanniktech = "0.29.0"
+vanniktech = "0.30.0"
 
 
 [plugins]
