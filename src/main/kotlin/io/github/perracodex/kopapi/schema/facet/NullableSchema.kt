@@ -28,6 +28,7 @@ internal data class NullableSchema private constructor(
     @JsonProperty("default") val defaultValue: Any? = null,
     @JsonProperty("examples") val examples: IExample? = null,
     @JsonProperty("type") val type: List<String>? = null,
+    @JsonProperty("format") val format: String? = null,
     @JsonProperty("oneOf") val oneOf: List<Any>? = null
 ) : ISchemaFacet {
 
@@ -47,7 +48,8 @@ internal data class NullableSchema private constructor(
                     description = decomposedSchema.description.trimOrNull(),
                     defaultValue = decomposedSchema.defaultValue,
                     examples = decomposedSchema.examples,
-                    type = listOf(decomposedSchema.strippedSchema.schemaType.toString(), ApiType.NULL())
+                    type = listOf(decomposedSchema.strippedSchema.schemaType.toString(), ApiType.NULL()),
+                    format = decomposedSchema.strippedSchema.format.trimOrNull()
                 )
             } else {
                 NullableSchema(
