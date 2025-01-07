@@ -20,6 +20,7 @@ import io.github.perracodex.kopapi.util.trimOrNull
  * @property defaultValue Default value of the schema.
  * @property examples Examples for the schema.
  * @property type The list that includes the base schema type and null type. (For primitive types).
+ * @property format The format of the schema type, meaningful only for primitive types.
  * @property oneOf The list that includes the base schema (with stripped attributes) and null type. (For complex types).
  */
 @ComposerApi

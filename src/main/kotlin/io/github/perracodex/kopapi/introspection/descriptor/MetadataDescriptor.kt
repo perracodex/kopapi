@@ -173,7 +173,6 @@ internal data class MetadataDescriptor(
          * @param elementName The resolved element name.
          * @return True if the property is required, false otherwise.
          */
-        @OptIn(ExperimentalSerializationApi::class)
         private fun determineIfRequired(
             classKType: KType,
             property: KProperty1<out Any, *>,

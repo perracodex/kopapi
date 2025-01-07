@@ -7,7 +7,7 @@ dokka = "2.0.0"
 jackson_version = "2.18.2"
 kotlin = "2.1.0"
 kotlinx-datetime = "0.6.1"
-kotlinx-serialization = "1.7.3"
+kotlinx-serialization = "1.8.0"
 ktor = "3.0.3"
 mockk = "1.13.14"
 swagger-parser = "2.1.24"
@@ -64,6 +64,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 # Kotlinx Serialization.
 # https://github.com/Kotlin/kotlinx.serialization/releases
 # https://github.com/Kotlin/kotlinx.serialization
+# https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/serialization-guide.md
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 # Ktor.
