@@ -8,6 +8,12 @@ response<MyResponseType>(status = HttpStatusCode.OK) { }
 
 // Response without a body type.
 response(status = HttpStatusCode.OK) { }
+
+// Default responses with a body type.
+defaultResponse<MyResponseType> { description = "Unexpected issue." }
+
+// Default without a body type.
+defaultResponse { description = "Unexpected issue." }
 ```
 
 ### Multiple Content Types
