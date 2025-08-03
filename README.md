@@ -20,6 +20,7 @@ get("/items/{data_id}") {
     queryParameter<String>("item_id") { description = "Optional item Id to locate." }
     response<List<Item>>(status = HttpStatusCode.OK) { description = "Successful fetch." }
     response(status = HttpStatusCode.NotFound) { description = "Data not found." }
+    defaultResponse { description = "Unexpected issue." }
     bearerSecurity(name = "Authentication") { description = "Access to data." }
 }
 ```
