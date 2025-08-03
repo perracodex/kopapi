@@ -193,7 +193,9 @@ internal object SchemaRegistry {
 
             // Introspect each response type.
             metadata.responses?.let { responses ->
-                ResponseComposer.compose(responses = responses)
+                ResponseComposer.compose(responses = responses, defaultResponse = metadata.defaultResponse)
+            } ?: metadata.defaultResponse?.let { defaultResponse ->
+                ResponseComposer.composeDefault(defaultResponse = defaultResponse)
             }
         }
 

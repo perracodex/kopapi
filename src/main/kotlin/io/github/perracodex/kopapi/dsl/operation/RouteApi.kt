@@ -57,7 +57,7 @@ public infix fun Route.api(builder: ApiOperationBuilder.() -> Unit): Route {
 
     // Apply the configuration within the ApiOperationBuilder's scope.
     val operationBuilder = ApiOperationBuilder(endpoint = "[$method] ${rotePathDetails.path}")
-    with(operationBuilder) { builder() }
+    with(receiver = operationBuilder) { builder() }
 
     // Build the operation using the provided configuration.
     val apiOperation: ApiOperation = operationBuilder.build(

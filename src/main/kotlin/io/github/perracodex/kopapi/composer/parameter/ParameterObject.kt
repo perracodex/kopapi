@@ -26,14 +26,14 @@ import io.github.perracodex.kopapi.schema.facet.ElementSchema
  */
 @ComposerApi
 internal data class ParameterObject(
-    @JsonProperty("name") val name: String,
-    @JsonProperty("in") val location: ApiParameter.Location,
-    @JsonProperty("description") val description: String?,
-    @JsonProperty("required") val required: Boolean,
-    @JsonProperty("allowReserved") val allowReserved: Boolean?,
-    @JsonProperty("style") val style: String?,
-    @JsonProperty("explode") val explode: Boolean?,
-    @JsonProperty("deprecated") val deprecated: Boolean?,
-    @JsonProperty("schema") val schema: ElementSchema,
-    @JsonProperty("examples") var examples: IExample?
+    @field:JsonProperty("name") val name: String,
+    @field:JsonProperty("in") val location: ApiParameter.Location,
+    @field:JsonProperty("description") val description: String?,
+    @field:JsonProperty("required") val required: Boolean,
+    @field:JsonProperty("allowReserved") val allowReserved: Boolean?,
+    @field:JsonProperty("style") val style: String?,
+    @field:JsonProperty("explode") val explode: Boolean?,
+    @field:JsonProperty("deprecated") val deprecated: Boolean?,
+    @field:JsonProperty("schema") val schema: ElementSchema,
+    @field:JsonProperty("examples") var examples: IExample?
 )

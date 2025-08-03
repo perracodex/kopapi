@@ -243,12 +243,17 @@ internal object OperationComposer {
         val parameters: Set<ParameterObject>? = apiOperation.parameters?.let {
             ParameterComposer.compose(apiParameters = apiOperation.parameters)
         }
+
         val requestBody: RequestBodyObject? = apiOperation.requestBody?.let {
             RequestBodyComposer.compose(requestBody = apiOperation.requestBody)
         }
+
         val responses: Map<String, ResponseObject>? = apiOperation.responses?.let {
-            ResponseComposer.compose(responses = apiOperation.responses)
+            ResponseComposer.compose(responses = apiOperation.responses, defaultResponse = apiOperation.defaultResponse)
+        } ?: apiOperation.defaultResponse?.let { defaultResponse ->
+            ResponseComposer.composeDefault(defaultResponse = defaultResponse)
         }
+
         return OperationObject(
             tags = apiOperation.tags?.orNull(),
             summary = apiOperation.summary,

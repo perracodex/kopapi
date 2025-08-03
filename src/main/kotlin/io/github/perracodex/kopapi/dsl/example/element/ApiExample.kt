@@ -16,6 +16,6 @@ import com.fasterxml.jackson.annotation.JsonInclude
 internal data class ApiExample(
     val summary: String? = null,
     val description: String? = null,
-    @JsonInclude(JsonInclude.Include.ALWAYS)
+    @field:JsonInclude(JsonInclude.Include.ALWAYS)
     val value: Any?
 ) : IExample

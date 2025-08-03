@@ -22,8 +22,8 @@ import java.util.*
  */
 @ComposerApi
 internal data class ResponseObject(
-    @JsonProperty("description") val description: String?,
-    @JsonProperty("headers") val headers: Map<String, HeaderObject>?,
-    @JsonProperty("content") var content: Map<ContentType, OpenApiSchema.ContentSchema>?,
-    @JsonProperty("links") val links: SortedMap<String, ApiLink>?
+    @field:JsonProperty("description") val description: String?,
+    @field:JsonProperty("headers") val headers: Map<String, HeaderObject>?,
+    @field:JsonProperty("content") var content: Map<ContentType, OpenApiSchema.ContentSchema>?,
+    @field:JsonProperty("links") val links: SortedMap<String, ApiLink>?
 )

@@ -53,7 +53,7 @@ class CookieParameterTest {
                             add(name = "GetEmployeeDetails") {
                                 operationRef = "/api/v1/employee/{employee_id}"
                                 description = "Retrieve information about this employee."
-                                parameter(name = "employee_id", value = "\$request. path. employee_id")
+                                parameter(name = "employee_id", value = "request.path.employee_id")
                             }
                         }
                     }

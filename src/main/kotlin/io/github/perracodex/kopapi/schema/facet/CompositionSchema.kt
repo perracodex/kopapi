@@ -31,7 +31,7 @@ internal sealed class CompositionSchema(
      */
     data class AnyOf(
         @JsonIgnore override val definition: String = AnyOf::class.safeName(),
-        @JsonProperty("anyOf") val anyOf: List<ElementSchema>
+        @field:JsonProperty("anyOf") val anyOf: List<ElementSchema>
     ) : CompositionSchema(definition = definition)
 
     /**
@@ -41,7 +41,7 @@ internal sealed class CompositionSchema(
      */
     data class AllOf(
         @JsonIgnore override val definition: String = AllOf::class.safeName(),
-        @JsonProperty("allOf") val allOf: List<ElementSchema>
+        @field:JsonProperty("allOf") val allOf: List<ElementSchema>
     ) : CompositionSchema(definition = definition)
 
     /**
@@ -51,7 +51,7 @@ internal sealed class CompositionSchema(
      */
     data class OneOf(
         @JsonIgnore override val definition: String = OneOf::class.safeName(),
-        @JsonProperty("oneOf") val oneOf: List<ElementSchema>
+        @field:JsonProperty("oneOf") val oneOf: List<ElementSchema>
     ) : CompositionSchema(definition = definition)
 
     companion object {

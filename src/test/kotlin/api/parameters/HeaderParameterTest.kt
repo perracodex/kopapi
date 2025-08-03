@@ -49,7 +49,7 @@ class HeaderParameterTest {
                     response(status = HttpStatusCode.OK) {
                         link(name = "GetEmployeeDetails") {
                             operationId = "getEmployeeDetails"
-                            parameter(name = "employee_id", value = "\$request. path. employee_id")
+                            parameter(name = "employee_id", value = "request.path.employee_id")
                         }
                     }
                 }

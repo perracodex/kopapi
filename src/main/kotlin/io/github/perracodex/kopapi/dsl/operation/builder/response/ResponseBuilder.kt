@@ -225,7 +225,7 @@ public class ResponseBuilder @PublishedApi internal constructor(
     }
 
     @PublishedApi
-    internal fun build(status: HttpStatusCode): ApiResponse {
+    internal fun build(status: HttpStatusCode?): ApiResponse {
         // Create the map of ContentType to Set<KType>, ensuring each ContentType maps to its specific types.
         val contentMap: Map<ContentType, Set<ApiResponse.TypeDetails>>? = _config
             .allTypes.orNull()

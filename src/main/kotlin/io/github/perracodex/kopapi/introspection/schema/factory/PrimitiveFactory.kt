@@ -9,6 +9,7 @@ import io.github.perracodex.kopapi.schema.facet.ElementSchema
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.reflect.KClass
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.Uuid
 
 /**
@@ -22,7 +23,9 @@ internal object PrimitiveFactory {
      * @param kClass The [KClass] representing the primitive type.
      * @return A [ElementSchema] for the primitive type, or null if the type is not a primitive.
      */
+    @OptIn(ExperimentalTime::class)
     fun newSchema(kClass: KClass<*>): ElementSchema? {
+        @Suppress("DEPRECATION")
         return when (kClass) {
             // Basic Kotlin Types.
             Byte::class -> SchemaFactory.ofInt32()
@@ -58,6 +61,7 @@ internal object PrimitiveFactory {
             Uuid::class, java.util.UUID::class -> SchemaFactory.ofUuid()
 
             // Kotlin Date/Time Types.
+            kotlin.time.Instant::class -> SchemaFactory.ofDateTime()
             kotlinx.datetime.LocalDate::class -> SchemaFactory.ofDate()
             kotlinx.datetime.LocalDateTime::class -> SchemaFactory.ofDateTime()
             kotlinx.datetime.Instant::class -> SchemaFactory.ofDateTime()

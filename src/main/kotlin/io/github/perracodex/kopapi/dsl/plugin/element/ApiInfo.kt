@@ -18,12 +18,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @property license The license information for the API.
  */
 internal data class ApiInfo @JsonCreator constructor(
-    @JsonProperty("title") val title: String = "",
-    @JsonProperty("description") val description: String = "",
-    @JsonProperty("version") val version: String = "",
-    @JsonProperty("termsOfService") val termsOfService: String? = null,
-    @JsonProperty("contact") val contact: Contact? = null,
-    @JsonProperty("license") val license: License? = null
+    @field:JsonProperty("title") val title: String = "",
+    @field:JsonProperty("description") val description: String = "",
+    @field:JsonProperty("version") val version: String = "",
+    @field:JsonProperty("termsOfService") val termsOfService: String? = null,
+    @field:JsonProperty("contact") val contact: Contact? = null,
+    @field:JsonProperty("license") val license: License? = null
 ) {
     /**
      * The `Contact` information in the OpenAPI schema.

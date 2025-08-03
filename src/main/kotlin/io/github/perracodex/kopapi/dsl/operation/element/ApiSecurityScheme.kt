@@ -44,8 +44,8 @@ internal sealed class ApiSecurityScheme(
     data class ApiKey(
         override val schemeName: String,
         override val description: String?,
-        @JsonProperty("name") val key: String,
-        @JsonProperty("in") val location: SecurityLocation
+        @field:JsonProperty("name") val key: String,
+        @field:JsonProperty("in") val location: SecurityLocation
     ) : ApiSecurityScheme(schemeName = schemeName, description = description) {
         init {
             if (schemeName.isBlank()) {
@@ -65,7 +65,7 @@ internal sealed class ApiSecurityScheme(
     data class Http(
         override val schemeName: String,
         override val description: String?,
-        @JsonProperty("scheme") val method: AuthMethod
+        @field:JsonProperty("scheme") val method: AuthMethod
     ) : ApiSecurityScheme(schemeName = schemeName, description = description) {
         init {
             if (schemeName.isBlank()) {

@@ -22,10 +22,10 @@ import io.ktor.http.*
  */
 @ComposerApi
 internal data class HeaderObject(
-    @JsonProperty("description") val description: String?,
-    @JsonProperty("required") val required: Boolean,
-    @JsonProperty("explode") val explode: Boolean?,
-    @JsonProperty("schema") val schema: ElementSchema?,
-    @JsonProperty("content") var content: Map<ContentType, OpenApiSchema.ContentSchema>?,
-    @JsonProperty("deprecated") val deprecated: Boolean?
+    @field:JsonProperty("description") val description: String?,
+    @field:JsonProperty("required") val required: Boolean,
+    @field:JsonProperty("explode") val explode: Boolean?,
+    @field:JsonProperty("schema") val schema: ElementSchema?,
+    @field:JsonProperty("content") var content: Map<ContentType, OpenApiSchema.ContentSchema>?,
+    @field:JsonProperty("deprecated") val deprecated: Boolean?
 )

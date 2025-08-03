@@ -17,7 +17,7 @@ import kotlin.reflect.KType
 /**
  * Represents the metadata of an API response.
  *
- * @property status The [HttpStatusCode] code associated with this response.
+ * @property status The [HttpStatusCode] code associated with this response. Null for default responses.
  * @property headers A map of [ApiHeader] objects representing the headers that may be included in the response.
  * @property description A human-readable description of the response, providing context about what this response signifies.
  * @property descriptionSet A set of descriptions to ensure uniqueness when merging responses.
@@ -32,7 +32,7 @@ import kotlin.reflect.KType
  */
 @PublishedApi
 internal data class ApiResponse(
-    val status: HttpStatusCode,
+    val status: HttpStatusCode?,
     val description: String?,
     val descriptionSet: MutableSet<String> = LinkedHashSet(),
     val headers: Map<String, ApiHeader>?,

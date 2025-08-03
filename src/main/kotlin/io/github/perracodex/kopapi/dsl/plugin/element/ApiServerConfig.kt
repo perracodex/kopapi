@@ -5,7 +5,6 @@
 package io.github.perracodex.kopapi.dsl.plugin.element
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.perracodex.kopapi.dsl.plugin.element.ApiServerConfig.Variable
 
 /**
  * Represents an immutable server configuration.
@@ -32,8 +31,8 @@ internal data class ApiServerConfig(
      * @property description A human-readable description of the variable.
      */
     internal data class Variable(
-        @JsonProperty("default") val defaultValue: String,
-        @JsonProperty("enum") val choices: Set<String>?,
+        @field:JsonProperty("default") val defaultValue: String,
+        @field:JsonProperty("enum") val choices: Set<String>?,
         val description: String?,
     )
 }

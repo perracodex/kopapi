@@ -19,6 +19,7 @@ import io.github.perracodex.kopapi.util.trimOrNull
 import io.ktor.http.*
 import kotlin.collections.component1
 import kotlin.collections.component2
+import kotlin.collections.orEmpty
 import kotlin.collections.set
 
 /**
@@ -32,13 +33,20 @@ internal object ResponseComposer {
     private val tracer: Tracer = Tracer<ResponseComposer>()
 
     /**
+     * The key used for the default response in the OpenAPI schema.
+     * This is used when no specific status code is defined for a response.
+     */
+    private const val DEFAULT_KEY: String = "default"
+
+    /**
      * Generates the `responses` section of the OpenAPI schema by mapping each API response
      * to its corresponding schema, if applicable.
      *
      * @param responses A map of API response status codes to their corresponding [ApiResponse] objects.
+     * @param defaultResponse An optional default [ApiResponse] to include as a fallback for unspecified status codes.
      * @return A map of status codes to [ResponseObject] instances representing the OpenAPI responses.
      */
-    fun compose(responses: Map<HttpStatusCode, ApiResponse>): Map<String, ResponseObject> {
+    fun compose(responses: Map<HttpStatusCode, ApiResponse>, defaultResponse: ApiResponse?): Map<String, ResponseObject> {
         tracer.info("Composing the 'responses' section of the OpenAPI schema.")
 
         val composedResponses: MutableMap<String, ResponseObject> = mutableMapOf()
@@ -46,50 +54,93 @@ internal object ResponseComposer {
         responses.forEach { (statusCode, apiResponse) ->
             tracer.debug("Composing response: [${statusCode.value}] → ${apiResponse.description}")
 
-            // Process the headers for the response.
-            val finalHeaders: MutableMap<String, HeaderObject>? = HeaderComposer.compose(
-                headers = apiResponse.headers.orEmpty()
+            composedResponses[statusCode.value.toString()] = composeSingleResponse(
+                code = statusCode.value.toString(),
+                apiResponse = apiResponse,
+                fallbackDescription = statusCode.description
             )
+        }
 
-            if (apiResponse.content.isNullOrEmpty()) {
-                // No types associated with the response; create a ResponseObject without content.
-                composedResponses[statusCode.value.toString()] = ResponseObject(
-                    description = apiResponse.description,
-                    headers = finalHeaders,
-                    content = null,
-                    links = apiResponse.links?.toSortedMap()
-                )
-                return@forEach
-            }
+        defaultResponse?.let { apiResponse ->
+            tracer.debug("Composing default response → ${apiResponse.description}")
 
-            // Map to hold schemas grouped by their content types.
-            val schemasByContentType: MutableMap<ContentType, MutableList<ElementSchema>> = mutableMapOf()
+            composedResponses[DEFAULT_KEY] = composeSingleResponse(
+                code = DEFAULT_KEY,
+                apiResponse = apiResponse,
+                fallbackDescription = HttpStatusCode.OK.description
+            )
+        }
 
-            // Introspect each type and associate its schema with the relevant content types.
-            apiResponse.content.forEach { (contentType, typesDetails) ->
-                typesDetails.forEach { details ->
-                    var baseSchema: ElementSchema = SchemaRegistry.introspectType(type = details.type)?.schema
-                        ?: throw KopapiException(
-                            "No schema found for response type: ${details.type}, status code: $statusCode"
-                        )
+        tracer.info("Composed ${composedResponses.size} responses.")
+        return composedResponses
+    }
 
-                    // Apply additional parameter attributes.
-                    details.schemaAttributes?.let { attributes ->
-                        baseSchema = SchemaAttributeUtils.copySchemaAttributes(
-                            schema = baseSchema,
-                            attributes = attributes
-                        )
-                    }
+    /**
+     * Composes only the default response for the OpenAPI schema.
+     *
+     * @param defaultResponse The default [ApiResponse] to be composed.
+     * @return A [ResponseObject] representing the default response.
+     */
+    fun composeDefault(defaultResponse: ApiResponse): Map<String, ResponseObject> {
+        tracer.info("Composing the default response.")
+        return mapOf(
+            "default" to composeSingleResponse(
+                code = DEFAULT_KEY,
+                apiResponse = defaultResponse,
+                fallbackDescription = HttpStatusCode.OK.description
+            )
+        )
+    }
 
-                    schemasByContentType.getOrPut(contentType) {
-                        mutableListOf()
-                    }.add(baseSchema)
+    /**
+     * Builds a single [ResponseObject] from an [ApiResponse], using introspection and composition logic.
+     *
+     * @param code The string representation of the status code or "default".
+     * @param apiResponse The response metadata to use.
+     * @param fallbackDescription A default description to use if none is explicitly set.
+     * @return A fully constructed [ResponseObject].
+     */
+    private fun composeSingleResponse(
+        code: String,
+        apiResponse: ApiResponse,
+        fallbackDescription: String
+    ): ResponseObject {
+        val finalHeaders: MutableMap<String, HeaderObject>? = HeaderComposer.compose(
+            headers = apiResponse.headers.orEmpty()
+        )
+
+        if (apiResponse.content.isNullOrEmpty()) {
+            // No content types defined; return response without content.
+            return ResponseObject(
+                description = apiResponse.description.trimOrNull() ?: fallbackDescription,
+                headers = finalHeaders,
+                content = null,
+                links = apiResponse.links?.toSortedMap()
+            )
+        }
+
+        val schemasByContentType: MutableMap<ContentType, MutableList<ElementSchema>> = mutableMapOf()
+
+        apiResponse.content.forEach { (contentType, typesDetails) ->
+            typesDetails.forEach { details ->
+                var baseSchema: ElementSchema = SchemaRegistry.introspectType(type = details.type)?.schema
+                    ?: throw KopapiException("No schema found for response type: ${details.type}, status code: $code")
+
+                details.schemaAttributes?.let { attributes ->
+                    baseSchema = SchemaAttributeUtils.copySchemaAttributes(
+                        schema = baseSchema,
+                        attributes = attributes
+                    )
                 }
-            }
 
-            // Build the final content map with combined schemas per content type.
-            val finalContent: Map<ContentType, OpenApiSchema.ContentSchema> = schemasByContentType
-                .toSortedMap(compareBy({ it.contentType }, { it.contentSubtype }))
+                schemasByContentType.getOrPut(contentType) {
+                    mutableListOf()
+                }.add(baseSchema)
+            }
+        }
+
+        val finalContent: Map<ContentType, OpenApiSchema.ContentSchema> =
+            schemasByContentType.toSortedMap(compareBy({ it.contentType }, { it.contentSubtype }))
                 .mapValues { (_, schemas) ->
                     CompositionSchema.determine(
                         composition = apiResponse.composition,
@@ -98,17 +149,11 @@ internal object ResponseComposer {
                     )
                 }
 
-            // Create the PathResponse with the composed content.
-            composedResponses[statusCode.value.toString()] = ResponseObject(
-                description = apiResponse.description.trimOrNull() ?: statusCode.description,
-                headers = finalHeaders,
-                content = finalContent,
-                links = apiResponse.links?.toSortedMap()
-            )
-        }
-
-        tracer.info("Composed ${composedResponses.size} responses.")
-
-        return composedResponses
+        return ResponseObject(
+            description = apiResponse.description.trimOrNull() ?: fallbackDescription,
+            headers = finalHeaders,
+            content = finalContent,
+            links = apiResponse.links?.toSortedMap()
+        )
     }
 }

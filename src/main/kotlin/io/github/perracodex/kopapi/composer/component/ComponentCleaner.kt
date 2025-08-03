@@ -185,7 +185,7 @@ internal class ComponentCleaner(
      * Returns `null` if any key is not a String.
      */
     private fun Map<*, *>.toMutableMapSafely(): MutableMap<String, Any?>? {
-        val mutableMap: MutableMap<String, Any?> = mutableMapOf<String, Any?>()
+        val mutableMap: MutableMap<String, Any?> = mutableMapOf()
         for ((key, value) in this) {
             val keyStr: String = key?.toString() ?: return null
             mutableMap[keyStr] = value

@@ -18,7 +18,7 @@ import io.ktor.http.*
  */
 @ComposerApi
 internal data class RequestBodyObject internal constructor(
-    @JsonProperty("description") val description: String?,
-    @JsonProperty("required") val required: Boolean,
-    @JsonProperty("content") var content: Map<ContentType, OpenApiSchema.ContentSchema>?
+    @field:JsonProperty("description") val description: String?,
+    @field:JsonProperty("required") val required: Boolean,
+    @field:JsonProperty("content") var content: Map<ContentType, OpenApiSchema.ContentSchema>?
 )

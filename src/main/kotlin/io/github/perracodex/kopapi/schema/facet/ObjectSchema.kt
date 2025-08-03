@@ -25,10 +25,10 @@ import io.github.perracodex.kopapi.type.ApiType
  */
 @ComposerApi
 internal data class ObjectSchema(
-    @JsonProperty("type") val type: ApiType = ApiType.OBJECT,
-    @JsonProperty("description") val description: String?,
-    @JsonProperty("default") val defaultValue: Any?,
-    @JsonProperty("examples") val examples: IExample?,
-    @JsonProperty("properties") val properties: Map<String, ISchemaFacet>?,
-    @JsonProperty("required") val required: MutableSet<String>?
+    @field:JsonProperty("type") val type: ApiType = ApiType.OBJECT,
+    @field:JsonProperty("description") val description: String?,
+    @field:JsonProperty("default") val defaultValue: Any?,
+    @field:JsonProperty("examples") val examples: IExample?,
+    @field:JsonProperty("properties") val properties: Map<String, ISchemaFacet>?,
+    @field:JsonProperty("required") val required: MutableSet<String>?
 ) : ISchemaFacet

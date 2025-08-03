@@ -111,8 +111,8 @@ internal data class OpenApiSchema(
      */
     @JsonTypeName("components")
     data class Components(
-        @JsonProperty("schemas") val componentSchemas: MutableMap<String, ISchemaFacet>?,
-        @JsonProperty("securitySchemes") val securitySchemes: Map<String, ApiSecurityScheme>?
+        @field:JsonProperty("schemas") val componentSchemas: MutableMap<String, ISchemaFacet>?,
+        @field:JsonProperty("securitySchemes") val securitySchemes: Map<String, ApiSecurityScheme>?
     ) {
         /**
          * Checks if the components object contains any security schemes.
@@ -135,7 +135,7 @@ internal data class OpenApiSchema(
      * @property examples The [IExample] object representing the example data for the content.
      */
     data class ContentSchema(
-        @JsonProperty("schema") var schema: ISchemaFacet?,
-        @JsonProperty("examples") var examples: IExample?
+        @field:JsonProperty("schema") var schema: ISchemaFacet?,
+        @field:JsonProperty("examples") var examples: IExample?
     )
 }

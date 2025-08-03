@@ -64,14 +64,14 @@ internal sealed class ElementSchema(
      */
     data class Array(
         @JsonIgnore override val definition: String = Array::class.safeName(),
-        @JsonProperty("type") override val schemaType: ApiType = ApiType.ARRAY,
-        @JsonProperty("description") override val description: String? = null,
-        @JsonProperty("minItems") val minItems: Int? = null,
-        @JsonProperty("maxItems") val maxItems: Int? = null,
-        @JsonProperty("uniqueItems") val uniqueItems: Boolean? = null,
-        @JsonProperty("items") val items: ElementSchema,
-        @JsonProperty("default") override val defaultValue: Any? = null,
-        @JsonProperty("examples") override val examples: IExample? = null
+        @field:JsonProperty("type") override val schemaType: ApiType = ApiType.ARRAY,
+        @field:JsonProperty("description") override val description: String? = null,
+        @field:JsonProperty("minItems") val minItems: Int? = null,
+        @field:JsonProperty("maxItems") val maxItems: Int? = null,
+        @field:JsonProperty("uniqueItems") val uniqueItems: Boolean? = null,
+        @field:JsonProperty("items") val items: ElementSchema,
+        @field:JsonProperty("default") override val defaultValue: Any? = null,
+        @field:JsonProperty("examples") override val examples: IExample? = null
     ) : ElementSchema(
         definition = definition,
         schemaType = ApiType.ARRAY,
@@ -87,11 +87,11 @@ internal sealed class ElementSchema(
      */
     data class AdditionalProperties(
         @JsonIgnore override val definition: String = AdditionalProperties::class.safeName(),
-        @JsonProperty("type") override val schemaType: ApiType = ApiType.OBJECT,
-        @JsonProperty("description") override val description: String? = null,
-        @JsonProperty("additionalProperties") val additionalProperties: ElementSchema,
-        @JsonProperty("default") override val defaultValue: Any? = null,
-        @JsonProperty("examples") override val examples: IExample? = null
+        @field:JsonProperty("type") override val schemaType: ApiType = ApiType.OBJECT,
+        @field:JsonProperty("description") override val description: String? = null,
+        @field:JsonProperty("additionalProperties") val additionalProperties: ElementSchema,
+        @field:JsonProperty("default") override val defaultValue: Any? = null,
+        @field:JsonProperty("examples") override val examples: IExample? = null
     ) : ElementSchema(
         definition = definition,
         schemaType = ApiType.OBJECT,
@@ -106,11 +106,11 @@ internal sealed class ElementSchema(
      */
     data class Enum(
         @JsonIgnore override val definition: String = Enum::class.safeName(),
-        @JsonProperty("type") override val schemaType: ApiType = ApiType.STRING,
-        @JsonProperty("enum") val values: List<String>,
-        @JsonProperty("description") override val description: String? = null,
-        @JsonProperty("default") override val defaultValue: Any? = null,
-        @JsonProperty("examples") override val examples: IExample? = null
+        @field:JsonProperty("type") override val schemaType: ApiType = ApiType.STRING,
+        @field:JsonProperty("enum") val values: List<String>,
+        @field:JsonProperty("description") override val description: String? = null,
+        @field:JsonProperty("default") override val defaultValue: Any? = null,
+        @field:JsonProperty("examples") override val examples: IExample? = null
     ) : ElementSchema(
         definition = definition,
         schemaType = ApiType.STRING,
@@ -136,21 +136,21 @@ internal sealed class ElementSchema(
      */
     data class Primitive(
         @JsonIgnore override val definition: String = Primitive::class.safeName(),
-        @JsonProperty("type") override val schemaType: ApiType,
-        @JsonProperty("format") val format: String?,
-        @JsonProperty("description") override val description: String? = null,
-        @JsonProperty("default") override val defaultValue: Any? = null,
-        @JsonProperty("minLength") val minLength: Int? = null,
-        @JsonProperty("maxLength") val maxLength: Int? = null,
-        @JsonProperty("pattern") val pattern: String? = null,
-        @JsonProperty("contentEncoding") val contentEncoding: String? = null,
-        @JsonProperty("contentMediaType") val contentMediaType: String? = null,
-        @JsonProperty("minimum") val minimum: Number? = null,
-        @JsonProperty("maximum") val maximum: Number? = null,
-        @JsonProperty("exclusiveMinimum") val exclusiveMinimum: Number? = null,
-        @JsonProperty("exclusiveMaximum") val exclusiveMaximum: Number? = null,
-        @JsonProperty("multipleOf") val multipleOf: Number? = null,
-        @JsonProperty("examples") override val examples: IExample? = null
+        @field:JsonProperty("type") override val schemaType: ApiType,
+        @field:JsonProperty("format") val format: String?,
+        @field:JsonProperty("description") override val description: String? = null,
+        @field:JsonProperty("default") override val defaultValue: Any? = null,
+        @field:JsonProperty("minLength") val minLength: Int? = null,
+        @field:JsonProperty("maxLength") val maxLength: Int? = null,
+        @field:JsonProperty("pattern") val pattern: String? = null,
+        @field:JsonProperty("contentEncoding") val contentEncoding: String? = null,
+        @field:JsonProperty("contentMediaType") val contentMediaType: String? = null,
+        @field:JsonProperty("minimum") val minimum: Number? = null,
+        @field:JsonProperty("maximum") val maximum: Number? = null,
+        @field:JsonProperty("exclusiveMinimum") val exclusiveMinimum: Number? = null,
+        @field:JsonProperty("exclusiveMaximum") val exclusiveMaximum: Number? = null,
+        @field:JsonProperty("multipleOf") val multipleOf: Number? = null,
+        @field:JsonProperty("examples") override val examples: IExample? = null
     ) : ElementSchema(
         definition = definition,
         schemaType = schemaType,
@@ -170,15 +170,15 @@ internal sealed class ElementSchema(
         @JsonIgnore override val schemaType: ApiType = ApiType.OBJECT,
         @JsonIgnore val referencedType: KType,
         @JsonIgnore val schemaName: String,
-        @JsonProperty("description") override val description: String? = null,
-        @JsonProperty("default") override val defaultValue: Any? = null,
-        @JsonProperty("examples") override val examples: IExample? = null
+        @field:JsonProperty("description") override val description: String? = null,
+        @field:JsonProperty("default") override val defaultValue: Any? = null,
+        @field:JsonProperty("examples") override val examples: IExample? = null
     ) : ElementSchema(
         definition = definition,
         schemaType = ApiType.OBJECT,
         description = description
     ) {
-        @JsonProperty(REFERENCE_KEY)
+        @field:JsonProperty(REFERENCE_KEY)
         val ref: String = "$PATH$schemaName"
 
         companion object {
@@ -186,7 +186,7 @@ internal sealed class ElementSchema(
             const val PATH: String = "#/components/schemas/"
 
             /** The key used to reference another schema. */
-            const val REFERENCE_KEY: String = "\$ref"
+            const val REFERENCE_KEY: String = $$"$ref"
         }
     }
 }

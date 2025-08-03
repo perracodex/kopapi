@@ -33,11 +33,11 @@ internal sealed class MultipartObject(
      */
     data class Object(
         @JsonIgnore override val definition: String = Object::class.safeName(),
-        @JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
-        @JsonProperty("description") val description: String?,
-        @JsonProperty("properties") val properties: MutableMap<String, MultipartObject> = mutableMapOf(),
-        @JsonProperty("required") val requiredFields: List<String>?,
-        @JsonProperty("encoding") val encoding: MutableMap<String, Any>?
+        @field:JsonProperty("type") val schemaType: ApiType = ApiType.OBJECT,
+        @field:JsonProperty("description") val description: String?,
+        @field:JsonProperty("properties") val properties: MutableMap<String, MultipartObject> = mutableMapOf(),
+        @field:JsonProperty("required") val requiredFields: List<String>?,
+        @field:JsonProperty("encoding") val encoding: MutableMap<String, Any>?
     ) : MultipartObject(
         definition = definition,
         isRequired = true
@@ -55,9 +55,9 @@ internal sealed class MultipartObject(
         @JsonIgnore override val definition: String = PartItem::class.safeName(),
         @JsonIgnore override val isRequired: Boolean,
         @JsonIgnore val name: String,
-        @JsonProperty("description") val description: String?,
-        @JsonProperty("type") val schemaType: ApiType,
-        @JsonProperty("format") val schemaFormat: String?
+        @field:JsonProperty("description") val description: String?,
+        @field:JsonProperty("type") val schemaType: ApiType,
+        @field:JsonProperty("format") val schemaFormat: String?
     ) : MultipartObject(
         definition = definition,
         isRequired = isRequired

@@ -25,12 +25,12 @@ import io.github.perracodex.kopapi.util.trimOrNull
  */
 @ComposerApi
 internal data class NullableSchema private constructor(
-    @JsonProperty("description") val description: String? = null,
-    @JsonProperty("default") val defaultValue: Any? = null,
-    @JsonProperty("examples") val examples: IExample? = null,
-    @JsonProperty("type") val type: List<String>? = null,
-    @JsonProperty("format") val format: String? = null,
-    @JsonProperty("oneOf") val oneOf: List<Any>? = null
+    @field:JsonProperty("description") val description: String? = null,
+    @field:JsonProperty("default") val defaultValue: Any? = null,
+    @field:JsonProperty("examples") val examples: IExample? = null,
+    @field:JsonProperty("type") val type: List<String>? = null,
+    @field:JsonProperty("format") val format: String? = null,
+    @field:JsonProperty("oneOf") val oneOf: List<Any>? = null
 ) : ISchemaFacet {
 
     companion object {

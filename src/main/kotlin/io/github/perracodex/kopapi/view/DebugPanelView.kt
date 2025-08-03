@@ -7,7 +7,6 @@ package io.github.perracodex.kopapi.view
 import io.github.perracodex.kopapi.schema.SchemaRegistry
 import io.github.perracodex.kopapi.view.annotation.DebugViewApi
 import kotlinx.html.*
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 
 /**

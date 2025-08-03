@@ -42,6 +42,7 @@ internal data class ApiOperation(
     val parameters: Set<ApiParameter>?,
     val requestBody: ApiRequestBody?,
     val responses: Map<HttpStatusCode, ApiResponse>?,
+    val defaultResponse: ApiResponse?,
     val securitySchemes: Set<ApiSecurityScheme>?,
     val noSecurity: Boolean,
     val servers: Set<ApiServerConfig>?,
@@ -52,8 +53,8 @@ internal data class ApiOperation(
             throw KopapiException("Api Operation path must not be empty.")
         }
 
-        if (responses.isNullOrEmpty()) {
-            throw KopapiException("Api Operation must have at least one response defined.")
+        if (responses.isNullOrEmpty() && defaultResponse == null) {
+            throw KopapiException("Api Operation must have at least one response defined, or at least a default response.")
         }
     }
 }

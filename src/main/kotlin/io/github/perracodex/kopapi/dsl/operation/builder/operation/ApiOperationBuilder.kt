@@ -441,6 +441,20 @@ public class ApiOperationBuilder internal constructor(
         }
     }
 
+    public inline fun <reified T : Any> defaultResponse(
+        noinline builder: ResponseBuilder.() -> Unit = {}
+    ) {
+        val apiResponse: ApiResponse = ResponseBuilder().apply {
+            apply(builder)
+            addType<T> {
+                this.contentType = this@apply.contentType
+                this._schemaAttributes = this@apply._config.schemaAttributes()
+            }
+        }.build(status = null)
+
+        _config.defaultResponse = apiResponse
+    }
+
     /**
      * Constructs the API operation metadata for the route endpoint.
      *
@@ -450,9 +464,9 @@ public class ApiOperationBuilder internal constructor(
      * @return The constructed [ApiOperation] instance.
      */
     internal fun build(method: HttpMethod, endpointPath: String, errors: Set<String>?): ApiOperation {
-        // If no responses are defined, add a default NoContent response,
-        // otherwise sort the responses by status code.
-        val responses: LinkedHashMap<HttpStatusCode, ApiResponse> = if (_config.responses.isEmpty()) {
+        // If no responses are defined, add a default NoContent response if no default response is set,
+        // as the specification requires at least one response.
+        val responses: LinkedHashMap<HttpStatusCode, ApiResponse> = if (_config.responses.isEmpty() && _config.defaultResponse == null) {
             linkedMapOf(HttpStatusCode.NoContent to ApiResponse.buildWithNoContent())
         } else {
             _config.responses.entries
@@ -470,6 +484,7 @@ public class ApiOperationBuilder internal constructor(
             parameters = parameterDelegate.build(),
             requestBody = _config.requestBody,
             responses = responses,
+            defaultResponse = _config.defaultResponse,
             securitySchemes = securityDelegate.build(),
             noSecurity = securityDelegate.noSecurity,
             servers = serverDelegate.build(),
@@ -487,5 +502,8 @@ public class ApiOperationBuilder internal constructor(
 
         /** Optional set of possible responses, outlining expected status codes and content types. */
         var responses: MutableMap<HttpStatusCode, ApiResponse> = mutableMapOf()
+
+        /** Default fallback response for all unspecified HTTP status codes. */
+        var defaultResponse: ApiResponse? = null
     }
 }
