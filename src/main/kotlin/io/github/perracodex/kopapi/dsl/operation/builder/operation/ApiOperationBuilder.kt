@@ -441,6 +441,106 @@ public class ApiOperationBuilder internal constructor(
         }
     }
 
+    /**
+     * Registers the default response.
+     *
+     * Responses can be registered with or without a response body type:
+     * ```
+     * defaultResponse<ResponseType> { ... }
+     * defaultResponse { ... }
+     * ```
+     *
+     * #### Usage
+     *```
+     * defaultResponse<String> {
+     *      description = "Fallback default response."
+     *
+     *      // Override the default JSON ContentType.
+     *      contentType = setOf(
+     *          ContentType.Application.Json,
+     *          ContentType.Application.Xml
+     *      )
+     *
+     *      header<Int>(name = "X-Rate-Limit") {
+     *          description = "Number of allowed requests per period."
+     *      }
+     *      link(name = "SomeLinkName") {
+     *          operationId = "someOperationId"
+     *          description = "Some description."
+     *          parameter(name = "some_id", value = "\$request.path.some_id")
+     *      }
+     *
+     *      // Only meaningful if multiple types are provided.
+     *      // If omitted, defaults to `AnyOf`.
+     *      composition = Composition.AnyOf
+     *
+     *      // Register additional type, but only set it to Xml.
+     *      addType<YetAnotherType> {
+     *          contentType = setOf(ContentType.Application.Xml)
+     *      }
+     * }
+     *```
+     *
+     * @receiver [ResponseBuilder] The builder used to configure the response.
+     *
+     * @see [HeaderDelegate.headers]
+     * @see [ResponseBuilder.links]
+     */
+    @JvmName(name = "defaultResponseWithoutType")
+    public fun defaultResponse(
+        builder: ResponseBuilder.() -> Unit = {}
+    ) {
+        defaultResponse<Unit>(builder = builder)
+    }
+
+    /**
+     * Registers the default response.
+     *
+     * Responses can be registered with or without a response body type:
+     * ```
+     * defaultResponse<ResponseType> { ... }
+     * defaultResponse { ... }
+     * ```
+     *
+     * #### Usage
+     *```
+     * defaultResponse<String> {
+     *      description = "Fallback default response."
+     *
+     *      // Override the default JSON ContentType.
+     *      contentType = setOf(
+     *          ContentType.Application.Json,
+     *          ContentType.Application.Xml
+     *      )
+     *
+     *      header<Int>(name = "X-Rate-Limit") {
+     *          description = "Number of allowed requests per period."
+     *      }
+     *      link(name = "SomeLinkName") {
+     *          operationId = "someOperationId"
+     *          description = "Some description."
+     *          parameter(name = "some_id", value = "\$request.path.some_id")
+     *      }
+     *
+     *      // Only meaningful if multiple types are provided.
+     *      // If omitted, defaults to `AnyOf`.
+     *      composition = Composition.AnyOf
+     *
+     *      // Register additional type, but only set it to Xml.
+     *      addType<YetAnotherType> {
+     *          contentType = setOf(ContentType.Application.Xml)
+     *      }
+     * }
+     *```
+     *
+     * @receiver [ResponseBuilder] The builder used to configure the response.
+     *
+     * @param T The body primary type of the response.
+     *
+     * @see [HeaderDelegate.headers]
+     * @see [ResponseBuilder.links]
+     */
+    @JvmName(name = "defaultResponseWithType")
     public inline fun <reified T : Any> defaultResponse(
         noinline builder: ResponseBuilder.() -> Unit = {}
     ) {
