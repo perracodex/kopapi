@@ -4,14 +4,14 @@
 
 detekt = "1.23.7"
 dokka = "2.0.0"
-jackson_version = "2.19.2"
-kotlin = "2.2.0"
+jackson_version = "2.20.0"
+kotlin = "2.2.20"
 kotlinx-datetime = "0.7.1"
 kotlinx-serialization = "1.9.0"
-ktor = "3.2.3"
+ktor = "3.3.0"
 mockk = "1.14.5"
-swagger-parser = "2.1.31"
-swagger-ui = "5.27.0"
+swagger-parser = "2.1.33"
+swagger-ui = "5.28.1"
 vanniktech = "0.30.0"
 
 
