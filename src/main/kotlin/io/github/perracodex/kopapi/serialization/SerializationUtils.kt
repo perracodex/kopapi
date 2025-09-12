@@ -37,8 +37,12 @@ internal class SerializationUtils {
         .addModule(kotlinModule())
         .enable(SerializationFeature.INDENT_OUTPUT)
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .serializationInclusion(JsonInclude.Include.ALWAYS)
-        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .defaultPropertyInclusion(
+            JsonInclude.Value.construct(
+                JsonInclude.Include.ALWAYS,
+                JsonInclude.Include.ALWAYS
+            )
+        ).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_BY_DECLARATION_ORDER)
         .disable(MapperFeature.USE_ANNOTATIONS)
@@ -52,8 +56,12 @@ internal class SerializationUtils {
     val openApiJsonMapper: JsonMapper = JsonMapper.builder()
         .addModule(kotlinModule())
         .enable(SerializationFeature.INDENT_OUTPUT)
-        .serializationInclusion(JsonInclude.Include.NON_NULL)
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .defaultPropertyInclusion(
+            JsonInclude.Value.construct(
+                JsonInclude.Include.NON_NULL,
+                JsonInclude.Include.NON_NULL
+            )
+        ).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
         .enable(MapperFeature.SORT_CREATOR_PROPERTIES_BY_DECLARATION_ORDER)
         .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
@@ -67,8 +75,12 @@ internal class SerializationUtils {
     val openApiYamlMapper: YAMLMapper = YAMLMapper.builder()
         .addModule(kotlinModule())
         .enable(SerializationFeature.INDENT_OUTPUT)
-        .serializationInclusion(JsonInclude.Include.NON_NULL)
-        .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
+        .defaultPropertyInclusion(
+            JsonInclude.Value.construct(
+                JsonInclude.Include.NON_NULL,
+                JsonInclude.Include.NON_NULL
+            )
+        ).disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
         .enable(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE)
         .enable(YAMLGenerator.Feature.INDENT_ARRAYS_WITH_INDICATOR)
         .disable(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID)

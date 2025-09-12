@@ -35,6 +35,7 @@ import kotlin.reflect.KType
  * @see [ParametersBuilder.pathParameter]
  * @see [ParametersBuilder.cookieParameter]
  */
+@PublishedApi
 internal data class ApiParameter(
     val type: KType,
     val name: String,
