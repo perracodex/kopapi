@@ -31,8 +31,8 @@ get("/items/{data_id}") {
 * Schema outputs in `YAML` or `JSON` format.
 * Provides `Swagger UI` and `ReDoc` out of the box.
 * Flexible and expressive `DSL` builder.
-* Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) and [Jackson](https://github.com/FasterXML/jackson-module-kotlin)
-  annotations (under development).
+* Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) annotations, ([Jackson](https://github.com/FasterXML/jackson-module-kotlin)
+   are partially supported).
 * Minimally invasive integration. No unnatural modifications to the routes.
 * Well documented.
 
