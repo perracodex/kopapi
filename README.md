@@ -27,7 +27,7 @@ get("/items/{data_id}") {
 
 ### Characteristics:
 
-* Support for arbitrary types, including `generics`, `collections` and complex nested structures.
+* Full support for arbitrary types, including `generics`, `collections` and complex nested structures.
 * Schema outputs in `YAML` or `JSON` format.
 * Provides `Swagger UI` and `ReDoc` out of the box.
 * Flexible and expressive `DSL` builder.
