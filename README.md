@@ -32,7 +32,7 @@ get("/items/{data_id}") {
 * Provides `Swagger UI` and `ReDoc` out of the box.
 * Flexible and expressive `DSL` builder.
 * Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) annotations, ([Jackson](https://github.com/FasterXML/jackson-module-kotlin)
-   are partially supported).
+   annotations are partially supported).
 * Includes a Dashboard to review/analize the output.
 * Minimally invasive integration. No unnatural modifications to the routes.
 * Well documented.
