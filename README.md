@@ -27,14 +27,13 @@ get("/items/{data_id}") {
 
 ### Characteristics:
 
-* Minimally invasive integration.
+* Support for arbitrary types, including `generics`, `collections` and complex nested structures.
+* Schema outputs in `YAML` or `JSON` format.
 * Provides `Swagger UI` and `ReDoc` out of the box.
 * Flexible and expressive `DSL` builder.
-* No unnatural modifications to the routes.
-* Support for arbitrary types, including `generics`, `collections` and complex nested structures.
 * Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) and [Jackson](https://github.com/FasterXML/jackson-module-kotlin)
   annotations (under development).
-* Schema outputs in `YAML` or `JSON` format.
+* Minimally invasive integration. No unnatural modifications to the routes.
 * Well documented.
 
 ---
