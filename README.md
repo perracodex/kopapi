@@ -33,6 +33,7 @@ get("/items/{data_id}") {
 * Flexible and expressive `DSL` builder.
 * Support for [Kotlinx](https://github.com/Kotlin/kotlinx.serialization) annotations, ([Jackson](https://github.com/FasterXML/jackson-module-kotlin)
    are partially supported).
+* Includes a Dashboard to review/analize the output.
 * Minimally invasive integration. No unnatural modifications to the routes.
 * Well documented.
 
